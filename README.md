@@ -48,6 +48,7 @@ Home Assistant themes are CSS-variable mappings. Edit your local copy of `themes
 | `lg-blur` | `blur(20px) saturate(150%)` | Glass blur through card-mod |
 | `lg-glow` | Blue focus glow | Accent for custom controls |
 | `lg-icon-diameter` | `40px` | Shared icon diameter for compatible custom cards |
+| `state-cover-shade-closed-color` | `rgba(88, 169, 249, 0.72)` | Translucent blue fill in native vertical cover controls |
 | `lovelace-background` | Gradient plus local wallpaper | Dashboard backdrop |
 | `lg-motion-duration` | `0ms` / `180ms` | Hover and focus transition |
 
