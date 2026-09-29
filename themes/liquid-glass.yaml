@@ -80,6 +80,12 @@ Liquid Glass:
     lg-glow: '0 0 0 1px rgba(125, 198, 255, 0.66), 0 0 20px rgba(35, 143, 255, 0.40)'
     lg-blur: 'blur(20px) saturate(150%)'
     lg-icon-diameter: '40px'
+    lg-accent: '#66b9ff'
+    lg-control-surface: 'rgba(42, 69, 99, 0.42)'
+    lg-control-outline: 'rgba(219, 239, 255, 0.30)'
+    lg-control-blur: 'blur(10px) saturate(150%)'
+    lg-icon-glow: 'drop-shadow(0 0 3px #66b9ff)'
+    lg-graph-glow: 'drop-shadow(0 0 2px #66b9ff)'
     lg-motion-duration: '0ms'
     lg-enter-animation: 'none'
     # card-mod augments glass surfaces. It does not reset internal slider, chart or grid geometry.
@@ -107,6 +113,18 @@ Liquid Glass:
       ha-card:active {
         box-shadow: var(--lg-shadow), 0 0 0 1px rgba(125, 198, 255, 0.30);
       }
+      ha-card button {
+        -webkit-backdrop-filter: var(--lg-control-blur);
+        backdrop-filter: var(--lg-control-blur);
+        box-shadow: inset 1px 1px 0 var(--lg-control-outline);
+        transition: background-color var(--lg-motion-duration) ease,
+                    box-shadow var(--lg-motion-duration) ease;
+      }
+      ha-card button:focus-visible {
+        box-shadow: inset 1px 1px 0 var(--lg-control-outline), var(--lg-glow);
+      }
+      ha-card input[type="range"] { accent-color: var(--lg-accent); }
+      ha-card ha-icon { filter: var(--lg-icon-glow); }
       @media (hover: hover) and (pointer: fine) {
         ha-card:hover {
           border-color: var(--lg-outline-bright);

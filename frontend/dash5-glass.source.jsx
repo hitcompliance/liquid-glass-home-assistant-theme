@@ -1,35 +1,74 @@
 /* DASH5 optical layer using samasante/liquid-glass. HA controls remain untouched. */
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { flushSync } from 'react-dom';
-import { Glass } from '@samasante/liquid-glass';
+import { SvgGlass as Glass } from './.samasante-svg-build.js';
+import './glass-card.js';
+import { readSettings, resolvedMode, opticsFor, cardMaterial, mountSettingsUI, unmountSettingsUI } from './glass-config.js';
 
 const PATH = window.__DASH5_LIQUID_GLASS_PATH__ || '/dash-5/wohnzimmer';
-const MAX_LENSES = 8;
-const OPTICS = Object.freeze({
-  strength: 0.33,
-  depth: 0.65,
-  curvature: 0.2,
-  bend: 0.56,
-  dispersion: 0.17,
-  frost: 11,
-  sheen: 0.65,
-  specular: 0.55,
-  glow: 0.2,
-  brightness: 0.025,
-  saturate: 1.25,
-});
 
 let root;
 let reactRoot;
 let view;
 let container;
-let lenses = [];
 let cardElements = [];
 let pending = false;
 let originalView = new Map();
 let originalIsolation = ['', ''];
+let originalContainerPosition = ['', ''];
 const originalCards = new Map();
+const cardIds = new WeakMap();
+const activeCardById = new Map();
+let nextCardId = 1;
+let lastSignature = '';
+let settings = readSettings();
+let lastMode = 'dark';
+const originalTheme = new Map();
+
+function themeValues() {
+  const profile = settings[lastMode];
+  const light = lastMode === 'light';
+  const image = settings.wallpaper.replaceAll('"', '%22');
+  return {
+    '--lg-surface': profile.tint,
+    '--lg-outline': profile.outline,
+    '--lg-blur': `blur(${profile.optics.frost}px) saturate(${Math.round(profile.optics.saturate * 100)}%)`,
+    '--lg-motion-duration': settings.motion ? '180ms' : '0ms',
+    '--ha-card-background': light ? 'rgba(235, 244, 255, .38)' : 'rgba(21, 31, 44, .50)',
+    '--card-background-color': light ? 'rgba(235, 244, 255, .38)' : 'rgba(21, 31, 44, .50)',
+    '--primary-text-color': light ? '#122238' : '#f5f9ff',
+    '--secondary-text-color': light ? '#41556d' : '#b8c7dc',
+    '--divider-color': profile.outline,
+    '--lg-accent': settings.controls.accent,
+    '--lg-control-surface': settings.controls.buttonTint,
+    '--lg-control-outline': settings.controls.buttonOutline,
+    '--lg-control-blur': `blur(${settings.controls.controlBlur}px) saturate(150%)`,
+    '--lg-icon-glow': `drop-shadow(0 0 ${Math.round(settings.controls.iconGlow * 12)}px ${settings.controls.accent})`,
+    '--lg-graph-glow': `drop-shadow(0 0 ${Math.round(settings.controls.graphGlow * 10)}px ${settings.controls.accent})`,
+    '--slider-color': settings.controls.accent,
+    '--primary-color': settings.controls.accent,
+    '--lovelace-background': `linear-gradient(110deg, rgba(4,10,18,.13), rgba(5,14,28,.06) 52%, rgba(3,9,19,.13)), url("${image}") center / cover fixed`,
+  };
+}
+
+function applyThemeValues() {
+  const values = themeValues();
+  for (const host of [document.documentElement, document.querySelector('home-assistant')].filter(Boolean)) {
+    if (!originalTheme.has(host)) originalTheme.set(host, new Map(Object.keys(values).map((key) =>
+      [key, [host.style.getPropertyValue(key), host.style.getPropertyPriority(key)]])));
+    for (const [key, value] of Object.entries(values)) host.style.setProperty(key, value);
+  }
+}
+
+function restoreThemeValues() {
+  for (const [host, values] of originalTheme) {
+    for (const [key, [value, priority]] of values) {
+      if (value) host.style.setProperty(key, value, priority);
+      else host.style.removeProperty(key);
+    }
+  }
+  originalTheme.clear();
+}
 
 function deepElements(start, result = []) {
   for (const element of start.querySelectorAll('*')) {
@@ -64,7 +103,7 @@ function scanCards() {
     const isCard = element.tagName === 'HA-CARD'
       || (parentTag === 'DASH5-GOVEE-LIGHT-CARD-V2' && element.classList.contains('card'));
     if (!isCard || parentTag === 'MINI-GRAPH-CARD') continue;
-    if (alpha(getComputedStyle(element).backgroundColor) >= 0.3) cardElements.push(element);
+    if (originalCards.has(element) || alpha(getComputedStyle(element).backgroundColor) >= 0.05) cardElements.push(element);
   }
 }
 
@@ -73,8 +112,9 @@ function candidates() {
   for (const element of cardElements) {
     if (!element.isConnected) continue;
     const box = element.getBoundingClientRect();
-    if (box.width < 190 || box.height < 68 || box.height > 700
-      || box.bottom < 60 || box.top > innerHeight - 12) continue;
+    if (box.width < 80 || box.height < 45 || box.height > 700
+      || box.bottom < 0 || box.top > innerHeight
+      || getComputedStyle(element).getPropertyValue('--lg-optics-disabled').trim() === '1') continue;
     found.push({ element, box });
   }
   const deduped = found.filter((item) => !found.some((other) =>
@@ -82,7 +122,7 @@ function candidates() {
       && Math.abs(other.box.left - item.box.left) < 8
       && Math.abs(other.box.top - item.box.top) < 8));
   deduped.sort((a, b) => a.box.top - b.box.top || b.box.width - a.box.width);
-  return deduped.slice(0, innerWidth < 600 ? 4 : MAX_LENSES);
+  return deduped.slice(0, innerWidth < 600 ? Math.min(4, settings.maxLenses) : settings.maxLenses);
 }
 
 function restoreCard(element) {
@@ -96,45 +136,93 @@ function restoreCard(element) {
 }
 
 function softenCard(element) {
-  if (originalCards.has(element)) return;
-  const old = new Map();
-  for (const property of ['background-color', 'backdrop-filter', '-webkit-backdrop-filter']) {
-    old.set(property, [element.style.getPropertyValue(property), element.style.getPropertyPriority(property)]);
+  if (!originalCards.has(element)) {
+    const old = new Map();
+    for (const property of ['background-color', 'backdrop-filter', '-webkit-backdrop-filter']) {
+      old.set(property, [element.style.getPropertyValue(property), element.style.getPropertyPriority(property)]);
+    }
+    originalCards.set(element, old);
   }
-  originalCards.set(element, old);
-  element.style.setProperty('background-color', 'rgba(21, 31, 44, 0.44)', 'important');
+  element.style.setProperty('background-color', cardMaterial(element, settings, lastMode).tint, 'important');
   element.style.setProperty('backdrop-filter', 'none', 'important');
   element.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
 }
 
 function place() {
-  if (!root || !lenses.length) return;
-  const next = candidates();
+  if (!root) return;
+  settings = readSettings();
+  lastMode = resolvedMode(settings);
+  applyThemeValues();
+  const next = settings.enabled ? candidates() : [];
   const selected = new Set(next.map((item) => item.element));
   for (const element of [...originalCards.keys()]) {
     if (!selected.has(element)) restoreCard(element);
   }
-  for (let i = 0; i < lenses.length; i++) {
-    const lens = lenses[i];
-    const item = next[i];
-    if (!item) {
-      lens.style.left = '-100px';
-      lens.style.top = '-100px';
-      lens.style.width = '1px';
-      lens.style.height = '1px';
-      continue;
-    }
-    const box = item.element.getBoundingClientRect();
-    lens.style.left = `${Math.round(box.left)}px`;
-    lens.style.top = `${Math.round(box.top)}px`;
-    lens.style.width = `${Math.round(box.width)}px`;
-    lens.style.height = `${Math.round(box.height)}px`;
-    softenCard(item.element);
-  }
+  const viewportWidth = document.documentElement.clientWidth;
+  const viewportHeight = innerHeight;
+  const frame = container.getBoundingClientRect();
+  const localPosition = (box) => [
+    Math.round(box.left - frame.left + container.scrollLeft),
+    Math.round(box.top - frame.top + container.scrollTop),
+  ];
+  const signature = JSON.stringify({ settings, mode: lastMode, viewportWidth, viewportHeight,
+    cards: next.map(({ element, box }) => {
+      if (!cardIds.has(element)) cardIds.set(element, nextCardId++);
+      return [cardIds.get(element), ...localPosition(box),
+        Math.round(box.width), Math.round(box.height),
+        opticsFor(element, settings, lastMode), cardMaterial(element, settings, lastMode)];
+    }) });
+  if (signature === lastSignature) { syncWallpaperOffsets(); return; }
+  lastSignature = signature;
+  activeCardById.clear();
+  const rendered = next.map(({ element, box }, index) => {
+    const [x, y] = localPosition(box);
+    const width = Math.round(box.width);
+    const height = Math.round(box.height);
+    const cardId = cardIds.get(element);
+    activeCardById.set(cardId, element);
+    const material = cardMaterial(element, settings, lastMode);
+    softenCard(element);
+    // Refract a real DOM copy of the fixed photo. Safari supports filter:url()
+    // on this copy; it does not support SVG displacement in backdrop-filter.
+    // Never transform the source image: WebKit may discard a transformed SVG filter.
+    const wallpaper = React.createElement('img', {
+      src: settings.wallpaper, alt: '', 'aria-hidden': true, draggable: false,
+      'data-lg-card-id': cardId,
+      style: { position: 'absolute', left: -Math.round(box.left), top: -Math.round(box.top),
+        width: viewportWidth, height: viewportHeight, maxWidth: 'none',
+        objectFit: 'cover', objectPosition: 'center', pointerEvents: 'none' },
+    });
+    return React.createElement(Glass, {
+      key: index, refract: wallpaper,
+      behind: lastMode === 'dark' ? '#142338' : '#dce9f4',
+      optics: opticsFor(element, settings, lastMode),
+      width, height, radius: material.radius, filterResolution: 1,
+      style: { position: 'absolute', left: x, top: y, width, height,
+        pointerEvents: 'none', overflow: 'hidden', borderRadius: material.radius,
+        background: material.tint, border: `1px solid ${material.outline}`,
+        boxShadow: 'inset 1px 1px 0 rgba(255,255,255,.42), 0 12px 32px rgba(0,4,18,.22)' },
+    }, React.createElement('span', { 'aria-hidden': true }));
+  });
+  reactRoot.render(React.createElement(React.Fragment, null, rendered));
   root.dataset.ready = 'true';
   root.dataset.lenses = String(next.length);
-  root.dataset.engine = 'samasante-svg';
-  window.__liquidGlassDASH5 = { active: true, lenses: next.length, source: '@samasante/liquid-glass 0.1.1' };
+  root.dataset.engine = 'samasante-svg-copy';
+  window.__liquidGlassDASH5 = { active: settings.enabled, lenses: next.length,
+    mode: lastMode, engine: 'SVG filter + DOM wallpaper copy' };
+}
+
+function syncWallpaperOffsets() {
+  if (!root) return;
+  for (const image of root.querySelectorAll('img[data-lg-card-id]')) {
+    const card = activeCardById.get(Number(image.dataset.lgCardId));
+    if (!card?.isConnected) continue;
+    const box = card.getBoundingClientRect();
+    // The lens scrolls with its card; only the copy of the fixed photo is
+    // offset inside it. No React update or SVG map regeneration on scroll.
+    image.style.left = `${-Math.round(box.left)}px`;
+    image.style.top = `${-Math.round(box.top)}px`;
+  }
 }
 
 function cleanup() {
@@ -142,6 +230,8 @@ function cleanup() {
   reactRoot = undefined;
   root?.remove();
   root = undefined;
+  unmountSettingsUI();
+  restoreThemeValues();
   for (const element of [...originalCards.keys()]) restoreCard(element);
   if (view) {
     for (const [property, [value, priority]] of originalView) {
@@ -152,11 +242,14 @@ function cleanup() {
   if (container) {
     if (originalIsolation[0]) container.style.setProperty('isolation', ...originalIsolation);
     else container.style.removeProperty('isolation');
+    if (originalContainerPosition[0]) container.style.setProperty('position', ...originalContainerPosition);
+    else container.style.removeProperty('position');
   }
   view = undefined;
   container = undefined;
-  lenses = [];
   cardElements = [];
+  activeCardById.clear();
+  lastSignature = '';
   window.__liquidGlassDASH5 = { active: false };
 }
 
@@ -167,28 +260,17 @@ function mount(nextContainer) {
   originalView = new Map(['position', 'z-index'].map((name) =>
     [name, [view.style.getPropertyValue(name), view.style.getPropertyPriority(name)]]));
   originalIsolation = [container.style.getPropertyValue('isolation'), container.style.getPropertyPriority('isolation')];
+  originalContainerPosition = [container.style.getPropertyValue('position'), container.style.getPropertyPriority('position')];
   container.style.setProperty('isolation', 'isolate');
+  if (getComputedStyle(container).position === 'static') container.style.setProperty('position', 'relative');
   view.style.setProperty('position', 'relative');
   view.style.setProperty('z-index', '1');
   root = document.createElement('div');
   root.id = 'dash5-liquid-glass-optics';
-  root.style.cssText = 'position:fixed;inset:0;width:100vw;height:100dvh;pointer-events:none;z-index:0;overflow:hidden;';
+  root.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:0;overflow:visible;';
   container.insertBefore(root, view);
   reactRoot = createRoot(root);
-  flushSync(() => reactRoot.render(React.createElement(React.Fragment, null,
-    Array.from({ length: MAX_LENSES }, (_, i) => React.createElement(Glass, {
-      key: i,
-      optics: OPTICS,
-      radius: 16,
-      style: {
-        position: 'absolute', left: -100, top: -100, width: 1, height: 1,
-        pointerEvents: 'none', overflow: 'hidden',
-        background: 'rgba(48, 72, 103, 0.14)',
-        border: '1px solid rgba(235, 247, 255, 0.22)',
-      },
-    }, React.createElement('span', { 'aria-hidden': true }))
-  ))));
-  lenses = [...root.querySelectorAll('[data-liquid-glass="material"]')];
+  mountSettingsUI();
   scanCards();
   place();
 }
@@ -215,8 +297,9 @@ function schedule() {
 
 if (!window.__samasanteGlassDASH5Loader) {
   window.__samasanteGlassDASH5Loader = true;
-  window.addEventListener('scroll', schedule, true);
+  window.addEventListener('scroll', () => { syncWallpaperOffsets(); schedule(); }, true);
   window.addEventListener('resize', schedule);
+  window.addEventListener('liquid-glass-settings-changed', schedule);
   window.setInterval(refresh, 1500);
   refresh();
 }

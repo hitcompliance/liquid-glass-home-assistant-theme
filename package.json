@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:glass": "esbuild frontend/dash5-glass.source.jsx --bundle --minify --format=esm --target=es2022 --outfile=frontend/dash5-glass.js"
+    "build:glass": "node scripts/build-glass.mjs",
+    "test:theme": "ruby tests/check_theme.rb",
+    "test:browser": "node tests/browser-smoke.mjs"
   },
   "dependencies": {
     "@samasante/liquid-glass": "0.1.1",
@@ -11,6 +13,7 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "esbuild": "0.25.12"
+    "esbuild": "0.25.12",
+    "playwright": "^1.61.1"
   }
 }
