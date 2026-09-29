@@ -15,6 +15,9 @@ Liquid Glass:
     state-icon-active-color: '#6dbcff'
     state-light-active-color: '#ffd17d'
     slider-color: '#66b9ff'
+    # Keep native vertical cover controls, but replace HA's opaque lilac fill.
+    state-cover-shade-closed-color: 'rgba(88, 169, 249, 0.72)'
+    state-cover-shade-open-color: 'rgba(113, 198, 255, 0.68)'
     switch-checked-color: '#66b9ff'
     paper-toggle-button-checked-button-color: '#66b9ff'
     paper-toggle-button-checked-bar-color: 'rgba(94, 179, 255, 0.50)'
