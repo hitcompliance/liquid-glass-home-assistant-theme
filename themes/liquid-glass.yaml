@@ -1,0 +1,150 @@
+Liquid Glass:
+  # Shared palette. Values without -- become CSS custom properties in Home Assistant.
+  <<: &glass
+    card-mod-theme: Liquid Glass
+    primary-color: '#59afff'
+    accent-color: '#61b8ff'
+    primary-text-color: '#f5f9ff'
+    secondary-text-color: '#b8c7dc'
+    disabled-text-color: '#8492a7'
+    text-primary-color: '#f5f9ff'
+    text-accent-color: '#e9f5ff'
+    paper-item-icon-color: '#b8c8dc'
+    paper-item-icon-active-color: '#6dbcff'
+    state-icon-color: '#b8c8dc'
+    state-icon-active-color: '#6dbcff'
+    state-light-active-color: '#ffd17d'
+    slider-color: '#66b9ff'
+    switch-checked-color: '#66b9ff'
+    paper-toggle-button-checked-button-color: '#66b9ff'
+    paper-toggle-button-checked-bar-color: 'rgba(94, 179, 255, 0.50)'
+    rgb-primary-color: '245, 249, 255'
+    rgb-accent-color: '97, 184, 255'
+    success-color: '#65dba4'
+    warning-color: '#ffcb70'
+    error-color: '#ff777f'
+    info-color: '#6dbcff'
+    primary-background-color: '#08111f'
+    secondary-background-color: 'rgba(29, 53, 79, 0.76)'
+    paper-card-background-color: 'rgba(17, 34, 55, 0.66)'
+    card-background-color: 'rgba(17, 34, 55, 0.66)'
+    ha-card-background: 'rgba(17, 34, 55, 0.66)'
+    ha-card-border-radius: '16px'
+    ha-card-border-width: '1px'
+    ha-card-box-shadow: '0 14px 36px rgba(0, 4, 18, 0.25), inset 0 1px rgba(255, 255, 255, 0.10)'
+    divider-color: 'rgba(206, 230, 255, 0.23)'
+    app-header-background-color: 'rgba(13, 27, 45, 0.72)'
+    app-header-text-color: '#f5f9ff'
+    sidebar-background-color: 'rgba(13, 27, 45, 0.72)'
+    sidebar-text-color: '#d9e6f4'
+    sidebar-icon-color: '#a9bed6'
+    sidebar-selected-background-color: 'rgba(86, 161, 238, 0.24)'
+    sidebar-selected-text-color: '#ffffff'
+    sidebar-selected-icon-color: '#7ac3ff'
+    mdc-theme-primary: '#60b7ff'
+    mdc-theme-surface: '#182b43'
+    mdc-theme-background: '#08111f'
+    mdc-theme-on-surface: '#f5f9ff'
+    mdc-theme-secondary: '#95d4ff'
+    dialog-background-color: 'rgba(17, 35, 56, 0.88)'
+    dialog-backdrop-filter: 'blur(18px) saturate(140%)'
+    label-badge-background-color: 'rgba(23, 46, 71, 0.78)'
+    label-badge-text-color: '#f5f9ff'
+    label-badge-red: '#ff777f'
+    label-badge-green: '#65dba4'
+    label-badge-blue: '#6dbcff'
+    label-badge-yellow: '#ffcb70'
+    mini-media-player-base-color: '#dceeff'
+    mini-media-player-accent-color: '#6dbcff'
+    mush-spacing: '10px'
+    mush-card-primary-color: '#f5f9ff'
+    mush-card-secondary-color: '#b8c7dc'
+    mush-rgb-blue: '96, 183, 255'
+    mush-rgb-green: '101, 219, 164'
+    mush-rgb-red: '255, 119, 127'
+    mush-rgb-orange: '255, 190, 112'
+    mush-rgb-disabled: '131, 147, 168'
+    mush-chip-background: 'rgba(30, 55, 80, 0.62)'
+    mush-control-border-radius: '12px'
+    # Optional file; the gradient still displays if the user has not copied it to /config/www.
+    lovelace-background: "linear-gradient(110deg, rgba(4, 13, 28, 0.67), rgba(5, 18, 39, 0.48) 52%, rgba(3, 11, 25, 0.64)), url('/local/liquid-glass-living-room.jpg') center / cover fixed"
+    lg-surface: 'rgba(17, 34, 55, 0.66)'
+    lg-surface-raised: 'rgba(28, 52, 78, 0.78)'
+    lg-outline: 'rgba(205, 231, 255, 0.28)'
+    lg-outline-bright: 'rgba(218, 239, 255, 0.46)'
+    lg-shadow: '0 14px 36px rgba(0, 4, 18, 0.25), inset 0 1px rgba(255, 255, 255, 0.10)'
+    lg-glow: '0 0 0 1px rgba(125, 198, 255, 0.42), 0 0 20px rgba(35, 143, 255, 0.32)'
+    lg-blur: 'blur(22px) saturate(155%)'
+    lg-motion-duration: '0ms'
+    lg-enter-animation: 'none'
+    # card-mod augments glass surfaces. It does not reset internal slider, chart or grid geometry.
+    card-mod-card: &card_style |
+      :host, ha-card {
+        -webkit-backdrop-filter: var(--lg-blur);
+        backdrop-filter: var(--lg-blur);
+      }
+      ha-card {
+        border: 1px solid var(--lg-outline);
+        border-radius: var(--ha-card-border-radius, 16px);
+        box-shadow: var(--lg-shadow);
+        transition: border-color var(--lg-motion-duration) ease,
+                    box-shadow var(--lg-motion-duration) ease,
+                    background-color var(--lg-motion-duration) ease;
+        animation: var(--lg-enter-animation);
+      }
+      ha-card:focus-within {
+        border-color: var(--lg-outline-bright);
+      }
+      ha-card:active {
+        box-shadow: var(--lg-shadow), 0 0 0 1px rgba(125, 198, 255, 0.30);
+      }
+      @media (hover: hover) and (pointer: fine) {
+        ha-card:hover {
+          border-color: var(--lg-outline-bright);
+          box-shadow: var(--lg-shadow), 0 0 20px rgba(56, 145, 230, 0.10);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        ha-card { animation: none !important; transition-duration: 0ms !important; }
+      }
+      @keyframes lg-card-enter {
+        from { opacity: 0.82; }
+        to { opacity: 1; }
+      }
+    card-mod-more-info: &more_info_style |
+      :host {
+        --ha-card-background: var(--lg-surface-raised);
+        --ha-card-border-radius: 16px;
+      }
+      ha-card {
+        -webkit-backdrop-filter: var(--lg-blur);
+        backdrop-filter: var(--lg-blur);
+        border: 1px solid var(--lg-outline);
+      }
+    card-mod-dialog: &dialog_style |
+      :host {
+        --mdc-theme-surface: rgba(17, 35, 56, 0.88);
+        --dialog-background-color: rgba(17, 35, 56, 0.88);
+      }
+      ha-dialog {
+        -webkit-backdrop-filter: blur(20px) saturate(145%);
+        backdrop-filter: blur(20px) saturate(145%);
+      }
+    card-mod-sidebar: &sidebar_style |
+      :host {
+        -webkit-backdrop-filter: blur(18px) saturate(135%);
+        backdrop-filter: blur(18px) saturate(135%);
+      }
+    modes:
+      dark:
+        dark-mode: true
+
+Liquid Glass Motion:
+  <<: *glass
+  card-mod-theme: Liquid Glass Motion
+  lg-motion-duration: '180ms'
+  lg-enter-animation: 'lg-card-enter 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both'
+  card-mod-card: *card_style
+  card-mod-more-info: *more_info_style
+  card-mod-dialog: *dialog_style
+  card-mod-sidebar: *sidebar_style
