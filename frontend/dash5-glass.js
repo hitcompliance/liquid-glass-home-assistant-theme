@@ -106,7 +106,7 @@ function softenCard(element) {
     old.set(property, [element.style.getPropertyValue(property), element.style.getPropertyPriority(property)]);
   }
   originals.set(element, old);
-  element.style.setProperty('background-color', 'rgba(21, 31, 44, 0.34)', 'important');
+  element.style.setProperty('background-color', 'rgba(21, 31, 44, 0.48)', 'important');
   element.style.setProperty('backdrop-filter', 'none', 'important');
   element.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
 }
@@ -148,6 +148,7 @@ function place() {
   if (changed) instance.markChanged();
   root.dataset.ready = 'true';
   root.dataset.lenses = String(next.length);
+  root.dataset.fps = String(instance.fps);
   window.__liquidGlassDASH5 = {
     active: true,
     lenses: next.length,
