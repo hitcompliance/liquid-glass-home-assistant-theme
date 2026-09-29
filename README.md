@@ -35,6 +35,18 @@ Both variants respect the operating system's **Reduce Motion** setting. The moti
 
 For the extra glass styling around cards and dialogs, install [card-mod](https://github.com/thomasloven/lovelace-card-mod). The palette, normal card backgrounds, and Mushroom colors still work without card-mod. Loading card-mod as a frontend module can improve application speed, especially for theme-wide styling; follow card-mod's current installation instructions and use the resource URL shown by your own HACS installation.
 
+## Optional WebGL refraction for DASH5
+
+The companion module adds real refraction of the supplied stationary wallpaper behind up to eight visible cards. The card text, sliders, graphs, and click targets remain in Home Assistant's normal DOM above the optical layer. It uses one WebGL context, does not capture private dashboard content, and falls back to the CSS theme when WebGL or the image is unavailable. At phone widths it limits rendering to four cards. Reduce Motion disables the enhancement.
+
+HACS installs the YAML theme, so install this optional frontend resource separately:
+
+1. Copy [`frontend/dash5-glass.js`](frontend/dash5-glass.js) and [`frontend/ybouane-liquidglass-1.0.3.js`](frontend/ybouane-liquidglass-1.0.3.js) into `/config/www/liquid-glass/`.
+2. Copy the wallpaper to `/config/www/liquid-glass-living-room.jpg` as described above.
+3. In **Settings → Dashboards → Resources**, add `/local/liquid-glass/dash5-glass.js` as a **JavaScript module**. Reload `/dash-5/wohnzimmer`.
+
+The module is scoped to `/dash-5/wohnzimmer` and an active Liquid Glass theme. Change its `CONFIG` object to tune refraction, blur, edge lighting, or specular reflection. Set `window.__DASH5_LIQUID_GLASS_DISABLE__ = true` before loading the resource to disable it without removing the resource. Its pinned upstream package is [@ybouane/liquidglass 1.0.3](https://www.npmjs.com/package/@ybouane/liquidglass); see [third-party licensing](frontend/THIRD-PARTY-LICENSE.md).
+
 ## Configuration
 
 Home Assistant themes are CSS-variable mappings. Edit your local copy of `themes/liquid-glass.yaml` to adjust these values, then reload themes:
