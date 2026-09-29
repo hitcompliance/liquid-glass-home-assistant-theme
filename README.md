@@ -44,6 +44,7 @@ Home Assistant themes are CSS-variable mappings. Edit your local copy of `themes
 | `lg-surface` | `rgba(17, 34, 55, 0.66)` | Main glass tint |
 | `lg-surface-raised` | `rgba(28, 52, 78, 0.78)` | Dialog and lifted surface tint |
 | `lg-outline` | `rgba(205, 231, 255, 0.28)` | Fine card edge |
+| `lg-radius` | `16px` | Glass-card corners, even when a custom card sets its own radius token |
 | `lg-blur` | `blur(22px) saturate(155%)` | Glass blur through card-mod |
 | `lg-glow` | Blue focus glow | Accent for custom controls |
 | `lovelace-background` | Gradient plus local wallpaper | Dashboard backdrop |
