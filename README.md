@@ -41,11 +41,11 @@ Home Assistant themes are CSS-variable mappings. Edit your local copy of `themes
 
 | Variable | Default | Effect |
 | --- | --- | --- |
-| `lg-surface` | `rgba(21, 31, 44, 0.60)` | Main glass tint |
-| `lg-surface-raised` | `rgba(31, 47, 66, 0.70)` | Dialog and lifted surface tint |
+| `lg-surface` | `rgba(21, 31, 44, 0.74)` | Main glass tint |
+| `lg-surface-raised` | `rgba(31, 47, 66, 0.78)` | Dialog and lifted surface tint |
 | `lg-outline` | `rgba(221, 239, 255, 0.34)` | Fine card edge |
 | `lg-radius` | `16px` | Glass-card corners, even when a custom card sets its own radius token |
-| `lg-blur` | `blur(14px) saturate(145%)` | Glass blur through card-mod |
+| `lg-blur` | `blur(20px) saturate(150%)` | Glass blur through card-mod |
 | `lg-glow` | Blue focus glow | Accent for custom controls |
 | `lg-icon-diameter` | `40px` | Shared icon diameter for compatible custom cards |
 | `lovelace-background` | Gradient plus local wallpaper | Dashboard backdrop |
