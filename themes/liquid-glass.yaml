@@ -69,6 +69,7 @@ Liquid Glass:
     # Optional file; the gradient still displays if the user has not copied it to /config/www.
     lovelace-background: "linear-gradient(110deg, rgba(4, 13, 28, 0.67), rgba(5, 18, 39, 0.48) 52%, rgba(3, 11, 25, 0.64)), url('/local/liquid-glass-living-room.jpg') center / cover fixed"
     lg-surface: 'rgba(17, 34, 55, 0.66)'
+    lg-radius: '16px'
     lg-surface-raised: 'rgba(28, 52, 78, 0.78)'
     lg-outline: 'rgba(205, 231, 255, 0.28)'
     lg-outline-bright: 'rgba(218, 239, 255, 0.46)'
@@ -85,7 +86,7 @@ Liquid Glass:
       }
       ha-card {
         border: 1px solid var(--lg-outline);
-        border-radius: var(--ha-card-border-radius, 16px);
+        border-radius: var(--lg-radius, 16px);
         box-shadow: var(--lg-shadow);
         transition: border-color var(--lg-motion-duration) ease,
                     box-shadow var(--lg-motion-duration) ease,
