@@ -89,8 +89,7 @@ Liquid Glass:
         box-shadow: var(--lg-shadow);
         transition: border-color var(--lg-motion-duration) ease,
                     box-shadow var(--lg-motion-duration) ease,
-                    background-color var(--lg-motion-duration) ease,
-                    transform var(--lg-motion-duration) ease;
+                    background-color var(--lg-motion-duration) ease;
         animation: var(--lg-enter-animation);
       }
       :host(mini-graph-card) ha-card {
@@ -104,7 +103,6 @@ Liquid Glass:
       }
       ha-card:active {
         box-shadow: var(--lg-shadow), 0 0 0 1px rgba(125, 198, 255, 0.30);
-        transform: scale(0.998);
       }
       @media (hover: hover) and (pointer: fine) {
         ha-card:hover {
