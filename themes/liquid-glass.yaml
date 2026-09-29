@@ -25,14 +25,14 @@ Liquid Glass:
     error-color: '#ff777f'
     info-color: '#6dbcff'
     primary-background-color: '#08111f'
-    secondary-background-color: 'rgba(29, 53, 79, 0.76)'
-    paper-card-background-color: 'rgba(17, 34, 55, 0.66)'
-    card-background-color: 'rgba(17, 34, 55, 0.66)'
-    ha-card-background: 'rgba(17, 34, 55, 0.66)'
+    secondary-background-color: 'rgba(34, 48, 65, 0.54)'
+    paper-card-background-color: 'rgba(21, 31, 44, 0.43)'
+    card-background-color: 'rgba(21, 31, 44, 0.43)'
+    ha-card-background: 'rgba(21, 31, 44, 0.43)'
     ha-card-border-radius: '16px'
     ha-card-border-width: '1px'
-    ha-card-box-shadow: '0 14px 36px rgba(0, 4, 18, 0.25), inset 0 1px rgba(255, 255, 255, 0.10)'
-    divider-color: 'rgba(206, 230, 255, 0.23)'
+    ha-card-box-shadow: '0 16px 38px rgba(0, 3, 12, 0.30), inset 0 1px rgba(255, 255, 255, 0.22)'
+    divider-color: 'rgba(222, 238, 255, 0.29)'
     app-header-background-color: 'rgba(13, 27, 45, 0.72)'
     app-header-text-color: '#f5f9ff'
     sidebar-background-color: 'rgba(13, 27, 45, 0.72)'
@@ -64,40 +64,47 @@ Liquid Glass:
     mush-rgb-red: '255, 119, 127'
     mush-rgb-orange: '255, 190, 112'
     mush-rgb-disabled: '131, 147, 168'
-    mush-chip-background: 'rgba(30, 55, 80, 0.62)'
+    mush-chip-background: 'rgba(32, 48, 67, 0.48)'
     mush-control-border-radius: '12px'
     # Optional file; the gradient still displays if the user has not copied it to /config/www.
-    lovelace-background: "linear-gradient(110deg, rgba(4, 13, 28, 0.67), rgba(5, 18, 39, 0.48) 52%, rgba(3, 11, 25, 0.64)), url('/local/liquid-glass-living-room.jpg') center / cover fixed"
-    lg-surface: 'rgba(17, 34, 55, 0.66)'
+    lovelace-background: "linear-gradient(110deg, rgba(4, 10, 18, 0.25), rgba(5, 14, 28, 0.14) 52%, rgba(3, 9, 19, 0.26)), url('/local/liquid-glass-living-room.jpg') center / cover fixed"
+    lg-surface: 'rgba(21, 31, 44, 0.43)'
     lg-radius: '16px'
-    lg-surface-raised: 'rgba(28, 52, 78, 0.78)'
-    lg-outline: 'rgba(205, 231, 255, 0.28)'
-    lg-outline-bright: 'rgba(218, 239, 255, 0.46)'
-    lg-shadow: '0 14px 36px rgba(0, 4, 18, 0.25), inset 0 1px rgba(255, 255, 255, 0.10)'
-    lg-glow: '0 0 0 1px rgba(125, 198, 255, 0.42), 0 0 20px rgba(35, 143, 255, 0.32)'
-    lg-blur: 'blur(22px) saturate(155%)'
+    lg-surface-raised: 'rgba(31, 47, 66, 0.59)'
+    lg-outline: 'rgba(221, 239, 255, 0.34)'
+    lg-outline-bright: 'rgba(240, 249, 255, 0.65)'
+    lg-shadow: '0 16px 38px rgba(0, 3, 12, 0.30), inset 0 1px rgba(255, 255, 255, 0.22)'
+    lg-glow: '0 0 0 1px rgba(125, 198, 255, 0.66), 0 0 20px rgba(35, 143, 255, 0.40)'
+    lg-blur: 'blur(12px) saturate(145%)'
+    lg-icon-diameter: '40px'
     lg-motion-duration: '0ms'
     lg-enter-animation: 'none'
     # card-mod augments glass surfaces. It does not reset internal slider, chart or grid geometry.
     card-mod-card: &card_style |
-      :host, ha-card {
+      ha-card {
         -webkit-backdrop-filter: var(--lg-blur);
         backdrop-filter: var(--lg-blur);
-      }
-      ha-card {
         border: 1px solid var(--lg-outline);
         border-radius: var(--lg-radius, 16px);
         box-shadow: var(--lg-shadow);
         transition: border-color var(--lg-motion-duration) ease,
                     box-shadow var(--lg-motion-duration) ease,
-                    background-color var(--lg-motion-duration) ease;
+                    background-color var(--lg-motion-duration) ease,
+                    transform var(--lg-motion-duration) ease;
         animation: var(--lg-enter-animation);
+      }
+      :host(mini-graph-card) ha-card {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        box-shadow: none;
+        border: 0;
       }
       ha-card:focus-within {
         border-color: var(--lg-outline-bright);
       }
       ha-card:active {
         box-shadow: var(--lg-shadow), 0 0 0 1px rgba(125, 198, 255, 0.30);
+        transform: scale(0.998);
       }
       @media (hover: hover) and (pointer: fine) {
         ha-card:hover {
