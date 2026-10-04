@@ -21,3 +21,5 @@ import './local-camera-card.js';
 import './profile-card.js';
 import './theme-editor.js';
 console.info('Liquid Glass Cards 2.3.0: Satin, adaptive controls and reusable cards.');
+
+import './demo-card.js';

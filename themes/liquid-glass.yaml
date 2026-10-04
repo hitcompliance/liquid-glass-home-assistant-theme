@@ -1,4 +1,5 @@
 Liquid Glass:
+  dash6-show-light-group-count: '0'
   # Shared palette. Values without -- become CSS custom properties in Home Assistant.
   <<: &glass
     card-mod-theme: Liquid Glass
@@ -167,6 +168,7 @@ Liquid Glass:
         dark-mode: true
 
 Liquid Glass Motion:
+  dash6-show-light-group-count: '0'
   <<: *glass
   card-mod-theme: Liquid Glass Motion
   lg-motion-duration: '180ms'
@@ -177,6 +179,7 @@ Liquid Glass Motion:
   card-mod-sidebar: *sidebar_style
 
 DASH6 Modern Glass:
+  dash6-show-light-group-count: '0'
   dash5-theme-version: 2026.09.30-elastic-hover
   modes:
     dark:
@@ -839,6 +842,7 @@ DASH6 Modern Glass:
   dash6-switch-gloss: ".8"
   dash6-switch-duration: 620ms
 DASH6 Modern Glass (apple-konform):
+  dash6-show-light-group-count: '0'
   dash5-theme-version: 2026.09.30-elastic-hover
   modes:
     dark:
@@ -1458,6 +1462,7 @@ DASH6 Modern Glass (apple-konform):
   dash6-switch-gloss: ".8"
   dash6-switch-duration: 620ms
 DASH6 Modern Glass (stark elastisch):
+  dash6-show-light-group-count: '0'
   dash5-theme-version: 2026.09.30-elastic-hover
   modes:
     dark:
@@ -2120,6 +2125,7 @@ DASH6 Modern Glass (stark elastisch):
   dash6-switch-gloss: ".8"
   dash6-switch-duration: 620ms
 DASH6 Modern Glass (apple-konform, stark elastisch):
+  dash6-show-light-group-count: '0'
   dash5-theme-version: 2026.09.30-elastic-hover
   modes:
     dark:
@@ -2739,6 +2745,7 @@ DASH6 Modern Glass (apple-konform, stark elastisch):
   dash6-switch-gloss: ".8"
   dash6-switch-duration: 620ms
 DASH6 Modern Glass (Safari SVG-Linsen):
+  dash6-show-light-group-count: '0'
   dash5-theme-version: 2026.10.01-svg-lenses
   modes:
     dark:
@@ -3401,6 +3408,7 @@ DASH6 Modern Glass (Safari SVG-Linsen):
   dash6-switch-gloss: ".8"
   dash6-switch-duration: 620ms
 DASH6 Satin Glass:
+  dash6-show-light-group-count: '0'
   dash5-theme-version: 2026.09.30-elastic-hover
   modes:
     dark:

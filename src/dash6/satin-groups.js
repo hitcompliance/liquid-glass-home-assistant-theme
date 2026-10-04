@@ -24,6 +24,8 @@ export function satinGroupCandidate(group){
  if(group?.nodeType!==1||group.getRootNode().host?.localName==='dash6-glass-segments')return false;
  if(thermostatAncestor(group)&&!thermostatModeGroup(group))return false;
  const host=group.getRootNode().host;
+ if(['ha-tab-group','ha-tabs','wa-tab-group','app-toolbar'].includes(host?.localName))return false;
+ if(host?.localName==='dash6-vacuum-card'&&group.classList.contains('actions-row'))return false;
  const explicit=group.matches(knownGroups)||['ha-control-select','ha-control-button-group','mushroom-button-group'].includes(host?.localName)&&group.classList.contains('container');
  return explicit&&directItems(group).length>=2;
 }

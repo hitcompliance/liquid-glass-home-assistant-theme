@@ -135,3 +135,7 @@ Nur in diesem Geltungsbereich startet die ältere Optik. Der ✦-Button öffnet 
 | Abweichende Materialwerte | Browserlokale Theme-Overrides über „Theme-Vorgaben wiederherstellen“ zurücksetzen |
 
 Nach Installation die gewünschte View auf Desktop und Smartphone prüfen: Ein/Aus-Richtung, Reglerfreigabe, Lichtgruppenmodal, Modi/Presets und vorhandene Spezialaktionen. Die Demo simuliert diese Gestaltung; sie steuert keine Geräte.
+
+## Demo-Dashboard mit Design-Prinzipien
+
+Der Installer kopiert `examples/demo-dashboard.yaml` nach `liquid-glass/examples/demo-dashboard.yaml`. Nach Laden des Hauptmoduls und der Abhängigkeiten ein neues Dashboard erstellen und dessen Rohkonfiguration durch diese YAML ersetzen. Die drei Views zeigen interaktive Karten mit simulierten lokalen Zuständen; eigene Entitäten sind nicht erforderlich. Gerätebefehle werden von `dash6-demo-card` abgefangen. Das vollständige Beispiel `examples/dashboard.yaml` bleibt für echte eigene Geräte verfügbar.

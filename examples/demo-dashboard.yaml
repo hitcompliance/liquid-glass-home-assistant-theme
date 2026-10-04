@@ -1,0 +1,172 @@
+# Eigenständiges, interaktives Demo-Dashboard. Keine eigenen Geräte erforderlich.
+# Das Hauptmodul dist/dash6-cards.js und die im README genannten Ressourcen laden.
+# Jede dash6-demo-card verwendet ausschließlich lokale simulierte Zustände.
+# Im Rohkonfigurationseditor eines NEUEN Dashboards einfügen.
+title: Liquid Glass · Design und Demo
+views:
+  - title: Licht und Material
+    path: material
+    icon: mdi:layers-outline
+    type: sections
+    max_columns: 2
+    theme: DASH6 Satin Glass
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              # Liquid Glass · Design und Demo
+              Bediene die echten Karten mit simulierten Werten. **Keine Geräte werden geschaltet.**
+
+              **Material:** sanft gefrostetes Rauchglas, flache Flächen, gewölbte Kanten und zurückhaltender Glanz. Die Karten bleiben lesbar, auch wenn der Hintergrund sichtbar ist.
+          - type: custom:dash6-demo-card
+            title: Licht · Farbe und Helligkeit
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Stehlampe
+              icon: mdi:floor-lamp
+              controls:
+                mode: combo
+                buttons: group
+                label: icon
+                position: right
+          - type: markdown
+            content: |
+              ### Ein Schalter, ein Hauptzustand
+              **Links ist Ein, rechts ist Aus.** Die eingestellte Lichtfarbe und Helligkeit bestimmen den Lichtschein. Farbe, Farbtemperatur und Helligkeit teilen sich denselben Regler.
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              ## Lichtgruppen · progressive Offenlegung
+              Die Hauptkarte bleibt kompakt. Klicke auf den **Kartenhintergrund**, um die einzelnen Lichter im Modal auszuwählen und gemeinsam oder einzeln zu steuern. Schließen ist per Escape, Außenklick oder Schließen-Taste möglich.
+          - type: custom:dash6-demo-card
+            title: Lichtgruppe · Modal ausprobieren
+            card:
+              type: custom:dash6-lightgroup-card-v2
+              entity: light.demo_gruppe
+              name: Wohnzimmer Ambiente
+              icon: mdi:lightbulb-outline
+              segments:
+                - entity: light.demo_links
+                  name: Links
+                - entity: light.demo_rechts
+                  name: Rechts
+              segment_display:
+                placement: detail
+                style: list
+              controls:
+                mode: combo
+                buttons: group
+                position: right
+          - type: markdown
+            content: |
+              ### Einheitliche Formensprache
+              Auswahlgruppen sind versenkte Rechtecke mit abgerundeten Ecken. Auf der aktiven Auswahl liegt eine bündige Glaslinse. Ein laufender Lichteffekt beleuchtet die Rauchglas-Taste weiß von innen.
+  - title: Bedienung und Bewegung
+    path: bedienung
+    icon: mdi:gesture-tap
+    type: sections
+    max_columns: 2
+    theme: DASH6 Satin Glass
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              # Berühren, bewegen, bestätigen
+              **Hover:** eine leichte elastische Rückmeldung. **Drücken:** kurz quetschen. **Drag:** die Sliderlinse wird größer; die Einstellung wird erst beim Loslassen übernommen.
+
+              Bedienung funktioniert auch ohne Hover. Die Systemeinstellung „Bewegung reduzieren“ hat Vorrang.
+          - type: custom:dash6-demo-card
+            title: Kombislider · Ziehen und Moduswechsel
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Kombislider
+              controls:
+                mode: combo
+                buttons: group
+                label: icon
+          - type: custom:dash6-demo-card
+            title: Dieselbe Lichtkarte · Einzelregler
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Einzelregler
+              controls:
+                mode: separate
+                buttons: group
+          - type: markdown
+            content: |
+              ### Zustandsfarbe statt Dekoration
+              Ein Licht verwendet seine eingestellte Farbe. Ein Schalter ohne Farbfunktion ist im eingeschalteten Zustand **gelb**. Aus bleibt neutral. Die Form und Position zeigen den Zustand zusätzlich zur Farbe.
+      - type: grid
+        cards:
+          - type: custom:dash6-demo-card
+            title: Steckdose · gelber Fallback
+            card:
+              type: custom:dash6-glass-switch
+              entity: switch.demo_steckdose
+              name: Steckdose
+              icon: mdi:power-socket-eu
+          - type: custom:dash6-demo-card
+            title: Ventilator · dasselbe Schalterprinzip
+            card:
+              type: custom:dash6-glass-switch
+              entity: fan.demo_luefter
+              name: Ventilator
+              icon: mdi:fan
+          - type: custom:dash6-demo-card
+            title: Rollo · vertikaler Regler
+            card:
+              type: custom:dash6-cover-card
+              entity: cover.demo_rollo
+              name: Rollo
+          - type: markdown
+            content: |
+              ### Gleiche Materialien, passende Bedienung
+              Vertikale Rollo-Regler behalten ihre Richtung. Reine Aktionstasten bleiben Tasten. Geräteaktionen werden nicht allein wegen der Gestaltung zu Ein-/Ausschaltern.
+  - title: Klima und Prinzipien
+    path: prinzipien
+    icon: mdi:thermostat
+    type: sections
+    max_columns: 2
+    theme: DASH6 Satin Glass
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              # Gestaltung respektiert die Funktion
+              Thermostate behalten ihre native Anzeige und Gauge-Geometrie. Nur Modus-/Preset-Tasten und die Griffe bekommen die Glasmaterialien. Drücke und ziehe die Temperaturgriffe.
+          - type: custom:dash6-demo-card
+            title: Dual-Thermostat · Modi, Presets und Griffe
+            card:
+              type: custom:dash6-thermostat-card
+              entity: climate.demo_thermostat
+              modes:
+                - 'off'
+                - heat
+                - cool
+                - heat_cool
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              ## Design-Prinzipien
+              - **Konsistenz:** gleiche Glasmaterialien, Glanz und Rückmeldungen.
+              - **Hierarchie:** Hauptzustand zuerst, Details bei Bedarf im Modal.
+              - **Zurückhaltung:** Frostung und Reflexe unterstützen die Lesbarkeit.
+              - **Direkte Manipulation:** Linsen folgen Eingaben; Einstellungen werden beim Loslassen übernommen.
+              - **Zugänglichkeit:** sichtbarer Tastaturfokus, Touch-Bedienung und reduzierte Bewegung.
+              - **Funktionserhalt:** native Sicherheits-, Geräte- und Auswahlaktionen bleiben erhalten.
+
+              [Alle elf Entwürfe vergleichen](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/) · [README und Installation](https://github.com/hitcompliance/liquid-glass-home-assistant-theme)
+          - type: markdown
+            content: |
+              ## Vom Demo- zum echten Dashboard
+              Die Demo-Karten fangen Serviceaufrufe ab und ändern nur lokale Beispielwerte. Für echte Geräte verwende die Karten **ohne** `dash6-demo-card`-Hülle und ersetze die Entitäten.
+
+              `examples/dashboard.yaml` zeigt das vollständige Konfigurationsbeispiel mit allen Kartenfamilien. `examples/demo-dashboard.yaml` ist diese bedienbare Einführung.

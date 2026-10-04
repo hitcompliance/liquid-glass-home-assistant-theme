@@ -14,6 +14,10 @@ const yaml=path=>JSON.parse(execFileSync('ruby',['-ryaml','-rjson','-e','puts JS
 const dashboard=yaml('examples/dashboard.yaml'),themes=Object.assign({},...readdirSync(resolve(root,'themes')).filter(name=>/\.ya?ml$/.test(name)).map(name=>yaml('themes/'+name)));
 const profileIndex=JSON.parse(await readFile(resolve(root,'src/dash6/profile-index.json'),'utf8'));
 const profiles=JSON.parse(await readFile(resolve(root,'src/dash6/profiles.json'),'utf8'));
+const demoDashboard=yaml('examples/demo-dashboard.yaml');
+const demoConfigs=[];
+function demoCollect(x){if(!x||typeof x!=='object')return;if(x.type==='custom:dash6-demo-card')demoConfigs.push(x);Object.values(x).forEach(demoCollect);}
+demoCollect(demoDashboard);
 const examples=[];
 function collect(value){if(Array.isArray(value))return value.forEach(collect);if(!value||typeof value!=='object')return;if(value.type?.startsWith('custom:'))examples.push(value);Object.values(value).forEach(collect);}
 collect(dashboard);
@@ -22,7 +26,7 @@ const ownTypes=[...new Set(ownExamples.map(c=>c.type.slice(7)))];
 assert.equal(ownTypes.length,29,'All 28 current package card/alias types plus the optional original SVG wrapper are in the example');
 
 async function fixture(data){
- const {dashboard,examples,themes,profiles}=data;
+ const {dashboard,examples,themes,profiles,demoConfigs}=data;
  window.calls=[];window.reads=[];window.mounts=[];window.mountErrors=[];window.factoryCalls=[];window.actions=[];
  for(const[key,value]of Object.entries(themes['DASH6 Satin Glass']))if(typeof value==='string'&&key!=='card-mod-theme')document.documentElement.style.setProperty('--'+key,value);
  const states={};
@@ -75,10 +79,11 @@ async function fixture(data){
  for(const config of examples){const type=config.type.slice(7);await customElements.whenDefined(type);try{const card=await helpers.createCardElement(config);const shell=document.createElement('section');shell.className='example';shell.style.width='380px';shell.dataset.card=type;document.querySelector('#cards').append(shell);shell.append(card);card.hass=hass;await card.updateComplete;mounts.push({type,card,config});}catch(error){mountErrors.push(type+': '+error.message);}}
  for(const[key,definition]of Object.entries(profiles)){const card=await helpers.createCardElement({type:'custom:dash6-profile-card',profile:key});document.querySelector('#profiles').append(card);card.hass=hass;await card.updateComplete;mounts.push({type:'profile:'+key,card,config:definition});}
  window.areaProfile=await helpers.createCardElement({type:'custom:dash6-profile-card',profile:'sample-entities',area:'Kitchen'});document.querySelector('#profiles').append(areaProfile);areaProfile.hass=hass;await areaProfile.updateComplete;
+ window.demos=[];for(const config of demoConfigs){const card=document.createElement('dash6-demo-card');card.setConfig(config);const shell=document.createElement('section');shell.className='example';shell.style.width='380px';shell.dataset.demo=config.card.type;document.querySelector('#cards').append(shell);shell.append(card);card.hass=hass;await card.updateComplete;window.demos.push(card);}
  window.ready=true;
 }
 
-const html='<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{margin:20px;background:#101820;color:#fff;font:14px system-ui}#cards{display:flex;flex-wrap:wrap;align-items:start;gap:20px}.example{min-width:0}#profiles{display:flex;flex-wrap:wrap;gap:20px}#profiles>*{width:380px}</style></head><body><div id="cards"></div><div id="profiles"></div><script type="module">('+fixture.toString()+')('+JSON.stringify({dashboard,examples:ownExamples,themes,profiles})+').catch(error=>{window.fatal=error.stack;console.error(error);});</script></body></html>';
+const html='<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{margin:20px;background:#101820;color:#fff;font:14px system-ui}#cards{display:flex;flex-wrap:wrap;align-items:start;gap:20px}.example{min-width:0}#profiles{display:flex;flex-wrap:wrap;gap:20px}#profiles>*{width:380px}</style></head><body><div id="cards"></div><div id="profiles"></div><script type="module">('+fixture.toString()+')('+JSON.stringify({dashboard,examples:ownExamples,themes,profiles,demoConfigs})+').catch(error=>{window.fatal=error.stack;console.error(error);});</script></body></html>';
 const requests=[],external=[],missing=[];
 const server=createServer(async(req,res)=>{const url=new URL(req.url,'http://localhost');try{if(url.pathname.startsWith('/package/')){const path=resolve(root,'.'+url.pathname.slice('/package'.length));assert.ok(path.startsWith(root+'/'));requests.push(url.pathname);res.setHeader('content-type',({'.js':'text/javascript','.json':'application/json','.jpg':'image/jpeg','.css':'text/css'})[extname(path)]||'application/octet-stream');res.end(await readFile(path));}else if(url.pathname==='/favicon.ico'){res.writeHead(204);res.end();}else{res.setHeader('content-type','text/html');res.end(html);}}catch(error){missing.push(url.pathname);res.writeHead(404);res.end(error.message);}});
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port;
@@ -104,6 +109,11 @@ try{
   await input.evaluate(el=>{el.value='23';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));});assert.equal(await page.evaluate(()=>calls.length),0,'Drag has no service until release');assert.equal(await input.evaluate(el=>el.parentElement.querySelector('output')?.textContent),before.text,'Committed readout remains frozen during drag');
   await page.evaluate(()=>window.dispatchEvent(new PointerEvent('pointerup',{pointerId:77,button:0})));await page.waitForFunction(()=>calls.length===1);assert.equal(await page.evaluate(()=>calls[0][1]),'turn_on');assert.equal(await page.evaluate(()=>calls[0][2].brightness_pct),23);await page.evaluate(()=>calls.length=0);
   const segments=page.locator('[data-card="dash6-segmented-control-card"]').first();await segments.locator('button').last().click();await page.waitForFunction(()=>calls.length===1);assert.deepEqual(await page.evaluate(()=>calls[0]),['input_select','select_option',{entity_id:'input_select.demo_lichtmodus',option:'Entspannen'}]);await page.evaluate(()=>calls.length=0);
+  assert.equal(await page.evaluate(()=>demos.length),8,'Every interactive demo example is mounted');
+  const demoLight=page.locator('[data-demo="custom:dash6-govee-light-card-v2"]').first();
+  const demoPower=demoLight.locator('dash6-glass-switch button').first();await demoPower.click();await page.waitForTimeout(600);assert.equal(await demoPower.getAttribute('aria-checked'),'false');assert.equal(await page.evaluate(()=>calls.length),0,'Demo service is isolated from HA');
+  const demoGroup=page.locator('[data-demo="custom:dash6-lightgroup-card-v2"]');await demoGroup.locator('.name').first().click();assert.equal(await demoGroup.locator('dialog[open]').count(),1);await page.keyboard.press('Escape');
+  assert.equal(await demoGroup.locator('svg.group,.members').count(),0,'Group switch has only one icon and no member LEDs');assert.doesNotMatch(await demoGroup.locator('dash6-glass-switch .readout').first().textContent(),/\d+\s*\/\s*\d+/);
   await page.evaluate(()=>{document.documentElement.style.setProperty('--dash6-satin-enabled','0');window.dispatchEvent(new Event('theme-changed'));});await page.waitForFunction(()=>!mounts.find(x=>x.type==='dash6-glass-switch').card.hasAttribute('data-satin'));assert.equal(await page.locator('[data-card="dash6-glass-switch"] dash6-glass-switch').first().evaluate(card=>card.getBoundingClientRect().width),104,'Theme-off restores original switch geometry');assert.equal(await page.evaluate(()=>calls.length),0,'Theme change sends no service');assert.deepEqual(errors,[]);
   console.log(`PASS ${name}: ${ownExamples.length} example entries / ${ownTypes.length} actual package types + ${Object.keys(profileIndex).length} profiles; portable URL scope; no startup actuation; real switch/slider/group/select gestures; theme-off.`);
   await browser.close();browser=null;

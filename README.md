@@ -18,7 +18,14 @@ Das Theme bestimmt Farben und Material. Das zusätzliche Kartenmodul liefert Sch
 | `dist/dash5-light-cards-v2.js` | Kompatibilitätseinstieg zum aktuellen Hauptmodul; nicht zusätzlich registrieren |
 | `dist/vacuum-dock-card.js` | Eigenständige Staubsauger-/Dock-Karte |
 | `frontend/dash5-glass.js` | Optional erhaltene SVG-Hintergrundbrechung für die ursprüngliche DASH5-Ansicht |
+| `examples/demo-dashboard.yaml` | Interaktives Demo-Dashboard mit isolierten simulierten Werten und Design-Prinzipien; keine Geräte erforderlich |
 | `examples/dashboard.yaml` | Portables Gesamtbeispiel mit erfundenen, auszutauschenden Entitäten |
+
+## Interaktives Demo-Dashboard
+
+[examples/demo-dashboard.yaml](examples/demo-dashboard.yaml) enthält drei Views: **Licht und Material**, **Bedienung und Bewegung** sowie **Klima und Prinzipien**. Licht, Lichtgruppe, Steckdose, Ventilator-Schalter, Rollo und Dual-Thermostat sind bedienbar. Die `dash6-demo-card`-Hülle stellt lokale Beispielzustände bereit und fängt Geräteaktionen ab. Es werden keine eigenen Geräte benötigt und keine echten Serviceaufrufe gesendet.
+
+Nach Installation des Hauptmoduls und der Ressourcen: neues Dashboard erstellen → Rohkonfigurationseditor → Demo-YAML einsetzen. Der Installer legt beide Dashboards unter `liquid-glass/examples/` im Konfigurationsverzeichnis ab. HACS allein installiert weiterhin nur die Themes.
 
 ## Themes
 

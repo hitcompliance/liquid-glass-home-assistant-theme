@@ -295,3 +295,7 @@ Der Editor bietet Satin-Glanz/Frostung, Hover, Transparenz, Buttons, Icons und B
 | `vacuum-dock-card` | Eigenständiges Staubsauger-/Dock-Modul |
 
 Die mitkopierte `dash5-light-cards-v2.js` ist ein Kompatibilitätseinstieg zum aktuellen Hauptmodul, kein zweites separates Laufzeitsystem. In einer normalen Gesamtinstallation genügt der Haupteintrag. Details: [Migration](MIGRATION.md).
+
+## Interaktive Demo-Karte
+
+`custom:dash6-demo-card` enthält eine `card:` mit einer eigenen DASH6-Karte. Sie stellt lokale Beispielzustände bereit und fängt Service-, API- und WebSocket-Zugriffe ab. Die Demo benötigt keine Geräte. `examples/demo-dashboard.yaml` zeigt acht Kartenbeispiele in drei Views mit den Design-Prinzipien. Für echte Geräte die Hülle weglassen und eigene Entitäten verwenden.

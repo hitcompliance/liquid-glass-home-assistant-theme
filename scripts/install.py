@@ -239,6 +239,8 @@ def package_files(root: Path) -> list[File]:
         backdrop = assets / "liquid-glass-living-room.jpg"
         if backdrop.is_file():
             files.append(File("www/liquid-glass-living-room.jpg", backdrop.read_bytes(), "original theme backdrop"))
+    for example in sorted((root / "examples").glob("*.yaml")):
+        files.append(File("liquid-glass/examples/" + example.name, example.read_bytes(), "example dashboard"))
     return files
 
 

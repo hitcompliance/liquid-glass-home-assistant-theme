@@ -45,7 +45,7 @@ export function bindSatinMode(host,onChange){
 export function unbindSatinMode(host){modes.delete(host);host.removeAttribute('data-satin');}
 function eligible(card){
  const host=card.getRootNode().host;
- if(structural.has(host?.localName))return false;
+ if(structural.has(host?.localName)||host?.localName==='dash6-area-header')return false;
  if(thermostatAncestor(card)||host?.classList?.contains('dash6-background-graph'))return false;
  if(host?.classList?.contains('dash5-transparent')||host?.classList?.contains('dash5-navigation-link')||host?.classList?.contains('dash6-nav-lens'))return false;
  if(card.classList.contains('tab-body')||host?.closest?.('.power-graph,.background-graph,.graph-overlay,#graph'))return false;
