@@ -2,7 +2,7 @@ name: Interactive card demos
 on:
   push:
     branches: [main]
-    paths: ['demo/**', '.github/workflows/pages.yml']
+    paths: ['demo/**', 'README.md', '.github/workflows/pages.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,6 +19,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
+      - name: Refresh README for the gallery
+        run: cp README.md demo/README.md
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
