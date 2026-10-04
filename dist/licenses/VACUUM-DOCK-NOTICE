@@ -1,0 +1,20 @@
+Vacuum Dock Card
+Copyright 2026 Vacuum Dock Card contributors
+Licensed under the Apache License, Version 2.0.
+
+The static vacuum SVG and animation CSS in src/native.js are adapted from
+Home Assistant frontend's ha-state-control-vacuum-status component:
+https://github.com/home-assistant/frontend/blob/dev/src/state-control/vacuum/ha-state-control-vacuum-status.ts
+Copyright Home Assistant contributors. Apache-2.0.
+Adaptation: TypeScript/Lit wrappers removed; the SVG and CSS are packaged as static
+strings, with state classes supplied by this card. Captured from the project
+reference on 2026-09-15. The original Apache license is provided in LICENSE.
+
+Lit and its runtime packages are bundled under BSD-3-Clause.
+Their notices are preserved in the compiled module and in
+ dist/THIRD-PARTY-LICENSES.txt.
+
+The interaction design evolved from an instance-specific extension used with
+strange-v/roborock-vacuum-card. This standalone implementation does not include
+or require that card's implementation. No endorsement by Roborock or Home
+Assistant is implied.

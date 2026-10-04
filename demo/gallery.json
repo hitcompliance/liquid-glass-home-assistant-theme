@@ -1,0 +1,182 @@
+{
+  "pages": [
+    {
+      "id": "dash6-satin-system",
+      "title": "Satin Glass · Kartensystem",
+      "description": "Die gemeinsame Gestaltung für acht Kartenfamilien: Lichtgruppe, Stehlampe, Steckdose, Ventilator, Button, Mushroom und zwei Thermostate.",
+      "count": "8 Kartenfamilien",
+      "tags": [
+        "Schalter",
+        "Slider",
+        "Effekte",
+        "Gruppen",
+        "Thermostate"
+      ],
+      "page": "pages/dash6-satin-system.html",
+      "preview": "previews/dash6-satin-system.jpg",
+      "source": "source/dash6-satin-system.html",
+      "sourceSha256": "f3bf4ac0e536f8cb3e9cee80bcb2f937041f64c46cc7391eef4383922548af9c"
+    },
+    {
+      "id": "satin-effect-group",
+      "title": "Satin · Effekte und Gruppen",
+      "description": "Kompakter Schalter, Rauchglas-Effekttaste und ein bedienbares Gruppenmodal mit Einzellichtern.",
+      "count": "2 Hintergründe",
+      "tags": [
+        "Effekte",
+        "Gruppen",
+        "Farbe",
+        "Helligkeit"
+      ],
+      "page": "pages/satin-effect-group.html",
+      "preview": "previews/satin-effect-group.jpg",
+      "source": "source/satin-effect-group.html",
+      "sourceSha256": "9fc327bd9e9cd6beffe80c9cfb833da48ba18782d8b60c13ee7dbf6afe41a4c7"
+    },
+    {
+      "id": "satin-raised-switch-rect-modes",
+      "title": "Satin · Runder Schalter",
+      "description": "Erhabene runde Schalterlinse mit rechteckiger, eingelassener Modusgruppe und breitem Clear-Reflex.",
+      "count": "2 Hintergründe",
+      "tags": [
+        "Runder Schalter",
+        "Bündige Auswahl",
+        "Kombislider"
+      ],
+      "page": "pages/satin-raised-switch-rect-modes.html",
+      "preview": "previews/satin-raised-switch-rect-modes.jpg",
+      "source": "source/satin-raised-switch-rect-modes.html",
+      "sourceSha256": "8d2e3ad864d49c09f87d6b1e8bc023ba95928dec302b873b32ef51620d39f86f"
+    },
+    {
+      "id": "satin-inset-rect",
+      "title": "Satin · Rechteckig versenkt",
+      "description": "Eingelassener rechteckiger Schalter und bündige rechteckige Auswahl-Linse auf weichem Rauchglas.",
+      "count": "2 Hintergründe",
+      "tags": [
+        "Versenkt",
+        "Rechteckig",
+        "Kombislider"
+      ],
+      "page": "pages/satin-inset-rect.html",
+      "preview": "previews/satin-inset-rect.jpg",
+      "source": "source/satin-inset-rect.html",
+      "sourceSha256": "4ed51922452249d48dc93ddd0f1d2716b107c0de91edcadf661ff518f83090b3"
+    },
+    {
+      "id": "satin-gloss-depth",
+      "title": "Satin · Erhaben oder versenkt",
+      "description": "Beide Tiefenwirkungen der kompakten Schalterkapsel, jeweils auf dunklem und fotografischem Hintergrund.",
+      "count": "4 Karten",
+      "tags": [
+        "Erhaben",
+        "Versenkt",
+        "Satin"
+      ],
+      "page": "pages/satin-gloss-depth.html",
+      "preview": "previews/satin-gloss-depth.jpg",
+      "source": "source/satin-gloss-depth.html",
+      "sourceSha256": "6cd890f4239cd526f559f2acb808ab7206976503668d356fb407dcddd73b6431"
+    },
+    {
+      "id": "custom-light-three-designs",
+      "title": "Custom Light · Drei Entwürfe",
+      "description": "Contour, Satin und Halo: drei Materialideen mit denselben bedienbaren Lichtreglern auf zwei Hintergründen.",
+      "count": "3 Entwürfe · 6 Karten",
+      "tags": [
+        "Contour",
+        "Satin",
+        "Halo"
+      ],
+      "page": "pages/custom-light-three-designs.html",
+      "preview": "previews/custom-light-three-designs.jpg",
+      "source": "source/custom-light-three-designs.html",
+      "sourceSha256": "117059351c2517b42f509260e6bbccdba3a1de2bc89be7bd4b06886b7de7b00e"
+    },
+    {
+      "id": "custom-light-flat-glass",
+      "title": "Custom Light · Flat Glass",
+      "description": "Flachere dunkle Glasfläche mit elastischem Icon-Schalter, Kombislider und gelbem Steckdosen-Fallback.",
+      "count": "Licht und Steckdose",
+      "tags": [
+        "Flat Glass",
+        "Icon",
+        "Kombislider"
+      ],
+      "page": "pages/custom-light-flat-glass.html",
+      "preview": "previews/custom-light-flat-glass.jpg",
+      "source": "source/custom-light-flat-glass.html",
+      "sourceSha256": "45c131f3fd9c08ffd0da7f0cffee76fe8c4489d05a5eb601964ed7b5e0fc4ef4"
+    },
+    {
+      "id": "black-frost-light",
+      "title": "Black Frost · Licht von unten",
+      "description": "Sanft gefrostetes schwarzes Glas mit farbigem Lichtschein von unten sowie Farbe und Helligkeit.",
+      "count": "Einzelkarte",
+      "tags": [
+        "Frostglas",
+        "Lichtschein",
+        "Farbpresets"
+      ],
+      "page": "pages/black-frost-light.html",
+      "preview": "previews/black-frost-light.jpg",
+      "source": "source/black-frost-light.html",
+      "sourceSha256": "dbc327cec88996c3ab63025b0ab3e55450cc0eeec40b944d9576fb5afe0c85b1"
+    },
+    {
+      "id": "liquid-lens-surfaces",
+      "title": "Liquid Lens · Vier Oberflächen",
+      "description": "Dieselbe animierte Glaslinse auf Grün, Schwarz, Weiß und Grau. Farbe und Helligkeit sind direkt bedienbar.",
+      "count": "4 Oberflächen",
+      "tags": [
+        "Grün",
+        "Schwarz",
+        "Weiß",
+        "Grau"
+      ],
+      "page": "pages/liquid-lens-surfaces.html",
+      "preview": "previews/liquid-lens-surfaces.jpg",
+      "source": "source/liquid-lens-surfaces.html",
+      "sourceSha256": "fae698b2151d62f42857c26b22e99882818562eff2435d857c43d7442d5c8065"
+    },
+    {
+      "id": "liquid-lens-reference",
+      "title": "Liquid Lens · Referenz",
+      "description": "Die frühe breite Glaslinse mit federnder Bewegung, Farbanzeige, Helligkeit und zuschaltbarer Animation.",
+      "count": "Referenzstudie",
+      "tags": [
+        "Glaslinse",
+        "Farbe",
+        "Animation"
+      ],
+      "page": "pages/liquid-lens-reference.html",
+      "preview": "previews/liquid-lens-reference.jpg",
+      "source": "source/liquid-lens-reference.html",
+      "sourceSha256": "5b71e2784e96f80d35622e06b5a64aae0e8aa7ed150ff240e48d066b0e85503c"
+    },
+    {
+      "id": "liquid-light-modern",
+      "title": "Liquid Light · Clear, Flow, Soft",
+      "description": "Drei frühe moderne Schalterideen mit weichen Animationen, Lichtzustand und Helligkeitsreglern.",
+      "count": "3 Entwürfe",
+      "tags": [
+        "Clear",
+        "Flow",
+        "Soft"
+      ],
+      "page": "pages/liquid-light-modern.html",
+      "preview": "previews/liquid-light-modern.jpg",
+      "source": "source/liquid-light-modern.html",
+      "sourceSha256": "f24ed79513a49175946203918493c6f726f28856645d86986358424133051219"
+    }
+  ],
+  "sourceCount": 11,
+  "workspaceDuplicates": [
+    "mockups/dash6-satin-system/interactive.html",
+    "mockups/dash6-satin-system/index.html"
+  ],
+  "image": {
+    "path": "assets/living-room.jpg",
+    "origin": "Project-generated public image"
+  }
+}

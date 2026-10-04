@@ -1,118 +1,114 @@
-# Liquid Glass for Home Assistant
+# Liquid Glass für Home Assistant
 
-A dark, spacious Home Assistant theme inspired by the optical layering and clear hierarchy of Apple's Liquid Glass. It was designed against a real DASH5 living-room dashboard with custom lights, a thermostat, vertical covers, background power graphs, media controls, and a Roborock card. The theme changes materials, color, focus, and motion. It deliberately does not replace card controls or rearrange their layout.
+Ein vollständiges Glas-Paket für Home Assistant: dunkle Themes, interaktive Custom-Cards und ein grafischer Materialeditor. **DASH6 Satin Glass** verbindet sanft gefrostetes Rauchglas mit kleinen beleuchteten Schaltern, versenkten Reglern und flachen Glaslinsen. Die ursprünglichen Liquid-Glass-Themes bleiben erhalten.
 
-[![Add to Home Assistant](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=hitcompliance&repository=liquid-glass-home-assistant-theme&category=theme)
+**[Interaktive Demo](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/)** · [Installation](docs/INSTALLATION.md) · [Karten und Einstellungen](docs/CARDS.md) · [Abhängigkeiten](docs/DEPENDENCIES.md) · [Umstieg](docs/MIGRATION.md)
 
-## Included themes
+[![In HACS hinzufügen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=hitcompliance&repository=liquid-glass-home-assistant-theme&category=theme)
 
-| Theme | Motion | Best for |
-| --- | --- | --- |
-| **Liquid Glass** | Off | Touch panels, low-power devices, or motion-sensitive users |
-| **Liquid Glass Motion** | Subtle card fade and 180 ms focus/hover transitions | Desktop and modern mobile browsers |
+## Was enthalten ist
 
-Both variants respect the operating system's **Reduce Motion** setting. The motion version avoids scaling cards so graph markers, external tooltips, and compact controls stay in place.
+Das Theme bestimmt Farben und Material. Das zusätzliche Kartenmodul liefert Schalter, Regler, Auswahlgruppen, Dialoge und Anpassungen vorhandener Button-/Mushroom-Karten. Für den vollständigen Satin-Look werden **Theme und Kartenmodul gemeinsam** installiert. HACS als Theme-Repository installiert den YAML-Teil; die JavaScript-Dateien werden über den Installer oder manuell ergänzt.
 
-## Installation with HACS
+| Bestandteil | Inhalt |
+| --- | --- |
+| `themes/` | Zwei ursprüngliche Liquid-Glass-Themes und sechs DASH6-Varianten |
+| `dist/dash6-cards.js` | Aktuelles Gesamtmodul mit Satin, Kartenadaptern und Editoren |
+| `dist/chunks/`, `dist/profiles/` | Zugehörige Module und neutrale Beispielprofile; mitkopieren |
+| `dist/dash5-light-cards-v2.js` | Kompatibilitätseinstieg zum aktuellen Hauptmodul; nicht zusätzlich registrieren |
+| `dist/vacuum-dock-card.js` | Eigenständige Staubsauger-/Dock-Karte |
+| `frontend/dash5-glass.js` | Optional erhaltene SVG-Hintergrundbrechung für die ursprüngliche DASH5-Ansicht |
+| `examples/dashboard.yaml` | Portables Gesamtbeispiel mit erfundenen, auszutauschenden Entitäten |
 
-1. Open the button above and add this repository in HACS as a **Theme**. If the link does not open HACS, add `https://github.com/hitcompliance/liquid-glass-home-assistant-theme` as a custom Theme repository in HACS.
-2. Ensure `configuration.yaml` contains the following. If `frontend:` already exists, add only its `themes:` line to that block.
+## Themes
 
-   ```yaml
-   frontend:
-     themes: !include_dir_merge_named themes
-   ```
+| Name in Home Assistant | Gestaltung |
+| --- | --- |
+| **Liquid Glass** | Ursprüngliches dunkles Glas ohne zusätzliche Bewegungsanimation |
+| **Liquid Glass Motion** | Ursprüngliches Glas mit dezenten Einblendungen und Hover-/Fokusübergängen |
+| **DASH6 Modern Glass** | Ursprüngliche DASH6-Materialvariante |
+| **DASH6 Modern Glass (apple-konform)** | Zurückhaltende DASH6-Variante |
+| **DASH6 Modern Glass (stark elastisch)** | DASH6 mit stärkerer elastischer Rückmeldung |
+| **DASH6 Modern Glass (apple-konform, stark elastisch)** | Kombination der beiden DASH6-Varianten |
+| **DASH6 Modern Glass (Safari SVG-Linsen)** | DASH6-Variante mit SVG-Linsen |
+| **DASH6 Satin Glass** | Sanft gefrostetes, flacheres Rauchglas und kompakte Satin-Bedienelemente |
 
-3. In Home Assistant, run **Developer tools → Actions → Reload themes** (`frontend.reload_themes`). Select **Liquid Glass** or **Liquid Glass Motion** in your user profile. The theme's dark mode is selected automatically.
-4. Optional wallpaper: copy [`assets/liquid-glass-living-room.jpg`](assets/liquid-glass-living-room.jpg) to `/config/www/liquid-glass-living-room.jpg`. It is then available at `/local/liquid-glass-living-room.jpg`. Without it, the dark gradient remains usable. HACS installs the theme YAML, but does not place the optional wallpaper in `/config/www`.
+Satin wird durch die aktive Theme-Variable `dash6-satin-enabled: '1'` eingeschaltet. Das öffentliche Gesamtmodul unterstützt beliebige Dashboard-Pfade. Die ältere optionale SVG-Erweiterung hat einen eigenen, engeren Geltungsbereich; siehe [Installation](docs/INSTALLATION.md#optionale-ursprüngliche-svg-optik).
 
-## Manual installation
+## Die Satin-Bedienung
 
-1. Copy [`themes/liquid-glass.yaml`](themes/liquid-glass.yaml) into `/config/themes/liquid-glass.yaml`.
-2. Add the `frontend:` configuration above if themes are not already enabled. Back up `configuration.yaml` before editing it.
-3. Reload themes and select one of the two variants in your user profile.
-4. Copy the wallpaper as described above if desired.
+- **Ein links, Aus rechts:** Der kleine Schalter trägt das vorhandene Icon. Kapsel und Icon leuchten in der Farbe der Hauptentität; die Helligkeit ist sichtbar. Ohne einstellbare Lichtfarbe leuchtet Ein gelb. Hover federt leicht, beim Drücken wird die Linse kurz gequetscht und bewegt sich anschließend zur anderen Seite.
+- **Versenkte Slider:** Die rechteckige Glaslinse vergrößert sich bei Klick, Touch und Drag. Während eines Drags bleibt der eingestellte Wert stabil; die neue Einstellung wird beim Loslassen übertragen. Schmale helle Streifen am linken Sliderrand und unteren Kartenrand entfallen.
+- **Gemeinsame Auswahlfläche:** Rechteckige Button-Gruppen mit abgerundeten Ecken liegen in einer versenkten Glasfläche. Die aktive Linse liegt plan zur Oberfläche und federt beim Hover. Bestehende Mehrfachauswahl bleibt Mehrfachauswahl.
+- **Effekt-Taste:** Unterstützte Lichter erhalten oben rechts eine flache Rauchglastaste. Ein laufender Effekt beleuchtet sie von innen weiß; ein Klick drückt sie sichtbar ein. Der Effektpicker bietet auch das Stoppen des Effekts.
+- **Einheitliche Karten:** Dunkle Glasflächen teilen Material, Transparenz und Glanz. Hover-Glanz folgt dem Zeiger. Hintergrundgraphen und strukturelle Layoutcontainer bleiben dort transparent, wo dies zur Karte gehört.
+- **Thermostat und Dual-Thermostat:** Nur die bis zu vier Modustasten unten links, die Preset-Taste unten rechts und die Glaslinsen der Temperaturgriffe werden angepasst. Außenfläche, Werte, Ring, Track und Preset-Dialog behalten ihre ursprüngliche Darstellung. Die DASH6-Thermostatkarte bleibt 265px hoch.
 
-For the extra glass styling around cards and dialogs, install [card-mod](https://github.com/thomasloven/lovelace-card-mod). The palette, normal card backgrounds, and Mushroom colors still work without card-mod. Loading card-mod as a frontend module can improve application speed, especially for theme-wide styling; follow card-mod's current installation instructions and use the resource URL shown by your own HACS installation.
+Die Animationen berücksichtigen „Bewegung reduzieren“. Auf Touchgeräten benötigt keine Funktion einen Hover.
 
-## SVG glass optics for DASH5 — Chrome and Safari
+## Karten für das ganze Dashboard
 
-The companion module uses [samasante/liquid-glass](https://github.com/samasante/liquid-glass) in its `refract` DOM-copy mode. It creates a viewport-aligned copy of the fixed wallpaper behind each visible card and applies an SVG displacement filter to that copy. This produces refraction, colour separation and specular light in **Chrome and Safari** without `backdrop-filter: url()`, WebGL, or dashboard screenshots. A small offscreen **2D canvas** generates the SVG displacement map; it does not render the dashboard. The published bundle excludes the upstream WebGL renderer entirely. The original Home Assistant card, including every button, graph, slider and tooltip, remains above the optical layer and keeps its own interaction. The module starts with at most eight visible lenses on desktop and four on phones; the GUI can lower these limits. Wide graph cards may look better with less `strength` and `curvature` via per-card settings.
+| Familie | Funktionen |
+| --- | --- |
+| Govee-/allgemeine Lichtkarte | Kombi- oder Einzelregler, Farbe, Farbtemperatur, Helligkeit, unterstützte Effekte, Segmente und optionale Leistung/Energie |
+| Lichtgruppe und Schuhschrank | Detailmodal beim Hintergrundklick, auswählbare Mitglieder, gemeinsame Steuerung, Segmentdarstellungen und Szenen |
+| IKEA-/Messsteckdose | Licht/Schalter, Leistung/Energie, optional LED und Kindersicherung, Hintergrundgraph mit externem Tooltip |
+| Ventilator und vorhandene Schalterkarten | Satin-Adapter für geeignete Button-/Mushroom-Karten; native Aktionen und zusätzliche Regler bleiben erhalten |
+| Cover/Rollo | Vertikale Positionssteuerung und Status, maximal 300px Kartenhöhe |
+| Thermostat/Dual-Thermostat | Native ein- oder zweifache Temperaturbedienung, unterstützte Modi und Presets |
+| Medien | Native Mediensteuerung, Apple-TV-/Fire-TV-Auswahl, Fernbedienungsmodal und Tastaturbedienung im Modal |
+| Staubsauger und Dock | Statusanimation, Start/Stop, Individuell-Dialog, Raum-Mehrfachauswahl, Dock-Funktionen und Wartungsdialog |
+| Türen | Schloss oder Türöffner, Kontakt, Batteriewarnung und getrennte Türaktionen |
+| Lokale Gerätekamera | Kamera des aktuellen Browsers mit ausdrücklichem Start, ohne Mikrofon; Stop beim Verlassen/Hintergrundwechsel |
+| Auswahl, Bereich und Struktur | Segmentauswahl, Bereichsheader mit Uhr, Stack, eingebettete Views, Ultra-Card sowie Render-/Profilwrapper |
+| Theme-Editor | Material, Transparenz, Glanz, Elastizität und Bewegungswerte grafisch einstellen, zurücksetzen und exportieren |
+| Vacuum Dock Card | Separat nutzbarer Staubsauger-/Dock-Assistent mit deutscher/englischer Oberfläche |
 
-HACS installs the YAML theme, so install this optional frontend resource separately:
+„Govee“ schränkt die Lichtkarte nicht auf diesen Hersteller ein: Entscheidend sind die von der `light`-Entity gemeldeten Funktionen. Roborock-Raumaufträge und Medien-Fernbedienungen benötigen die passenden Geräteintegrationen. Alle Kartentypen und gültigen Schlüssel stehen in [CARDS.md](docs/CARDS.md).
 
-1. Copy the bundled [`frontend/dash5-glass.js`](frontend/dash5-glass.js) into `/config/www/liquid-glass/`.
-2. Copy the wallpaper to `/config/www/liquid-glass-living-room.jpg` as described above.
-3. In **Settings → Dashboards → Resources**, add `/local/liquid-glass/dash5-glass.js` as a **JavaScript module**. Reload `/dash-5/wohnzimmer`.
+## Installation und erstes Dashboard
 
-The module is scoped to `/dash-5/wohnzimmer` and an active Liquid Glass theme. Rebuild from [`frontend/dash5-glass.source.jsx`](frontend/dash5-glass.source.jsx) with `npm ci && npm run build:glass`; the build script selects only the upstream SVG/DOM component and checks that WebGL APIs are absent. Set `window.__DASH5_LIQUID_GLASS_DISABLE__ = true` before loading the resource to disable it without removing the resource. The bundled upstream package is [@samasante/liquid-glass 0.1.1](https://www.npmjs.com/package/@samasante/liquid-glass); see [third-party licensing](frontend/THIRD-PARTY-LICENSE.md).
+Der [Python-Installer](docs/INSTALLATION.md#installation-mit-dem-python-installer) kopiert das Paket in das angegebene Home-Assistant-Konfigurationsverzeichnis und hilft bei Ressourcen und optionalen Abhängigkeiten. Er benötigt keinen Build auf dem Home-Assistant-Server. Alternativ lassen sich Themes über HACS und die fertigen Module manuell installieren.
 
-For a local browser check, run `npm ci`, `npx playwright install chromium webkit`, and `python3 -m http.server 8765 --bind 127.0.0.1` in this repository; then run `npm run test:browser` in another terminal. The smoke test checks DOM wallpaper copies, the absence of canvas, controls, per-card settings, light mode, and a phone-sized viewport in both browser engines. It is a local demo check; Home Assistant custom cards still need testing in the actual dashboard.
+1. [Theme, Kartenmodul und benötigte Abhängigkeiten installieren](docs/INSTALLATION.md).
+2. **DASH6 Satin Glass** im Profil oder in der View auswählen.
+3. Im Karteneditor eine DASH6-Karte hinzufügen und die eigenen Entitäten auswählen.
+4. [examples/dashboard.yaml](examples/dashboard.yaml) in den Rohkonfigurationseditor eines neuen Dashboards übernehmen und alle `demo_…`-Entitäten ersetzen. Es ist eine Konfiguration, keine Simulation; ohne passende Entitäten fehlen Daten.
 
-### Visual settings
-
-Open `/dash-5/wohnzimmer` and tap the **✦** button at the bottom right. The panel gives immediate control over the refraction, edge bend, curvature, colour split, frost, shine, glow, saturation, light and dark tint, accent, button material, icon/graph glow, wallpaper URL, motion and maximum simultaneous lenses. `System / Theme`, `Dunkel` and `Hell` switch the current look without changing card behaviour. `Standardwerte` restores defaults; `JSON kopieren` exports the complete profile. The current GUI settings are saved **in the browser's local storage**, so use the export on another device to reproduce them there. The default values in the resource and theme YAML apply before a user customizes them.
-
-The wallpaper remains fixed during scrolling. The optical layer lives in the same scrolling DOM container as the cards, so its panels move with the cards natively rather than chasing them with a delayed JavaScript position update. Only each wallpaper copy is offset to match the fixed photograph. This avoids relying on `background-attachment: fixed` inside the lens, which [WebKit does not reliably support on iOS](https://bugs.webkit.org/show_bug.cgi?id=275247). Set the same image URL in the GUI that Home Assistant uses as its dashboard background; the module updates `--lovelace-background` while this view is active. For a reliable visual match, the image should use `center / cover` like the included wallpaper.
-
-### Per-card controls in Ultra Card
-
-Embed `custom:liquid-glass-card` as an Ultra Card **external_card**. The wrapper accepts any installed Home Assistant card as `card` and adds a visual editor for its optical settings. Its host passes values through CSS variables to the SVG lens, without replacing the inner card controls:
+Eine einzelne Lichtkarte:
 
 ```yaml
-type: custom:liquid-glass-card
-card:
-  type: custom:button-card
-  entity: switch.example
-glass:
-  enabled: true
-  optics:
-    strength: 0.24
-    curvature: 0.12
-    frost: 3
-  tint: rgba(25, 42, 65, 0.30)
-  outline: rgba(235, 247, 255, 0.35)
-  radius: 16px
+type: custom:dash6-govee-light-card-v2
+entity: light.demo_lampe
+name: Stehlampe
+controls:
+  mode: combo
+  label: icon
+  buttons: group
+  density: compact
+  position: right
 ```
 
-For an existing Ultra Card module that must keep its current nesting, set the inherited CSS properties `--lg-optic-strength`, `--lg-optic-depth`, `--lg-optic-curvature`, `--lg-optic-bend`, `--lg-optic-dispersion`, `--lg-optic-frost`, `--lg-optic-sheen`, `--lg-optic-specular`, `--lg-optic-glow`, `--lg-optic-brightness`, `--lg-optic-saturate`, `--lg-card-tint`, `--lg-card-outline`, `--lg-card-radius` or `--lg-optics-disabled: 1` on that card. This is compatible with Ultra Card's styling options and card-mod. The wrapper is optional; use it when its extra nesting does not disturb the card's layout. The GUI edits glass settings; the nested card configuration remains the card's own configuration.
+Die grafischen Karteneditoren sind der einfachste Einstieg. Lichtkarten innerhalb verschachtelter Dashboards können zusätzliche Einstellungen als Home-Assistant-Benutzerdaten speichern; sie überschreiben nur die jeweilige Karte. Der Theme-Editor speichert Sofortänderungen browserlokal und bietet einen Export für weitere Geräte. [Umstieg und Rücksetzen](docs/MIGRATION.md).
 
-## Configuration
+## Bestehende Dashboards weiterverwenden
 
-Home Assistant themes are CSS-variable mappings. Edit your local copy of `themes/liquid-glass.yaml` to adjust these values, then reload themes:
+Die ursprünglichen Themes und Ressourcen können weiterverwendet werden. Das aktuelle Gesamtmodul ersetzt beim Umstieg die ältere DASH6-Ressource: Beide registrieren dieselben `dash6-*`-Elemente und dürfen nicht gleichzeitig geladen werden. Das Gesamtmodul bietet auch die DASH5-v2-Kompatibilität (einschließlich Multi-Light-Aliasnamen); der separate Kompatibilitätseinstieg wird nicht zusätzlich registriert. [MIGRATION.md](docs/MIGRATION.md) erklärt Zuordnung und Rückweg.
 
-| Variable | Default | Effect |
-| --- | --- | --- |
-| `lg-surface` | `rgba(21, 31, 44, 0.74)` | Main glass tint |
-| `lg-surface-raised` | `rgba(31, 47, 66, 0.78)` | Dialog and lifted surface tint |
-| `lg-outline` | `rgba(221, 239, 255, 0.34)` | Fine card edge |
-| `lg-radius` | `16px` | Glass-card corners, even when a custom card sets its own radius token |
-| `lg-blur` | `blur(20px) saturate(150%)` | Glass blur through card-mod |
-| `lg-glow` | Blue focus glow | Accent for custom controls |
-| `lg-icon-diameter` | `40px` | Shared icon diameter for compatible custom cards |
-| `state-cover-shade-closed-color` | `rgba(88, 169, 249, 0.72)` | Translucent blue fill in native vertical cover controls |
-| `lovelace-background` | Gradient plus local wallpaper | Dashboard backdrop |
-| `lg-motion-duration` | `0ms` / `180ms` | Hover and focus transition |
-| `lg-accent` / `lg-control-*` | Blue translucent controls | Generic button and range styling |
-| `lg-icon-glow` / `lg-graph-glow` | Subtle blue glow | Icon styling and opt-in chart styling |
+Button-/Mushroom-Karten erhalten nur dann einen Satin-Schalter, wenn die vorhandene Icon-Aktion als Ein/Aus-Bedienung erkennbar ist. Gesperrte oder unklare Vendor-Konfigurationen bleiben nativ. Die Adapter erhalten native Aktions-, Bestätigungs- und Sperrwege. Das Paket erstellt keine Geräte und ersetzt keine Geräteintegration.
 
-For a different background, replace the supplied JPG with your own image at the same `/config/www` path. The supplied image stays sharp; foreground cards apply their own backdrop blur. If a device struggles with blur, change `lg-blur` to `blur(10px) saturate(125%)` or choose a CSS gradient without a photograph.
+## Voraussetzungen und Grenzen
 
-## Custom-card behavior
+Die Karten benötigen unterschiedliche Zusatzmodule. Eine Lichtkarte braucht weniger als ein komplettes Ultra-/Graph-/Medien-Dashboard. [DEPENDENCIES.md](docs/DEPENDENCIES.md) nennt Zuordnung und vom Installer verwendete Versionen. HACS-Theme-Installation allein lädt diese Abhängigkeiten nicht.
 
-The theme provides standard Home Assistant variables plus Mushroom tokens and `card-mod` hooks. It leaves the existing sliders, cover orientation, chart layers, tooltips, dimensions, and click actions alone. This matters for custom cards: a theme can style only variables a card consumes and elements card-mod can reach. A card with hard-coded inline styles or a closed shadow root may need an adapter in that card's own configuration. The generic button styling is deliberately limited to colour, blur and shadow; graph geometry and pointer layers are untouched. See [Card compatibility](docs/CARD-COMPATIBILITY.md) for the DASH5 card inventory and specific checks.
+Aktuelle Browser mit Custom Elements, Shadow DOM und `<dialog>` werden vorausgesetzt. Chrome/Chromium und Safari/WebKit wurden für Satin-Bedienelemente und Dialoge geprüft. Änderungen an HA-Frontend-Interna und Fremdkarten können Anpassungen nötig machen. Eigene CSS-Regeln und geschlossene Shadow Roots können Styling-Hooks begrenzen; vollständige Umgestaltung sämtlicher Fremdkarten ist nicht pauschal zugesichert.
 
-`card-mod` remains available for per-card adjustments. CSS cannot stop another `card-mod` rule from intentionally overriding the theme; the theme instead uses shared `lg-*` variables and a consistent border, surface, blur, and focus vocabulary that custom rules can reuse.
+SVG-Hintergrundbrechung und Satin-Frostung sind getrennte Funktionen. Die ursprüngliche SVG-Optik bricht eine Kopie des Hintergrundbilds, nicht sämtliche Live-Dashboard-Inhalte. Satin verwendet CSS-/SVG-Materialien und die dafür vorgesehenen Kartenadapter.
 
-## Design and privacy
+## Projekt und Lizenzen
 
-The wallpaper was generated for this project. The repository does not contain dashboard exports, entity IDs, credentials, or screenshots of a private Home Assistant installation. The theme is unofficial and is not affiliated with Apple or Home Assistant.
+Demo, Default-Zuordnungen und Beispiele enthalten neutrale Daten. Für das Dashboard werden eigene Entitäten benötigt; Zugangsdaten und Tokens gehören nicht in die Kartenkonfiguration. Das beigelegte Wohnzimmerbild ist ein für das Projekt erzeugter Hintergrund.
 
-## Sources
+Dieses Projekt ist unabhängig von Apple und Home Assistant. Der Theme-Teil steht unter [MIT](LICENSE); Quell- und Fremdlizenzen der mitgelieferten Karten stehen bei den jeweiligen Modulen und Lizenzhinweisen. Für die ursprüngliche SVG-Optik siehe [THIRD-PARTY-LICENSE.md](frontend/THIRD-PARTY-LICENSE.md).
 
-- [Apple Liquid Glass design overview](https://developer.apple.com/documentation/technologyoverviews/liquid-glass)
-- [Home Assistant frontend themes](https://www.home-assistant.io/integrations/frontend/)
-- [HACS theme repository requirements](https://www.hacs.xyz/docs/publish/theme/)
-- [card-mod theme variables](https://github.com/thomasloven/lovelace-card-mod/blob/master/README-themes.md)
-- [WebKit SVG backdrop-filter limitation](https://bugs.webkit.org/show_bug.cgi?id=245510)
-- [samasante browser notes and Safari workarounds](https://github.com/samasante/liquid-glass/blob/main/BROWSERS.md)
+Weitere Einordnung: [Design-Notizen](docs/DESIGN-NOTES.md) und [ursprüngliche DASH5-Kompatibilität](docs/CARD-COMPATIBILITY.md).

@@ -1,0 +1,121 @@
+{
+  "pages": [
+    {
+      "id": "dash6-satin-system",
+      "variants": 4,
+      "switch": true,
+      "slider": true,
+      "mobile": {
+        "viewport": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "id": "satin-effect-group",
+      "variants": 1,
+      "switch": true,
+      "slider": true,
+      "mobile": {
+        "viewport": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "id": "satin-raised-switch-rect-modes",
+      "variants": 1,
+      "switch": true,
+      "slider": true,
+      "mobile": {
+        "viewport": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "id": "satin-inset-rect",
+      "variants": 1,
+      "switch": true,
+      "slider": true,
+      "mobile": {
+        "viewport": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "id": "satin-gloss-depth",
+      "variants": 1,
+      "switch": true,
+      "slider": true,
+      "mobile": {
+        "viewport": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "id": "custom-light-three-designs",
+      "variants": 1,
+      "switch": true,
+      "slider": true,
+      "mobile": {
+        "viewport": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "id": "custom-light-flat-glass",
+      "variants": 1,
+      "switch": true,
+      "slider": true,
+      "mobile": {
+        "viewport": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "id": "black-frost-light",
+      "variants": 1,
+      "switch": true,
+      "slider": true,
+      "mobile": {
+        "viewport": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "id": "liquid-lens-surfaces",
+      "variants": 4,
+      "switch": true,
+      "slider": true,
+      "mobile": {
+        "viewport": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "id": "liquid-lens-reference",
+      "variants": 1,
+      "switch": true,
+      "slider": true,
+      "mobile": {
+        "viewport": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "id": "liquid-light-modern",
+      "variants": 3,
+      "switch": true,
+      "slider": true,
+      "mobile": {
+        "viewport": 390,
+        "scroll": 390
+      }
+    }
+  ],
+  "motion": "Squeeze, delayed state change and CSS travel transition verified with animations enabled",
+  "narrowViewport": 320,
+  "runtimeErrors": [],
+  "externalRequests": [],
+  "missingRequests": [],
+  "services": "No device APIs or Home Assistant services",
+  "mode": "Isolated local browser"
+}

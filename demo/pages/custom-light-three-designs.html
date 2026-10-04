@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="de" data-demo="custom-light-three-designs">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Contour, Satin und Halo: drei Materialideen mit denselben bedienbaren Lichtreglern auf zwei Hintergründen."><meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Custom Light · Drei Entwürfe · Liquid Glass</title>
+<link rel="stylesheet" href="../assets/preview.css"><script src="../assets/lucide.min.js"></script><script src="../assets/runtime.js"></script></head>
+<body class="demo-page">
+<header class="demo-header"><a class="demo-home" href="../index.html">← Galerie</a><div><span class="demo-kicker">LIQUID GLASS / INTERAKTIVER ENTWURF</span><h1>Custom Light · Drei Entwürfe</h1></div><nav aria-label="Weitere Entwürfe"><a href="satin-gloss-depth.html" aria-label="Vorheriger Entwurf">←</a><a href="custom-light-flat-glass.html" aria-label="Nächster Entwurf">→</a></nav></header>
+<main class="demo-main"><div class="demo-stage"><style>
+#light-designs{--room-photo:url("../assets/living-room.jpg");font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--foreground);display:grid;gap:20px}
+#light-designs *{box-sizing:border-box}
+#light-designs .proposal{min-width:0}
+#light-designs .proposal-name{font-size:16px;font-weight:500;margin:0 0 8px;color:var(--foreground)}
+#light-designs .pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#light-designs .stage{position:relative;min-width:0;min-height:224px;display:grid;align-content:center;padding:36px 16px 28px;border-radius:18px;background:#111618;color-scheme:dark;container-type:inline-size}
+#light-designs .stage.photo{background-image:var(--room-photo);background-size:cover;background-position:center}
+#light-designs .context{position:absolute;left:17px;top:12px;font-size:11px;color:#e3e6e9;background:#15191bd9;padding:3px 7px;border-radius:5px}
+#light-designs .light-card{--light:#ad78fa;--level:.72;--opacity:.82;--radius:18px;position:relative;isolation:isolate;overflow:hidden;min-width:0;color:#f2f5f8;border-radius:var(--radius);border:1px solid #e3edf02b;padding:11px 12px 13px;background:linear-gradient(145deg,#ffffff06,transparent 35%),rgb(16 21 25 / var(--opacity));box-shadow:inset 0 1px 1px #ffffff26,inset 0 -1px 1px #ffffff12,0 6px 14px #00000024;backdrop-filter:blur(15px) saturate(120%);-webkit-backdrop-filter:blur(15px) saturate(120%)}
+#light-designs .uplight{position:absolute;inset:10% -10% -10%;z-index:-1;background:var(--light);mask-image:radial-gradient(ellipse 78% 55% at 50% 113%,#000,transparent 95%);opacity:calc(var(--level)*.58);pointer-events:none;transition:background .4s,opacity .45s}
+#light-designs .light-card:after{content:"";position:absolute;bottom:0;left:16%;right:16%;height:1px;background:var(--light);opacity:var(--level);box-shadow:0 -2px 13px var(--light);pointer-events:none;transition:background .4s,opacity .45s}
+#light-designs .head{display:flex;align-items:center;gap:11px;min-height:58px}
+#light-designs .details{min-width:0;padding:0;text-align:left;background:none;border:0;color:inherit;touch-action:manipulation;font:inherit}
+#light-designs .name{font-size:14px;line-height:19px;font-weight:500;display:block}
+#light-designs .status{font-size:11px;line-height:17px;color:#bac2cc;margin-top:3px;display:block;font-variant-numeric:tabular-nums}
+#light-designs .switch{--knob-size:31.5px;--travel:51px;position:relative;width:88px;height:58px;flex:none;border:0;padding:0;background:none;color:#f7f9fc;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#light-designs .track{position:absolute;inset:10.5px 0;height:37px;border:1px solid #ecf7ff2d;border-radius:40px;overflow:hidden;background:linear-gradient(#ffffff0a,transparent),#272d32;box-shadow:inset 0 1px 2px #ffffff0b,inset 0 -2px 3px #00000035}
+#light-designs .track-light{position:absolute;inset:0;background:var(--light);opacity:calc(var(--level)*.44);transition:background .4s,opacity .45s}
+#light-designs .track-value{position:absolute;left:34px;top:21px;width:54px;font-size:11px;line-height:16px;font-variant-numeric:tabular-nums;transition:transform .65s cubic-bezier(.2,1.22,.34,1)}
+#light-designs .switch[aria-checked="false"] .track-value{transform:translateX(-34px)}
+#light-designs .knob-position{position:absolute;left:2.75px;top:13.25px;width:var(--knob-size);height:var(--knob-size);transform:translateX(0);transition:transform .67s cubic-bezier(.2,1.22,.34,1);pointer-events:none}
+#light-designs .switch[aria-checked="false"] .knob-position{transform:translateX(var(--travel))}
+#light-designs .knob{position:absolute;inset:0;border-radius:50%;border:1px solid #ffffff66;background:radial-gradient(ellipse at 34% 4%,#ffffff45,transparent 42%),linear-gradient(135deg,#e5f3ff23,#111a2012 50%,#e0ebf324);box-shadow:inset 1px 1px 2px #ffffff32,inset -1px -2px 3px #ffffff33,0 4px 8px #00000040;backdrop-filter:blur(3px) saturate(150%);-webkit-backdrop-filter:blur(3px) saturate(150%);overflow:hidden;display:grid;place-items:center;transition:transform .45s cubic-bezier(.17,1.65,.4,1)}
+#light-designs .knob:before{content:"";position:absolute;inset:0;background:var(--light);opacity:calc(var(--level)*.35);transition:background .4s,opacity .45s}
+#light-designs .knob:after{content:"";position:absolute;inset:3px;border-radius:50%;border-top:1px solid #ffffff62;border-bottom:1px solid #ffffff40}
+#light-designs .device-icon{width:18px;height:18px;position:relative;fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--light) 55%,transparent))}
+#light-designs .device-icon.socket{fill:currentColor;stroke:none}
+#light-designs .switch:hover .knob{transform:scale(1.1)}
+#light-designs .switch.pressing .knob{transform:scale(1.17,.79);transition:transform 85ms ease-out}
+#light-designs .switch.travelling .knob{animation:light-elastic .67s both}
+@keyframes light-elastic{0%{transform:scale(1.17,.79)}35%{transform:scale(.91,1.1)}67%{transform:scale(1.07,.97)}100%{transform:scale(1)}}
+#light-designs .controls{display:grid;grid-template-columns:minmax(0,1fr) 114px;align-items:center;gap:8px;margin-top:9px}
+#light-designs .range{appearance:none;-webkit-appearance:none;width:100%;min-width:0;height:42px;border:0;border-radius:11px;background:var(--slider);box-shadow:inset 0 2px 4px #00000045;margin:0;touch-action:pan-y;transition:opacity .4s}
+#light-designs .range::-webkit-slider-runnable-track{height:42px;background:transparent}
+#light-designs .range::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:18px;height:40px;margin-top:1px;border-radius:9px;border:1px solid #ffffff80;background:#ffffff36;box-shadow:inset 0 1px 1px #ffffff60,0 1px 5px #00000030}
+#light-designs .range::-moz-range-thumb{width:17px;height:38px;border-radius:9px;border:1px solid #ffffff80;background:#ffffff36}
+#light-designs .light-card[data-on="false"] .range{opacity:.45}
+#light-designs .modes{display:flex;height:42px;background:#ffffff05;border:1px solid #ffffff19;border-radius:11px;overflow:hidden}
+#light-designs .mode{width:38px;border:0;padding:0;display:grid;place-items:center;background:none;color:#aeb8c4;touch-action:manipulation}
+#light-designs .mode+button{border-left:1px solid #ffffff0e}
+#light-designs .mode[aria-pressed="true"]{color:#f7f9fc;background:#ffffff16;box-shadow:inset 0 1px 0 #ffffff18}
+#light-designs .mode svg{width:17px!important;height:17px!important}
+#light-designs .mode:disabled{opacity:.28}
+#light-designs .range:disabled{opacity:.25}
+#light-designs .satin.light-card{border-color:#ffffff20;background:linear-gradient(#ffffff04,transparent 38%),rgb(20 24 28 / var(--opacity));box-shadow:inset 0 1px 0 #ffffff18,inset 0 -1px 0 #ffffff10,0 6px 14px #00000024}
+#light-designs .satin .track{background:linear-gradient(#ffffff0d,transparent),#292f34;border-color:#ffffff22}
+#light-designs .satin .track-light{opacity:calc(var(--level)*.36)}
+#light-designs .satin .knob{background:linear-gradient(140deg,#e9effb32,#c7d2e813);border-color:#eef4ff4a;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:inset 0 1px 2px #ffffff35,inset 0 -1px 2px #ffffff25,0 3px 8px #00000045}
+#light-designs .satin .knob:after{inset:2px;border-color:#ffffff20}
+#light-designs .satin .knob:before{opacity:calc(var(--level)*.45)}
+#light-designs .halo.light-card{border-color:#dde8f32f;box-shadow:inset 0 1px 1px #ffffff35,inset 0 -1px 0 #ffffff17,0 5px 12px #00000025}
+#light-designs .halo .track{border-color:#d4e1ef35;background:#1d242a;box-shadow:inset 0 1px 3px #00000048}
+#light-designs .halo .knob{border-color:#e9f4ff70;background:radial-gradient(ellipse at 35% 0,#ffffff2d,transparent 50%),#e6f3ff0b;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);box-shadow:inset 0 0 0 2px #ffffff09,inset 0 -1px 3px #ffffff45,0 4px 9px #00000045}
+#light-designs .halo .knob:before{opacity:calc(var(--level)*.22)}
+#light-designs .halo .knob:after{inset:3px;border:1px solid var(--light);opacity:calc(var(--level)*.65);transition:opacity .45s,border-color .4s}
+@media(max-width:640px){#light-designs .pair{grid-template-columns:minmax(0,1fr)}#light-designs .stage{min-height:220px;padding:35px 14px 26px}}
+@container(max-width:290px){#light-designs .light-card{padding:10px}#light-designs .head{gap:8px}#light-designs .name{font-size:13px}#light-designs .status{font-size:11px}#light-designs .controls{grid-template-columns:minmax(0,1fr) 102px;gap:6px}#light-designs .mode{width:34px}}
+@media(pointer:coarse){#light-designs .modes{height:44px}#light-designs .range{height:44px}}
+@media(prefers-reduced-motion:reduce){#light-designs *,#light-designs *:before,#light-designs *:after{animation:none!important;transition:none!important}}
+</style>
+<div id="light-designs" class="viz-dotted-background" aria-label="Drei interaktive Lichtkarten auf dunklem Hintergrund und Generierter Wohnraum">
+ <section class="proposal" data-design="contour" aria-label="Contour"><h2 class="proposal-name">Contour · klare Glaskante</h2><div class="pair"><div class="stage"><span class="context">Dunkel</span></div><div class="stage photo"><span class="context">Wohnzimmer</span></div></div></section>
+ <section class="proposal" data-design="satin" aria-label="Satin"><h2 class="proposal-name">Satin · sanft gefrostet</h2><div class="pair"><div class="stage"><span class="context">Dunkel</span></div><div class="stage photo"><span class="context">Wohnzimmer</span></div></div></section>
+ <section class="proposal" data-design="halo" aria-label="Halo"><h2 class="proposal-name">Halo · schwebender Lichtring</h2><div class="pair"><div class="stage"><span class="context">Dunkel</span></div><div class="stage photo"><span class="context">Wohnzimmer</span></div></div></section>
+ <template id="light-card-template"><section class="light-card cursor-interaction" data-on="true" aria-label="Wohnzimmer Ambiente"><div class="uplight"></div><div class="head"><button type="button" class="switch cursor-interaction" role="switch" aria-checked="true" aria-label="Wohnzimmer Ambiente ein- oder ausschalten"><span class="track"><span class="track-light"></span></span><span class="track-value">72%</span><span class="knob-position"><span class="knob"><svg class="device-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18v-2.5a6.5 6.5 0 1 1 6 0V18M9 18h6M9.5 21h5"/></svg></span></span></button><button type="button" class="details cursor-interaction" aria-label="Wohnzimmer Ambiente ein- oder ausschalten"><span class="name">Wohnzimmer Ambiente</span><span class="status" aria-live="polite">Ein · 72 % · Violett</span></button></div><div class="controls"><input class="range" type="range" min="1" max="100" value="72" aria-label="Helligkeit"><div class="modes" aria-label="Lichtfunktion"><button type="button" class="mode cursor-interaction" data-mode="brightness" aria-label="Helligkeit" aria-pressed="true"><i data-lucide="sun" aria-hidden="true"></i></button><button type="button" class="mode cursor-interaction" data-mode="temperature" aria-label="Farbtemperatur" aria-pressed="false"><i data-lucide="thermometer" aria-hidden="true"></i></button><button type="button" class="mode cursor-interaction" data-mode="color" aria-label="Lichtfarbe" aria-pressed="false"><i data-lucide="palette" aria-hidden="true"></i></button></div></div></section></template>
+</div>
+<script>
+(()=>{
+ const root=document.getElementById('light-designs'),template=document.getElementById('light-card-template');
+ const defaults={on:true,brightness:72,hue:265,temperature:3000,colorMode:'color',mode:'brightness',hasColor:true,radius:18,opacity:.82};
+ const saved=window.demoState?.widgetState?.privateContent?.lightProposals||{};
+ const states={},views={},busy={};
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const bulb='M9 18v-2.5a6.5 6.5 0 1 1 6 0V18M9 18h6M9.5 21h5';
+ const socket='M12 2A10 10 0 1 0 12 22A10 10 0 1 0 12 2M12 4A8 8 0 1 1 12 20A8 8 0 1 1 12 4M8.5 10.5A1.5 1.5 0 1 0 8.5 13.5A1.5 1.5 0 1 0 8.5 10.5M15.5 10.5A1.5 1.5 0 1 0 15.5 13.5A1.5 1.5 0 1 0 15.5 10.5M11 5V8H13V5M11 16V19H13V16';
+ function restore(id,value){const state=states[id];if(!value)return;for(const key of Object.keys(defaults))if(typeof value[key]===typeof defaults[key])state[key]=value[key];state.brightness=Math.max(1,Math.min(100,state.brightness));state.hue=Math.max(0,Math.min(360,state.hue));state.temperature=Math.max(2000,Math.min(6500,state.temperature));}
+ function kelvin(k){const t=k/100;const r=t<=66?255:329.6987*Math.pow(t-60,-.1332);const g=t<=66?99.4708*Math.log(t)-161.1196:288.1222*Math.pow(t-60,-.0755);const b=t>=66?255:t<=19?0:138.5177*Math.log(t-10)-305.0448;return 'rgb('+[r,g,b].map(n=>Math.round(Math.max(0,Math.min(255,n)))).join(' ')+')';}
+ function colorName(h){return h<18||h>342?'Rot':h<48?'Orange':h<72?'Gelb':h<165?'Grün':h<205?'Türkis':h<248?'Blau':h<290?'Violett':'Pink';}
+ function render(id){const s=states[id];if(!s.hasColor)s.mode='brightness';const color=!s.hasColor?'#ffd45b':s.colorMode==='temperature'?kelvin(s.temperature):'hsl('+s.hue+' 90% 70%)';
+  views[id].forEach(card=>{card.style.setProperty('--light',color);card.style.setProperty('--level',s.on?(s.hasColor?s.brightness/100:1):0);card.style.setProperty('--radius',s.radius+'px');card.style.setProperty('--opacity',s.opacity);card.dataset.on=String(s.on);card.querySelector('.switch').setAttribute('aria-checked',String(s.on));card.querySelector('.track-value').textContent=s.on?(s.hasColor?s.brightness+'%':'Ein'):'Aus';card.querySelector('.name').textContent=s.hasColor?'Wohnzimmer Ambiente':'Büro Eingang';card.querySelector('.status').textContent=s.on?(s.hasColor?'Ein · '+s.brightness+' % · '+(s.colorMode==='temperature'?s.temperature+' K':colorName(s.hue)):'Ein · Gelb'):'Aus';const icon=card.querySelector('.device-icon');icon.classList.toggle('socket',!s.hasColor);icon.querySelector('path').setAttribute('d',s.hasColor?bulb:socket);
+   const input=card.querySelector('.range');input.disabled=!s.hasColor;input.min=s.mode==='temperature'?2000:s.mode==='color'?0:1;input.max=s.mode==='temperature'?6500:s.mode==='color'?360:100;input.value=s.mode==='temperature'?s.temperature:s.mode==='color'?s.hue:s.brightness;input.setAttribute('aria-label',s.mode==='temperature'?'Farbtemperatur':s.mode==='color'?'Lichtfarbe':'Helligkeit');input.setAttribute('aria-valuetext',input.value+(s.mode==='temperature'?' Kelvin':s.mode==='color'?' Grad':' Prozent'));input.style.setProperty('--slider',s.mode==='temperature'?'linear-gradient(90deg,#ffa951,#fff0da,#d3e3ff)':s.mode==='color'?'linear-gradient(90deg,#e96767,#ddc968,#8adb73,#73dba7,#73bedb,#9374db,#dd73ce,#e96767)':'linear-gradient(90deg,#292e34,'+color+')');card.querySelectorAll('.mode').forEach(b=>{b.setAttribute('aria-pressed',String(s.mode===b.dataset.mode));b.disabled=!s.hasColor;});
+  });
+ }
+ function persist(){window.demoState?.setWidgetState?.({modelContent:{proposals:states,switchDirection:'links Ein, rechts Aus'},privateContent:{lightProposals:states}})?.catch(()=>{});}
+ function toggle(id){if(busy[id])return;busy[id]=true;views[id].forEach(c=>c.querySelector('.switch').classList.add('pressing'));setTimeout(()=>{states[id].on=!states[id].on;views[id].forEach(c=>{const b=c.querySelector('.switch');b.classList.remove('pressing');b.classList.add('travelling');});render(id);persist();setTimeout(()=>{views[id].forEach(c=>c.querySelector('.switch').classList.remove('travelling'));busy[id]=false;},reduced?0:670);},reduced?0:100);}
+ root.querySelectorAll('.proposal').forEach(proposal=>{const id=proposal.dataset.design;states[id]={...defaults};if(id==='satin')states[id].opacity=.86;if(id==='halo')states[id].opacity=.74;restore(id,saved[id]);views[id]=[];
+  proposal.querySelectorAll('.stage').forEach(stage=>{const card=template.content.firstElementChild.cloneNode(true);card.classList.add(id);stage.append(card);views[id].push(card);card.querySelector('.switch').addEventListener('click',()=>toggle(id));card.querySelector('.details').addEventListener('click',()=>toggle(id));card.addEventListener('click',e=>{if(!e.target.closest('button,input'))toggle(id);});card.querySelectorAll('.mode').forEach(button=>button.addEventListener('click',()=>{states[id].mode=button.dataset.mode;render(id);persist();}));const input=card.querySelector('.range');input.addEventListener('input',()=>{const s=states[id];if(s.mode==='color'){s.hue=Number(input.value);s.colorMode='color';}else if(s.mode==='temperature'){s.temperature=Number(input.value);s.colorMode='temperature';}else s.brightness=Number(input.value);s.on=true;render(id);});input.addEventListener('change',persist);});render(id);
+  if(globalThis.Tweak){const tweak=new Tweak({container:proposal,onChange:()=>render(id)});tweak.addSlider(states[id],'radius',{label:'Kartenradius',min:12,max:24,unit:'px'});tweak.addSlider(states[id],'opacity',{label:'Glasdeckkraft',min:.6,max:.95,step:.01});tweak.addToggle(states[id],'hasColor',{label:'Licht mit Farbfunktion'});}
+ });
+ globalThis.lucide?.createIcons({attrs:{width:17,height:17}});
+ window.addEventListener('demo:state',e=>{const s=e.detail?.globals?.widgetState?.privateContent?.lightProposals;if(s)Object.keys(states).forEach(id=>{restore(id,s[id]);render(id);});});
+})();
+</script>
+</div><details class="demo-tweaks" id="demo-design-controls"><summary>Darstellung anpassen</summary><div class="demo-tweak-groups"></div></details></main>
+<footer class="demo-footer">Lokale Simulation · keine Verbindung zu Geräten. Fotohintergründe sind für dieses Projekt generiert.</footer>
+<script>window.initializeDemo();</script></body></html>

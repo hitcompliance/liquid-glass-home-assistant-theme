@@ -1,0 +1,137 @@
+<style>
+#liquid-lights{--ll-ink:light-dark(#18332e,#f1f8f5);--ll-muted:light-dark(#56736a,#a6bab2);--ll-edge:light-dark(#ffffffb8,#ffffff4d);--ll-surface:light-dark(#ffffff50,#d6efe812);--ll-deep:light-dark(#d0dfd7,#132924);--ll-tint:light-dark(#38836b,#bce9d6);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ll-ink)}
+#liquid-lights *{box-sizing:border-box}
+#liquid-lights .ll-stage{height:458px;position:relative;isolation:isolate;overflow:hidden;border-radius:24px;padding:28px;background:var(--ll-deep)}
+#liquid-lights .ll-stage:before{content:"";position:absolute;inset:-35%;z-index:-2;background:radial-gradient(ellipse at 25% 58%,light-dark(#eff4d9,#94b6a34f),transparent 34%),radial-gradient(ellipse at 65% 32%,light-dark(#82b7a7,#579e8b66),transparent 40%),linear-gradient(120deg,light-dark(#b3c3b9,#0d211d) 10%,light-dark(#dde5dc,#38564b) 50%,light-dark(#83a69b,#122924) 85%);transform:rotate(-14deg);animation:ll-drift 18s ease-in-out infinite alternate}
+#liquid-lights .ll-stage:after{content:"";position:absolute;z-index:-1;width:90%;height:110%;top:-40%;left:35%;border-radius:50%;border:1px solid var(--ll-edge);box-shadow:20px 2px 55px light-dark(#ffffff50,#b7edcf12),inset 9px 0 18px light-dark(#ffffff66,#c9fbe21c);transform:rotate(-36deg);pointer-events:none}
+#liquid-lights .ll-context{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.05em;color:var(--ll-muted)}
+#liquid-lights .ll-context:before{content:"";height:5px;width:5px;border-radius:50%;background:currentColor}
+#liquid-lights .ll-scene{height:350px;display:flex;align-items:center;justify-content:center;perspective:1000px}
+#liquid-lights .ll-glass{--radius:28px;--glow:.65;position:relative;width:min(100%,510px);padding:24px;border-radius:var(--radius);background:linear-gradient(135deg,light-dark(#ffffffe0,#ffffff24),transparent 50%,light-dark(#ffffff5c,#ffffff06));border:1px solid var(--ll-edge);box-shadow:inset 0 1px 0 #ffffff70,inset 0 -1px 0 #ffffff17,0 18px 44px light-dark(#2544391c,#00000032);backdrop-filter:blur(16px) saturate(135%);-webkit-backdrop-filter:blur(16px) saturate(135%);transform:translateZ(0);transition:box-shadow .7s,background .7s;overflow:hidden}
+#liquid-lights .ll-glass:before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(ellipse at var(--mx,30%) var(--my,0%),light-dark(#ffffff8c,#ffffff25),transparent 55%);pointer-events:none;opacity:.85}
+#liquid-lights .ll-top{position:relative;display:flex;align-items:center;gap:14px;min-height:48px}
+#liquid-lights .ll-title{font-size:17px;font-weight:500;letter-spacing:-.4px;line-height:1.4}
+#liquid-lights .ll-sub{font-size:12px;color:var(--ll-muted);margin-top:3px}
+#liquid-lights button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+#liquid-lights .ll-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--ll-edge);background:#ffffff0a;color:var(--ll-muted);transition:color .6s,background .6s,box-shadow .6s;flex:none}
+#liquid-lights .ll-icon svg{width:19px;height:19px;stroke-width:1.6}
+#liquid-lights [data-on="true"] .ll-icon{color:var(--ll-ink);background:light-dark(#eaf9eaa8,#c9efd328);box-shadow:0 0 22px light-dark(#d8efcf44,#befac51c)}
+#liquid-lights .ll-toggle{margin-left:auto;width:60px;height:44px;flex:none;padding:0;border:0;background:transparent;position:relative}
+#liquid-lights .ll-toggle:before{content:"";position:absolute;inset:7px 0;border-radius:30px;border:1px solid var(--ll-edge);background:light-dark(#244e4212,#00000020);box-shadow:inset 0 2px 5px #00000012;transition:background .6s}
+#liquid-lights .ll-toggle:after{content:"";position:absolute;left:4px;top:11px;width:22px;height:22px;border-radius:50%;background:linear-gradient(145deg,#ffffffd9,#ffffff55);border:1px solid #ffffffa6;box-shadow:0 2px 6px #00000024;transition:transform .55s cubic-bezier(.2,1.5,.4,1),width .2s}
+#liquid-lights .ll-toggle[aria-pressed="true"]:before{background:light-dark(#55907880,#b1e9cb70)}
+#liquid-lights .ll-toggle[aria-pressed="true"]:after{transform:translateX(30px)}
+#liquid-lights .ll-toggle:active:after{width:27px}
+#liquid-lights .ll-toggle[aria-pressed="true"]:active:after{transform:translateX(25px)}
+#liquid-lights .ll-meter{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--ll-muted);margin:26px 0 9px;position:relative}
+#liquid-lights .ll-value{font-variant-numeric:tabular-nums;color:var(--ll-ink)}
+#liquid-lights .ll-range-wrap{position:relative;height:44px;display:flex;align-items:center;--value:65%;--fill:65%}
+#liquid-lights .ll-track{position:absolute;inset:14px 0;border-radius:30px;background:light-dark(#244e4214,#081c263b);overflow:hidden;box-shadow:inset 0 1px 3px #0000000a}
+#liquid-lights .ll-fill{height:100%;width:var(--fill);border-radius:inherit;background:linear-gradient(90deg,light-dark(#92bca5,#729d8c),light-dark(#c3ddbd,#d7f2d6));transition:width .15s,opacity .6s;opacity:var(--glow)}
+#liquid-lights input[type="range"]{appearance:none;-webkit-appearance:none;width:100%;height:44px;margin:0;background:transparent;position:relative;z-index:2;touch-action:pan-y}
+#liquid-lights input[type="range"]::-webkit-slider-runnable-track{height:16px;background:transparent}
+#liquid-lights input[type="range"]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:34px;height:34px;margin-top:-9px;border-radius:50%;border:1px solid #ffffffba;background:linear-gradient(140deg,#ffffffe6,#e9f8e34f);box-shadow:inset 0 1px 2px #ffffff,0 3px 10px #0000002b;backdrop-filter:blur(5px);transition:transform .3s cubic-bezier(.2,1.6,.4,1)}
+#liquid-lights input[type="range"]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;border:1px solid #ffffffba;background:#e9f8e3d9;box-shadow:0 3px 10px #0000002b}
+#liquid-lights input[type="range"]:active::-webkit-slider-thumb{transform:scale(1.18,.94)}
+#liquid-lights .ll-foot{display:flex;align-items:center;justify-content:space-between;position:relative;margin-top:12px;font-size:11px;color:var(--ll-muted)}
+#liquid-lights .ll-foot span:last-child{letter-spacing:.07em;text-transform:uppercase;font-size:10px}
+#liquid-lights .ll-light{position:absolute;width:260px;height:180px;left:50%;top:48%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(ellipse,light-dark(#faffea,#d3f8b9),transparent 68%);filter:blur(28px);z-index:-1;opacity:calc(var(--glow,.65) * .35);transition:opacity .7s}
+#liquid-lights .ll-liquid{--radius:50px;padding:18px 22px;width:min(100%,540px);display:grid;grid-template-columns:52px minmax(0,1fr);gap:19px;align-items:center}
+#liquid-lights .ll-power{display:flex;align-items:center;justify-content:center;border:1px solid var(--ll-edge);border-radius:50%;width:52px;height:52px;background:light-dark(#ffffff35,#ffffff0d);box-shadow:inset 0 1px 0 #ffffff5c;transition:background .6s,box-shadow .6s,transform .25s}
+#liquid-lights .ll-power:active{transform:scale(.9)}
+#liquid-lights .ll-power[aria-pressed="true"]{background:light-dark(#def5d6cc,#c9f3bb28);box-shadow:inset 0 1px 0 #ffffff80,0 0 24px light-dark(#c5e6b53b,#d5ffa021)}
+#liquid-lights .ll-power svg{width:20px;height:20px;stroke-width:1.6}
+#liquid-lights .ll-liquid .ll-top{min-height:0;justify-content:space-between;gap:8px}
+#liquid-lights .ll-liquid .ll-title{font-size:15px}
+#liquid-lights .ll-liquid .ll-value{font-size:12px}
+#liquid-lights .ll-liquid .ll-track{inset:17px 0;height:10px}
+#liquid-lights .ll-liquid .ll-range-wrap{margin-top:4px}
+#liquid-lights .ll-liquid .ll-sub{margin-top:0}
+#liquid-lights .ll-pebble{width:min(100%,300px);padding:22px;--radius:34px}
+#liquid-lights .ll-pebble .ll-top{justify-content:space-between}
+#liquid-lights .ll-pebble .ll-power{width:44px;height:44px}
+#liquid-lights .ll-pebble .ll-readout{padding:27px 0 19px;position:relative;display:flex;align-items:baseline;gap:5px;font-size:54px;font-weight:400;letter-spacing:-3px;font-variant-numeric:tabular-nums}
+#liquid-lights .ll-pebble .ll-readout small{font-size:18px;letter-spacing:0;color:var(--ll-muted)}
+#liquid-lights .ll-pebble .ll-meter{margin:0 0 0}
+#liquid-lights .ll-presets{display:flex;gap:7px;margin-top:14px;position:relative}
+#liquid-lights .ll-presets button{flex:1;min-height:38px;border:1px solid transparent;border-radius:20px;background:light-dark(#ffffff30,#ffffff08);font-size:11px;transition:background .35s,border-color .35s}
+#liquid-lights .ll-presets button[aria-pressed="true"]{border-color:var(--ll-edge);background:light-dark(#ffffff8f,#ffffff21)}
+#liquid-lights .ll-ripple{position:absolute;border-radius:50%;background:#ffffff25;width:40px;height:40px;pointer-events:none;animation:ll-ripple .85s ease-out forwards;z-index:0}
+#liquid-lights .ll-note{position:absolute;bottom:21px;left:28px;font-size:11px;color:var(--ll-muted);letter-spacing:.02em}
+@keyframes ll-drift{from{transform:rotate(-14deg) translate(-2%,0)}to{transform:rotate(-6deg) translate(3%,4%)}}
+@keyframes ll-ripple{to{transform:scale(16);opacity:0}}
+@media(max-width:480px){#liquid-lights .ll-stage{padding:20px 16px;height:458px}#liquid-lights .ll-glass{padding:20px}#liquid-lights .ll-liquid{padding:17px 16px;gap:12px;grid-template-columns:46px minmax(0,1fr)}#liquid-lights .ll-liquid .ll-power{width:46px;height:46px}#liquid-lights .ll-title{font-size:16px}#liquid-lights .ll-top{gap:10px}#liquid-lights .ll-icon{width:34px;height:34px}#liquid-lights .ll-note{left:16px}#liquid-lights .ll-pebble{padding:22px}}
+@media(prefers-reduced-motion:reduce){#liquid-lights *,#liquid-lights *:before,#liquid-lights *:after{animation:none!important;transition:none!important}#liquid-lights .ll-ripple{display:none}}
+</style>
+<div id="liquid-lights">
+ <div class="viz-carousel viz-dotted-background" aria-label="Animierte Liquid-Glass-Lichtschalter" data-previous-label="Vorheriger Entwurf" data-next-label="Nächster Entwurf">
+  <section data-variant="Clear" aria-label="Clear Lichtschalter">
+   <div class="ll-stage"><div class="ll-context">WOHNZIMMER · BELEUCHTUNG</div><div class="ll-scene"><div class="ll-light"></div>
+    <div class="ll-glass" data-light="clear" data-on="true" aria-label="Clear Glasleiste">
+     <div class="ll-top"><span class="ll-icon"><i data-lucide="lightbulb" aria-hidden="true"></i></span><div><div class="ll-title">Stehlampe</div><div class="ll-sub" data-status>Warmweiß · Ein</div></div><button type="button" class="ll-toggle cursor-interaction" aria-label="Stehlampe einschalten oder ausschalten" aria-pressed="true" data-power></button></div>
+     <label class="ll-meter" for="ll-range-clear"><span>Helligkeit</span><output class="ll-value" data-value>65 %</output></label>
+     <div class="ll-range-wrap"><div class="ll-track"><div class="ll-fill"></div></div><input id="ll-range-clear" type="range" min="1" max="100" value="65" aria-label="Helligkeit der Stehlampe"></div>
+     <div class="ll-foot"><span>Wohnzimmer</span><span>Clear</span></div>
+    </div>
+   </div><div class="ll-note">Interaktiver Entwurf</div></div>
+  </section>
+  <section data-variant="Flow" aria-label="Flow Lichtschalter" hidden>
+   <div class="ll-stage"><div class="ll-context">WOHNZIMMER · BELEUCHTUNG</div><div class="ll-scene"><div class="ll-light"></div>
+    <div class="ll-glass ll-liquid" data-light="flow" data-on="true" aria-label="Flow Glaskapsel">
+     <button type="button" class="ll-power cursor-interaction" aria-label="Stehlampe einschalten oder ausschalten" aria-pressed="true" data-power><i data-lucide="power" aria-hidden="true"></i></button>
+     <div><div class="ll-top"><div class="ll-title">Stehlampe</div><output class="ll-value" data-value>65 %</output></div><div class="ll-range-wrap"><div class="ll-track"><div class="ll-fill"></div></div><input type="range" min="1" max="100" value="65" aria-label="Helligkeit der Stehlampe"></div><div class="ll-sub" data-status>Warmweiß · Ein</div></div>
+    </div>
+   </div><div class="ll-note">Interaktiver Entwurf</div></div>
+  </section>
+  <section data-variant="Soft" aria-label="Soft Lichtschalter" hidden>
+   <div class="ll-stage"><div class="ll-context">WOHNZIMMER · BELEUCHTUNG</div><div class="ll-scene"><div class="ll-light"></div>
+    <div class="ll-glass ll-pebble" data-light="soft" data-on="true" aria-label="Soft Lichtkachel">
+     <div class="ll-top"><span class="ll-icon"><i data-lucide="lamp-floor" aria-hidden="true"></i></span><button type="button" class="ll-power cursor-interaction" aria-label="Stehlampe einschalten oder ausschalten" aria-pressed="true" data-power><i data-lucide="power" aria-hidden="true"></i></button></div>
+     <div class="ll-readout"><span data-number>65</span><small>%</small></div><div class="ll-title">Stehlampe</div><div class="ll-sub" data-status>Warmweiß · Ein</div>
+     <div class="ll-range-wrap" style="margin-top:14px"><div class="ll-track"><div class="ll-fill"></div></div><input type="range" min="1" max="100" value="65" aria-label="Helligkeit der Stehlampe"></div>
+     <div class="ll-presets" aria-label="Lichtstimmung"><button type="button" class="cursor-interaction" data-preset="30" aria-pressed="false">Abend</button><button type="button" class="cursor-interaction" data-preset="65" aria-pressed="true">Entspannt</button><button type="button" class="cursor-interaction" data-preset="100" aria-pressed="false">Hell</button></div>
+    </div>
+   </div><div class="ll-note">Interaktiver Entwurf</div></div>
+  </section>
+ </div>
+</div>
+<script>
+(()=>{
+ const root=document.getElementById('liquid-lights');
+ const controls={};
+ const saved=window.demoState?.widgetState?.privateContent?.lights||{};
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ function persist(){const lights={};Object.entries(controls).forEach(([key,c])=>lights[key]={on:c.state.on,value:c.state.value});window.demoState?.setWidgetState?.({modelContent:{lightDesigns:lights},privateContent:{lights}})?.catch(()=>{});}
+ root.querySelectorAll('[data-light]').forEach(card=>{
+  const key=card.dataset.light;
+  const input=card.querySelector('input');
+  const power=card.querySelector('[data-power]');
+  const initial=saved[key];
+  const state={on:typeof initial?.on==='boolean'?initial.on:true,value:Number.isFinite(initial?.value)?Math.max(1,Math.min(100,initial.value)):65};
+  const stage=card.closest('.ll-stage');
+  const design={radius:key==='flow'?50:key==='soft'?34:28,blur:16};
+  let raf;
+  function render(){
+   card.dataset.on=String(state.on);power.setAttribute('aria-pressed',String(state.on));
+   input.value=state.value;input.setAttribute('aria-valuetext',state.value+' Prozent');
+   card.querySelector('.ll-range-wrap').style.setProperty('--fill',state.on?state.value+'%':'0%');
+   card.style.setProperty('--glow',state.on?String(.4+state.value/170):'0');
+   stage.querySelector('.ll-light').style.setProperty('--glow',state.on?String(state.value/100):'0');
+   card.querySelector('[data-status]').textContent=state.on?'Warmweiß · Ein':'Aus';
+   const out=card.querySelector('[data-value]');if(out)out.textContent=state.on?state.value+' %':'Aus';
+   const number=card.querySelector('[data-number]');if(number)number.textContent=state.on?state.value:'0';
+   card.querySelectorAll('[data-preset]').forEach(b=>b.setAttribute('aria-pressed',String(state.on&&Number(b.dataset.preset)===state.value)));
+  }
+  function ripple(){if(reduced)return;const dot=document.createElement('span');dot.className='ll-ripple';dot.style.left='10px';dot.style.top='10px';card.append(dot);dot.addEventListener('animationend',()=>dot.remove(),{once:true});}
+  function toValue(value){cancelAnimationFrame(raf);state.on=true;const start=state.value;const t0=performance.now();function tick(t){const progress=reduced?1:Math.min(1,(t-t0)/420);state.value=Math.round(start+(value-start)*(1-Math.pow(1-progress,3)));render();if(progress<1)raf=requestAnimationFrame(tick);else persist();}raf=requestAnimationFrame(tick);}
+  power.addEventListener('click',()=>{cancelAnimationFrame(raf);state.on=!state.on;render();ripple();persist();});
+  input.addEventListener('input',()=>{cancelAnimationFrame(raf);state.value=Number(input.value);state.on=true;render();});
+  input.addEventListener('change',persist);
+  card.querySelectorAll('[data-preset]').forEach(button=>button.addEventListener('click',()=>toValue(Number(button.dataset.preset))));
+  card.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const b=card.getBoundingClientRect();card.style.setProperty('--mx',(e.clientX-b.left)/b.width*100+'%');card.style.setProperty('--my',(e.clientY-b.top)/b.height*100+'%');});
+  controls[key]={state,render};render();
+  if(globalThis.Tweak){const tweak=new Tweak({container:card,onChange:()=>{card.style.setProperty('--radius',design.radius+'px');card.style.backdropFilter='blur('+design.blur+'px) saturate(135%)';card.style.webkitBackdropFilter=card.style.backdropFilter;}});tweak.addSlider(design,'radius',{label:'Rundung',min:16,max:52,unit:'px'});tweak.addSlider(design,'blur',{label:'Glasunschärfe',min:2,max:24,unit:'px'});}
+ });
+ window.addEventListener('demo:state',event=>{const next=event.detail?.globals?.widgetState?.privateContent?.lights;if(!next)return;Object.entries(controls).forEach(([key,c])=>{if(typeof next[key]?.on==='boolean')c.state.on=next[key].on;if(Number.isFinite(next[key]?.value))c.state.value=Math.max(1,Math.min(100,next[key].value));c.render();});});
+})();
+</script>

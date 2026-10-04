@@ -1,0 +1,141 @@
+<style>
+#lens-light{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#34383f}
+#lens-light *{box-sizing:border-box}
+#lens-light .lens-stage{position:relative;height:504px;overflow:hidden;border-radius:24px;background:#b8bbc1;color-scheme:light}
+#lens-light canvas{display:block;width:100%;height:504px;position:absolute;inset:0;pointer-events:none}
+#lens-light .lens-heading{position:absolute;left:28px;top:24px;font-size:14px;font-weight:500;letter-spacing:-.15px}
+#lens-light .lens-status{display:block;font-size:12px;font-weight:400;color:#565b62;margin-top:5px}
+#lens-light .lens-switch{position:absolute;left:50%;top:109px;transform:translateX(-50%);width:264px;height:126px;border:0;border-radius:64px;background:transparent;color:white;touch-action:manipulation}
+#lens-light .lens-sun{display:flex;position:absolute;align-items:center;justify-content:center;width:56px;height:56px;top:144px;left:calc(50% - 109px);pointer-events:none;color:#f9fcff;filter:drop-shadow(0 0 7px #ffffffa8)}
+#lens-light .lens-sun svg{width:27px;height:27px;stroke-width:2}
+#lens-light .lens-readout{position:absolute;top:143px;width:116px;transform:translateX(-50%);text-align:center;pointer-events:none;color:#fff;text-shadow:0 1px 5px #34405028}
+#lens-light .lens-percent{display:block;font-size:29px;line-height:34px;font-weight:400;font-variant-numeric:tabular-nums;letter-spacing:-.7px}
+#lens-light .lens-color{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;line-height:20px;color:#fff}
+#lens-light .lens-swatch{display:inline-block;width:11px;height:11px;border-radius:50%;box-shadow:inset 0 0 0 1px #ffffff70;flex:none}
+#lens-light #lens-color-value{display:flex;align-items:center;gap:6px}
+#lens-light .lens-label{position:absolute;top:260px;left:50%;transform:translateX(-50%);width:min(352px,calc(100% - 64px));display:flex;justify-content:space-between;font-size:12px;color:#4e545c;pointer-events:none}
+#lens-light .lens-label.color-label{top:356px}
+#lens-light output{font-variant-numeric:tabular-nums;color:#363d45}
+#lens-light .lens-range{position:absolute;left:50%;transform:translateX(-50%);top:282px;width:min(352px,calc(100% - 64px));height:48px;appearance:none;-webkit-appearance:none;background:transparent;margin:0;touch-action:pan-y}
+#lens-light .lens-range.color-range{top:378px}
+#lens-light .lens-range::-webkit-slider-runnable-track{height:14px;background:transparent}
+#lens-light .lens-range::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:46px;height:46px;margin-top:-16px;background:transparent;border:0;border-radius:50%}
+#lens-light .lens-range::-moz-range-track{height:14px;background:transparent}
+#lens-light .lens-range::-moz-range-thumb{width:46px;height:46px;background:transparent;border:0}
+#lens-light .lens-footer{position:absolute;bottom:20px;left:28px;right:28px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#535961;font-size:11px}
+#lens-light .lens-demo{font:inherit;font-size:12px;border:1px solid #ffffff60;border-radius:20px;min-height:36px;padding:0 14px;background:#ffffff25;color:#3c444e;box-shadow:inset 0 1px 0 #ffffff55}
+#lens-light .lens-demo:active{background:#ffffff45}
+@media(max-width:400px){#lens-light .lens-heading{left:20px}#lens-light .lens-footer{left:20px;right:20px}.lens-footer>span{max-width:95px}}
+</style>
+<div id="lens-light" class="viz-dotted-background">
+ <div class="lens-stage" aria-label="Lichtschalter mit beweglicher Glaslinse">
+  <canvas aria-hidden="true"></canvas>
+  <div class="lens-heading">Stehlampe<span class="lens-status" aria-live="polite">Ein · Wohnzimmer</span></div>
+  <button type="button" class="lens-switch cursor-interaction" aria-label="Licht einschalten oder ausschalten" aria-pressed="true"></button>
+  <span class="lens-sun"><i data-lucide="sun" aria-hidden="true"></i></span>
+  <div class="lens-readout"><span class="lens-percent">63 %</span><span class="lens-color"><span class="lens-swatch" aria-hidden="true"></span><span class="lens-color-name">Mint</span></span></div>
+  <label class="lens-label" for="lens-brightness"><span>Helligkeit</span><output id="lens-brightness-value">63 %</output></label>
+  <input type="range" id="lens-brightness" class="lens-range" aria-label="Helligkeit" min="1" max="100" value="63">
+  <label class="lens-label color-label" for="lens-hue"><span>Lichtfarbe</span><output id="lens-color-value"><span class="lens-swatch" aria-hidden="true"></span><span class="lens-color-name">Mint</span></output></label>
+  <input type="range" id="lens-hue" class="lens-range color-range" aria-label="Farbton" min="0" max="360" value="155">
+  <div class="lens-footer"><span>Interaktiver Entwurf</span><button type="button" class="lens-demo cursor-interaction" aria-pressed="false">Animation abspielen</button></div>
+ </div>
+</div>
+<script>
+(()=>{
+ const root=document.getElementById('lens-light'),stage=root.querySelector('.lens-stage'),canvas=root.querySelector('canvas'),ctx=canvas.getContext('2d');
+ const scene=document.createElement('canvas'),sc=scene.getContext('2d',{willReadFrequently:true});
+ const glass=document.createElement('canvas'),gc=glass.getContext('2d');
+ const power=root.querySelector('.lens-switch'),sun=root.querySelector('.lens-sun'),brightness=root.querySelector('#lens-brightness'),hue=root.querySelector('#lens-hue'),demoButton=root.querySelector('.lens-demo');
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const saved=window.demoState?.widgetState?.privateContent?.lensLight;
+ const state={on:typeof saved?.on==='boolean'?saved.on:true,brightness:Number.isFinite(saved?.brightness)?Math.max(1,Math.min(100,saved.brightness)):63,hue:Number.isFinite(saved?.hue)?Math.max(0,Math.min(360,saved.hue)):155};
+ const settings={refraction:41,elasticity:1.5};
+ let width=700,dpr=1.5,trackWidth=352,raf=0,last=0,demo=false,demoStart=0,drag='',shine=0;
+ const springs={toggle:{x:state.on?1:0,v:0,target:state.on?1:0},brightness:{x:state.brightness/100,v:0,target:state.brightness/100},hue:{x:state.hue/360,v:0,target:state.hue/360}};
+ function persist(){window.demoState?.setWidgetState?.({modelContent:{design:'Glaslinse nach Bild- und Videoreferenz',...state},privateContent:{lensLight:{...state}}})?.catch(()=>{});}
+ function colorName(value){return value<20||value>=340?'Rot':value<50?'Orange':value<80?'Gelb':value<145?'Grün':value<180?'Mint':value<210?'Türkis':value<260?'Blau':value<300?'Violett':'Pink';}
+ function updateUI(){
+  const name=colorName(state.hue),color='hsl('+state.hue+' 100% 50%)';
+  power.setAttribute('aria-pressed',String(state.on));power.setAttribute('aria-label','Stehlampe, '+(state.on?state.brightness+' Prozent, '+name+', ausschalten':'aus, einschalten mit '+state.brightness+' Prozent, '+name));
+  root.querySelector('.lens-status').textContent=state.on?'Ein · Wohnzimmer':'Aus · '+state.brightness+' % gespeichert';
+  brightness.value=state.brightness;hue.value=state.hue;root.querySelector('#lens-brightness-value').textContent=state.brightness+' %';
+  root.querySelector('.lens-percent').textContent=state.on?state.brightness+' %':'Aus';
+  root.querySelectorAll('.lens-color-name').forEach(el=>el.textContent=name);
+  root.querySelectorAll('.lens-swatch').forEach(el=>el.style.background=color);
+  brightness.setAttribute('aria-valuetext',state.brightness+' Prozent');hue.setAttribute('aria-valuetext',name);
+  springs.toggle.target=state.on?1:0;springs.brightness.target=state.brightness/100;springs.hue.target=state.hue/360;
+ }
+ function hueRGB(value){const h=((value%360)+360)%360/60,x=1-Math.abs(h%2-1);return(h<1?[1,x,0]:h<2?[x,1,0]:h<3?[0,1,x]:h<4?[0,x,1]:h<5?[x,0,1]:[1,0,x]).map(c=>c*255);}
+ function round(context,x,y,w,h,r){context.beginPath();context.roundRect(x,y,w,h,r);}
+ function base(){
+  sc.setTransform(dpr,0,0,dpr,0,0);sc.clearRect(0,0,width,504);
+  let bg=sc.createLinearGradient(0,0,width,504);bg.addColorStop(0,'#c9cbd0');bg.addColorStop(.5,'#b8bbc1');bg.addColorStop(1,'#afb3ba');sc.fillStyle=bg;sc.fillRect(0,0,width,504);
+  const x=width/2-114,y=135,lightLevel=Math.max(0,Math.min(1,springs.brightness.x)),onLevel=Math.max(0,Math.min(1,springs.toggle.x)),colorHue=springs.hue.x*360;
+  const halo=sc.createRadialGradient(width/2,172,20,width/2,172,155);halo.addColorStop(0,'hsla('+colorHue+' 95% 65% / '+onLevel*lightLevel*.38+')');halo.addColorStop(1,'hsla('+colorHue+' 95% 65% / 0)');sc.fillStyle=halo;sc.fillRect(width/2-155,17,310,310);
+  sc.save();sc.shadowColor='#3b43503b';sc.shadowBlur=25;sc.shadowOffsetY=22;sc.fillStyle='#9ca1aa';round(sc,x,y,228,74,37);sc.fill();sc.restore();
+  sc.save();sc.shadowColor='#ffffffb0';sc.shadowBlur=17;sc.shadowOffsetY=-7;sc.fillStyle='#c9cbd1';round(sc,x,y,228,74,37);sc.fill();sc.restore();
+  let body=sc.createLinearGradient(0,y,0,y+74);body.addColorStop(0,'#d8dbe1');body.addColorStop(.15,'#bec3cb');body.addColorStop(.7,'#acb0b9');body.addColorStop(1,'#989fa9');sc.fillStyle=body;round(sc,x,y,228,74,37);sc.fill();
+  let edge=sc.createLinearGradient(x,y,x+228,y+74);edge.addColorStop(0,'#ffffffed');edge.addColorStop(.38,'#ffffff9a');edge.addColorStop(.7,'#ffffff15');edge.addColorStop(1,'#636c7b70');sc.strokeStyle=edge;sc.lineWidth=1.25;sc.stroke();
+  sc.save();round(sc,x+2,y+2,224,70,35);sc.clip();sc.fillStyle='#ffffff21';sc.fillRect(x,y,228,5);sc.restore();
+  const left=(width-trackWidth)/2+23,tw=trackWidth-46;
+  sc.save();sc.shadowColor='#4249591f';sc.shadowBlur=7;sc.shadowOffsetY=4;
+  let br=sc.createLinearGradient(left,0,left+tw,0);br.addColorStop(0,'hsl('+colorHue+' 30% 24%)');br.addColorStop(.5,'hsl('+colorHue+' 75% 53%)');br.addColorStop(1,'hsl('+colorHue+' 100% 83%)');sc.fillStyle=br;round(sc,left,300,tw,12,6);sc.fill();
+  let colors=sc.createLinearGradient(left,0,left+tw,0);for(let i=0;i<=12;i++)colors.addColorStop(i/12,'hsl('+i*30+' 100% 50%)');sc.fillStyle=colors;round(sc,left,396,tw,12,6);sc.fill();sc.restore();
+ }
+ function lens(cx,cy,rx,ry,motion,isMain=false){
+  const left=Math.floor((cx-rx-3)*dpr),top=Math.floor((cy-ry-3)*dpr),w=Math.ceil((rx*2+6)*dpr),h=Math.ceil((ry*2+6)*dpr);
+  const pad=Math.ceil(18*dpr),sx=Math.max(0,left-pad),sy=Math.max(0,top-pad),sw=Math.min(scene.width-sx,w+pad*2),sh=Math.min(scene.height-sy,h+pad*2);
+  const source=sc.getImageData(sx,sy,sw,sh).data;
+  glass.width=w;glass.height=h;const out=gc.createImageData(w,h),dst=out.data;
+  const prx=rx*dpr,pry=ry*dpr,pcx=cx*dpr-left,pcy=cy*dpr-top;
+  const color=hueRGB(springs.hue.x*360),level=Math.max(0,Math.min(1,springs.brightness.x)),active=Math.max(0,Math.min(1,springs.toggle.x));
+  for(let iy=0;iy<h;iy++)for(let ix=0;ix<w;ix++){
+   const nx=(ix-pcx)/prx,ny=(iy-pcy)/pry,r=Math.sqrt(nx*nx+ny*ny);if(r>1)continue;
+   const inner=Math.sqrt(Math.max(0,1-r*r));const distortion=(settings.refraction/100)*(isMain?1.18:1.0)*inner;
+   const qx=Math.max(0,Math.min(sw-1,Math.round(left+ix-sx-nx*prx*distortion+motion*ny*2*dpr)));
+   const qy=Math.max(0,Math.min(sh-1,Math.round(top+iy-sy-ny*pry*distortion)));
+   const si=(qy*sw+qx)*4,di=(iy*w+ix)*4;
+   const rim=Math.pow(r,10),light=(-nx*.58-ny*.82),edge=46*rim*light;
+   const upper=Math.exp(-Math.pow((ny+.87)/.045,2))*Math.exp(-Math.pow(nx/.57,4))*100;
+   const lower=Math.exp(-Math.pow((ny-.86)/.06,2))*Math.exp(-Math.pow((nx-.15)/.55,4))*78;
+   const topSheen=Math.max(0,-ny)*4+inner*1.5;
+   const glow=edge+upper+lower+topSheen;
+   const tint=isMain?active*(.26+.44*level)*(1-rim*.45):0;
+   for(let channel=0;channel<3;channel++){const colored=(color[channel]*.7+255*.3)*(.42+.58*level);dst[di+channel]=Math.max(0,Math.min(255,source[si+channel]*(1-tint)+colored*tint+glow+channel));}
+   dst[di+3]=Math.min(255,(1-r)*Math.min(prx,pry)*255);
+  }
+  gc.putImageData(out,0,0);
+  ctx.save();ctx.shadowColor='#343e512e';ctx.shadowBlur=isMain?20:9;ctx.shadowOffsetY=isMain?12:5;ctx.fillStyle='#bcc2ca09';ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.fill();ctx.restore();
+  ctx.drawImage(glass,left/dpr,top/dpr,w/dpr,h/dpr);
+  let rim=ctx.createLinearGradient(cx-rx,cy-ry,cx+rx,cy+ry);rim.addColorStop(0,'#ffffffb8');rim.addColorStop(.28,'#ffffff1a');rim.addColorStop(.55,'#ffffff17');rim.addColorStop(.84,'#ffffffff');rim.addColorStop(1,'#ffffff40');ctx.strokeStyle=rim;ctx.lineWidth=.75;ctx.beginPath();ctx.ellipse(cx,cy,rx-.3,ry-.3,0,0,Math.PI*2);ctx.stroke();
+ }
+ function draw(){base();ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,504);ctx.drawImage(scene,0,0,width,504);
+  const t=springs.toggle;const speed=Math.min(1.6,Math.abs(t.v)*.14)*settings.elasticity;const cx=width/2-80+t.x*160;
+  lens(cx,172,43+speed*11,57-speed*8,t.v*.06,true);sun.style.left=(cx-28)+'px';sun.style.opacity=String(.4+.6*Math.max(0,Math.min(1,t.x))*Math.max(.15,springs.brightness.x));sun.style.transform='scale('+(1-speed*.06)+')';
+  root.querySelector('.lens-readout').style.left=(width/2+42-t.x*84)+'px';
+  const left=(width-trackWidth)/2+23,tw=trackWidth-46;
+  ['brightness','hue'].forEach((key,i)=>{const s=springs[key],speed=Math.min(1.2,Math.abs(s.v)*.12)*settings.elasticity;const active=drag===key?2:0;lens(left+s.x*tw,i===0?306:402,22+speed*8+active,23-speed*4+active,s.v*.04);});
+ }
+ function tick(time){const dt=Math.min(.028,last?(time-last)/1000:1/60);last=time;
+  if(demo){const p=(time-demoStart)/1000;state.on=Math.floor(p/2.4)%2===0;state.brightness=Math.round(50+42*Math.sin(p*1.25));state.hue=Math.round(180+165*Math.sin(p*1.0));updateUI();}
+  let unsettled=false;
+  for(const s of Object.values(springs)){if(reduced){s.x=s.target;s.v=0;}else{const acceleration=(s.target-s.x)*210-s.v*(settings.elasticity?19:30);s.v+=acceleration*dt;s.x+=s.v*dt;if(Math.abs(s.target-s.x)<.00008&&Math.abs(s.v)<.0005){s.x=s.target;s.v=0;}else unsettled=true;}}
+  draw();if(unsettled||demo){raf=requestAnimationFrame(tick);}else{raf=0;last=0;}
+ }
+ function wake(){if(!raf)raf=requestAnimationFrame(tick);}
+ function stopDemo(){if(!demo)return;demo=false;demoButton.textContent='Animation abspielen';demoButton.setAttribute('aria-pressed','false');}
+ power.addEventListener('click',()=>{stopDemo();state.on=!state.on;updateUI();wake();persist();});
+ [[brightness,'brightness',100],[hue,'hue',360]].forEach(([input,key,max])=>{
+  input.addEventListener('input',()=>{stopDemo();state[key]=Number(input.value);state.on=true;updateUI();wake();});input.addEventListener('change',persist);
+  input.addEventListener('pointerdown',()=>{stopDemo();drag=key;wake();});
+  input.addEventListener('pointerup',()=>{drag='';wake();});input.addEventListener('pointercancel',()=>{drag='';wake();});input.addEventListener('blur',()=>{drag='';wake();});
+ });
+ demoButton.addEventListener('click',()=>{if(demo){stopDemo();persist();}else{demo=true;demoStart=performance.now();demoButton.textContent='Animation anhalten';demoButton.setAttribute('aria-pressed','true');}wake();});
+ function resize(){width=stage.getBoundingClientRect().width;dpr=Math.min(devicePixelRatio||1,1.5);trackWidth=Math.min(352,width-64);canvas.width=scene.width=Math.round(width*dpr);canvas.height=scene.height=Math.round(504*dpr);wake();}
+ new ResizeObserver(resize).observe(stage);updateUI();resize();
+ if(globalThis.Tweak){const tweak=new Tweak({container:stage,onChange:wake});tweak.addSlider(settings,'refraction',{label:'Linsenwölbung',min:15,max:55});tweak.addSlider(settings,'elasticity',{label:'Elastische Bewegung',min:0,max:1.5,step:.1});}
+ window.addEventListener('demo:state',event=>{const data=event.detail?.globals?.widgetState?.privateContent?.lensLight;if(!data)return;stopDemo();if(typeof data.on==='boolean')state.on=data.on;if(Number.isFinite(data.brightness))state.brightness=Math.max(1,Math.min(100,data.brightness));if(Number.isFinite(data.hue))state.hue=Math.max(0,Math.min(360,data.hue));updateUI();wake();});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){stopDemo();if(raf)cancelAnimationFrame(raf);raf=0;last=0;}else wake();});
+})();
+</script>
