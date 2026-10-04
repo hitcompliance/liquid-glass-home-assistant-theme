@@ -108,9 +108,9 @@ export class GlassSwitch extends LitElement{
  getCardSize(){return 1;}
  get model(){return this.visual||switchVisual(this._config||{},this.hass?.states||{},this.colorForState);}
  reject(){clearTimeout(this._denyTimer);this._rejecting=true;this.requestUpdate();this._denyTimer=setTimeout(()=>{this._rejecting=false;this.requestUpdate();},480);}
- connectedCallback(){super.connectedCallback();bindThemePreferences(this);}
+ connectedCallback(){super.connectedCallback();bindThemePreferences(this);this._groupCountRefresh=()=>this.requestUpdate();window.addEventListener('dash6-theme-settings-changed',this._groupCountRefresh);}
  cancelPress(){clearTimeout(this._pressTimer);this._pressTimer=null;this._squeezing=false;}
- disconnectedCallback(){super.disconnectedCallback();unbindThemePreferences(this);clearTimeout(this._denyTimer);this.cancelPress();this._rejecting=false;}
+ disconnectedCallback(){super.disconnectedCallback();window.removeEventListener('dash6-theme-settings-changed',this._groupCountRefresh);unbindThemePreferences(this);clearTimeout(this._denyTimer);this.cancelPress();this._rejecting=false;}
  async activate(e){e?.stopPropagation();const v=this.model;if(!v.available||this._pressTimer)return;if(v.locked){this.reject();return;}const on=!v.on;
   const commit=async()=>{this.cancelPress();const current=this.model;if(!this.isConnected||!current.available)return;if(current.locked){this.reject();return;}if(current.on===on)return;if(this.managed){this.dispatchEvent(new CustomEvent('toggle-request',{detail:{on},bubbles:true,composed:true}));return;}try{await this.hass.callService(this._config.entity.split('.')[0],'toggle',{entity_id:this._config.entity});}catch(error){this.dispatchEvent(new CustomEvent('switch-error',{detail:{error},bubbles:true,composed:true}));}};
   if(this.hasAttribute('data-satin')&&this.dataset.style!=='classic'&&this._config?.animation!==false&&!matchMedia('(prefers-reduced-motion: reduce)').matches){this._squeezing=true;this._pressTimer=setTimeout(commit,100);return;}await commit();
