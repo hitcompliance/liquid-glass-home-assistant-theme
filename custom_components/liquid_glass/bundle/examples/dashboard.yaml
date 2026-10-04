@@ -1,0 +1,454 @@
+# Gesamtbeispiel: alle demo_* Entity-IDs durch eigene vorhandene Entities ersetzen.
+# Ressourcen außerhalb dieser Datei registrieren: Hauptmodul, Vacuum Dock, Fremdkarten.
+# Keine Geräte/Entities werden durch dieses Dashboard angelegt.
+# Die SVG-Subview am Ende benötigt zusätzlich die optionale Legacy-SVG-Ressource.
+title: Liquid Glass Beispiel
+views:
+  - title: Licht und Schalter
+    path: licht
+    icon: mdi:lightbulb-group
+    type: sections
+    max_columns: 2
+    theme: DASH6 Satin Glass
+    sections:
+      - type: grid
+        cards:
+          - type: custom:dash6-area-header
+            title: Demo-Raum
+            show_clock: true
+            time_zone: Europe/Berlin
+          - type: custom:dash6-govee-light-card-v2
+            entity: light.demo_lampe
+            name: Stehlampe
+            icon: mdi:floor-lamp
+            power_entity: sensor.demo_lampe_leistung
+            energy_entity: sensor.demo_lampe_energie
+            discovery:
+              enabled: false
+            controls:
+              mode: combo
+              label: icon
+              buttons: group
+              density: compact
+              position: right
+            graph:
+              show: true
+              source: power
+              span: 24h
+              interval: 15min
+              update_interval: 5min
+              height: 80
+          - type: custom:dash6-lightgroup-card-v2
+            entity: light.demo_gruppe
+            name: Lichtgruppe
+            discovery:
+              enabled: false
+            segments:
+              - entity: light.demo_lampe_links
+                name: Links
+              - entity: light.demo_lampe_rechts
+                name: Rechts
+            segment_display:
+              placement: detail
+              style: list
+            controls:
+              mode: combo
+              label: icon
+              buttons: group
+              density: compact
+              position: right
+          - type: custom:dash6-shoe-cabinet-card
+            entity: light.demo_schrankgruppe
+            name: Licht mit Szenen
+            discovery:
+              enabled: false
+            segments:
+              - entity: light.demo_schrank_oben
+                name: Oben
+              - entity: light.demo_schrank_unten
+                name: Unten
+            scenes:
+              - entity: scene.demo_lesen
+                name: Lesen
+                icon: mdi:book-open-variant
+              - entity: scene.demo_entspannen
+                name: Entspannen
+                icon: mdi:sofa
+      - type: grid
+        cards:
+          - type: custom:dash6-ikea-card
+            entity: switch.demo_steckdose
+            name: Messsteckdose
+            icon: mdi:power-socket-eu
+            power_entity: sensor.demo_steckdose_leistung
+            energy_entity: sensor.demo_steckdose_energie
+            height: 118
+            graph:
+              show: true
+              span: 24h
+              interval: 15min
+              update_interval: 15min
+              minimum: 100
+              color: '#6ec7ff'
+          - type: custom:dash6-glass-switch
+            entity: input_boolean.demo_schalter
+            name: Schalter
+            icon: mdi:power
+            switch_style: liquid_glass
+          - type: custom:dash6-satin-native-card
+            definition:
+              type: custom:mushroom-light-card
+              entity: light.demo_tischlicht
+              name: Mushroom-Licht
+              show_brightness_control: true
+              show_color_control: true
+              tap_action:
+                action: toggle
+          - type: custom:dash6-satin-native-card
+            definition:
+              type: custom:mushroom-fan-card
+              entity: fan.demo_ventilator
+              name: Ventilator
+              show_percentage_control: true
+              show_oscillate_control: true
+              tap_action:
+                action: toggle
+          # Keine eigene Fan-Card: vollständige Button-Card unter definition.
+          - type: custom:dash6-satin-graph-card
+            definition:
+              type: custom:button-card
+              entity: fan.demo_ventilator
+              show_icon: false
+              show_name: false
+              show_state: false
+              tap_action:
+                action: more-info
+              styles:
+                card:
+                  - height: 118px
+                  - padding: 0
+                grid:
+                  - grid-template-areas: '"device title values" "device status values" "graph graph graph"'
+                  - grid-template-columns: 112px minmax(0,1fr) minmax(86px,auto)
+                  - grid-template-rows: 32px 32px minmax(0,1fr)
+                custom_fields:
+                  graph:
+                    - position: absolute
+                    - left: 0
+                    - right: 0
+                    - bottom: 0
+                    - height: 80px
+              custom_fields:
+                device:
+                  card:
+                    type: custom:button-card
+                    entity: fan.demo_ventilator
+                    icon: mdi:fan
+                    show_name: false
+                    show_state: false
+                    tap_action:
+                      action: toggle
+                title: Ventilator mit Graph
+                status: '[[[ return entity?.state === "on" ? "Ein" : "Aus"; ]]]'
+                values: '[[[ const s=states["sensor.demo_ventilator_leistung"]; return s ? s.state + " W" : "—"; ]]]'
+                graph:
+                  card:
+                    type: custom:mini-graph-card
+                    entities:
+                      - entity: sensor.demo_ventilator_leistung
+                    hours_to_show: 24
+                    height: 80
+                    show:
+                      name: false
+                      icon: false
+                      state: false
+                      legend: false
+          - type: custom:dash6-segmented-control-card
+            name: Lichtmodus
+            entity: input_select.demo_lichtmodus
+            options:
+              - value: Lesen
+                label: Lesen
+                icon: mdi:book-open-variant
+              - value: Entspannen
+                label: Entspannen
+                icon: mdi:sofa
+          - type: custom:dash6-theme-editor-card
+            title: Glas einstellen
+            expanded: false
+
+  - title: Klima und Geräte
+    path: gerate
+    icon: mdi:home-thermometer
+    type: sections
+    max_columns: 2
+    theme: DASH6 Satin Glass
+    sections:
+      - type: grid
+        cards:
+          - type: custom:dash6-thermostat-card
+            entity: climate.demo_thermostat
+            modes: ['off', heat, cool, heat_cool]
+          # Dieselbe Card für eine Entity mit zwei unterstützten Sollwerten.
+          - type: custom:dash6-thermostat-card
+            entity: climate.demo_dual_thermostat
+            modes: ['off', heat, cool, heat_cool]
+          - type: custom:dash6-cover-card
+            entity: cover.demo_rollo
+            name: Rollo
+          - type: custom:dash6-media-card
+            name: Fernseher und Apple TV
+            apple_entity: media_player.demo_apple_tv
+            apple_remote: remote.demo_apple_tv
+            fire_entity: media_player.demo_fire_tv
+            apple_device_type: appletv-4k-gen2
+            fire_device_type: fire_tv_4_series
+          - type: custom:dash6-local-camera-card
+            name: Kamera dieses Geräts
+            facing_mode: user
+      - type: grid
+        cards:
+          - type: custom:dash6-vacuum-card
+            entity: vacuum.demo_roboter
+            defaults:
+              mode: vac_and_mop
+              intensity: moderate
+              route: standard
+              fan: balanced
+              repeat: 1
+            entities:
+              battery: sensor.demo_roboter_batterie
+              progress: sensor.demo_roboter_fortschritt
+              mode: select.demo_roboter_reinigung
+              intensity: select.demo_roboter_wischintensitat
+              route: select.demo_roboter_wischroute
+              emptyMode: select.demo_dock_entleerungsmodus
+              drying: switch.demo_dock_trocknung
+              washing: switch.demo_dock_wasche
+              emptying: switch.demo_dock_entleerung
+              dryTime: sensor.demo_dock_trocknungsrestzeit
+              cleanWater: binary_sensor.demo_dock_frischwasser_problem
+              dirtyWater: binary_sensor.demo_dock_schmutzwasser_problem
+            stats:
+              default:
+                - entity: sensor.demo_roboter_filter_restzeit
+                  title: Filter
+                  unit: h
+                  scale: 1
+              cleaning:
+                - entity: sensor.demo_roboter_reinigungsdauer
+                  title: Dauer
+                  unit: min
+                  scale: 0
+            areas: [] # Nur selbst bestätigte Segmentnummern ergänzen.
+            reset_buttons: {}
+          - type: custom:dash6-door-card
+            kind: apartment
+            entity: lock.demo_tur
+            name: Eingang
+            contact_entity: binary_sensor.demo_turkontakt
+            battery_entity: sensor.demo_schloss_batterie
+          - type: custom:dash6-door-card
+            kind: entrance
+            entity: button.demo_turoffner
+            name: Türöffner
+            activity_entity: sensor.demo_klingel_letzte_aktivitat
+            ring_entity: event.demo_klingel
+
+  - title: Struktur und Diagramme
+    path: struktur
+    icon: mdi:view-dashboard-outline
+    type: sections
+    max_columns: 2
+    theme: DASH6 Satin Glass
+    sections:
+      - type: grid
+        cards:
+          - type: custom:dash6-stack-card
+            cards:
+              - type: custom:dash6-area-header
+                title: Kartenstack
+                show_clock: false
+              - type: custom:dash6-govee-light-card-v2
+                entity: light.demo_lampe
+                discovery:
+                  enabled: false
+          - type: custom:dash6-render-card
+            definition:
+              type: entities
+              title: Native Karte im Wrapper
+              entities:
+                - sensor.demo_temperatur
+                - sensor.demo_luftfeuchte
+          - type: custom:dash6-profile-card
+            profile: sample-button
+            overrides:
+              entity: switch.demo_steckdose
+              name: Neutrales Beispielprofil
+          - type: custom:dash6-auto-entities
+            card:
+              type: entities
+              title: Demo-Lichter dynamisch
+            filter:
+              include:
+                - domain: light
+                  entity_id: light.demo_*
+            show_empty: false
+          - type: custom:dash6-apexcharts-card
+            graph_span: 24h
+            header:
+              show: true
+              title: Leistung · 24 h
+            series:
+              - entity: sensor.demo_steckdose_leistung
+                name: Steckdose
+                type: line
+                group_by:
+                  func: avg
+                  duration: 30min
+      - type: grid
+        cards:
+          - type: custom:dash6-ultra-card
+            _config_version: 3
+            card_padding: 0
+            card_border_width: 0
+            layout:
+              rows:
+                - id: demo-row
+                  column_layout: custom
+                  custom_column_sizing: minmax(0,1fr)
+                  gap: 8
+                  gap_unit: px
+                  columns:
+                    - id: demo-column
+                      width: 100%
+                      modules:
+                        - id: demo-external-light
+                          type: external_card
+                          card_type: dash6-govee-light-card-v2
+                          card_config:
+                            type: custom:dash6-govee-light-card-v2
+                            entity: light.demo_lampe
+                            name: Licht in Ultra-Card
+                            discovery:
+                              enabled: false
+                          display_conditions: []
+          - type: custom:dash6-embedded-view-card
+            mode: static
+            view: eingebettet
+            ha_card: false
+          - type: markdown
+            content: >-
+              Dieses Dashboard ist ein Konfigurationsbeispiel.
+              Ersetze alle demo_…-Entitäten durch eigene vorhandene Entitäten.
+              Graphen, Modi, Presets und Zusatzfunktionen brauchen passende
+              Fähigkeiten und die jeweils erforderlichen Ressourcen.
+
+  - title: Eigenständig und Kompatibilität
+    path: kompatibilitat
+    icon: mdi:puzzle-outline
+    type: sections
+    max_columns: 2
+    theme: DASH6 Satin Glass
+    sections:
+      - type: grid
+        cards:
+          - type: custom:vacuum-dock-card
+            entity: vacuum.demo_roboter
+            name: Eigenständige Vacuum Dock Card
+            language: auto
+            entities:
+              battery: sensor.demo_roboter_batterie
+              progress: sensor.demo_roboter_fortschritt
+              cleaning_mode: select.demo_roboter_reinigung
+              mop_intensity: select.demo_roboter_wischintensitat
+              mop_route: select.demo_roboter_wischroute
+              mop_drying: switch.demo_dock_trocknung
+              mop_washing: switch.demo_dock_wasche
+              dust_emptying: switch.demo_dock_entleerung
+              drying_remaining: sensor.demo_dock_trocknungsrestzeit
+              clean_water: binary_sensor.demo_dock_frischwasser_problem
+              dirty_water: binary_sensor.demo_dock_schmutzwasser_problem
+              emptying_mode: select.demo_dock_entleerungsmodus
+            stats:
+              default:
+                - entity: sensor.demo_roboter_filter_restzeit
+                  title: Filter
+                  unit: h
+                  scale: 1
+              cleaning: []
+            areas: []
+            defaults:
+              mode: vac_and_mop
+              intensity: moderate
+              route: standard
+              fan: balanced
+              repeat: 1
+      - type: grid
+        cards:
+          # Die Aliasnamen werden durch das aktuelle Hauptmodul registriert.
+          # Keine weitere dash5-light-cards-v2-Ressource parallel laden.
+          - type: custom:dash5-govee-light-card-v2
+            entity: light.demo_lampe
+            name: DASH5-v2-Kompatibilitätsname
+            discovery:
+              enabled: false
+          - type: custom:dash5-lightgroup-card-v2
+            entity: light.demo_gruppe
+            name: DASH5-Lichtgruppenname
+            segments:
+              - light.demo_lampe_links
+              - light.demo_lampe_rechts
+            discovery:
+              enabled: false
+          - type: custom:dash5-multi-light-card-v2
+            entity: light.demo_gruppe
+            name: Multi-Light-Kompatibilitätsname
+            segments:
+              - light.demo_lampe_links
+              - light.demo_lampe_rechts
+            discovery:
+              enabled: false
+          - type: custom:dash6-multi-light-card-v2
+            entity: light.demo_gruppe
+            name: DASH6-Multi-Light-Alias
+            discovery:
+              enabled: false
+
+  # Vorhandene Ziel-Subview für die Embedded-Card oben, keine Selbstreferenz.
+  - title: Eingebettete Demo
+    path: eingebettet
+    subview: true
+    type: sections
+    theme: DASH6 Satin Glass
+    sections:
+      - type: grid
+        cards:
+          - type: custom:dash6-govee-light-card-v2
+            entity: light.demo_tischlicht
+            name: Eingebettetes Licht
+            discovery:
+              enabled: false
+
+  # Optional: nur öffnen, wenn frontend/dash5-glass.js zusätzlich geladen ist.
+  # Die ursprüngliche automatische SVG-Optik startet ausschließlich unter
+  # /dash-5/wohnzimmer mit einem ursprünglichen Liquid-Glass-Theme.
+  - title: Ursprünglicher SVG-Wrapper
+    path: svg-beispiel
+    subview: true
+    theme: Liquid Glass
+    cards:
+      - type: custom:liquid-glass-card
+        card:
+          type: entities
+          entities:
+            - sensor.demo_temperatur
+        glass:
+          enabled: true
+          optics:
+            strength: 0.24
+            curvature: 0.12
+            frost: 3
+          tint: rgba(25,42,65,0.30)
+          outline: rgba(235,247,255,0.35)
+          radius: 16px

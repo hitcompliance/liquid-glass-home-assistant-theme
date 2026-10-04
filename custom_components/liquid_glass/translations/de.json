@@ -1,0 +1,18 @@
+{
+  "title": "Liquid Glass",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Liquid Glass einrichten",
+        "description": "Themes und alle fehlenden Karten-Abhängigkeiten werden automatisch installiert (Internet erforderlich). Vorhandene HACS-Ressourcen bleiben erhalten. Das Demo-Dashboard verwendet simulierte Geräte. Dual Smart Thermostat benötigt nach der Installation einen weiteren Neustart und eine Geräte-Konfiguration.",
+        "data": {
+          "demo_dashboard": "Interaktives Demo-Dashboard anzeigen",
+          "dual_smart_thermostat": "Dual Smart Thermostat zusätzlich installieren"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Liquid Glass ist bereits eingerichtet."
+    }
+  }
+}

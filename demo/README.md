@@ -4,11 +4,11 @@ Ein vollständiges Glas-Paket für Home Assistant: dunkle Themes, interaktive Cu
 
 **[Interaktive Demo](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/)** · [Installation](docs/INSTALLATION.md) · [Karten und Einstellungen](docs/CARDS.md) · [Abhängigkeiten](docs/DEPENDENCIES.md) · [Umstieg](docs/MIGRATION.md)
 
-[![In HACS hinzufügen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=hitcompliance&repository=liquid-glass-home-assistant-theme&category=theme)
+[![In HACS hinzufügen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=hitcompliance&repository=liquid-glass-home-assistant-theme&category=integration)
 
 ## Was enthalten ist
 
-Das Theme bestimmt Farben und Material. Das zusätzliche Kartenmodul liefert Schalter, Regler, Auswahlgruppen, Dialoge und Anpassungen vorhandener Button-/Mushroom-Karten. Für den vollständigen Satin-Look werden **Theme und Kartenmodul gemeinsam** installiert. HACS als Theme-Repository installiert den YAML-Teil; die JavaScript-Dateien werden über den Installer oder manuell ergänzt.
+Das Theme bestimmt Farben und Material. Das zusätzliche Kartenmodul liefert Schalter, Regler, Auswahlgruppen, Dialoge und Anpassungen vorhandener Button-/Mushroom-Karten. Für den vollständigen Satin-Look werden **Theme und Kartenmodul gemeinsam** installiert. Die **HACS-Integration** richtet Themes, alle eigenen Karten und fehlende Karten-Abhängigkeiten automatisch ein. Ein Terminal und manuelle Ressourcen-Einträge sind dafür nicht nötig.
 
 | Bestandteil | Inhalt |
 | --- | --- |
@@ -25,7 +25,7 @@ Das Theme bestimmt Farben und Material. Das zusätzliche Kartenmodul liefert Sch
 
 [examples/demo-dashboard.yaml](examples/demo-dashboard.yaml) enthält drei Views: **Licht und Material**, **Bedienung und Bewegung** sowie **Klima und Prinzipien**. Licht, Lichtgruppe, Steckdose, Ventilator-Schalter, Rollo und Dual-Thermostat sind bedienbar. Die `dash6-demo-card`-Hülle stellt lokale Beispielzustände bereit und fängt Geräteaktionen ab. Es werden keine eigenen Geräte benötigt und keine echten Serviceaufrufe gesendet.
 
-Nach Installation des Hauptmoduls und der Ressourcen: neues Dashboard erstellen → Rohkonfigurationseditor → Demo-YAML einsetzen. Der Installer legt beide Dashboards unter `liquid-glass/examples/` im Konfigurationsverzeichnis ab. HACS allein installiert weiterhin nur die Themes.
+Die Integration zeigt das interaktive Demo-Dashboard automatisch als **Liquid Glass Demo** in der Seitenleiste. Es benötigt keine Geräte. Beide Beispiel-Dateien liegen zusätzlich unter `liquid-glass/examples/` im Konfigurationsverzeichnis; dort lässt sich eine eigene, editierbare Kopie erstellen.
 
 ## Themes
 
@@ -75,7 +75,16 @@ Die Animationen berücksichtigen „Bewegung reduzieren“. Auf Touchgeräten be
 
 ## Installation und erstes Dashboard
 
-Der [Python-Installer](docs/INSTALLATION.md#installation-mit-dem-python-installer) kopiert das Paket in das angegebene Home-Assistant-Konfigurationsverzeichnis und hilft bei Ressourcen und optionalen Abhängigkeiten. Er benötigt keinen Build auf dem Home-Assistant-Server. Alternativ lassen sich Themes über HACS und die fertigen Module manuell installieren.
+**Empfohlen: HACS-Integration ab Home Assistant 2026.9.**
+
+1. Oben **In HACS hinzufügen** öffnen, als Kategorie **Integration** hinzufügen und herunterladen.
+2. Home Assistant neu starten.
+3. **Einstellungen → Geräte & Dienste → Integration hinzufügen → Liquid Glass** wählen und bestätigen.
+4. **Liquid Glass Demo** in der Seitenleiste öffnen; für eigene Views **DASH6 Satin Glass** auswählen.
+
+Die Integration lädt fehlende Frontend-Abhängigkeiten in festgelegten Versionen mit Prüfsummen. Bereits registrierte HACS-Module bleiben aktiv und werden weiter durch HACS aktualisiert. Automatisch geladene Vendor-Kopien werden über Liquid Glass verwaltet, nicht als eigene HACS-Repositories. Optional lässt sich Dual Smart Thermostat mitinstallieren; hierfür sind ein weiterer Neustart und eine eigene Thermostat-Konfiguration nötig. [Details und Umstieg](docs/INSTALLATION.md#automatische-installation-mit-hacs).
+
+Der [Python-Installer](docs/INSTALLATION.md#installation-mit-dem-python-installer) bleibt als Alternative für manuelle Installationen erhalten. Für ein eigenes Dashboard:
 
 1. [Theme, Kartenmodul und benötigte Abhängigkeiten installieren](docs/INSTALLATION.md).
 2. **DASH6 Satin Glass** im Profil oder in der View auswählen.
@@ -106,7 +115,7 @@ Button-/Mushroom-Karten erhalten nur dann einen Satin-Schalter, wenn die vorhand
 
 ## Voraussetzungen und Grenzen
 
-Die Karten benötigen unterschiedliche Zusatzmodule. Eine Lichtkarte braucht weniger als ein komplettes Ultra-/Graph-/Medien-Dashboard. [DEPENDENCIES.md](docs/DEPENDENCIES.md) nennt Zuordnung und vom Installer verwendete Versionen. HACS-Theme-Installation allein lädt diese Abhängigkeiten nicht.
+Die Karten benötigen unterschiedliche Zusatzmodule. Eine Lichtkarte braucht weniger als ein komplettes Ultra-/Graph-/Medien-Dashboard. [DEPENDENCIES.md](docs/DEPENDENCIES.md) nennt Zuordnung und vom Installer verwendete Versionen. Die HACS-Integration installiert fehlende Frontend-Abhängigkeiten automatisch; eine ältere reine HACS-Theme-Installation tut dies nicht.
 
 Aktuelle Browser mit Custom Elements, Shadow DOM und `<dialog>` werden vorausgesetzt. Chrome/Chromium und Safari/WebKit wurden für Satin-Bedienelemente und Dialoge geprüft. Änderungen an HA-Frontend-Interna und Fremdkarten können Anpassungen nötig machen. Eigene CSS-Regeln und geschlossene Shadow Roots können Styling-Hooks begrenzen; vollständige Umgestaltung sämtlicher Fremdkarten ist nicht pauschal zugesichert.
 

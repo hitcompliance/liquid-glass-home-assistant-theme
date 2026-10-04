@@ -1,0 +1,1253 @@
+{
+  "schema_version": 1,
+  "verified_on": "2026-10-04",
+  "verification": "Every listed artifact was downloaded from the official pinned release or commit; SHA-256 and byte size were verified. Ultra release API digests were additionally compared where provided.",
+  "frontend_destination": "www/liquid-glass/vendor/{id}/",
+  "integration_destination": "custom_components/{id}/",
+  "dependencies": [
+    {
+      "id": "ultra-card",
+      "kind": "frontend",
+      "repository": "https://github.com/WJDDesigns/Ultra-Card",
+      "version": "v3.13.0",
+      "commit": "50e2f396c6a7a8d276b0dd85368acd7abc88cbac",
+      "release": "https://github.com/WJDDesigns/Ultra-Card/releases/tag/v3.13.0",
+      "entrypoint": "ultra-card.js",
+      "assets": [
+        {
+          "path": "uc-1154.759c8dbd.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-1154.759c8dbd.js",
+          "sha256": "8d027a647b707d6931d52e8ce2755c2647d9c7a499d8ccb15e7e0552e1b6df4e",
+          "bytes": 55999
+        },
+        {
+          "path": "uc-1172.7ac11546.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-1172.7ac11546.js",
+          "sha256": "44f6d09fa43c25928b705c56f7fc8ed22afa48c5e0d59309b0326ce9b03c59bc",
+          "bytes": 1439
+        },
+        {
+          "path": "uc-1540.a6206158.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-1540.a6206158.js",
+          "sha256": "a1619f26d4140883c036475f06ec852575a8bdfbc967c8a98d26b43b5cc5b9a1",
+          "bytes": 33266
+        },
+        {
+          "path": "uc-185.61a23321.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-185.61a23321.js",
+          "sha256": "78d89e1602411c99e42e42cc201104ef4f61fc9f8b7c62edda8e49fc716e2cc0",
+          "bytes": 50981
+        },
+        {
+          "path": "uc-185.61a23321.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-185.61a23321.js.LICENSE.txt",
+          "sha256": "38643bdcb276438da6f9e49002b2d8046818c258f7d4cddbae005554262cf44c",
+          "bytes": 90
+        },
+        {
+          "path": "uc-2034.016ae9a6.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-2034.016ae9a6.js",
+          "sha256": "c683cb1a70c4ab5ee1e1f6562256193f9d745a89166cd4a3625f815520e6022b",
+          "bytes": 223776
+        },
+        {
+          "path": "uc-2034.016ae9a6.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-2034.016ae9a6.js.LICENSE.txt",
+          "sha256": "548202811216c403ddcff2cbf60b0000878157d526dbad7e3c2f207e4d8dbfb2",
+          "bytes": 90
+        },
+        {
+          "path": "uc-23.bef92fb6.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-23.bef92fb6.js",
+          "sha256": "ac9c25d7ecf468e3fdc331653df9ea56690c497ce573de005806f84247e3a96b",
+          "bytes": 39434
+        },
+        {
+          "path": "uc-2905.6ca769d2.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-2905.6ca769d2.js",
+          "sha256": "5316709c0caaf8ea5bfa4be7a2b6aa869983c6e6346045aab835fd704a9ce3a0",
+          "bytes": 31320
+        },
+        {
+          "path": "uc-2905.6ca769d2.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-2905.6ca769d2.js.LICENSE.txt",
+          "sha256": "6414a6764f0972e89d1110a1fe05369968a8cd8f6e1642f1913ad3be73516de7",
+          "bytes": 272
+        },
+        {
+          "path": "uc-382.19eb5fc3.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-382.19eb5fc3.js",
+          "sha256": "a0d7307efee3dc0250e92aed24bb340e83f267b16b15b97a1e2b9f287b342776",
+          "bytes": 42963
+        },
+        {
+          "path": "uc-4480.cd6f2170.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-4480.cd6f2170.js",
+          "sha256": "ca2875ef84f1af616c2e3a066f4913decd64b26d99c1f8ca74bee5504d711b43",
+          "bytes": 47499
+        },
+        {
+          "path": "uc-4676.83cf618a.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-4676.83cf618a.js",
+          "sha256": "95fa7ec36da270ff9cd6c20a82320fa61a1a967d8b614f246979cdee554631e9",
+          "bytes": 69959
+        },
+        {
+          "path": "uc-4676.83cf618a.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-4676.83cf618a.js.LICENSE.txt",
+          "sha256": "23fa46fd40e2bb2ca5ffd8035558063e2a05f8a859bbea966a953ba1d61f99f5",
+          "bytes": 181
+        },
+        {
+          "path": "uc-6193.26d7f87f.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-6193.26d7f87f.js",
+          "sha256": "62341f8a9eb81121377f38d7436845fcc8bd3ab9577a3961245009ca3032d5de",
+          "bytes": 59499
+        },
+        {
+          "path": "uc-6444.9970f2ef.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-6444.9970f2ef.js",
+          "sha256": "69cca0244a09e11c8d97f0dd7775df280ef61aa9b6c889ec292232777e97076d",
+          "bytes": 25167
+        },
+        {
+          "path": "uc-6597.512d5752.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-6597.512d5752.js",
+          "sha256": "777cd911fa9b0154e7bcdc3ebd07b4cf025bf280e8c72c08693f72932aac0f63",
+          "bytes": 15003
+        },
+        {
+          "path": "uc-7229.83dbdce8.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-7229.83dbdce8.js",
+          "sha256": "127d5489e9e9cccb6e36135f2c23310800311f8d0769b9178232d01867d6cee7",
+          "bytes": 48378
+        },
+        {
+          "path": "uc-7229.83dbdce8.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-7229.83dbdce8.js.LICENSE.txt",
+          "sha256": "38643bdcb276438da6f9e49002b2d8046818c258f7d4cddbae005554262cf44c",
+          "bytes": 90
+        },
+        {
+          "path": "uc-7283.30cbceff.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-7283.30cbceff.js",
+          "sha256": "e17cdfa665fe5c5339583751f0ab711c9b6eb43ca6880b09616609788adbaefe",
+          "bytes": 47976
+        },
+        {
+          "path": "uc-7921.245bc17c.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-7921.245bc17c.js",
+          "sha256": "c3197d77f97cc95c2695a370cc1057673342c604b35c89750a76387f6833c0be",
+          "bytes": 45451
+        },
+        {
+          "path": "uc-8283.78fa262a.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-8283.78fa262a.js",
+          "sha256": "8a53305525fc15d4321cb179e1b3528013542f9d99aabccdfd12672ae554f83f",
+          "bytes": 38923
+        },
+        {
+          "path": "uc-8612.593ad7ea.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-8612.593ad7ea.js",
+          "sha256": "a30cfa1e509d4145938ae019c1a6bb8661c9d00f278e8ba5b2f0fbdd1bc35aee",
+          "bytes": 34186
+        },
+        {
+          "path": "uc-8717.dc1c1eee.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-8717.dc1c1eee.js",
+          "sha256": "a780e50bcd6a325612e8a9578fe489cb495e3291524cd24621b9fba40faec1ad",
+          "bytes": 31054
+        },
+        {
+          "path": "uc-8840.6a0d383e.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-8840.6a0d383e.js",
+          "sha256": "2958ca7e15f85d5878c5dca6ce68a1c10441a9268de79fca14f0a8380c75ecda",
+          "bytes": 48490
+        },
+        {
+          "path": "uc-9165.e01595ba.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-9165.e01595ba.js",
+          "sha256": "be8bf416854a58a67cf07ae4b91926f8ab147f7e70b14480ffe56219f228c336",
+          "bytes": 4212
+        },
+        {
+          "path": "uc-9286.3d00b660.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-9286.3d00b660.js",
+          "sha256": "24a5d31c5eb290371531bced03b2f183d525055b850782ef65411debbc355128",
+          "bytes": 330
+        },
+        {
+          "path": "uc-9418.9128fc89.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-9418.9128fc89.js",
+          "sha256": "e8aaa90022ad01d03bc3f023b142c5c47f58e58d36ef20a28ceb36907307584c",
+          "bytes": 29070
+        },
+        {
+          "path": "uc-9418.9128fc89.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-9418.9128fc89.js.LICENSE.txt",
+          "sha256": "4f55467ea52ad9c8cd0da90a17693933bb37e012e9eac43eae69857ab8f9789e",
+          "bytes": 190
+        },
+        {
+          "path": "uc-9532.323a4de3.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-9532.323a4de3.js",
+          "sha256": "1be6f9adc0785cadb13ca3e1111c50f4e05f53f1ab658a9f04335f06b0b25045",
+          "bytes": 126610
+        },
+        {
+          "path": "uc-core-settings.feaf1586.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-core-settings.feaf1586.js",
+          "sha256": "ebdea65a3f147fde2a18663166b8ccaf9ff78663bffc9e8d9069221f99b8f3fd",
+          "bytes": 315314
+        },
+        {
+          "path": "uc-default-image.7ae9b424.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-default-image.7ae9b424.js",
+          "sha256": "41a32eb2c18cee3ce5fca4ab0428612f023100df2b8a80d6a1215d7406ca9f06",
+          "bytes": 186948
+        },
+        {
+          "path": "uc-editor.cc430f87.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-editor.cc430f87.js",
+          "sha256": "64d6c9ae06d6b98b5bf2a7659905824a14ce0ff982e8a718485b9fa09d6c2570",
+          "bytes": 1980341
+        },
+        {
+          "path": "uc-freespace.8c72d85a.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-freespace.8c72d85a.js",
+          "sha256": "b763a38354fc71659735dd1ff485560e01c2a31444293a183bbb2120ebca958a",
+          "bytes": 83479
+        },
+        {
+          "path": "uc-locale-ca.ebb4460d.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-ca.ebb4460d.js",
+          "sha256": "60ba98e285ec1751769216dd1c83e9952f0f9de7b7c81c450ce17163943ca407",
+          "bytes": 262774
+        },
+        {
+          "path": "uc-locale-cs.b7cdcd10.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-cs.b7cdcd10.js",
+          "sha256": "e35ea226fde4604ede704239005fba1b3e7fb9c4ea1bbdac0432d647f6943f4f",
+          "bytes": 253954
+        },
+        {
+          "path": "uc-locale-da.ba17d0ed.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-da.ba17d0ed.js",
+          "sha256": "7e7fe44ec800c53af1957b797e65c8f011c96f18f20ca60fd7127484b307724e",
+          "bytes": 248327
+        },
+        {
+          "path": "uc-locale-de.fd89bc61.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-de.fd89bc61.js",
+          "sha256": "7952aed1d9b935f521a45318072e7db09ce93a70fd47535840a9a29a394b3c4c",
+          "bytes": 260923
+        },
+        {
+          "path": "uc-locale-en-GB.a0750447.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-en-GB.a0750447.js",
+          "sha256": "e4475a3347ac8818bf13b495a6669da46d25f2f674b4b3f4fffe196f45b0aae7",
+          "bytes": 243146
+        },
+        {
+          "path": "uc-locale-en.7944025d.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-en.7944025d.js",
+          "sha256": "6205df0b5fa5f9fc0529c2491ab2bc698d94bf3d49834ecaa893ff9fe1b4939a",
+          "bytes": 242866
+        },
+        {
+          "path": "uc-locale-es.c2448f9c.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-es.c2448f9c.js",
+          "sha256": "c4205c68e1ec6718776ed176354ed732b33c36decc8b460a76d093e0a863bc85",
+          "bytes": 261976
+        },
+        {
+          "path": "uc-locale-fr.606f087c.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-fr.606f087c.js",
+          "sha256": "a40e8eead34eb27ec4fb9f3c409d8e3e73f95eda052edcbf7ed6dbf82e6e761c",
+          "bytes": 266440
+        },
+        {
+          "path": "uc-locale-it.7dc31e81.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-it.7dc31e81.js",
+          "sha256": "cea9594a4a998bde4a184fba2aa1f54dee801edb116cdbb0370535a00a193eaa",
+          "bytes": 260235
+        },
+        {
+          "path": "uc-locale-nb.ba663be9.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-nb.ba663be9.js",
+          "sha256": "ed3a0aa9385c8ca5cadf5bb6c5fe21a63470eda6ca4e0729232aa16670bba08a",
+          "bytes": 247746
+        },
+        {
+          "path": "uc-locale-nl.98bd9338.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-nl.98bd9338.js",
+          "sha256": "c70cac122382b6fa68517d710b9ad33ed134bb98245b322129852b812e31a69b",
+          "bytes": 253813
+        },
+        {
+          "path": "uc-locale-nn.94b23ae8.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-nn.94b23ae8.js",
+          "sha256": "039630861c76499896ea03937c37817d549740d3f82c8812142f71c7075db415",
+          "bytes": 246067
+        },
+        {
+          "path": "uc-locale-no.e4893860.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-no.e4893860.js",
+          "sha256": "77363454787f2b69284a9e134d46946044e180c724cd1d2a17f634ecdf052f28",
+          "bytes": 247552
+        },
+        {
+          "path": "uc-locale-pl.a7c2b505.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-pl.a7c2b505.js",
+          "sha256": "37bb7e88d385b35e97244cf315bd98a3ee00b4f05f667f058322fbeccf295465",
+          "bytes": 255050
+        },
+        {
+          "path": "uc-locale-sv.66f97af6.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-locale-sv.66f97af6.js",
+          "sha256": "1782849129c5ba4e8f1a3e522a466d1015bfa5021035c58bea6998ec89d526ca",
+          "bytes": 249050
+        },
+        {
+          "path": "uc-m-accordion.6b650e7e.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-accordion.6b650e7e.js",
+          "sha256": "117abfae105e6fff7e6663c0b4a512bc83e64e55a0f2c7adcd6bbc237f898a98",
+          "bytes": 47212
+        },
+        {
+          "path": "uc-m-activity-feed.d533cba8.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-activity-feed.d533cba8.js",
+          "sha256": "94fd5c79bda92bf7c990069fcac25c9578e3c70112c607ade1a2151d7a70c74c",
+          "bytes": 35055
+        },
+        {
+          "path": "uc-m-alarm-panel.172b05bf.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-alarm-panel.172b05bf.js",
+          "sha256": "f1295e8fe3b125a472af8617d16bcba67aa3ffe43f20dde293ed58ad6e2d1f9a",
+          "bytes": 36438
+        },
+        {
+          "path": "uc-m-alert-center.21435366.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-alert-center.21435366.js",
+          "sha256": "8e326c09343053aa2ee3d7ca59bb98237bc88806e319fb912096f63a29c47c2f",
+          "bytes": 22634
+        },
+        {
+          "path": "uc-m-alert-center.21435366.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-alert-center.21435366.js.LICENSE.txt",
+          "sha256": "bd4f42277cda45379d715925c54295ad26bfe02d0ca6ee15b03763a163509eb7",
+          "bytes": 90
+        },
+        {
+          "path": "uc-m-animated-clock.c4271d03.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-animated-clock.c4271d03.js",
+          "sha256": "1cafcf2a2700a4c0029aec2ebff8dd99526b912b5aa0e0f25d7699d58db68ee8",
+          "bytes": 73677
+        },
+        {
+          "path": "uc-m-animated-forecast.84b9858f.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-animated-forecast.84b9858f.js",
+          "sha256": "471933167383da68ff03f034e85d9fcedb5074503578e225a4f8e81cb1a60db7",
+          "bytes": 21636
+        },
+        {
+          "path": "uc-m-animated-weather.94a9e5aa.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-animated-weather.94a9e5aa.js",
+          "sha256": "c30b560f74c3cc4e7d572291d884c8eec722ff0168cadfdfcf12c31381f7a901",
+          "bytes": 39621
+        },
+        {
+          "path": "uc-m-appliance.067d832b.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-appliance.067d832b.js",
+          "sha256": "aa3bbb7adec3f392fe9c38f16e2e08fd63058cbcdbf8e51043ae33ce86cb396f",
+          "bytes": 90512
+        },
+        {
+          "path": "uc-m-area-summary.1710dcce.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-area-summary.1710dcce.js",
+          "sha256": "d5051af315857d5f531a5b8a9c86eea1f8166a5f9a59353f0103a71f843a6781",
+          "bytes": 54533
+        },
+        {
+          "path": "uc-m-area-summary.1710dcce.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-area-summary.1710dcce.js.LICENSE.txt",
+          "sha256": "bd4f42277cda45379d715925c54295ad26bfe02d0ca6ee15b03763a163509eb7",
+          "bytes": 90
+        },
+        {
+          "path": "uc-m-auto-entity-list.fa2d721a.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-auto-entity-list.fa2d721a.js",
+          "sha256": "93e55c9b2a4a549444bf5950d1e00417ee40873665b109dccf8c6fa49c9eb2ff",
+          "bytes": 52983
+        },
+        {
+          "path": "uc-m-auto-entity-list.fa2d721a.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-auto-entity-list.fa2d721a.js.LICENSE.txt",
+          "sha256": "bd4f42277cda45379d715925c54295ad26bfe02d0ca6ee15b03763a163509eb7",
+          "bytes": 90
+        },
+        {
+          "path": "uc-m-background.b038af95.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-background.b038af95.js",
+          "sha256": "af094662864aeefe0f0cfb2189cb1864cd3532f6464f5d3e2ba9fc7b8d04611a",
+          "bytes": 8275
+        },
+        {
+          "path": "uc-m-badge-of-honor.4e0dbef8.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-badge-of-honor.4e0dbef8.js",
+          "sha256": "a69d9e41d8870a7fe6e7c3fbd94660f43daae90178b807fe45994b38cdb6c54a",
+          "bytes": 27162
+        },
+        {
+          "path": "uc-m-bambu.4b684b70.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-bambu.4b684b70.js",
+          "sha256": "2ebc594d6ce1c5ab30c704a4880b282714d8f9d55059a711ba829978519215d4",
+          "bytes": 51180
+        },
+        {
+          "path": "uc-m-battery-fleet.e1b33987.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-battery-fleet.e1b33987.js",
+          "sha256": "95e28435175d0b9ef30d886f20652957ef7bbefbcc067b8f645aab7e2a2bbd9b",
+          "bytes": 96555
+        },
+        {
+          "path": "uc-m-battery-fleet.e1b33987.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-battery-fleet.e1b33987.js.LICENSE.txt",
+          "sha256": "bd4f42277cda45379d715925c54295ad26bfe02d0ca6ee15b03763a163509eb7",
+          "bytes": 90
+        },
+        {
+          "path": "uc-m-battery-monitor.9d0b45df.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-battery-monitor.9d0b45df.js",
+          "sha256": "6ff25a5b5184bf6755285289d20108ad8cad5fdd7e0a2d632bfb64738a66cec2",
+          "bytes": 39819
+        },
+        {
+          "path": "uc-m-boiler.618e3697.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-boiler.618e3697.js",
+          "sha256": "c38e1333a3efa548aff6d9ec323552b4e723cc3d12b05da78d4d140a8b335423",
+          "bytes": 43449
+        },
+        {
+          "path": "uc-m-calendar.96aec680.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-calendar.96aec680.js",
+          "sha256": "830ae2112deee1cdbd8c8eecd9bedcade80fc9ea30c8177cb311c4b8b9efe4bd",
+          "bytes": 86793
+        },
+        {
+          "path": "uc-m-camera-grid.417985ca.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-camera-grid.417985ca.js",
+          "sha256": "f351904fa19e21ca07bc5c7e7ff207c428961cc2a0ff72eab32ab1affb6e5d40",
+          "bytes": 62779
+        },
+        {
+          "path": "uc-m-camera-grid.417985ca.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-camera-grid.417985ca.js.LICENSE.txt",
+          "sha256": "bd4f42277cda45379d715925c54295ad26bfe02d0ca6ee15b03763a163509eb7",
+          "bytes": 90
+        },
+        {
+          "path": "uc-m-camera.ddba0223.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-camera.ddba0223.js",
+          "sha256": "8a391397e787d635c2bebe74b6c06f17fe23c4ef718a540d566e92eb196ff012",
+          "bytes": 72401
+        },
+        {
+          "path": "uc-m-camera.ddba0223.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-camera.ddba0223.js.LICENSE.txt",
+          "sha256": "bd4f42277cda45379d715925c54295ad26bfe02d0ca6ee15b03763a163509eb7",
+          "bytes": 90
+        },
+        {
+          "path": "uc-m-cleaning-zones.088fc83a.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-cleaning-zones.088fc83a.js",
+          "sha256": "f1f80b5af07095fb3eb7ffc7299edbf372dfc5067b8833f91bee837dad8441e2",
+          "bytes": 74266
+        },
+        {
+          "path": "uc-m-climate.7619190d.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-climate.7619190d.js",
+          "sha256": "69f01b7c5d0df2436d59a365f514438c59bb52b8f387e6777b90d2eb64a8cc72",
+          "bytes": 53332
+        },
+        {
+          "path": "uc-m-clock.8f3792d7.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-clock.8f3792d7.js",
+          "sha256": "e83bc9bcf912660ed750b3cd14f888a50b29680e70715a3e10de1cf3665eb946",
+          "bytes": 8403
+        },
+        {
+          "path": "uc-m-cover.dcedbe13.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-cover.dcedbe13.js",
+          "sha256": "12c434017f164e79a9e7221094894e52b081d2bed1a2548a82e4122cd1e78ac4",
+          "bytes": 19924
+        },
+        {
+          "path": "uc-m-dog-duty.82be90fc.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-dog-duty.82be90fc.js",
+          "sha256": "209176d6702ca90baeddb10c30486472b5bd51c286678f0143568330289d21e2",
+          "bytes": 108352
+        },
+        {
+          "path": "uc-m-drawer.5c371cc4.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-drawer.5c371cc4.js",
+          "sha256": "864ef224c637cccc6251b75ccafe3ae824917ab732a5f00c9184f017c7b7809a",
+          "bytes": 18671
+        },
+        {
+          "path": "uc-m-dropdown.883c986b.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-dropdown.883c986b.js",
+          "sha256": "8a900ff27c9f687be0299ad075080d5fb2b4193637d140e06a897e894be7e6ac",
+          "bytes": 91813
+        },
+        {
+          "path": "uc-m-dynamic-list.aeeaadff.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-dynamic-list.aeeaadff.js",
+          "sha256": "001aba0a51e6f8902caea10b0507d2fdf06bdc9faaae1def69bac4c7b4a50218",
+          "bytes": 83670
+        },
+        {
+          "path": "uc-m-dynamic-weather.3224dd79.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-dynamic-weather.3224dd79.js",
+          "sha256": "22da42821204bb6398713d03ac6755ec3ce2b3c0605cf3250559c932cfce1bda",
+          "bytes": 14050
+        },
+        {
+          "path": "uc-m-energy-display.e4e9f650.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-energy-display.e4e9f650.js",
+          "sha256": "8b695879f955883efeddf7984df3daf96a8f5fa907d2f142032846533bdee305",
+          "bytes": 38987
+        },
+        {
+          "path": "uc-m-external-card.5382e7c6.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-external-card.5382e7c6.js",
+          "sha256": "31dc464a9a948276e9f004b73055f2af89d6e8692139e40372ed0f257a0ef8d3",
+          "bytes": 1276
+        },
+        {
+          "path": "uc-m-external-card.5382e7c6.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-external-card.5382e7c6.js.LICENSE.txt",
+          "sha256": "153fc3b30eaa834598160cf747072ed4878b8c17282c2bbbb65ec1a45789c775",
+          "bytes": 181
+        },
+        {
+          "path": "uc-m-fan.68f32c57.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-fan.68f32c57.js",
+          "sha256": "94d79cbb068b6b0d56cd8e9f085d5236f22005ddd2045f3a932c0fc7f9cb2d80",
+          "bytes": 38359
+        },
+        {
+          "path": "uc-m-flip-card.87b9fb23.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-flip-card.87b9fb23.js",
+          "sha256": "bc2b0c2b53dcd9e6f8f157b0426bdec078091b207ab4bf0b4cd7d26ede8cc1aa",
+          "bytes": 11756
+        },
+        {
+          "path": "uc-m-gauge.b2099ba1.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-gauge.b2099ba1.js",
+          "sha256": "9c332d2ab8e77c06d33e68baf3461eb251f12e44b19d2f7a59e5a4ebc38134ec",
+          "bytes": 116240
+        },
+        {
+          "path": "uc-m-graphs.7c663041.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-graphs.7c663041.js",
+          "sha256": "efbfc70db0587465ce7efad998e19ad034163e740385a0c30a7faebd759226df",
+          "bytes": 133477
+        },
+        {
+          "path": "uc-m-grid-layout.d4df542c.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-grid-layout.d4df542c.js",
+          "sha256": "73fbbde3a79de613c84c33efb2863984abbed95b759e1a372f6c7096c4a67e89",
+          "bytes": 16359
+        },
+        {
+          "path": "uc-m-grid.57af66cf.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-grid.57af66cf.js",
+          "sha256": "a92b6f93c40c36de9f080db9d8f360e4e00c1e82cb439415aab3a4e7c6038061",
+          "bytes": 90830
+        },
+        {
+          "path": "uc-m-humidifier.ccd5979d.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-humidifier.ccd5979d.js",
+          "sha256": "dac3db95184e4a795d609f9a7cc0b5bcf554521a26c9d3c0da9644f62e3d1886",
+          "bytes": 13453
+        },
+        {
+          "path": "uc-m-inputs.c2084242.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-inputs.c2084242.js",
+          "sha256": "49a0897ef61f0ef67857015f02bf7a9d24a58463f2e91fea3092971b2e68a442",
+          "bytes": 102003
+        },
+        {
+          "path": "uc-m-laundry-tracker.70291c52.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-laundry-tracker.70291c52.js",
+          "sha256": "adbdb5b0430684f46bb638485f03fdc4b6f7436b091db5add38e8401294585fb",
+          "bytes": 81905
+        },
+        {
+          "path": "uc-m-light.c9fda8cd.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-light.c9fda8cd.js",
+          "sha256": "4fb9fbe176997964bc15527528658cdcf52148b9a1c988e40eee23f22f0f5834",
+          "bytes": 162990
+        },
+        {
+          "path": "uc-m-living-canvas.5caac279.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-living-canvas.5caac279.js",
+          "sha256": "3d45842812f9927764318624a188318915e5fbeaa7cfaf787cad57faf4e21de1",
+          "bytes": 18878
+        },
+        {
+          "path": "uc-m-lock.9ec98904.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-lock.9ec98904.js",
+          "sha256": "d5113506d641a8da90568d1882cc20d99024ebc73cdcc9ec451511abb9ab6a04",
+          "bytes": 24606
+        },
+        {
+          "path": "uc-m-lunar-phase.a8efce9f.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-lunar-phase.a8efce9f.js",
+          "sha256": "8adfac5f400fdb671b52a8edcfb16b93ebaf81ed2fa2448ff47bc477e8324331",
+          "bytes": 71645
+        },
+        {
+          "path": "uc-m-map.634ef11d.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-map.634ef11d.js",
+          "sha256": "882e1febd5f130690549e8f8c835a041f13fba0d74fed9be58c99bb095a60a50",
+          "bytes": 53709
+        },
+        {
+          "path": "uc-m-markdown.2b3f1444.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-markdown.2b3f1444.js",
+          "sha256": "7525614d7ce514d8708a51e62c568764496df237a201ae8fa2a7dc6d562a9e21",
+          "bytes": 64052
+        },
+        {
+          "path": "uc-m-media-player.e59c53d0.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-media-player.e59c53d0.js",
+          "sha256": "fd8d26d4679e44c045a54d4d5b1b109ffd5cda93ae70fcb81ddf4231121cbdb5",
+          "bytes": 64352
+        },
+        {
+          "path": "uc-m-native-card.a8b75276.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-native-card.a8b75276.js",
+          "sha256": "c79d159794bb327a582d8876b96ab5a023f9b944134e15717479fddcc2cada49",
+          "bytes": 23527
+        },
+        {
+          "path": "uc-m-navigation.a9b46c1d.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-navigation.a9b46c1d.js",
+          "sha256": "f1a241d07d90a12958d15fb0ac16623d3cae557d7bd0c0a5644255b1070a058a",
+          "bytes": 92270
+        },
+        {
+          "path": "uc-m-people.aa50b299.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-people.aa50b299.js",
+          "sha256": "8c4b276a0312802fa0e8d9fb1d354788944fd4b263dc9b5fa6ba3f99296c8517",
+          "bytes": 77797
+        },
+        {
+          "path": "uc-m-plant-care.aa0d3334.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-plant-care.aa0d3334.js",
+          "sha256": "01972eb1fed68b12d02ce4a908047d53dee070e68e36eb48db29e669e9c993e5",
+          "bytes": 81028
+        },
+        {
+          "path": "uc-m-popup.aa4ad2f1.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-popup.aa4ad2f1.js",
+          "sha256": "4975e419fa22684ce4f3a6ca7cd49ca0b0e07715ce4b3f5dc0c4daea42da515a",
+          "bytes": 95873
+        },
+        {
+          "path": "uc-m-printer-3d.062ab2b7.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-printer-3d.062ab2b7.js",
+          "sha256": "4b63a12efc3e409ba23b98b29e10e99ccb8fa645557b4e9b6ed7132801ce5ed5",
+          "bytes": 26569
+        },
+        {
+          "path": "uc-m-qr-code.ba1cbb5e.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-qr-code.ba1cbb5e.js",
+          "sha256": "aa9f905f145c7f8db5e2366d85d6ed51db48065dc43f3e55fecb22c57ec6f606",
+          "bytes": 29338
+        },
+        {
+          "path": "uc-m-screensaver.6b4c159f.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-screensaver.6b4c159f.js",
+          "sha256": "c9127ab29fe33f2043e36b1bb1833f5320a9eaec6215116505619665aa571007",
+          "bytes": 57122
+        },
+        {
+          "path": "uc-m-scroll-row.5196035c.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-scroll-row.5196035c.js",
+          "sha256": "b804e3aeb5d6aa5d3c55f2a24b33e08128902c87e8fa506981897e211d141f18",
+          "bytes": 13095
+        },
+        {
+          "path": "uc-m-slider-control.4c32d0c0.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-slider-control.4c32d0c0.js",
+          "sha256": "3e21c6a40b015b879efc2561ff00cf55cdcc1768e0938f924eb9d4fdde0099fc",
+          "bytes": 104870
+        },
+        {
+          "path": "uc-m-slider.6ef410a6.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-slider.6ef410a6.js",
+          "sha256": "76b021c4dc442b0618326a5ca6b3f5828618c6f606b0a6ef8160dbb95be53eba",
+          "bytes": 81781
+        },
+        {
+          "path": "uc-m-solar-analytics.458d348d.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-solar-analytics.458d348d.js",
+          "sha256": "8c5a8c1023ade7c055e2d67326e09168b1d5932c5061a7286fade6731e455bdc",
+          "bytes": 23746
+        },
+        {
+          "path": "uc-m-spinbox.3542266b.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-spinbox.3542266b.js",
+          "sha256": "db96c09a88ac31b0e71c03ede59121679211e6b0eb1ca12b82d0b09d99b56fb2",
+          "bytes": 28621
+        },
+        {
+          "path": "uc-m-sports-score.c34d2279.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-sports-score.c34d2279.js",
+          "sha256": "973e18c35b3ecd353f6ac0cfa0f715d1f349574c0c25da09081d5aaef6c128d6",
+          "bytes": 74755
+        },
+        {
+          "path": "uc-m-stack.1eb34302.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-stack.1eb34302.js",
+          "sha256": "5f677fa3ced69e6a1a2bfb0bf5c228f4d9430d611150d28f1bf563d22c6bd34b",
+          "bytes": 44571
+        },
+        {
+          "path": "uc-m-state-switcher.0fdedb59.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-state-switcher.0fdedb59.js",
+          "sha256": "cf29a22bed409dc20b8439d0e9c10251c4c8e86c98aa22fa829dfdb3de682426",
+          "bytes": 14238
+        },
+        {
+          "path": "uc-m-status-summary.f252ab1b.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-status-summary.f252ab1b.js",
+          "sha256": "7963ee07a6e4edec6041162209e513a823adf6b2c49ee24e31086d64fe4970b6",
+          "bytes": 53847
+        },
+        {
+          "path": "uc-m-tabs.a956aa47.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-tabs.a956aa47.js",
+          "sha256": "6e52c6907b0ef15dabbe983b1ff420a36e247b4a4604df2ea71d50b83fb52264",
+          "bytes": 54349
+        },
+        {
+          "path": "uc-m-time-machine.aaf7f118.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-time-machine.aaf7f118.js",
+          "sha256": "188049c5bbbe104411a4f35b625fdc826c377dea63ad5316a793906507ae531a",
+          "bytes": 34696
+        },
+        {
+          "path": "uc-m-timer.135546a5.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-timer.135546a5.js",
+          "sha256": "2f0fe1cd2ad681f8b1a7dc5605e934c9ffed32a5af3415c54a78924d341b10c5",
+          "bytes": 19042
+        },
+        {
+          "path": "uc-m-todo-list.044c8682.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-todo-list.044c8682.js",
+          "sha256": "8bba0676a915a7b0735c7e2acee5e4179464d2ae64cded96b8f71f6cc4c455bd",
+          "bytes": 10992
+        },
+        {
+          "path": "uc-m-toggle.6949dae3.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-toggle.6949dae3.js",
+          "sha256": "c2c24ff8fd91d273e68b22ae947f89228bfc02c8643a4cb47b28674d8ca862ff",
+          "bytes": 60407
+        },
+        {
+          "path": "uc-m-train.62d50f08.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-train.62d50f08.js",
+          "sha256": "6355df1392eb99a948fd957d5cfdb02b49f42b2aa64f88cdf090bf2c0de6c543",
+          "bytes": 66438
+        },
+        {
+          "path": "uc-m-unifi.d3c97a87.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-unifi.d3c97a87.js",
+          "sha256": "0d3fc44ee83231e43a853bd36e6c40987c4785ff75ec3d5b91597414a59cf392",
+          "bytes": 145782
+        },
+        {
+          "path": "uc-m-update-monitor.95fc0a9a.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-update-monitor.95fc0a9a.js",
+          "sha256": "14a957b0e04d1ee8f98ceee0dc13b45d38a702c8eac6eafe19408f5c218bcd48",
+          "bytes": 13340
+        },
+        {
+          "path": "uc-m-vacuum.6caa3ba6.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-vacuum.6caa3ba6.js",
+          "sha256": "56d825510bc7f70d4aafe2adafc09e232381e93c202d225c35a275cc28490847",
+          "bytes": 127291
+        },
+        {
+          "path": "uc-m-vampire-power.9797e7a9.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-vampire-power.9797e7a9.js",
+          "sha256": "f3e58ba86d4db6b83e70034b20cbeda1f3c6a6ecf51383fbdeb4a8fddb3239e4",
+          "bytes": 60683
+        },
+        {
+          "path": "uc-m-vehicle-maintenance.4f6e49c6.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-vehicle-maintenance.4f6e49c6.js",
+          "sha256": "5e037fcfd3a3f3ad5d950a04b976594eac5e9a3e7569592cd044a610b6a36bcd",
+          "bytes": 104714
+        },
+        {
+          "path": "uc-m-video-bg.106152a0.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-video-bg.106152a0.js",
+          "sha256": "5c33334a0fba01aef7455c3f7422d4d842df1461fede9a59346329de0521919a",
+          "bytes": 21734
+        },
+        {
+          "path": "uc-m-virtual-pet.cc69f0bb.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-virtual-pet.cc69f0bb.js",
+          "sha256": "03ab54a25ac87330ad477ac9d2ee02e5ec4cb2b27d8661bcc0246addc93e6d17",
+          "bytes": 41729
+        },
+        {
+          "path": "uc-m-weather.2ffa6934.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-m-weather.2ffa6934.js",
+          "sha256": "bb24b646f10b5176beb0ead5a8affb853d767a37cd7fd6d5e08240e0f729b9a9",
+          "bytes": 12838
+        },
+        {
+          "path": "uc-strategy.f0584dd7.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-strategy.f0584dd7.js",
+          "sha256": "61050a94df67e84c6ec50d814ae8801b1a3911226f4b3980bf773653000cc34e",
+          "bytes": 36649
+        },
+        {
+          "path": "uc-svc-dynamic-weather.ddb84562.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-svc-dynamic-weather.ddb84562.js",
+          "sha256": "8f990a68dcc8159a84506e8e416d4a68551645659976bc2a778e58aec945df40",
+          "bytes": 53062
+        },
+        {
+          "path": "uc-svc-living-canvas.49713d4f.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-svc-living-canvas.49713d4f.js",
+          "sha256": "ceb373e817db49f99d8f8ce0835b59add378ad9a88c176ad04b540390c698ffb",
+          "bytes": 19058
+        },
+        {
+          "path": "uc-svc-navigation.250cfb1d.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-svc-navigation.250cfb1d.js",
+          "sha256": "a6dbd8fe60814294f482036b3c374977582c32041fd7ced23106c33f968fbf60",
+          "bytes": 94940
+        },
+        {
+          "path": "uc-vendor-codemirror.07dd43d5.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-vendor-codemirror.07dd43d5.js",
+          "sha256": "64ee7593c299df73f62c81d16213e60f668d37bf8f48a53d33f4084260488afd",
+          "bytes": 420678
+        },
+        {
+          "path": "uc-vendor-leaflet.277c2d38.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-vendor-leaflet.277c2d38.js",
+          "sha256": "500b23cc5dbd22f062d6718bb0a66a2eff2b0f51ef546da3cd05e9ae6bfba812",
+          "bytes": 165411
+        },
+        {
+          "path": "uc-vendor-leaflet.277c2d38.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-vendor-leaflet.277c2d38.js.LICENSE.txt",
+          "sha256": "ea790f3be4982c33c90750c0596263856a361f65ff6369653718f93c29a6520c",
+          "bytes": 153
+        },
+        {
+          "path": "uc-vendor-pako.0961e8a0.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-vendor-pako.0961e8a0.js",
+          "sha256": "bab5c89aef75ef3d901fd48b8654265131cfe698df5bb58bc2c9f1c349f9da0c",
+          "bytes": 45765
+        },
+        {
+          "path": "uc-vendor-swiper.cbb0bac1.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-vendor-swiper.cbb0bac1.js",
+          "sha256": "c85723b159a2612a31cc36f3d7a0e5a1776231b0683bee5878cf8d17bd7db975",
+          "bytes": 144218
+        },
+        {
+          "path": "uc-vendor-three.d820ed55.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-vendor-three.d820ed55.js",
+          "sha256": "a060faa8ff81a05750a2865d203a0ab7459c45ed7221b33184afa4a0ecde31e1",
+          "bytes": 522501
+        },
+        {
+          "path": "uc-vendor-three.d820ed55.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-vendor-three.d820ed55.js.LICENSE.txt",
+          "sha256": "8507dae269ac0851dec99156da9c6c2fa6b1d672dca9c781340ee0a7f69cb74e",
+          "bytes": 92
+        },
+        {
+          "path": "uc-vendor-tiptap.01cf99c4.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/uc-vendor-tiptap.01cf99c4.js",
+          "sha256": "052d9009444b93324889acd2dd980b0e6f0a5f3cb0b64f12aa84820ab6019955",
+          "bytes": 380633
+        },
+        {
+          "path": "ultra-card-panel.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/ultra-card-panel.js",
+          "sha256": "90e7cb3b04845c2ed1c53c641c519dfefe08639a4f41ec0d98a3f392938a0cc7",
+          "bytes": 83880
+        },
+        {
+          "path": "ultra-card-panel.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/ultra-card-panel.js.LICENSE.txt",
+          "sha256": "0298482c29652ccf9cbdb0ee19611bf67c1946c88465b063b3c08c9648b1809f",
+          "bytes": 181
+        },
+        {
+          "path": "ultra-card.js",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/ultra-card.js",
+          "sha256": "c74998d629670e653bc9f4f2226112c69b3239223bff6eaa72ed6fc1c956145d",
+          "bytes": 983944
+        },
+        {
+          "path": "ultra-card.js.LICENSE.txt",
+          "url": "https://github.com/WJDDesigns/Ultra-Card/releases/download/v3.13.0/ultra-card.js.LICENSE.txt",
+          "sha256": "801acc486d3eee9dfd7a005dc10a8975da25a750bbd2bb3ab1261ee25350f5a6",
+          "bytes": 554
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/WJDDesigns/Ultra-Card/50e2f396c6a7a8d276b0dd85368acd7abc88cbac/license",
+          "sha256": "fff285c9e01ec883110b1ae93f269656ab3f1fee94b04072e60181035bd13301",
+          "bytes": 1067
+        }
+      ],
+      "hacs_category": "dashboard",
+      "purpose": "DASH6 Ultra layout and full visual editor; includes all lazy chunks and locales",
+      "default_install": true,
+      "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "button-card",
+      "kind": "frontend",
+      "repository": "https://github.com/custom-cards/button-card",
+      "version": "v7.0.1",
+      "commit": "dfa304f93ab73b41011b624960657c568672e9c9",
+      "release": "https://github.com/custom-cards/button-card/releases/tag/v7.0.1",
+      "entrypoint": "button-card.js",
+      "assets": [
+        {
+          "path": "button-card.js",
+          "url": "https://github.com/custom-cards/button-card/releases/download/v7.0.1/button-card.js",
+          "sha256": "5d6e9c6afca01e8014653fa56bb5d6aa9248d832c34fb944a7f2c36329bc22d1",
+          "bytes": 162135
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/custom-cards/button-card/dfa304f93ab73b41011b624960657c568672e9c9/LICENSE",
+          "sha256": "59b1de746fe5434821c25cadfa74b7d13764811f237f2532093defc8ff59fc69",
+          "bytes": 1084
+        }
+      ],
+      "hacs_category": "dashboard",
+      "purpose": "Native button-card adapters and configurable device cards",
+      "default_install": true,
+      "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "mushroom",
+      "kind": "frontend",
+      "repository": "https://github.com/piitaya/lovelace-mushroom",
+      "version": "v5.2.3",
+      "commit": "d8a90ffff1b217fbbf9cb8210ee672be99596231",
+      "release": "https://github.com/piitaya/lovelace-mushroom/releases/tag/v5.2.3",
+      "entrypoint": "mushroom.js",
+      "assets": [
+        {
+          "path": "mushroom.js",
+          "url": "https://github.com/piitaya/lovelace-mushroom/releases/download/v5.2.3/mushroom.js",
+          "sha256": "631668268e474d5357e0f17f161322499ea5c93a910431477e112653d7aa456b",
+          "bytes": 666719
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/piitaya/lovelace-mushroom/d8a90ffff1b217fbbf9cb8210ee672be99596231/LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "bytes": 11357
+        }
+      ],
+      "hacs_category": "dashboard",
+      "purpose": "Light, fan, entity, template and chips compatibility",
+      "default_install": true,
+      "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "auto-entities",
+      "kind": "frontend",
+      "repository": "https://github.com/thomasloven/lovelace-auto-entities",
+      "version": "v1.16.1",
+      "commit": "360722dc512f6f3aea3bbfbe08553b06c37880b6",
+      "release": "https://github.com/thomasloven/lovelace-auto-entities/releases/tag/v1.16.1",
+      "entrypoint": "auto-entities.js",
+      "assets": [
+        {
+          "path": "auto-entities.js",
+          "url": "https://raw.githubusercontent.com/thomasloven/lovelace-auto-entities/360722dc512f6f3aea3bbfbe08553b06c37880b6/auto-entities.js",
+          "sha256": "b7327b2fcd39f1fb859b60b53c869760d1d762ab4d4e4617b748971f528bd407",
+          "bytes": 97077
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/thomasloven/lovelace-auto-entities/360722dc512f6f3aea3bbfbe08553b06c37880b6/LICENSE.txt",
+          "sha256": "4b20e02bf5ba00311214874f8fcb146ae63c194f6ba8644ce95c9e3708bdedfa",
+          "bytes": 1070
+        }
+      ],
+      "hacs_category": "dashboard",
+      "purpose": "Dynamic entity filtering and DASH6 auto-entities layouts",
+      "default_install": true,
+      "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "apexcharts-card",
+      "kind": "frontend",
+      "repository": "https://github.com/RomRider/apexcharts-card",
+      "version": "v2.2.3",
+      "commit": "6d3f1e9843f2d58ff73098128e78be8f57a5272b",
+      "release": "https://github.com/RomRider/apexcharts-card/releases/tag/v2.2.3",
+      "entrypoint": "apexcharts-card.js",
+      "assets": [
+        {
+          "path": "apexcharts-card.js",
+          "url": "https://github.com/RomRider/apexcharts-card/releases/download/v2.2.3/apexcharts-card.js",
+          "sha256": "346780707773fb90c45e9eeaf8acb010d16a8089e86563a242cc4e1d8995f718",
+          "bytes": 1627706
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/RomRider/apexcharts-card/6d3f1e9843f2d58ff73098128e78be8f57a5272b/LICENSE",
+          "sha256": "2ac0a76d0c13719cbc5204717d71ff604fc6f56847009ae83a80bdecf216af8e",
+          "bytes": 1075
+        }
+      ],
+      "hacs_category": "dashboard",
+      "purpose": "DASH6 background, climate and energy graphs",
+      "default_install": true,
+      "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "mini-graph-card",
+      "kind": "frontend",
+      "repository": "https://github.com/kalkih/mini-graph-card",
+      "version": "v0.13.0",
+      "commit": "a94771a516d79134536e96d40526541b3f23501d",
+      "release": "https://github.com/kalkih/mini-graph-card/releases/tag/v0.13.0",
+      "entrypoint": "mini-graph-card-bundle.js",
+      "assets": [
+        {
+          "path": "mini-graph-card-bundle.js",
+          "url": "https://github.com/kalkih/mini-graph-card/releases/download/v0.13.0/mini-graph-card-bundle.js",
+          "sha256": "4d8b986f3cd693c0f7771d2f5574008bc39c45ecb450aec067906150be2dfabd",
+          "bytes": 124432
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/kalkih/mini-graph-card/a94771a516d79134536e96d40526541b3f23501d/LICENSE",
+          "sha256": "2fa930cf0aa3b966a2a4fde1ab2e034811b7a3435b575c157fd03980aa407830",
+          "bytes": 1077
+        }
+      ],
+      "hacs_category": "dashboard",
+      "purpose": "Existing mini-graph configurations and theme-off graph compatibility",
+      "default_install": true,
+      "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "card-mod",
+      "kind": "frontend",
+      "repository": "https://github.com/thomasloven/lovelace-card-mod",
+      "version": "v4.2.1",
+      "commit": "11005313b240da0f7880b95aedc5a9876c293b83",
+      "release": "https://github.com/thomasloven/lovelace-card-mod/releases/tag/v4.2.1",
+      "entrypoint": "card-mod.js",
+      "assets": [
+        {
+          "path": "card-mod.js",
+          "url": "https://raw.githubusercontent.com/thomasloven/lovelace-card-mod/11005313b240da0f7880b95aedc5a9876c293b83/card-mod.js",
+          "sha256": "5e7e71ad61796f59070f8c4621e69fa8e71a9864d0be0922bc4dbc72f990cd35",
+          "bytes": 99373
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/thomasloven/lovelace-card-mod/11005313b240da0f7880b95aedc5a9876c293b83/LICENSE.txt",
+          "sha256": "4b20e02bf5ba00311214874f8fcb146ae63c194f6ba8644ce95c9e3708bdedfa",
+          "bytes": 1070
+        }
+      ],
+      "hacs_category": "dashboard",
+      "purpose": "Card-Mod theme CSS and mod-card compatibility",
+      "default_install": true,
+      "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "layout-card",
+      "kind": "frontend",
+      "repository": "https://github.com/thomasloven/lovelace-layout-card",
+      "version": "v2.4.7",
+      "commit": "12e811470058647e509b6b3bfa98995fc645d506",
+      "release": "https://github.com/thomasloven/lovelace-layout-card/releases/tag/v2.4.7",
+      "entrypoint": "layout-card.js",
+      "assets": [
+        {
+          "path": "layout-card.js",
+          "url": "https://raw.githubusercontent.com/thomasloven/lovelace-layout-card/12e811470058647e509b6b3bfa98995fc645d506/layout-card.js",
+          "sha256": "aa7ed2f010b7453687b02a54dc5372bb0c98451244c1aa40e85d6f7c71608191",
+          "bytes": 72969
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/thomasloven/lovelace-layout-card/12e811470058647e509b6b3bfa98995fc645d506/LICENSE.txt",
+          "sha256": "4b20e02bf5ba00311214874f8fcb146ae63c194f6ba8644ce95c9e3708bdedfa",
+          "bytes": 1070
+        }
+      ],
+      "hacs_category": "dashboard",
+      "purpose": "grid-layout, pill and inline layout adapters",
+      "default_install": true,
+      "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "more-info-card",
+      "kind": "frontend",
+      "repository": "https://github.com/thomasloven/lovelace-more-info-card",
+      "version": "commit:c0a9c942851c",
+      "commit": "c0a9c942851c1c5370e8de102eb96597fb845d85",
+      "release": "https://github.com/thomasloven/lovelace-more-info-card/commit/c0a9c942851c1c5370e8de102eb96597fb845d85",
+      "entrypoint": "more-info-card.js",
+      "assets": [
+        {
+          "path": "more-info-card.js",
+          "url": "https://raw.githubusercontent.com/thomasloven/lovelace-more-info-card/c0a9c942851c1c5370e8de102eb96597fb845d85/more-info-card.js",
+          "sha256": "7489a78c1ca15f5979ea946e0b8bc668cbc09af151146bc19307e87eb7e5fc49",
+          "bytes": 18354
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/thomasloven/lovelace-more-info-card/c0a9c942851c1c5370e8de102eb96597fb845d85/LICENSE.txt",
+          "sha256": "4b20e02bf5ba00311214874f8fcb146ae63c194f6ba8644ce95c9e3708bdedfa",
+          "bytes": 1070
+        }
+      ],
+      "hacs_category": "dashboard",
+      "purpose": "Existing non-cover more-info-card configurations; covers use the bundled native adapter",
+      "default_install": true,
+      "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "vertical-stack-in-card",
+      "kind": "frontend",
+      "repository": "https://github.com/ofekashery/vertical-stack-in-card",
+      "version": "v1.1.4",
+      "commit": "07cadb19b37210e2f4d207f04462e8a1bfb0ab30",
+      "release": "https://github.com/ofekashery/vertical-stack-in-card/releases/tag/v1.1.4",
+      "entrypoint": "vertical-stack-in-card.js",
+      "assets": [
+        {
+          "path": "vertical-stack-in-card.js",
+          "url": "https://github.com/ofekashery/vertical-stack-in-card/releases/download/v1.1.4/vertical-stack-in-card.js",
+          "sha256": "8e3775a19ae79664acf94afe4ebfacdc701f7294d3c5da24a74f99b0deb39c37",
+          "bytes": 9780
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/ofekashery/vertical-stack-in-card/07cadb19b37210e2f4d207f04462e8a1bfb0ab30/LICENSE",
+          "sha256": "623c9ed3600d6e088d0daf45c922df7b59e336823cb8407842fabcafe2c70ff6",
+          "bytes": 1068
+        }
+      ],
+      "hacs_category": "dashboard",
+      "purpose": "Existing stack configurations; DASH6 also supplies its own stack",
+      "default_install": true,
+      "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "firemote",
+      "kind": "frontend",
+      "repository": "https://github.com/PRProd/HA-Firemote",
+      "version": "v4.1.9",
+      "commit": "a2c5b59fad8e8c050a2d2164648bb09dd4795a84",
+      "release": "https://github.com/PRProd/HA-Firemote/releases/tag/v4.1.9",
+      "entrypoint": "HA-Firemote.js",
+      "assets": [
+        {
+          "path": "HA-Firemote.js",
+          "url": "https://raw.githubusercontent.com/PRProd/HA-Firemote/a2c5b59fad8e8c050a2d2164648bb09dd4795a84/dist/HA-Firemote.js",
+          "sha256": "c503db6fe95c74200ceade0e031d1515c59182f0754198c429e2d976cfeb957e",
+          "bytes": 388651
+        },
+        {
+          "path": "language-translations.js",
+          "url": "https://raw.githubusercontent.com/PRProd/HA-Firemote/a2c5b59fad8e8c050a2d2164648bb09dd4795a84/dist/language-translations.js",
+          "sha256": "989a868a33964e331557293a5fa465a7039793ce5610c001aef308cf970d09e4",
+          "bytes": 22194
+        },
+        {
+          "path": "launcher-buttons.js",
+          "url": "https://raw.githubusercontent.com/PRProd/HA-Firemote/a2c5b59fad8e8c050a2d2164648bb09dd4795a84/dist/launcher-buttons.js",
+          "sha256": "af516bf1f56f608e9f6698bcd8113d452444c438103a1136478268917f5091ba",
+          "bytes": 1401777
+        },
+        {
+          "path": "lit/lit-all.min.js",
+          "url": "https://raw.githubusercontent.com/PRProd/HA-Firemote/a2c5b59fad8e8c050a2d2164648bb09dd4795a84/dist/lit/lit-all.min.js",
+          "sha256": "934c9157d9e8c1c6aac88fdc94bb908b04e1db4dbe0a127be9b75465dcda2887",
+          "bytes": 31110
+        },
+        {
+          "path": "lit/lit-all.min.js.map",
+          "url": "https://raw.githubusercontent.com/PRProd/HA-Firemote/a2c5b59fad8e8c050a2d2164648bb09dd4795a84/dist/lit/lit-all.min.js.map",
+          "sha256": "64b1d319b23371ec9db30593d7afa16bf7d55948391551ea9404b8a6072748e9",
+          "bytes": 303576
+        },
+        {
+          "path": "supported-devices.js",
+          "url": "https://raw.githubusercontent.com/PRProd/HA-Firemote/a2c5b59fad8e8c050a2d2164648bb09dd4795a84/dist/supported-devices.js",
+          "sha256": "734c2cdf6efb134e295d10647185741a20ac27c813a34ee5c6a31f88f057ccbe",
+          "bytes": 12739
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/PRProd/HA-Firemote/a2c5b59fad8e8c050a2d2164648bb09dd4795a84/LICENSE",
+          "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+          "bytes": 35149
+        }
+      ],
+      "hacs_category": "dashboard",
+      "purpose": "Complete Apple TV / Fire TV remote modal; includes relative imports and vendored Lit",
+      "default_install": true,
+      "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "dual_smart_thermostat",
+      "kind": "integration",
+      "repository": "https://github.com/swingerman/ha-dual-smart-thermostat",
+      "version": "v0.13.2",
+      "commit": "fe0c544b4a2a155cfbfd0863d9bf694accb83920",
+      "release": "https://github.com/swingerman/ha-dual-smart-thermostat/releases/tag/v0.13.2",
+      "entrypoint": null,
+      "assets": [
+        {
+          "path": "source.zip",
+          "url": "https://codeload.github.com/swingerman/ha-dual-smart-thermostat/zip/fe0c544b4a2a155cfbfd0863d9bf694accb83920",
+          "sha256": "0d532bc1f04f21bb0a47eb966c336e64e2cf1e5e6e52346d1e4d39dc4e7a7233",
+          "bytes": 3173846,
+          "archive_prefix": "ha-dual-smart-thermostat-fe0c544b4a2a155cfbfd0863d9bf694accb83920/",
+          "component_path": "custom_components/dual_smart_thermostat/"
+        },
+        {
+          "path": "LICENSE.upstream.txt",
+          "url": "https://raw.githubusercontent.com/swingerman/ha-dual-smart-thermostat/fe0c544b4a2a155cfbfd0863d9bf694accb83920/LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "bytes": 11357
+        }
+      ],
+      "hacs_category": "integration",
+      "purpose": "Optional backend climate integration; no JavaScript resource",
+      "default_install": false,
+      "license_file": "LICENSE.upstream.txt"
+    }
+  ]
+}

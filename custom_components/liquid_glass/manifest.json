@@ -1,0 +1,21 @@
+{
+  "domain": "liquid_glass",
+  "name": "Liquid Glass",
+  "version": "3.0.0",
+  "config_flow": true,
+  "documentation": "https://github.com/hitcompliance/liquid-glass-home-assistant-theme",
+  "issue_tracker": "https://github.com/hitcompliance/liquid-glass-home-assistant-theme/issues",
+  "codeowners": [
+    "@hitcompliance"
+  ],
+  "dependencies": [
+    "frontend",
+    "lovelace",
+    "http",
+    "persistent_notification"
+  ],
+  "requirements": [],
+  "integration_type": "service",
+  "iot_class": "local_push",
+  "single_config_entry": true
+}
