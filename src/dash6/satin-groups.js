@@ -21,6 +21,8 @@ export const satinGroupCSS=`
 function directItems(group){const slot=group.querySelector(':scope>slot');if(slot)return slot.assignedElements({flatten:true}).filter(el=>el.matches(itemSelector));return [...group.children].filter(el=>el.matches(itemSelector));}
 function selected(item){const sources=[item];if(item.shadowRoot)sources.push(...item.shadowRoot.querySelectorAll('[aria-pressed],[aria-selected],[aria-checked],.selected,.active'));return sources.some(el=>['aria-pressed','aria-selected','aria-checked'].some(name=>el.getAttribute(name)==='true')||el.classList.contains('selected')||el.classList.contains('active'));}
 export function satinGroupCandidate(group){
+ if(group?.hasAttribute?.('data-dash6-own-group'))return false;
+ for(let n=group;n;n=n.assignedSlot||n.parentNode||n.host)if(n.localName==='hui-media-control-card'||n.localName==='firemote-card')return false;
  if(group?.nodeType!==1||group.getRootNode().host?.localName==='dash6-glass-segments')return false;
  if(thermostatAncestor(group)&&!thermostatModeGroup(group))return false;
  const host=group.getRootNode().host;

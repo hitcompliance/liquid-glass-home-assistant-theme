@@ -128,3 +128,32 @@ Demo, Default-Zuordnungen und Beispiele enthalten neutrale Daten. Für das Dashb
 Dieses Projekt ist unabhängig von Apple und Home Assistant. Der Theme-Teil steht unter [MIT](LICENSE); Quell- und Fremdlizenzen der mitgelieferten Karten stehen bei den jeweiligen Modulen und Lizenzhinweisen. Für die ursprüngliche SVG-Optik siehe [THIRD-PARTY-LICENSE.md](frontend/THIRD-PARTY-LICENSE.md).
 
 Weitere Einordnung: [Design-Notizen](docs/DESIGN-NOTES.md) und [ursprüngliche DASH5-Kompatibilität](docs/CARD-COMPATIBILITY.md).
+
+
+
+### Lichtgruppen ab Kartenpaket 2.4.0
+
+In den Theme-Einstellungen heißt die optionale Mitgliederanzeige **Lichtgruppen Sonder-Schalter**; sie ist standardmäßig aus. Im visuellen Karteneditor lassen sich Leistung/Energie, die Mindestskala (100 W), Haupt-/Backlight und folgende Zeilen konfigurieren:
+
+```yaml
+rows:
+  controls: true
+  scenes: false
+main_back:
+  enabled: true
+  main_entity: switch.example_main_light
+  back_entity: switch.example_backlight
+power_entity: sensor.example_power
+energy_entity: sensor.example_energy
+graph:
+  minimum: 100
+scenes:
+  - entity: scene.example_evening
+    name: Abend
+    icon: mdi:weather-night
+    fill: linear-gradient(90deg, rgba(90,30,120,.7), rgba(20,70,120,.7))
+```
+
+Für die Szenen muss `rows.scenes: true` gesetzt werden. Ohne zusätzliche Konfiguration bleibt die Steuerungszeile aktiv. Effekte erscheinen bei entsprechendem Geräteangebot. Zugeordnete Haupt-/Backlights folgen dem zentralen Ein-/Ausschalten; die Zusatzbuttons bleiben einzeln bedienbar.
+
+Bei Haustürkarten können `ring_entities` weitere Klingelsensoren und `cancel_entities` die Öffner/Schlösser angeben, die das Klingelsignal beenden. `contact_entity` verwendet den Wohnungstürkontakt. Die Farbmarkierung verändert keine Tür- oder Schlosszustände.

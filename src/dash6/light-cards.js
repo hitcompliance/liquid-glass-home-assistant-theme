@@ -2,11 +2,13 @@ import {scopedHass,watchRegistries} from './shared-data.js';
 import {errorIndicator,reportError} from './error-indicator.js';
 import {bindThemePreferences,unbindThemePreferences} from './material.js';
 import BASE_CSS from './base.css';
+import {ikeaBackgroundGraph} from './ikea-card.js';
+import {sceneMatches,sceneTarget} from './scene-state.js';
 import {bindSatinSlider} from './satin-slider-drag.js';
 import {satinSurfaceCSS} from './satin-surface.js';
 import {childLocked,switchVisual,setSwitchColorResolver} from './glass-switch.js';
 /* DASH5 Light Cards v2. Standalone module; no legacy element is redefined. */
-export const VERSION = '2.3.0-satin';
+export const VERSION = '2.4.0-satin';
 export const TYPES = { light: 'dash6-govee-light-card-v2', group: 'dash6-lightgroup-card-v2' };
 const colorModes = new Set(['hs', 'xy', 'rgb', 'rgbw', 'rgbww']);
 const neutralEffects = new Set(['none', 'off', 'no effect', 'kein effekt']);
@@ -71,15 +73,17 @@ export function normalizeConfig(input) {
   if (!['group', 'individual'].includes(config.controls.buttons)) config.controls.buttons = 'group';
   if (!['normal', 'compact'].includes(config.controls.density)) config.controls.density = 'compact';
   if (!['top', 'bottom', 'left', 'right'].includes(config.controls.position)) config.controls.position = 'right';
-  config.main_back = { enabled: false, show_main: true, show_back: true, placement: 'detail', auto_detect: true, ...config.main_back };
+  config.rows = { controls: true, scenes: false, ...config.rows };
+  config.main_back = { enabled: true, show_main: true, show_back: true, placement: 'header', auto_detect: true, ...config.main_back };
   if (!['detail', 'header'].includes(config.main_back.placement)) config.main_back.placement = 'detail';
   if(!controllableID(config.main_back.main_entity))delete config.main_back.main_entity;
   if(!controllableID(config.main_back.back_entity))delete config.main_back.back_entity;
   config.discovery = { enabled: true, include_hidden: false, ...config.discovery };
-  config.graph = { show: true, source: 'auto', span: '24h', interval: '15min', update_interval: '5min', height: 80, ...config.graph };
+  config.graph = { show: true, source: 'auto', span: '24h', interval: '15min', update_interval: '15min', height: 80, minimum: 100, ...config.graph };
   if (!['auto', 'power', 'energy'].includes(config.graph.source)) config.graph.source = 'auto';
   if (!['5min', '15min', '30min', '1h'].includes(config.graph.interval)) config.graph.interval = '15min';
   config.graph.height = clamp(config.graph.height, 64, 120);
+  config.graph.minimum = finite(config.graph.minimum) ? Math.max(1,Number(config.graph.minimum)) : 100;
   return config;
 }
 export function available(state) { return Boolean(state && !['unknown', 'unavailable'].includes(state.state)); }
@@ -251,7 +255,11 @@ export function controlTarget(config, role, states = {}) {
   const mapped=config.main_back?.[`${role}_entity`];
   if(controllableID(mapped))return [mapped];
   if(config.main_back?.auto_detect===false)return [];
-  return segmentRoles(config,states)[role]||[];
+  const members=(config.segments||[]).map(s=>typeof s==='string'?{entity:s}:s);
+  const pattern=role==='back'?/back[ _-]?light|hintergrundlicht|hinterlicht/i:/main[ _-]?light|hauptlicht/i;
+  const named=members.filter(s=>s.role===role||pattern.test(`${s.entity} ${s.name||''} ${states[s.entity]?.attributes?.friendly_name||''}`)).map(s=>s.entity);
+  if(named.length)return named;
+  return /^ceiling-/.test(config.segment_display?.style||'')&&members.length>1?segmentRoles(config,states)[role]||[]:[];
 }
 export function toggleServiceFor(hass, ids) {
   const availableIds=ids.filter(id=>controllableID(id)&&available(hass.states[id]));
@@ -260,18 +268,12 @@ export function toggleServiceFor(hass, ids) {
   return {service:allOn?'turn_off':'turn_on',ids:availableIds};
 }
 export function graphConfig(config, states = {}) {
-  const source=config.graph?.source||'auto';
-  const energy=source==='energy'||(source==='auto'&&!config.power_entity&&config.energy_entity);
+  const energy=config.graph?.source==='energy'||(!config.power_entity&&config.energy_entity);
   const entity=energy?config.energy_entity:config.power_entity;
-  if(!config.graph?.show||!/^sensor\.[a-z0-9_]+$/.test(entity||''))return null;
-  const height=clamp(config.graph.height||80,64,120);
-  const unit=states[entity]?.attributes?.unit_of_measurement||(energy?'Wh':'W');
-  return {
-    type:'custom:apexcharts-card',graph_span:config.graph.span||'24h',update_interval:config.graph.update_interval||'5min',
-    header:{show:false},series:[{entity,type:'line',stroke_width:2,group_by:{func:'last',duration:config.graph.interval||'15min'}}],
-    card_mod:{style:`ha-card{container-type:inline-size!important;background:transparent!important;border:0!important;box-shadow:none!important;margin:0!important;padding:0!important;height:${height}px!important;min-height:${height}px!important;max-height:${height}px!important;overflow:hidden!important;border-radius:0!important}.apexcharts-canvas,.apexcharts-svg,svg{display:block!important;width:100%!important;min-width:0!important;height:${height}px!important;min-height:${height}px!important;max-height:${height}px!important;box-sizing:border-box!important;overflow:visible!important}.apexcharts-tooltip{border:1px solid var(--divider-color)!important;border-radius:999px!important;background:var(--ha-card-background,var(--card-background-color))!important;box-shadow:var(--ha-card-box-shadow,0 2px 6px rgba(0,0,0,.24))!important;color:var(--primary-text-color)!important;padding:2px 4px!important}`},
-    apex_config:{chart:{height,sparkline:{enabled:true},background:'transparent'},stroke:{curve:'straight'},markers:{size:0,hover:{size:4}},grid:{show:false},tooltip:{enabled:true,shared:false,intersect:false,followCursor:true,x:{format:'HH:mm'},y:{formatter:value=>`${Math.round(value).toLocaleString('de-DE')} ${unit}`}},yaxis:energy?{min:0}:{min:0,max:max=>Math.max(100,max)}}
-  };
+  if(config.graph?.show===false||!/^sensor\.[a-z0-9_]+$/.test(entity||''))return null;
+  const graph=ikeaBackgroundGraph({power_entity:entity,name:states[entity]?.attributes?.friendly_name||'',graph:{...config.graph,show:true}});
+  graph.series[0].unit=states[entity]?.attributes?.unit_of_measurement||(energy?'Wh':'W');
+  return graph;
 }
 export function stopEffectData(state) {
   const a=state?.attributes||{}, neutral=(a.effect_list||[]).find(effect=>neutralEffects.has(String(effect).toLocaleLowerCase()));
@@ -441,7 +443,15 @@ function loadEntityRegistry(hass){
 }
 function effectiveConfig(config,states,registry){
   if(config.discovery?.enabled===false)return config;
-  return {...config,segments:automaticSegments(config,states,registry)};
+  const resolved={...config,segments:automaticSegments(config,states,registry),main_back:{...config.main_back}};
+  if(resolved.main_back.auto_detect!==false){
+    const candidates=suggestions(resolved,states,registry).switches;
+    for(const role of ['main','back']){
+      const matches=candidates.filter(s=>s.role===role&&/main[ _-]?light|back[ _-]?light|hauptlicht|hintergrundlicht|hinterlicht/i.test(`${s.entity} ${s.name}`));
+      if(!resolved.main_back[role+'_entity']&&matches.length===1)resolved.main_back[role+'_entity']=matches[0].entity;
+    }
+  }
+  return resolved;
 }
 export function warmHue(state){const a=state?.attributes||{},h=Number(a.hs_color?.[0]);return a.color_mode==='hs'&&Array.isArray(a.hs_color)&&h>=29&&h<=49;}
 export function controlKelvin(state){const a=state?.attributes||{};if(a.color_mode==='color_temp'&&Number(a.color_temp_kelvin)>0)return Number(a.color_temp_kelvin);const bounds=kelvinBounds(state);if(!bounds)return null;const rgb=hsRGB(...(a.hs_color||[39,50])),peak=Math.max(...rgb),target=rgb.map(x=>x/peak);let best=bounds[0],distance=Infinity;for(let k=bounds[0];k<=bounds[1];k+=10){const c=kelvinRGB(k),m=Math.max(...c),d=c.reduce((sum,x,i)=>sum+(x/m-target[i])**2,0);if(d<distance){distance=d;best=k;}}return best;}
@@ -533,7 +543,7 @@ const EXTRA_CSS=`
 @media(prefers-reduced-motion:no-preference){.card,.power,.mode-bar.grouped button{transition:background-color var(--lc-glass-speed) ease,border-color var(--lc-glass-speed) ease,box-shadow var(--lc-glass-speed) ease,transform var(--lc-glass-speed) ease}.mode-bar.grouped button:active,.power:active{transform:scale(.96)}}
 :host(.selected) .card{outline:var(--dash6-material-8b78f10a);outline-offset:2px}
 .card{position:relative;isolation:isolate}.card>*:not(.power-graph){position:relative;z-index:2}
-.power-graph{position:absolute!important;left:0;bottom:0;width:100%;height:80px;z-index:1;opacity:1;pointer-events:auto;overflow:hidden}.power-graph>apexcharts-card{display:block;width:100%;height:100%;min-width:0}.power-graph:hover{z-index:4}
+.power-graph{position:absolute!important;left:0;bottom:0;width:100%;height:80px;z-index:1;opacity:1;pointer-events:auto;overflow:hidden}.power-graph>apexcharts-card{display:block;width:100%;height:100%;min-width:0}
 .mode-bar{display:flex;gap:8px;flex-wrap:nowrap;white-space:nowrap;min-width:0}.mode-bar.grouped{gap:0;border:var(--dash6-material-9aa1c302);border-radius:14px;overflow:hidden}.mode-bar.grouped button{border:0;border-radius:0;flex:0 0 48px}.mode-bar.grouped button+button{border-left:1px solid var(--divider-color)}.mode-bar.compact button{padding:0;min-width:44px;min-height:44px;width:44px;height:44px;flex-basis:44px}.mode-bar.icon-only button{flex:0 0 48px}.mode-bar.icon-only.compact button{flex-basis:44px}.mode-bar.text-only button{flex:0 0 auto}
 .controls.main-off .slider{opacity:var(--dash6-slider-off-opacity,.5)!important}
 .controls.layout-left,.controls.layout-right{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;min-width:0}.controls.layout-right{grid-template-columns:minmax(0,1fr) auto}.controls.layout-left .mode-bar{grid-column:1;grid-row:1}.controls.layout-left .slider-wrap,.controls.layout-left .effect-entry{grid-column:2;grid-row:1}.controls.layout-right .slider-wrap,.controls.layout-right .effect-entry{grid-column:1;grid-row:1}.controls.layout-right .mode-bar{grid-column:2;grid-row:1}.controls.layout-bottom .mode-bar{order:2}.controls.layout-bottom .slider-wrap,.controls.layout-bottom .effect-entry{order:1}
@@ -611,7 +621,25 @@ const SATIN_LIGHT_CSS=`
 @media(pointer:coarse){:host([data-satin]) .slider,:host([data-satin]) .slider::-webkit-slider-runnable-track{height:44px}:host([data-satin]) .slider::-webkit-slider-thumb{height:44px}:host([data-satin]) .card>.effect-trigger{top:12px;width:44px;height:44px;min-width:44px;min-height:44px}:host([data-satin]) .card.has-effect-trigger>.head{padding-right:52px}}
 @media(prefers-reduced-motion:reduce){:host([data-satin]) .card>.effect-trigger{scale:1!important;translate:0!important;transition:none!important}}
 `;
-function addStyle(root,extra=''){root.append(el('style',{},CSS+'.power[aria-pressed=true]{background:var(--lamp);border:0;color:var(--lamp-ink)}'+EXTRA_CSS+ICON_GLASS_CSS+DASH5_POLISH_CSS+DASH5_SELECTION_CSS+extra+BASE_CSS.slice(BASE_CSS.indexOf('/* Elastic feedback'))+satinSurfaceCSS+SATIN_LIGHT_CSS));}
+const ADDITIONAL_LIGHT_CSS=`
+.card .head{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:12px;align-items:start}
+.card .detail-link{min-height:44px;width:100%;align-items:flex-start}
+.card .light-extras{align-self:start;justify-self:end;display:grid;grid-template-columns:repeat(var(--extras-count),minmax(0,1fr));width:140px;height:42px;padding:3px;gap:0;border-radius:10px;background:var(--dash6-satin-control-background);border:var(--dash6-satin-control-border);box-shadow:var(--dash6-satin-control-shadow);backdrop-filter:var(--dash6-satin-control-filter)}
+.card .light-extras button{position:relative;display:grid;place-items:center;min-width:0;min-height:34px;height:34px;padding:0;border:0!important;border-radius:8px;background:transparent!important;box-shadow:none!important;filter:none!important;isolation:isolate;color:var(--secondary-text-color)}
+.card .light-extras button::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:8px;background:var(--dash6-satin-lens-background);border:var(--dash6-satin-lens-border);box-shadow:var(--dash6-satin-lens-shadow);opacity:0;transition:opacity 160ms ease,scale 380ms cubic-bezier(.22,1.5,.36,1)}
+.card .light-extras button[aria-pressed=true]{color:var(--primary-text-color)}.card .light-extras button[aria-pressed=true]::before{opacity:1}
+.card .light-extras button:active::before{scale:.975;box-shadow:var(--dash6-satin-button-pressed-shadow)}
+.card .scene-recess{margin-top:8px;padding:8px;border-radius:12px;background:var(--dash6-satin-control-background);border:var(--dash6-satin-control-border);box-shadow:var(--dash6-satin-control-shadow)}
+.card .scene-recess button{background:var(--scene-fill,var(--dash6-satin-button-background))!important;border:var(--dash6-satin-button-border)!important;box-shadow:var(--dash6-satin-button-shadow)!important;filter:brightness(.82);border-radius:10px;transition:scale 380ms cubic-bezier(.22,1.5,.36,1),filter 180ms ease,box-shadow 180ms ease}
+.card .scene-recess button[aria-pressed=true]{filter:brightness(1.12);box-shadow:var(--dash6-satin-lens-shadow),0 0 8px rgba(190,223,255,.25)!important}
+.card .scene-recess button:active{scale:.96;translate:0 2px;box-shadow:var(--dash6-satin-button-pressed-shadow)!important}
+.card .power-graph{right:0!important;width:100%!important;height:80px!important;padding:0!important;margin:0!important;bottom:0!important;z-index:1!important}.card .power-graph>*{display:block;width:100%;height:80px}
+@media(hover:hover){.card .light-extras button:hover::before{scale:1.035}.card .scene-recess button:hover{filter:brightness(1.12)}}
+@container(max-width:370px){.card .head{grid-template-columns:88px minmax(0,1fr)}.card .light-extras{grid-column:2;grid-row:2}.card .head .detail-link{grid-column:2}.card .head>dash6-glass-switch{grid-row:1 / span 2}}
+@media(pointer:coarse){.card .light-extras{height:50px}.card .light-extras button{height:44px;min-height:44px}}
+@media(prefers-reduced-motion:reduce){.card .light-extras button::before,.card .scene-recess button{transition:none!important;scale:1!important;translate:0!important}}
+`;
+function addStyle(root,extra=''){root.append(el('style',{},CSS+'.power[aria-pressed=true]{background:var(--lamp);border:0;color:var(--lamp-ink)}'+EXTRA_CSS+ICON_GLASS_CSS+DASH5_POLISH_CSS+DASH5_SELECTION_CSS+extra+BASE_CSS.slice(BASE_CSS.indexOf('/* Elastic feedback'))+satinSurfaceCSS+SATIN_LIGHT_CSS+ADDITIONAL_LIGHT_CSS));}
 function slider(label,min,max,value,unit,track,commit,disabled=false,preview,owner){
   const wrap=el('div',{class:'slider-wrap'}), line=el('div',{class:'slider-label'}), output=el('output',{},`${Math.round(value)}${unit}`);
   line.append(el('span',{},label),output);
@@ -663,7 +691,12 @@ export class Dash5LightCard extends Base {
   async send(data={},service='turn_on'){
     if(childLocked(this._config,this._hass?.states)){this.shadowRoot.querySelector('dash6-glass-switch')?.reject();return;}
     this._error=null;
-    try{if(this._commandHandler)await this._commandHandler(data,service);else await sendLight(this._hass,this._config.entity,data,service,this._config);this.render();}
+    try{if(this._commandHandler)await this._commandHandler(data,service);else await sendLight(this._hass,this._config.entity,data,service,this._config);
+      if(!Object.keys(data).length&&['turn_on','turn_off'].includes(service)){
+        const c=this._renderConfig||this._config,ids=[...new Set(['main','back'].flatMap(role=>this.roleTargets(role,c)))].filter(id=>id!==c.entity&&available(this._hass.states[id]));
+        const results=await Promise.allSettled(ids.map(id=>setTarget(this._hass,id,service,c)));
+        if(results.some(r=>r.status==='rejected'))throw Error('Haupt- oder Backlight konnte nicht vollständig geschaltet werden.');
+      }this.render();}
     catch(e){reportError(this,e);this.render();}
   }
   async toggleRole(role){
@@ -762,9 +795,9 @@ export class Dash5LightCard extends Base {
   }
   makeGraph(card,config){
     const graphConfigValue=graphConfig(config,this._hass?.states||{});if(!graphConfigValue)return;
-    const graphKey=[config.power_entity,config.energy_entity,config.graph?.source,config.graph?.span,config.graph?.interval,config.graph?.update_interval,config.graph?.height].join('|');
+    const graphKey=[config.power_entity,config.energy_entity,config.graph?.source,config.graph?.span,config.graph?.interval,config.graph?.update_interval,config.graph?.height,config.graph?.minimum,config.graph?.color].join('|');
     if(graphKey!==this._graphKey){this._graphKey=graphKey;this._graphCard=null;this._graphPromise=null;}
-    const layer=el('div',{class:'power-graph','aria-label':'24-Stunden-Leistungsverlauf'});layer.style.height=`${config.graph.height}px`;layer.style.bottom='0';layer.addEventListener('click',event=>event.stopPropagation());card.insertBefore(layer,card.firstChild);
+    const layer=el('div',{class:'power-graph','aria-label':'24-Stunden-Leistungsverlauf'});layer.style.height='80px';layer.style.bottom='0';layer.addEventListener('click',event=>event.stopPropagation());card.insertBefore(layer,card.firstChild);
     if(this._graphCard){this._graphCard.hass=this._hass;layer.append(this._graphCard);return;}
     if(!this._graphPromise){this._graphPromise=typeof window.loadCardHelpers==='function'?window.loadCardHelpers().then(helpers=>{
       if(!helpers?.createCardElement)throw new Error('Kartenhilfe nicht verfügbar');
@@ -828,6 +861,20 @@ export class Dash5LightCard extends Base {
     }
     if(group.childElementCount)target.append(group);
   }
+  renderSceneRow(card,c){
+    if(!c.scenes.length)return;
+    const row=el('div',{class:'scenes scene-recess','data-dash6-own-group':'','aria-label':'Lichtgruppen-Szenen'});
+    for(const scene of c.scenes){
+      const target=scene.entities||sceneTarget(this._hass,scene.entity,()=>this.isConnected&&this.render());
+      const active=sceneMatches(target,this._hass.states);
+      const item=button(scene.name||this._hass.states[scene.entity]?.attributes.friendly_name||scene.entity,async()=>{
+        item.disabled=true;try{await this._hass.callService('scene','turn_on',{entity_id:scene.entity});}catch(error){reportError(this,error);}finally{item.disabled=false;}
+      },{'aria-pressed':active,disabled:!available(this._hass.states[scene.entity])});
+      if(scene.icon)item.prepend(icon(scene.icon));
+      if(typeof scene.fill==='string')item.style.setProperty('--scene-fill',scene.fill);
+      row.append(item);
+    }card.append(row);
+  }
   renderInlineSegments(card,c){
     if(c.segment_display.placement!=='inline'||!c.segments.length)return;
     const wrapper=el('section',{class:'inline-segments','aria-label':'Enthaltene Lichter'}),title=el('div',{class:'row'});title.append(el('strong',{class:'grow'},'Enthaltene Lichter'));
@@ -854,19 +901,25 @@ export class Dash5LightCard extends Base {
     else if(state.state==='unknown')status.push('Status unbekannt');
     else if(!on)status.push('Aus');
     else{if(finite(a.brightness))status.push(`${Math.round(a.brightness/2.55)} %`);if(a.color_mode==='color_temp'&&a.color_temp_kelvin>0)status.push(`${Math.round(a.color_temp_kelvin)} K`);else if(effectRunning)status.push('Effekt '+a.effect);else if(actual==='color')status.push('Farbton '+Math.round(a.hs_color?.[0]||0)+'°');else if(!status.length)status.push('Ein');}
-    if(c.segments.length)status.push(`${c.segments.filter(s=>stateFor(this._hass,s.entity)?.state==='on').length}/${c.segments.length} an`);
+    // Membership counts belong only to the optional group switch, never the status line.
     if(optimistic.pending(c.entity))status.push(optimistic.errors.has(c.entity)?'Noch nicht bestätigt':'Wird übernommen…');
-    const name=el('span',{class:'name'},displayName(c,state));if(this._selectionSummary)name.append(el('strong',{class:'selection-summary'},` (${this._selectionSummary.count} von ${this._selectionSummary.total})`));text.append(name,el('span',{class:'status'},status.join(' · ')));link.append(text);head.append(power,link);this.renderMainBack(head,c,'header');let gear=null;if(this.showConfigGear()){gear=button('',()=>this.openSettings(),{class:'settings-trigger','aria-label':'Karteneinstellungen öffnen','title':'Karteneinstellungen'});gear.append(icon('mdi:cog-outline'));head.append(gear);}card.append(head);
+    const name=el('span',{class:'name'},displayName(c,state));if(this._selectionSummary)name.append(el('strong',{class:'selection-summary'},` (${this._selectionSummary.count} von ${this._selectionSummary.total})`));text.append(name,el('span',{class:'status'},status.join(' · ')));link.append(text);head.append(power,link);let gear=null;if(this.showConfigGear()){gear=button('',()=>this.openSettings(),{class:'settings-trigger','aria-label':'Karteneinstellungen öffnen','title':'Karteneinstellungen'});gear.append(icon('mdi:cog-outline'));head.append(gear);}card.append(head);
+    const extras=el('div',{class:'light-extras','data-dash6-own-group':'','aria-label':'Zusätzliche Lichtfunktionen',role:'group'});
     if(capabilities(state,c).effect){
-      card.classList.add('has-effect-trigger');
-      const title=effectRunning?'Effekt '+a.effect+' beenden':'Lichteffekt auswählen';
-      const trigger=button('',()=>{if(effectRunning)this.send(stopEffectData(state));else this.openEffects();},{class:'effect-trigger','aria-label':title,title,'aria-pressed':effectRunning,disabled:!available(state)});
-      trigger.append(icon('mdi:creation'));card.append(trigger);
+      const trigger=button('',()=>this.openEffects(),{class:'extra-action','aria-label':'Lichteffekt auswählen',title:effectRunning?'Effekt: '+a.effect:'Lichteffekt auswählen','aria-pressed':effectRunning,disabled:!available(state)});
+      trigger.append(icon('mdi:creation'));extras.append(trigger);
     }
+    if(c.main_back.enabled!==false)for(const [role,label,glyph] of [['main','Hauptlicht','mdi:ceiling-light'],['back','Backlight','mdi:led-strip-variant']]){
+      const ids=this.roleTargets(role,c);if(c.main_back['show_'+role]===false||!ids.length)continue;
+      const on=ids.some(id=>stateFor(this._hass,id)?.state==='on');
+      const trigger=button('',()=>this.toggleRole(role),{class:'extra-action','aria-label':label+(on?' ausschalten':' einschalten'),title:label,'aria-pressed':on,disabled:!ids.some(id=>available(this._hass.states[id]))});trigger.append(icon(glyph));extras.append(trigger);
+    }
+    if(extras.childElementCount){extras.style.setProperty('--extras-count',extras.childElementCount);card.classList.add('has-extras');head.append(extras);}
     const metrics=[];for(const id of [c.power_entity,c.energy_entity]){const s=this._hass.states[id];if(available(s))metrics.push(`${s.state} ${s.attributes.unit_of_measurement||''}`);}
     if(metrics.length)card.append(el('p',{class:'metrics muted'},metrics.join(' · ')));
     this.renderInlineSegments(card,c);
-    if(capabilities(state,c).brightness||capabilities(state,c).color_temp||capabilities(state,c).color||capabilities(state,c).white)this.renderControls(card,state,c);
+    if(c.rows.controls&&(capabilities(state,c).brightness||capabilities(state,c).color_temp||capabilities(state,c).color||capabilities(state,c).white))this.renderControls(card,state,c);
+    if(c.rows.scenes)this.renderSceneRow(card,c);
     const occurrence=optimistic.errorEvents.get(c.entity);if(occurrence&&occurrence!==this._seenError){this._seenError=occurrence;reportError(this,occurrence.message);}head.append(errorIndicator(this));
     card.addEventListener('click',e=>{if(!e.composedPath().some(n=>n.tagName&&['BUTTON','INPUT','SELECT','DASH6-GLASS-SWITCH'].includes(n.tagName))){if(this._backgroundAction!==undefined)this._backgroundAction?.();else if(this._selectionHandler){e.stopPropagation();this._selectionHandler(c.entity,this._selection);}else this.open();}});
     if(oldCard)oldCard.replaceWith(card);else this.shadowRoot.insertBefore(card,dialog||null);

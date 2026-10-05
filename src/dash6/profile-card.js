@@ -21,6 +21,8 @@ function mapCards(config){
  if(!config||typeof config!=='object')return config;
  if(Array.isArray(config))return config.map(mapCards);
  const c=mapDeviceSwitches(config);
+ // Area pills belong directly to the thin header surface, without a nested card.
+ if(c.cards?.[0]?.type==='custom:dash6-area-header')c.cards=c.cards.map((child,index)=>{if(!index)return child;const auto=child.type==='custom:mod-card'?child.card:child;if(auto?.type!=='custom:auto-entities')return child;const pills=auto.card;if(pills?.type==='custom:layout-card'){delete pills.card_mod;delete pills.dash6_css;pills.layout={...pills.layout,padding:'0',background:'transparent'};}return auto;});
  const protectedVendor=!vendorLockAllowsSwitch(c);
  if(!protectedVendor&&isLegacyIkea(c))return ikeaConfig(c);
  const metered=protectedVendor?c:mapSatinGraphConfig(c);if(metered!==c)return metered;
@@ -68,9 +70,9 @@ class RenderCard extends LitElement {
    delete config.card_mod;
    const child=await helpers.createCardElement(!protectedVendor&&isLegacyIkea(config)?ikeaConfig(config):metered);
    if(generation!==this._generation)return;
-   let cssText=BASE_CSS+'\n'+(c.skin?.css||'');
+   let cssText=config.type==='media-control'?'ha-card{border-radius:16px!important;overflow:hidden}:host([data-media-idle]) ha-card{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important}:host([data-media-idle]) .color-block,:host([data-media-idle]) .no-img{background:transparent!important}':BASE_CSS+'\n'+(c.skin?.css||'');
    if(cssText.includes('{%'))cssText=BASE_CSS+'\nha-card{min-height:64px}';
-   cssText=materialCSS(cssText)+'\n'+BASE_CSS.slice(BASE_CSS.indexOf('/* Scoped material geometry:')); 
+   cssText=config.type==='media-control'?cssText:materialCSS(cssText)+'\n'+BASE_CSS.slice(BASE_CSS.indexOf('/* Scoped material geometry:'));
    let sheet=sheetCache.get(cssText);if(!sheet){sheet=new CSSStyleSheet();sheet.replaceSync(cssText);sheetCache.set(cssText,sheet);}
    if(config.type==='picture-entity'&&inDashboardScope())child.style.setProperty('--ha-card-border-radius','var(--dash5-card-radius,16px)');
    child.dataset.active=c.skin?.active?'true':'false';
@@ -87,7 +89,7 @@ class RenderCard extends LitElement {
   }catch(error){this._error=String(error.message||error);}
  }
  syncSwitchIcon(child,config=this._config?.definition){if(config?.entity?.startsWith('switch.')&&child.classList.contains('dash6-card-icon-lens')){child.dataset.mainDomain='switch';child.dataset.mainState=this.hass?.states?.[config.entity]?.state||'unknown';}}
- updated(){if(this._child){const child=this._child;Promise.resolve(child.updateComplete).then(()=>{if(child!==this._child||!child.isConnected||!nativeSwitchPlan(this._config.definition))return;this._satinNative??=bindSatinNativeCard(child,this._config.definition);this._satinNative.sync(this._config.definition);});this.syncSwitchIcon(this._child);if(this._child.classList.contains('dash6-nav-lens'))this._child.dataset.navActive=String(this._config?.definition?.tap_action?.navigation_path===location.pathname);this._child.hass=scopedHass(this.hass);if(this._child.classList.contains('dash6-weather-split')){const child=this._child;Promise.resolve(child.updateComplete).then(()=>{if(!child.isConnected)return;const card=child.shadowRoot?.querySelector('ha-card');if(card)child.style.setProperty('--dash6-weather-border',getComputedStyle(card).borderLeftWidth);});}const entity=this._config?.definition?.entity;if(entity?.startsWith('scene.')){this._sceneNotify??=()=>this.requestUpdate();const target=sceneTarget(this.hass,entity,this._sceneNotify);this._child.dataset.active=String(!!this._config.skin?.active&&sceneMatches(target,this.hass?.states||{}));}}}
+ updated(){if(this._child){const child=this._child;if(this._config.definition?.type==='media-control'){const state=this.hass?.states[this._config.definition.entity]?.state;child.toggleAttribute('data-media-idle',!['playing','buffering'].includes(state));}Promise.resolve(child.updateComplete).then(()=>{if(child!==this._child||!child.isConnected||!nativeSwitchPlan(this._config.definition))return;this._satinNative??=bindSatinNativeCard(child,this._config.definition);this._satinNative.sync(this._config.definition);});this.syncSwitchIcon(this._child);if(this._child.classList.contains('dash6-nav-lens'))this._child.dataset.navActive=String(this._config?.definition?.tap_action?.navigation_path===location.pathname);this._child.hass=scopedHass(this.hass);if(this._child.classList.contains('dash6-weather-split')){const child=this._child;Promise.resolve(child.updateComplete).then(()=>{if(!child.isConnected)return;const card=child.shadowRoot?.querySelector('ha-card');if(card)child.style.setProperty('--dash6-weather-border',getComputedStyle(card).borderLeftWidth);});}const entity=this._config?.definition?.entity;if(entity?.startsWith('scene.')){this._sceneNotify??=()=>this.requestUpdate();const target=sceneTarget(this.hass,entity,this._sceneNotify);this._child.dataset.active=String(!!this._config.skin?.active&&sceneMatches(target,this.hass?.states||{}));}}}
  getCardSize(){return this._child?.getCardSize?.()??3;}
  getGridOptions(){return this._config?.definition?.grid_options??this._child?.getGridOptions?.()??{columns:12};}
  render(){return this._error?html`<div role="alert" class="error">${this._error}</div>`:html`${this._child}`;}

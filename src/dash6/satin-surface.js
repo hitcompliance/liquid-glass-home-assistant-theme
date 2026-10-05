@@ -45,6 +45,7 @@ export function bindSatinMode(host,onChange){
 export function unbindSatinMode(host){modes.delete(host);host.removeAttribute('data-satin');}
 function eligible(card){
  const host=card.getRootNode().host;
+ for(let n=card;n;n=n.assignedSlot||n.parentNode||n.host)if(n.localName==='hui-media-control-card'||n.localName==='firemote-card')return false;
  if(structural.has(host?.localName)||host?.localName==='dash6-area-header')return false;
  if(thermostatAncestor(card)||host?.classList?.contains('dash6-background-graph'))return false;
  if(host?.classList?.contains('dash5-transparent')||host?.classList?.contains('dash5-navigation-link')||host?.classList?.contains('dash6-nav-lens'))return false;

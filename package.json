@@ -22,6 +22,6 @@
     "esbuild": "0.25.12",
     "playwright": "^1.61.1"
   },
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Satin Liquid Glass theme, complete custom-card bundle and interactive design gallery for Home Assistant"
 }
