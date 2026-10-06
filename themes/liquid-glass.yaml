@@ -4046,6 +4046,7 @@ DASH6 Satin Glass:
   dash6-switch-gloss: ".8"
   dash6-switch-duration: 620ms
   dash6-satin-enabled: '1'
+  dash6-media-player-padding-top: 0px
   dash6-satin-version: 2026.10.04-mockup-1
   dash6-satin-card-opacity: ".70"
   dash6-satin-card-gloss: ".14"

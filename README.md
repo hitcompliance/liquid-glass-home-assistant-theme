@@ -185,3 +185,5 @@ Cards 2.4.11: Preset-Menüzeilen behalten auch während Druck ihre Größe und P
 Cards 2.4.12: Reset and confirmation buttons in the vacuum maintenance dialog are flat at rest, raised liquid glass with pointer-following gloss on hover and deeply recessed while pressed. The existing two-step reset confirmation and entity mapping remain unchanged.
 
 Cards 2.4.13: Refrigerator button-cards inherit the same shared theme material and pointer gloss as IKEA cards. The earlier refrigerator-only fixed dark material is retired; door status, temperatures, power/energy, graph and 12px values padding remain.
+
+Cards 2.4.14: HomePod and Apple-TV/TV cards show Browse media only as the final transport button, styled like its neighbors and delegating to the current native media-browser action. Their player containers use the theme token dash6-media-player-padding-top (0px), applied with !important.
