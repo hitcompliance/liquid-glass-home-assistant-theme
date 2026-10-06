@@ -1,7 +1,7 @@
 {
   "domain": "liquid_glass",
   "name": "Liquid Glass",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "config_flow": true,
   "documentation": "https://github.com/hitcompliance/liquid-glass-home-assistant-theme",
   "issue_tracker": "https://github.com/hitcompliance/liquid-glass-home-assistant-theme/issues",
