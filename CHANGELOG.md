@@ -1,3 +1,8 @@
+# 3.1.3 / Cards 2.4.3
+
+- Make flat action button borders transparent immediately during press, retaining inset shadows and button geometry.
+- Explicitly clear scene-row container backgrounds, borders and shadows without changing individual scene fills.
+
 # 3.1.2 / Cards 2.4.2
 
 - Preserve configured scene background and text colors under the flat action material. Explicit scene fills take precedence; hover gloss and inset press feedback remain.
