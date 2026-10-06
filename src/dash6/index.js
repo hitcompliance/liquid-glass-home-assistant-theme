@@ -47,3 +47,5 @@ import './interaction-refinements.js';
 import './recessed-gauge-refinements.js';
 
 import './maintenance-button-refinements.js';
+
+import './fridge-material-refinements.js';

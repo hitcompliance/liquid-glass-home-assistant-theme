@@ -183,3 +183,5 @@ Thermostat-Gauges behalten ihre native Temperaturbedienung mit versenkten Bögen
 Cards 2.4.11: Preset-Menüzeilen behalten auch während Druck ihre Größe und Position. Das Menü ist halbtransparent mit deutlichem Schatten und schließt bei Außenklick; der Außenklick bedient keine darunterliegende Karte. Thermostat-Gauge-Bögen erhalten eine versenkte Darstellung mit dunklem oberen Innenrand und heller unterer Innenkante; die elastischen Glasgriffe bleiben erhalten.
 
 Cards 2.4.12: Reset and confirmation buttons in the vacuum maintenance dialog are flat at rest, raised liquid glass with pointer-following gloss on hover and deeply recessed while pressed. The existing two-step reset confirmation and entity mapping remain unchanged.
+
+Cards 2.4.13: Refrigerator button-cards inherit the same shared theme material and pointer gloss as IKEA cards. The earlier refrigerator-only fixed dark material is retired; door status, temperatures, power/energy, graph and 12px values padding remain.
