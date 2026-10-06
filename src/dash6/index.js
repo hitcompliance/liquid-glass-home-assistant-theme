@@ -53,3 +53,8 @@ import './fridge-material-refinements.js';
 import './media-browse-refinements.js';
 
 import './media-material-refinements.js';
+
+import './fan-mode-refinements.js';
+import './lighting-layout-refinements.js';
+
+import './universal-material-refinements.js';

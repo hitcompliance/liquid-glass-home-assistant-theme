@@ -189,3 +189,20 @@ Cards 2.4.13: Refrigerator button-cards inherit the same shared theme material a
 Cards 2.4.14: HomePod and Apple-TV/TV cards show Browse media only as the final transport button, styled like its neighbors and delegating to the current native media-browser action. Their player containers use the theme token dash6-media-player-padding-top (0px), applied with !important.
 
 Cards 2.4.15: HomePod and Apple-TV/TV shells inherit the same transparent material, subtle gloss overlay, and pointer-following hover gloss as IKEA cards. Legacy media-specific material overrides are retired while transport, status, remote controls, and media browsing remain intact.
+
+### Fan modes and metered light cards (2.4.16)
+
+`custom:dash6-fan-card` provides a visual editor for the main fan/switch, optional power and energy sensors, and `force_switch_entity` (switch or input_boolean). Its glass selector uses Automatik (main on, force off), Ein (both on), and Aus (both off). Service calls are sequential; unavailable entities disable the control and inconsistent states have no selected mode. No commands run when the card loads.
+
+```yaml
+type: custom:dash6-fan-card
+entity: fan.example
+force_switch_entity: input_boolean.example_force
+name: Fan
+power_entity: sensor.example_power
+energy_entity: sensor.example_energy
+```
+
+An optional `definition` preserves an existing button-card layout and background graph. Native light cards retain their icon action while using the current glass switch. Scene rows in Govee and lightgroup cards use an 8px gap. Metered on/off lights and switches can use `custom:dash6-ikea-card` with `power_entity` and `energy_entity`, regardless of device brand.
+
+All visible dashboard card surfaces share the Govee reference material and pointer-following hover gloss under the active Satin theme. Explicit clear shells, layout layers and embedded background graphs remain transparent; native thermostats inside a themed thermostat shell do not add a second glass layer.
