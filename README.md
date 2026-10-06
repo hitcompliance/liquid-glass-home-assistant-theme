@@ -167,3 +167,5 @@ With the Satin theme active, native media-control cards whose entity ID or frien
 [Refrigerator card configuration](examples/refrigerator-card.json) uses neutral example entities. Place it in its own cooling appliances block and replace the entities with your own. It retains power, energy, refrigerator/freezer temperatures, express-mode status and the door-opening graph. A single lock marker belongs to the glass switch; an open-door indicator appears at the top right only while the door contact is open.
 
 Cards 2.4.4 also add the current glass switch to native light cards when the theme is active, remove light scene gaps, restore light graph hover/portal tooltips, enlarge thermostat lenses during dragging and add 8px below HomePod volume sliders.
+
+Cards 2.4.5 routes HomePod power through the Apple TV remote belonging to the same registry device. This connects/disconnects the HomePod without starting music. An explicit `homepod_remote_entity` can be supplied where entity registry metadata is unavailable; unrelated remotes are never inferred from names.

@@ -33,3 +33,5 @@ import './effect-lens.js';
 import './homepod-controls.js';
 
 import './card-refinements.js';
+
+import './homepod-power.js';
