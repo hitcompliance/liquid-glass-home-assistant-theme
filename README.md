@@ -181,3 +181,5 @@ Apple-TV-/Fernseherkarten zeigen mit `?edit=1` ein Zahnrad für den GUI-Editor. 
 Thermostat-Gauges behalten ihre native Temperaturbedienung mit versenkten Bögen mit Innenschatten und elastischen Glasgriffen. Verbrauchsteilbuttons haben einen transparenten Hoverrahmen und sofort zurückkehrenden Druckschatten. Inaktive Preset-Zeilen sind transparent, bei Hover 30 Prozent weiß und während Druck vertieft; die aktive Auswahl bleibt erhaben und aktualisiert das Kartenicon aus dem tatsächlichen Entity-Zustand.
 
 Cards 2.4.11: Preset-Menüzeilen behalten auch während Druck ihre Größe und Position. Das Menü ist halbtransparent mit deutlichem Schatten und schließt bei Außenklick; der Außenklick bedient keine darunterliegende Karte. Thermostat-Gauge-Bögen erhalten eine versenkte Darstellung mit dunklem oberen Innenrand und heller unterer Innenkante; die elastischen Glasgriffe bleiben erhalten.
+
+Cards 2.4.12: Reset and confirmation buttons in the vacuum maintenance dialog are flat at rest, raised liquid glass with pointer-following gloss on hover and deeply recessed while pressed. The existing two-step reset confirmation and entity mapping remain unchanged.
