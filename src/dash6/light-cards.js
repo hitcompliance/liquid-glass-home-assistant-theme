@@ -82,7 +82,7 @@ export function normalizeConfig(input) {
   config.graph = { show: true, source: 'auto', span: '24h', interval: '15min', update_interval: '15min', height: 80, minimum: 100, ...config.graph };
   if (!['auto', 'power', 'energy'].includes(config.graph.source)) config.graph.source = 'auto';
   if (!['5min', '15min', '30min', '1h'].includes(config.graph.interval)) config.graph.interval = '15min';
-  config.graph.height = clamp(config.graph.height, 64, 120);
+  config.graph.height = clamp(config.graph.height, 90, 120);
   config.graph.minimum = finite(config.graph.minimum) ? Math.max(1,Number(config.graph.minimum)) : 100;
   return config;
 }
@@ -629,7 +629,7 @@ const ADDITIONAL_LIGHT_CSS=`
 .card .light-extras button::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:8px;background:var(--dash6-satin-lens-background);border:var(--dash6-satin-lens-border);box-shadow:var(--dash6-satin-lens-shadow);opacity:0;transition:opacity 160ms ease,scale 380ms cubic-bezier(.22,1.5,.36,1)}
 .card .light-extras button[aria-pressed=true]{color:var(--primary-text-color)}.card .light-extras button[aria-pressed=true]::before{opacity:1}
 .card .light-extras button:active::before{scale:.975;box-shadow:var(--dash6-satin-button-pressed-shadow)}
-.card .scene-recess{margin-top:8px;padding:8px;border-radius:12px;background:var(--dash6-satin-control-background);border:var(--dash6-satin-control-border);box-shadow:var(--dash6-satin-control-shadow)}
+.card .scene-recess{margin:0px!important;padding:8px;border-radius:12px;background:var(--dash6-satin-control-background);border:var(--dash6-satin-control-border);box-shadow:var(--dash6-satin-control-shadow)}
 .card .scene-recess button{background:var(--scene-fill,var(--dash6-satin-button-background))!important;border:var(--dash6-satin-button-border)!important;box-shadow:var(--dash6-satin-button-shadow)!important;filter:brightness(.82);border-radius:10px;transition:scale 380ms cubic-bezier(.22,1.5,.36,1),filter 180ms ease,box-shadow 180ms ease}
 .card .scene-recess button[aria-pressed=true]{filter:brightness(1.12);box-shadow:var(--dash6-satin-lens-shadow),0 0 8px rgba(190,223,255,.25)!important}
 .card .scene-recess button:active{scale:.96;translate:0 2px;box-shadow:var(--dash6-satin-button-pressed-shadow)!important}

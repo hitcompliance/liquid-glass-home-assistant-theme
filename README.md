@@ -157,3 +157,7 @@ scenes:
 Für die Szenen muss `rows.scenes: true` gesetzt werden. Ohne zusätzliche Konfiguration bleibt die Steuerungszeile aktiv. Effekte erscheinen bei entsprechendem Geräteangebot. Zugeordnete Haupt-/Backlights folgen dem zentralen Ein-/Ausschalten; die Zusatzbuttons bleiben einzeln bedienbar.
 
 Bei Haustürkarten können `ring_entities` weitere Klingelsensoren und `cancel_entities` die Öffner/Schlösser angeben, die das Klingelsignal beenden. `contact_entity` verwendet den Wohnungstürkontakt. Die Farbmarkierung verändert keine Tür- oder Schlosszustände.
+
+### HomePod controls (Cards 2.4.1)
+
+With the Satin theme active, native media-control cards whose entity ID or friendly name includes `HomePod` gain previous/play-pause/next buttons and a liquid-glass volume slider. The slider has no visible labels, keeps an accessible name and value, and dims to 50% for off or standby players. Album artwork remains visible; cards without artwork use a transparent background. Optional dashboard scope is respected.

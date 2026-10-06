@@ -1,3 +1,11 @@
+# 3.1.1 / Cards 2.4.1
+
+- Flat scene, door, vacuum action and remote buttons with glossy hover and inset press feedback; individual scene fills remain visible.
+- Light graphs reserve at least 90 px above scene and slider rows; header power and energy show rounded integers.
+- Portrait apartment lock switch, upright icons and shorter door status labels. Entrance door keeps its framed icon.
+- Effect controls use a glass lens without shrinking.
+- HomePod native cards add previous/play/next and a glass volume slider, aligned with transport controls, without visible labels. All off/standby HomePods dim the slider to 50%; cards without artwork stay transparent and rounded.
+
 # Changelog
 
 ## Integration 3.1.0 / Karten 2.4.0 — 2026-10-05

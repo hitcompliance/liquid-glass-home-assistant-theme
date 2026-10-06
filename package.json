@@ -10,7 +10,8 @@
     "build": "npm run build:cards",
     "test:package": "node tests/package-smoke.mjs",
     "test:installer": "python3 scripts/test-installer.py",
-    "test:demo": "node tests/demo-gallery.mjs"
+    "test:demo": "node tests/demo-gallery.mjs",
+    "test:homepod": "node tests/homepod-controls.mjs"
   },
   "dependencies": {
     "@samasante/liquid-glass": "0.1.1",
@@ -22,6 +23,6 @@
     "esbuild": "0.25.12",
     "playwright": "^1.61.1"
   },
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Satin Liquid Glass theme, complete custom-card bundle and interactive design gallery for Home Assistant"
 }

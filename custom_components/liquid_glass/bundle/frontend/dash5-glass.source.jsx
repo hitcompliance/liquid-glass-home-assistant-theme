@@ -3,10 +3,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { SvgGlass as Glass } from './.samasante-svg-build.js';
 import './glass-card.js';
-import { installGlassElasticity } from './glass-elasticity.js';
 import { readSettings, resolvedMode, opticsFor, cardMaterial, mountSettingsUI, unmountSettingsUI } from './glass-config.js';
-
-installGlassElasticity();
 
 const PATH = window.__DASH5_LIQUID_GLASS_PATH__ || '/dash-5/wohnzimmer';
 
@@ -59,9 +56,7 @@ function applyThemeValues() {
   for (const host of [document.documentElement, document.querySelector('home-assistant')].filter(Boolean)) {
     if (!originalTheme.has(host)) originalTheme.set(host, new Map(Object.keys(values).map((key) =>
       [key, [host.style.getPropertyValue(key), host.style.getPropertyPriority(key)]])));
-    for (const [key, value] of Object.entries(values)) {
-      if (host.style.getPropertyValue(key) !== value) host.style.setProperty(key, value);
-    }
+    for (const [key, value] of Object.entries(values)) host.style.setProperty(key, value);
   }
 }
 
@@ -199,7 +194,7 @@ function place() {
         objectFit: 'cover', objectPosition: 'center', pointerEvents: 'none' },
     });
     return React.createElement(Glass, {
-      key: cardId, refract: wallpaper,
+      key: index, refract: wallpaper,
       behind: lastMode === 'dark' ? '#142338' : '#dce9f4',
       optics: opticsFor(element, settings, lastMode),
       width, height, radius: material.radius, filterResolution: 1,
@@ -272,7 +267,7 @@ function mount(nextContainer) {
   view.style.setProperty('z-index', '1');
   root = document.createElement('div');
   root.id = 'dash5-liquid-glass-optics';
-  root.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:0;overflow:visible;overflow-anchor:none;contain:layout style;';
+  root.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:0;overflow:visible;';
   container.insertBefore(root, view);
   reactRoot = createRoot(root);
   mountSettingsUI();
@@ -284,7 +279,7 @@ function refresh() {
   if (!active()) { if (root) cleanup(); return; }
   const current = dashboardContainer();
   if (!current) return;
-  if (container && (current !== container || !view?.isConnected)) cleanup();
+  if (container && current !== container) cleanup();
   if (!root) {
     try { mount(current); }
     catch (error) { console.warn('DASH5 samasante glass unavailable:', error); cleanup(); }
@@ -292,15 +287,6 @@ function refresh() {
     scanCards();
     place();
   }
-}
-
-function checkRoute() {
-  if (!active()) { if (root) cleanup(); return; }
-  const current = dashboardContainer();
-  if (!current) return;
-  // Rebuild only after navigation replaces the view. State updates and scrolling
-  // must not change the selected lenses or remount their SVG filters.
-  if (!root || current !== container || !view?.isConnected) refresh();
 }
 
 function schedule() {
@@ -311,11 +297,11 @@ function schedule() {
 
 if (!window.__samasanteGlassDASH5Loader) {
   window.__samasanteGlassDASH5Loader = true;
-  window.addEventListener('scroll', syncWallpaperOffsets, true);
+  window.addEventListener('scroll', () => { syncWallpaperOffsets(); schedule(); }, true);
   window.addEventListener('resize', schedule);
   window.addEventListener('liquid-glass-settings-changed', schedule);
-  window.setInterval(checkRoute, 1500);
-  checkRoute();
+  window.setInterval(refresh, 1500);
+  refresh();
 }
 
 export { refresh as refreshDash5Glass };

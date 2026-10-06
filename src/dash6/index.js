@@ -23,3 +23,11 @@ import './theme-editor.js';
 console.info('Liquid Glass Cards 2.3.0: Satin, adaptive controls and reusable cards.');
 
 import './demo-card.js';
+
+import './inset-actions.js';
+import './graph-position.js';
+import './door-switch.js';
+import './door-switch-vertical.js';
+import './header-metrics.js';
+import './effect-lens.js';
+import './homepod-controls.js';
