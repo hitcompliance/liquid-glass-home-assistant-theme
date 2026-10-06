@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {createServer} from 'node:http';
+import {readFile} from 'node:fs/promises';
+import {chromium,webkit} from 'playwright';
+const server=createServer(async(req,res)=>{try{res.setHeader('Content-Type',req.url.endsWith('.js')?'text/javascript':'text/html');res.end(req.url==='/'?'<!doctype html><body></body>':await readFile(new URL('..'+req.url,import.meta.url)));}catch{res.writeHead(404).end();}});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+try{for(const engine of [chromium,webkit]){const browser=await engine.launch({headless:true});try{const page=await browser.newPage();await page.goto('http://127.0.0.1:'+server.address().port);const result=await page.evaluate(async()=>{
+ const calls=[];
+ class Native extends HTMLElement{constructor(){super();this.attachShadow({mode:'open'});this.style.setProperty('--dash6-satin-enabled','1');}updated(){}}
+ class Tile extends Native{constructor(){super();this.shadowRoot.innerHTML='<ha-tile-icon></ha-tile-icon>';}}
+ class Switch extends HTMLElement{constructor(){super();this.onclick=()=>this.hass.callService('light','toggle',{entity_id:this._config.entity});}setConfig(c){this._config=c;}}
+ class Group extends Native{constructor(){super();this.shadowRoot.innerHTML='<ha-card class="card"><div class="head"></div><div class="scene-recess" style="gap:8px"><button>A</button><button>B</button></div></ha-card>';this._graphCard={_config:{definition:{apex_config:{tooltip:{custom:"EVAL:function(){if(host.localName==='button-card')return true}"}}}},setConfig(c){this._config=c}};}render(){}makeGraph(){}}
+ class Circular extends Native{constructor(){super();this.setAttribute('data-dash6-satin-climate','');this.shadowRoot.innerHTML='<style>:host(ha-control-circular-slider[data-dash6-satin-climate]) .target[data-dash6-satin-handle-pressed]{stroke-width:21px!important}</style><svg><path class="target" data-dash6-satin-handle="" d="M0 0L1 0" /></svg>';}}
+ customElements.define('hui-tile-card',Tile);customElements.define('dash6-glass-switch',Switch);customElements.define('dash6-lightgroup-card-v2',Group);customElements.define('ha-control-circular-slider',Circular);
+ await import('/src/dash6/card-refinements.js');await new Promise(r=>setTimeout(r,20));
+ const tile=new Tile();tile._config={entity:'light.example'};tile.hass={states:{},callService:async(...args)=>calls.push(args)};document.body.append(tile);tile.updated();const startup=calls.length,sw=tile.shadowRoot.querySelector('dash6-glass-switch');sw.click();const original=tile.shadowRoot.querySelector('ha-tile-icon'),hidden=original.style.display==='none';tile.style.setProperty('--dash6-satin-enabled','0');tile.updated();const restored=!tile.shadowRoot.querySelector('dash6-glass-switch')&&original.style.display==='';
+ const group=new Group();document.body.append(group);group.render();group.makeGraph();const gap=getComputedStyle(group.shadowRoot.querySelector('.scene-recess')).gap,head=getComputedStyle(group.shadowRoot.querySelector('.head')).pointerEvents,tooltip=group._graphCard._config.definition.apex_config.tooltip.custom;
+ const slider=new Circular();document.body.append(slider);slider.updated();const target=slider.shadowRoot.querySelector('.target'),rest=getComputedStyle(target).strokeWidth;target.setAttribute('data-dash6-satin-handle-pressed','');const pressed=getComputedStyle(target).strokeWidth;
+ return {startup,calls,hidden,restored,gap,head,tooltip,rest,pressed};
+ });assert.equal(result.startup,0);assert.equal(result.calls.length,1);assert.equal(result.hidden,true);assert.equal(result.restored,true);assert.equal(result.gap,'0px');assert.equal(result.head,'none');assert.ok(result.tooltip.includes('dash6-lightgroup-card-v2'));assert.equal(result.rest,'20px');assert.equal(result.pressed,'31px');console.log('PASS '+engine.name()+': native light switch, no startup actuation, theme restoration, zero scene gap, graph pointer/tooltip, elastic lens sizes.');}finally{await browser.close();}}}finally{server.close();}

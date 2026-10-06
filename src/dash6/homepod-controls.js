@@ -14,7 +14,7 @@ import {inDashboardScope} from './scope.js';
  .dash6-pod-transport button:disabled{opacity:.4;cursor:default}.dash6-pod-transport button:focus-visible{outline:2px solid var(--primary-color);outline-offset:2px}
  .dash6-pod-transport button:active:not(:disabled){box-shadow:inset 0 7px 12px rgba(0,0,0,.9),inset 0 -1px 1px rgba(255,255,255,.3)}
  @media(hover:hover){.dash6-pod-transport button:hover:not(:disabled){background:linear-gradient(145deg,rgba(255,255,255,.14),transparent 65%),rgba(24,28,34,.32)}}
- .dash6-pod-volume{margin:8px 12px 0;min-width:0;opacity:1}.dash6-pod-volume[data-off]{opacity:.5}
+ .dash6-pod-volume{margin:8px 12px 8px;min-width:0;opacity:1}.dash6-pod-volume[data-off]{opacity:.5}
  .dash6-pod-label{display:none;justify-content:space-between;align-items:center;gap:8px;font:13px/20px var(--paper-font-body1_-_font-family,system-ui)}
  .dash6-pod-range{position:relative;margin-top:0;min-width:0;--dash6-slider-opacity:1}
  .dash6-pod-range input{appearance:none;-webkit-appearance:none;display:block;box-sizing:border-box;width:100%;height:42px;margin:0;border:0;border-radius:11px;cursor:ew-resize;touch-action:pan-y;background:var(--dash6-satin-slider-gloss),var(--track);box-shadow:var(--dash6-satin-control-shadow);color:inherit}

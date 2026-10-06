@@ -161,3 +161,9 @@ Bei Haustürkarten können `ring_entities` weitere Klingelsensoren und `cancel_e
 ### HomePod controls (Cards 2.4.1)
 
 With the Satin theme active, native media-control cards whose entity ID or friendly name includes `HomePod` gain previous/play-pause/next buttons and a liquid-glass volume slider. The slider has no visible labels, keeps an accessible name and value, and dims to 50% for off or standby players. Album artwork remains visible; cards without artwork use a transparent background. Optional dashboard scope is respected.
+
+### Refrigerator example
+
+[Refrigerator card configuration](examples/refrigerator-card.json) uses neutral example entities. Place it in its own cooling appliances block and replace the entities with your own. It retains power, energy, refrigerator/freezer temperatures, express-mode status and the door-opening graph. A single lock marker belongs to the glass switch; an open-door indicator appears at the top right only while the door contact is open.
+
+Cards 2.4.4 also add the current glass switch to native light cards when the theme is active, remove light scene gaps, restore light graph hover/portal tooltips, enlarge thermostat lenses during dragging and add 8px below HomePod volume sliders.

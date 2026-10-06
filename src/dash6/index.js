@@ -31,3 +31,5 @@ import './door-switch-vertical.js';
 import './header-metrics.js';
 import './effect-lens.js';
 import './homepod-controls.js';
+
+import './card-refinements.js';
