@@ -41,3 +41,5 @@ import './homepod-card.js';
 import './layout-corrections.js';
 
 import './media-refinements.js';
+
+import './interaction-refinements.js';
