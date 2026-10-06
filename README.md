@@ -172,3 +172,6 @@ Cards 2.4.5 routes HomePod power through the Apple TV remote belonging to the sa
 
 ### HomePod card
 Use `custom:dash6-homepod-card` with a media-player `entity`. It preserves native media controls and adds the Satin transport and volume controls. Power uses the Apple TV remote from the same device; `homepod_remote_entity` can explicitly select that remote. Power connects or disconnects Home Assistant and does not start playback.
+
+### Apple TV and television card
+`custom:dash6-appletv-card` replaces `custom:dash6-media-card` and keeps its configuration and visual editor: `apple_entity`, `apple_remote`, `fire_entity` and both Firemote device types. HomePod and Apple TV cards show the shared managed Apple switch, device name and playback status within a thick dark glass shell. Preset and wake/sleep controls are flat at rest, raised with pointer-following gloss on hover and deeply recessed while pressed. The remote selector has a nonelastic sliding lens. A fridge button-card can opt in with `satin_fridge: true`; its existing door-status field also identifies the fridge presentation.

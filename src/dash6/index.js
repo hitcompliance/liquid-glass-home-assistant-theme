@@ -39,3 +39,5 @@ import './homepod-power.js';
 import './homepod-card.js';
 
 import './layout-corrections.js';
+
+import './media-refinements.js';
