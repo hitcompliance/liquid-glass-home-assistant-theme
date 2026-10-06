@@ -35,3 +35,5 @@ import './homepod-controls.js';
 import './card-refinements.js';
 
 import './homepod-power.js';
+
+import './homepod-card.js';

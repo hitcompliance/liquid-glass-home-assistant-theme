@@ -169,3 +169,6 @@ With the Satin theme active, native media-control cards whose entity ID or frien
 Cards 2.4.4 also add the current glass switch to native light cards when the theme is active, remove light scene gaps, restore light graph hover/portal tooltips, enlarge thermostat lenses during dragging and add 8px below HomePod volume sliders.
 
 Cards 2.4.5 routes HomePod power through the Apple TV remote belonging to the same registry device. This connects/disconnects the HomePod without starting music. An explicit `homepod_remote_entity` can be supplied where entity registry metadata is unavailable; unrelated remotes are never inferred from names.
+
+### HomePod card
+Use `custom:dash6-homepod-card` with a media-player `entity`. It preserves native media controls and adds the Satin transport and volume controls. Power uses the Apple TV remote from the same device; `homepod_remote_entity` can explicitly select that remote. Power connects or disconnects Home Assistant and does not start playback.

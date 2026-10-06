@@ -24,4 +24,4 @@ strings['config']['step']['user'].update(title='Set up Liquid Glass', descriptio
 strings['config']['abort']['already_configured'] = 'Liquid Glass is already configured.'
 (component / 'strings.json').write_text(json.dumps(strings, indent=2) + '\n')
 (component / 'translations/en.json').write_text(json.dumps(strings, indent=2) + '\n')
-print('Built self-contained HACS integration 3.1.6')
+print('Built self-contained HACS integration 3.1.7')
