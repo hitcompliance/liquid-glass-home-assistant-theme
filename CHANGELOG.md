@@ -1,3 +1,7 @@
+# 3.1.2 / Cards 2.4.2
+
+- Preserve configured scene background and text colors under the flat action material. Explicit scene fills take precedence; hover gloss and inset press feedback remain.
+
 # 3.1.1 / Cards 2.4.1
 
 - Flat scene, door, vacuum action and remote buttons with glossy hover and inset press feedback; individual scene fills remain visible.
