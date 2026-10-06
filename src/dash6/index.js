@@ -43,3 +43,5 @@ import './layout-corrections.js';
 import './media-refinements.js';
 
 import './interaction-refinements.js';
+
+import './recessed-gauge-refinements.js';
