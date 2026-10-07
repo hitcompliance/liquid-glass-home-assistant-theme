@@ -206,3 +206,7 @@ energy_entity: sensor.example_energy
 An optional `definition` preserves an existing button-card layout and background graph. Native light cards retain their icon action while using the current glass switch. Scene rows in Govee and lightgroup cards use an 8px gap. Metered on/off lights and switches can use `custom:dash6-ikea-card` with `power_entity` and `energy_entity`, regardless of device brand.
 
 All visible dashboard card surfaces share the Govee reference material and pointer-following hover gloss under the active Satin theme. Explicit clear shells, layout layers and embedded background graphs remain transparent; native thermostats inside a themed thermostat shell do not add a second glass layer.
+
+### Media power and permanent controls (2.4.17)
+
+HomePod and Apple TV cards animate the glass power switch immediately. Apple TV sends wakeup/suspend device commands and follows the media player power state; HomePod uses its configured remote connection. Both cards render previous, play/pause, next and browse media together with persistent styles. Card hover gloss also reaches native thermostat content.

@@ -28,11 +28,12 @@ import {inDashboardScope} from './scope.js';
  const inScope=()=>inDashboardScope();
  customElements.whenDefined('hui-media-control-card').then(()=>{
   const proto=customElements.get('hui-media-control-card').prototype;if(proto._homePodControlsV1)return;proto._homePodControlsV1=true;
+  const createRoot=proto.createRenderRoot;if(createRoot)proto.createRenderRoot=function(...args){const root=createRoot.apply(this,args);if(!root.adoptedStyleSheets.includes(sheet))root.adoptedStyleSheets=[...root.adoptedStyleSheets,sheet];return root;};
   const updated=proto.updated,disconnect=proto.disconnectedCallback;
   const sync=function(){
    const id=this._config?.entity,hass=this.hass||this._hass,root=this.shadowRoot;
    if(!root)return;
-   if(!inScope()||getComputedStyle(this).getPropertyValue('--dash6-satin-enabled').trim()!=='1'||!/homepod/i.test(id+' '+(hass?.states[id]?.attributes.friendly_name||''))){this._podCancel?.();const old=root.querySelector('ha-card');if(old?.hasAttribute('data-pod-no-cover')){old.removeAttribute('data-pod-no-cover');old.style.removeProperty('background');}root.querySelector('.dash6-pod-transport')?.remove();root.querySelector('.dash6-pod-volume')?.remove();this.removeAttribute('data-dash6-homepod');return;}
+   if(!inScope()||getComputedStyle(this).getPropertyValue('--dash6-satin-enabled').trim()!=='1'||!(this._config?.homepod===true||this._satinMediaHeader||/homepod/i.test(id+' '+(hass?.states[id]?.attributes.friendly_name||'')))){this._podCancel?.();const old=root.querySelector('ha-card');if(old?.hasAttribute('data-pod-no-cover')){old.removeAttribute('data-pod-no-cover');old.style.removeProperty('background');}root.querySelector('.dash6-pod-transport')?.remove();root.querySelector('.dash6-pod-volume')?.remove();this.removeAttribute('data-dash6-homepod');return;}
    const card=root.querySelector('ha-card'),state=hass?.states[id];if(!card||!state)return;
    this.setAttribute('data-dash6-homepod','');
    if(!root.adoptedStyleSheets.includes(sheet))root.adoptedStyleSheets=[...root.adoptedStyleSheets,sheet];
@@ -69,6 +70,7 @@ import {inDashboardScope} from './scope.js';
    const raw=state.attributes.volume_level,known=typeof raw==='number'&&Number.isFinite(raw);if(known)this._podLastVolume=Math.max(0,Math.min(1,raw));
    if(!this._podDragging){const value=this._podLastVolume;input.value=String(Math.round((value??0)*100));output.textContent=value===undefined?'—':input.value+' %';input.setAttribute('aria-valuetext',value===undefined?'Nicht verfügbar':output.textContent);volume.querySelector('dash6-slider-lens').update?.();}
   };
+  proto._syncSatinTransport=sync;
   proto._podService=async function(action,data={}){try{this.shadowRoot.querySelector('.dash6-pod-error').textContent='';await (this.hass||this._hass).callService('media_player',action,{entity_id:this._config.entity,...data});}catch(error){this.shadowRoot.querySelector('.dash6-pod-error').textContent=error.message||String(error);}};
   proto.updated=function(...args){const result=updated?.apply(this,args);sync.call(this);return result;};
   proto.disconnectedCallback=function(...args){this._podCancel?.();return disconnect?.apply(this,args);};
