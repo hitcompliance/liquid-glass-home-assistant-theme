@@ -210,3 +210,7 @@ All visible dashboard card surfaces share the Govee reference material and point
 ### Media power and permanent controls (2.4.17)
 
 HomePod and Apple TV cards animate the glass power switch immediately. Apple TV sends wakeup/suspend device commands and follows the media player power state; HomePod uses its configured remote connection. Both cards render previous, play/pause, next and browse media together with persistent styles. Card hover gloss also reaches native thermostat content.
+
+### Stable material and gauge highlights (2.4.18)
+
+Shared glass surfaces restore the reference material after native style updates and reset hover highlights when the pointer leaves. Recessed thermostat tracks retain their moving specular light. Glass temperature handles grow on hover and again on mouse or touch drag, including touch presses without prior hover.
