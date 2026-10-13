@@ -2,7 +2,7 @@
 (()=>{
  const clone=x=>structuredClone(x),queries=new Map();
  let definitions;
- const configs=()=>definitions??=fetch('/local/dash6-satin/room-loader-configs.json?v=20261013-fan3').then(r=>{if(!r.ok)throw Error('Raumlader-Konfiguration: '+r.status);return r.json()});
+ const configs=()=>definitions??=fetch('/local/dash6-satin/room-loader-configs.json?v=20261014-domains').then(r=>{if(!r.ok)throw Error('Raumlader-Konfiguration: '+r.status);return r.json()});
  const scan=(r,fn)=>{for(const e of r.children||[]){fn(e);scan(e,fn);if(e.shadowRoot)scan(e.shadowRoot,fn)}};
  function watch(room,hass,fn){let q=queries.get(room);if(!q){q={listeners:new Set(),connection:hass.connection,active:true,subscriptions:0};queries.set(room,q);q.ready=configs().then(async all=>{q.definition=all[room];if(!q.definition)throw Error('Unbekannter Raum '+room);if(!q.active)return;q.subscriptions++;const unsub=await q.connection.subscribeMessage(e=>{if(!q.active)return;if(e.error){q.error=e.error;for(const f of q.listeners)f(null,q.error);return;}try{q.result=typeof e.result==='string'?JSON.parse(e.result):e.result;for(const f of q.listeners)f(q.result);}catch(error){q.error=error;for(const f of q.listeners)f(null,error);}},{type:'render_template',template:q.definition.template});if(q.active)q.unsubscribe=unsub;else unsub();}).catch(e=>{q.error=e;for(const f of q.listeners)f(null,e)});}
  q.listeners.add(fn);if(q.result)fn(q.result);else if(q.error)fn(null,q.error);return ()=>{q.listeners.delete(fn);if(!q.listeners.size){q.active=false;q.unsubscribe?.();queries.delete(room)}};

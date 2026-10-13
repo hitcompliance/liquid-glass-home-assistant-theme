@@ -145,10 +145,10 @@
       "sha256": "a310ab70ea0c56613d1326387d65f9f88487ca382a7fd6ea594c0092c83e2ce4"
     },
     "room-loader.js": {
-      "sha256": "584b3aee176ba26b948d41baf52bd4eee94382b7a30322555ba322ec5e2fa010"
+      "sha256": "37d703bbc795b353717abcdfd35a6914d7c7e9834befa4307e5230ca2d865838"
     },
     "room-loader.js.gz": {
-      "sha256": "dfc32135cbc6e18f48b805b8a739ee75551fc2064ba22cdefb002745be0b67d5"
+      "sha256": "e26124ba802fa884f683d430df666edabfad690fe64474f7763865792aeee749"
     },
     "vacuum-dock-card.js": {
       "sha256": "3a00d3aa0818fa158bf5e31c05c7926d6382463abc7652c59d53337acccb5eda"
