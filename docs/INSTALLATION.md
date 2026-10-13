@@ -16,6 +16,16 @@ Es ist kein Installer-Kommando erforderlich. Die Einrichtung lädt fehlende Fron
 
 Themes und Karten werden durch die Integration registriert, auch bei YAML-verwalteten Ressourcen. `configuration.yaml` und `.storage` werden nicht direkt verändert. Vorhandene Ressourcen werden anhand ihres Dateinamens wiederverwendet. HACS bleibt für deren Updates zuständig; fehlende Vendor-Kopien werden mit Liquid Glass ausgeliefert/installiert und sind keine eigenen HACS-Einträge. Nach Aktualisierungen Home Assistant neu starten und die Browserseite vollständig neu laden, nötigenfalls den Frontend-Cache leeren.
 
+### Aktualisierung und neue Abhängigkeiten
+
+1. Das Liquid-Glass-Update in HACS herunterladen.
+2. Home Assistant neu starten, damit die aktualisierte Integration geladen wird.
+3. Geöffnete Browser-/Companion-Seiten vollständig neu laden.
+
+Beim nächsten Einrichten der bereits konfigurierten Integration wird der **mit dem neuen Release gelieferte** Dependency-Lock erneut geprüft. Neu aufgenommene Frontend-Abhängigkeiten werden automatisch heruntergeladen und vor den eigenen Karten geladen; von Liquid Glass verwaltete Vendor-Dateien werden auf die neue festgelegte Version aktualisiert. Ein erneuter Einrichtungsdialog oder manuelles Hinzufügen dieser Ressourcen ist nicht nötig. Neue oder geänderte Dateien benötigen Internetzugriff, sofern ihre geprüften Bytes noch nicht im lokalen Download-Cache vorhanden sind. Bereits separat registrierte HACS-Module bleiben bei ihrem bestehenden Ressourcen-Eintrag und werden weiterhin durch HACS aktualisiert.
+
+Schlägt ein Download oder seine Größen-/Hashprüfung fehl, bleiben die bisherigen installierten Dateien erhalten. Home Assistant meldet die Einrichtung vorübergehend als fehlgeschlagen und kann sie erneut versuchen; nach Behebung der Verbindung oder des Downloadproblems werden die fehlenden Dateien installiert. Bei einem Schreibfehler stellt der Installer die in diesem Aufruf bereits veränderten Dateien wieder her. Die normale Einrichtung verändert keine Geräte, Entitäten oder eigenen Dashboards. Optionale Backend-Integrationen bleiben an ihre bestehende ausdrückliche Auswahl gebunden.
+
 Dual Smart Thermostat ist eine optionale **Backend-Integration**. Eine bestehende Installation wird nicht überschrieben. Bei erstmaliger Installation erscheint eine Neustart-Mitteilung; danach müssen die eigenen Heizungs-/Sensor-Entitäten konfiguriert werden. Native Thermostat-Karten benötigen diese Integration nicht.
 
 Das Demo-Dashboard unter `/liquid-glass-demo` ist eine von Liquid Glass verwaltete YAML-Demo mit lokalen simulierten Geräten. Seine Karten steuern keine echten Geräte. Ein bereits vorhandenes Dashboard mit dieser Adresse bleibt erhalten; dann lässt die Integration ihre Demo aus und meldet dies im Protokoll. Für eigene Änderungen `liquid-glass/examples/demo-dashboard.yaml` in ein neues Dashboard kopieren. Das Konfigurationsbeispiel `dashboard.yaml` benötigt dagegen eigene Entitäten.
@@ -28,7 +38,7 @@ Beim Deaktivieren/Entfernen der Liquid-Glass-Integration verschwinden ihre Laufz
 
 ### Prüfstand
 
-Die Integrations-Schnittstellen wurden gegen den offiziellen Home-Assistant-Quellstand 2026.9 geprüft. Automatisierte Tests prüfen Einrichtung, erneutes Laden, Theme-Reload, Ressourcen-Deduplizierung, Downloadfehler und Dashboard-Kollisionen. Eine Live-Installation auf der produktiven Instanz ist davon getrennt und noch nicht bestätigt.
+Die Integrations-Schnittstellen wurden gegen den offiziellen Home-Assistant-Quellstand 2026.9 geprüft. Automatisierte Tests prüfen Einrichtung, erneutes Laden, neue und aktualisierte Release-Abhängigkeiten, HACS-Wiederverwendung, fehlgeschlagene Updates samt erneutem Versuch, Theme-Reload, Ressourcen-Deduplizierung und Dashboard-Kollisionen. Eine Live-Installation auf der produktiven Instanz ist davon getrennt und noch nicht bestätigt.
 
 ## Installation mit dem Python-Installer
 

@@ -20,15 +20,19 @@ import './shoe-cabinet-card.js';
 import './local-camera-card.js';
 import './profile-card.js';
 import './theme-editor.js';
-console.info('Liquid Glass Cards 2.3.0: Satin, adaptive controls and reusable cards.');
+console.info('DASH6 Satin 2.4.19: Lichtgruppen, Szenen und Statussteuerung.');
 
 import './demo-card.js';
-
 import './inset-actions.js';
+
 import './graph-position.js';
+
 import './door-switch.js';
+
 import './door-switch-vertical.js';
+
 import './header-metrics.js';
+
 import './effect-lens.js';
 import './homepod-controls.js';
 
@@ -52,9 +56,18 @@ import './fridge-material-refinements.js';
 
 import './media-browse-refinements.js';
 
+import './universal-material-refinements.js';
+
 import './media-material-refinements.js';
 
 import './fan-mode-refinements.js';
+
 import './lighting-layout-refinements.js';
 
-import './universal-material-refinements.js';
+import './home-overview-card.js';
+
+import "./media-artwork-refinements.js";
+
+import "./overview-cover-refinements.js";
+
+import './favorites-gui.js';

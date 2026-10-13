@@ -214,3 +214,9 @@ HomePod and Apple TV cards animate the glass power switch immediately. Apple TV 
 ### Stable material and gauge highlights (2.4.18)
 
 Shared glass surfaces restore the reference material after native style updates and reset hover highlights when the pointer leaves. Recessed thermostat tracks retain their moving specular light. Glass temperature handles grow on hover and again on mouse or touch drag, including touch presses without prior hover.
+
+### Favorites editor and dependency upgrades (3.1.19)
+
+`custom:dash6-favorites-card` provides a hierarchical visual editor for selecting cards and headings across dashboard views. Selected children can render without their unselected wrapper. Group actions, card type labels, a scrollable preview, source/domain grouping and manual view/domain ordering are supported. Source view ordering follows the dashboard before additional views alphabetically.
+
+After a HACS integration update and Home Assistant restart, newly listed dependencies are installed automatically. Existing HACS resources remain HACS-managed. See [upgrade behavior](docs/INSTALLATION.md#aktualisierung-und-neue-abhängigkeiten). Embedded View Card remains separately owned; the adapter uses its own custom-element names and avoids competing registrations.

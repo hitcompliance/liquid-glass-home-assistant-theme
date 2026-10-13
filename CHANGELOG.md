@@ -1,3 +1,11 @@
+# 3.1.19 / Cards 2.4.19
+
+- Add the Favorites visual editor, group selection links, type labels, scrollable preview, dashboard/manual view ordering and selected descendants without unchecked wrappers.
+- Keep shared glass controls mounted and synchronized through independent native-card renders and on/off updates.
+- Install newly listed dependencies during integration upgrades; reuse HACS-owned resources and prevent competing Embedded View registrations.
+- Preserve previously deployed card refinements, media artwork/controls and overview cards.
+- Validate installer upgrades, upstream Embedded compatibility and native control lifecycle in Chromium/WebKit.
+
 # 3.1.3 / Cards 2.4.3
 
 - Make flat action button borders transparent immediately during press, retaining inset shadows and button geometry.

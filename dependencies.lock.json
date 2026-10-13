@@ -1248,6 +1248,82 @@
       "purpose": "Optional backend climate integration; no JavaScript resource",
       "default_install": false,
       "license_file": "LICENSE.upstream.txt"
+    },
+    {
+      "id": "embedded-view-card",
+      "kind": "frontend",
+      "repository": "https://github.com/redkanoon/embedded-view-card",
+      "version": "commit:739823b9b6f8",
+      "commit": "739823b9b6f89999203504cf13ed7d0247ecb0b8",
+      "entrypoint": "embedded-view-card.js",
+      "assets": [
+        {
+          "path": "embedded-view-card.js",
+          "url": "https://raw.githubusercontent.com/redkanoon/embedded-view-card/739823b9b6f89999203504cf13ed7d0247ecb0b8/dist/embedded-view-card.js",
+          "sha256": "ed2740131be074005db47ca36d33d312ba340a675093cb7decf61f32e65ff82c",
+          "bytes": 34203
+        },
+        {
+          "path": "version.js",
+          "url": "https://raw.githubusercontent.com/redkanoon/embedded-view-card/739823b9b6f89999203504cf13ed7d0247ecb0b8/dist/version.js",
+          "sha256": "be15161df0fdd26de5b1a295ecdd6d2f59e9172d2b28c4404c948c0373c22f6f",
+          "bytes": 32
+        },
+        {
+          "path": "i18n/index.js",
+          "url": "https://raw.githubusercontent.com/redkanoon/embedded-view-card/739823b9b6f89999203504cf13ed7d0247ecb0b8/dist/i18n/index.js",
+          "sha256": "42d3c73a1e4995a96b0e23171d19462e287c590d5fa03c96468c3fb0c90a1182",
+          "bytes": 1068
+        },
+        {
+          "path": "i18n/en.js",
+          "url": "https://raw.githubusercontent.com/redkanoon/embedded-view-card/739823b9b6f89999203504cf13ed7d0247ecb0b8/dist/i18n/en.js",
+          "sha256": "abce66ab402b457a4806dcf75540849afa39034b4fee62d01310e29b6497f2fd",
+          "bytes": 1681
+        },
+        {
+          "path": "i18n/de.js",
+          "url": "https://raw.githubusercontent.com/redkanoon/embedded-view-card/739823b9b6f89999203504cf13ed7d0247ecb0b8/dist/i18n/de.js",
+          "sha256": "22ca1229c2078db23d1bb2a2b9a2ee7e6220d62a9b5cadc77f54784ffefdf99b",
+          "bytes": 1804
+        },
+        {
+          "path": "i18n/fr.js",
+          "url": "https://raw.githubusercontent.com/redkanoon/embedded-view-card/739823b9b6f89999203504cf13ed7d0247ecb0b8/dist/i18n/fr.js",
+          "sha256": "4d690ca1dbc4586a509891ea53272dc01b1a0aa429e04f467aeffd27649c4223",
+          "bytes": 1839
+        },
+        {
+          "path": "i18n/es.js",
+          "url": "https://raw.githubusercontent.com/redkanoon/embedded-view-card/739823b9b6f89999203504cf13ed7d0247ecb0b8/dist/i18n/es.js",
+          "sha256": "ca8ae7cb44c4595e6bfef92de77f33a164b6645bf307170e998ded76c13ecbd6",
+          "bytes": 1836
+        },
+        {
+          "path": "i18n/nl.js",
+          "url": "https://raw.githubusercontent.com/redkanoon/embedded-view-card/739823b9b6f89999203504cf13ed7d0247ecb0b8/dist/i18n/nl.js",
+          "sha256": "bbddf4201a353c32162f93c44a5bcf7a9067da8061493b2254b6975b8710731b",
+          "bytes": 1851
+        },
+        {
+          "path": "i18n/it.js",
+          "url": "https://raw.githubusercontent.com/redkanoon/embedded-view-card/739823b9b6f89999203504cf13ed7d0247ecb0b8/dist/i18n/it.js",
+          "sha256": "aea445ddc5d7376bf9c34ff026f7bb8a54f3646280ee037708f007a3e11da680",
+          "bytes": 1836
+        },
+        {
+          "path": "i18n/pl.js",
+          "url": "https://raw.githubusercontent.com/redkanoon/embedded-view-card/739823b9b6f89999203504cf13ed7d0247ecb0b8/dist/i18n/pl.js",
+          "sha256": "31a02d326c792946ca7ce9389788b8630f5088f654b77e192206e4977af6be80",
+          "bytes": 1838
+        },
+        {
+          "path": "LICENSE",
+          "url": "https://raw.githubusercontent.com/redkanoon/embedded-view-card/739823b9b6f89999203504cf13ed7d0247ecb0b8/LICENSE",
+          "sha256": "a03826372540aa0eeb1b5c6203c10c9bb07d0828575c7a70131b7df963772012",
+          "bytes": 1066
+        }
+      ]
     }
   ]
 }

@@ -18,9 +18,29 @@
  hook('button-card',h=>{if(enabled(h)&&h._config?.entity?.startsWith('fan.'))style(h,'fan-spacing',`:host #device#device{padding-left:0px!important}`);});
  hook('dash6-glass-switch',h=>{if(!h._config?.entity?.startsWith('light.'))return;if(enabled(h)&&h._config.switch_style==='classic'){h._refinedSwitchStyle='classic';h.setConfig({...h._config,switch_style:'liquid_glass'});}else if(!enabled(h)&&h._refinedSwitchStyle){const old=h._refinedSwitchStyle;h._refinedSwitchStyle=null;h.setConfig({...h._config,switch_style:old});}});
  // Native HA light tiles retain their card's own detail/action handlers.
+ function clearLightSwitch(h){
+  h._refinedLightSwitch?.remove();
+  if(h._refinedOriginalIcon)h._refinedOriginalIcon.style.display=h._refinedOriginalDisplay;
+  h._refinedLightSwitch=null;h._refinedOriginalIcon=null;
+ }
  for(const name of ['hui-tile-card','hui-light-card','hui-entity-card','button-card','mushroom-light-card','mushroom-entity-card'])hook(name,h=>{
-  const r=h.shadowRoot,c=h._config,id=c?.entity,hass=h.hass||h._hass;if(h._refinedLightSwitch)h._refinedLightSwitch.hass=hass;if(!r||!id?.startsWith('light.')||!enabled(h)){if(h._refinedLightSwitch){h._refinedLightSwitch.remove();h._refinedOriginalIcon.style.display=h._refinedOriginalDisplay;h._refinedLightSwitch=null;}return;}
-  if(c.lock?.enabled!==undefined&&c.lock.enabled!==false)return;if(['press_action','release_action','icon_press_action','icon_release_action'].some(k=>c[k]?.action&&c[k].action!=='none'))return;const original=r.querySelector('#icon,mushroom-shape-icon[slot=icon],ha-tile-icon,ha-state-icon,ha-icon');if(!original||r.querySelector('dash6-glass-switch'))return;
-  const sw=document.createElement('dash6-glass-switch');sw.setConfig({type:'custom:dash6-glass-switch',entity:id,switch_style:'liquid_glass',child_lock_entity:c.child_lock_entity||(hass?.states[id+'_child_lock']?id+'_child_lock':'')});sw.hass=hass;h._refinedOriginalIcon=original;h._refinedOriginalDisplay=original.style.display;original.style.display='none';original.parentNode.insertBefore(sw,original);for(const type of ['pointerdown','pointerup','pointermove','pointercancel','mousedown','mouseup','touchstart','touchend','touchcancel','click','dblclick','contextmenu','action','keydown','keyup'])sw.addEventListener(type,e=>e.stopPropagation());h._refinedLightSwitch=sw;
+  const r=h.shadowRoot,c=h._config,id=c?.entity,hass=h.hass||h._hass;
+  if(!r||!id?.startsWith('light.')||!enabled(h)||c.lock?.enabled!==undefined&&c.lock.enabled!==false||['press_action','release_action','icon_press_action','icon_release_action'].some(k=>c[k]?.action&&c[k].action!=='none')){clearLightSwitch(h);return;}
+  // A managed native/standard adapter already owns this icon's interaction.
+  const existing=r.querySelector('dash6-glass-switch');
+  if(existing&&existing!==h._refinedLightSwitch){clearLightSwitch(h);return;}
+  const original=r.querySelector('#icon,mushroom-shape-icon[slot=icon],ha-tile-icon,ha-state-icon,ha-icon');
+  if(!original){clearLightSwitch(h);return;}
+  if(h._refinedOriginalIcon&&h._refinedOriginalIcon!==original)clearLightSwitch(h);
+  let sw=h._refinedLightSwitch;
+  if(!sw){
+   sw=document.createElement('dash6-glass-switch');h._refinedOriginalIcon=original;h._refinedOriginalDisplay=original.style.display;h._refinedLightSwitch=sw;
+   for(const type of ['pointerdown','pointerup','pointermove','pointercancel','mousedown','mouseup','touchstart','touchend','touchcancel','click','dblclick','contextmenu','action','keydown','keyup'])sw.addEventListener(type,e=>e.stopPropagation());
+  }
+  // Lit may replace the icon subtree, remove the added sibling, or restore its
+  // inline display. Reconcile the actual rendered tree on every native update.
+  if(sw.parentNode!==original.parentNode)original.parentNode.insertBefore(sw,original);
+  if(original.style.display!=='none')original.style.display='none';
+  sw.setConfig({type:'custom:dash6-glass-switch',entity:id,switch_style:'liquid_glass',child_lock_entity:c.child_lock_entity||(hass?.states[id+'_child_lock']?id+'_child_lock':'')});sw.hass=hass;
  });
 })();

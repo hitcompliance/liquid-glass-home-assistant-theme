@@ -79,7 +79,7 @@ function protectedVendorAncestor(host){
  return false;
 }
 export function bindSatinNativeCard(host,definition,{iconElement,dispatchNativeAction,resolveColor,lockTogglePlan=null}={}){
- let config=definition,plan=null,original=null,control=null,display='',style=null,compactFrame=null,holdTimer=0,tapTimer=0,holding=false,down=false,disposed=false;
+ let config=definition,plan=null,original=null,control=null,display='',style=null,compactFrame=null,holdTimer=0,tapTimer=0,holding=false,down=false,disposed=false,refreshQueued=false;
  const active=()=>inDashboardScope()&&getComputedStyle(host).getPropertyValue('--dash6-satin-enabled').trim()==='1';
  const stop=e=>e.stopPropagation();
  function clearTimers(){clearTimeout(holdTimer);clearTimeout(tapTimer);holdTimer=tapTimer=0;holding=down=false;}
@@ -139,7 +139,7 @@ export function bindSatinNativeCard(host,definition,{iconElement,dispatchNativeA
   if(!active()||!rawPlan||!plan||protectedVendorAncestor(host)){restore();return null;}
   const icon=iconElement||findIcon(host,config);if(!icon||!icon.isConnected||plan.implicitTileIcon&&icon.localName!=='ha-tile-icon'){restore();return null;}
   if(original!==icon||!control?.isConnected)mount(icon);
-  original.style.display='none';
+  if(original.style.display!=='none')original.style.display='none';
   const switchConfig={...config,child_lock_entity:config.child_lock_entity||plan.child_lock_entity},visual=switchVisual(switchConfig,hass?.states||{},resolveColor);
   // The main entity supplies color/brightness; the native icon stays unchanged
   // even for groups. Native card backgrounds continue to open their own details.
@@ -150,8 +150,24 @@ export function bindSatinNativeCard(host,definition,{iconElement,dispatchNativeA
   control.hass=hass;control.visual={...visual,group:false,mixed:false,brightness:mainBrightness,dimmable};
   return control;
  }
+ // Vendor cards also update independently of their wrapper (templates, icon
+ // branches, asynchronous work). Lit can remove an imperatively inserted sibling
+ // or overwrite the hidden icon style after the wrapper has already synchronized.
+ // Observe only this card's light DOM in its own shadow root; switch animations
+ // live in a different shadow root and never trigger this reconciliation.
+ const observer=new MutationObserver(records=>{
+  if(disposed||refreshQueued||!records.some(record=>record.type==='attributes'?record.target===original:record.target!==style&&!control?.contains(record.target)))return;
+  refreshQueued=true;queueMicrotask(()=>{refreshQueued=false;if(!disposed&&host.isConnected)sync();});
+ });
+ if(host.shadowRoot)observer.observe(host.shadowRoot,{subtree:true,childList:true,attributes:true,attributeFilter:['style']});
+ // A Hass update can leave the vendor DOM identical (or only edit Text.data).
+ // Reconcile after the vendor's own Lit lifecycle too, without patching its
+ // global prototype or requesting an additional render of the native card.
+ const updatedDescriptor=Object.getOwnPropertyDescriptor(host,'updated'),vendorUpdated=host.updated;
+ const adapterUpdated=function(...args){const result=vendorUpdated.apply(this,args);sync();return result;};
+ if(typeof vendorUpdated==='function')host.updated=adapterUpdated;
  bindSatinMode(host,()=>sync());sync();
- return {sync,get control(){return control;},dispose(){disposed=true;restore();unbindSatinMode(host);}};
+ return {sync,get control(){return control;},dispose(){disposed=true;observer.disconnect();if(host.updated===adapterUpdated){if(updatedDescriptor)Object.defineProperty(host,'updated',updatedDescriptor);else delete host.updated;}restore();unbindSatinMode(host);}};
 }
 export class SatinNativeCard extends LitElement{
  static getConfigElement(){return document.createElement('dash6-satin-native-editor');}

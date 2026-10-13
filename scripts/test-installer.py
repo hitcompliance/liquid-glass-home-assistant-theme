@@ -308,6 +308,12 @@ class InstallerTests(unittest.TestCase):
         self.assertTrue((self.config / "www/liquid-glass/dash6-cards.js").is_file())
         self.assertEqual((nested / "dist/dash6-cards.js").read_bytes(), b"import './chunks/control.js';")
 
+    def test_hacs_package_contains_current_dependency_lock_and_installer(self):
+        root = Path(__file__).resolve().parents[1]
+        component = root / 'custom_components/liquid_glass'
+        self.assertEqual((root / 'dependencies.lock.json').read_bytes(), (component / 'bundle/dependencies.lock.json').read_bytes(), 'Build the integration package after changing dependencies; HACS copies only the component folder')
+        self.assertEqual((root / 'scripts/install.py').read_bytes(), (component / 'installer.py').read_bytes(), 'Packaged installer must match the release source')
+
     def test_real_dependency_lock_is_complete_and_ultra_chunks_are_locked(self):
         real = Path(__file__).resolve().parent.parent / "dependencies.lock.json"
         if not real.exists():

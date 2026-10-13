@@ -1,0 +1,119 @@
+{
+  "reason": "Restore exact missing imported modules from established local DASH6 source so the dependency migration can be built and reviewed. No production deployment.",
+  "files": [
+    {
+      "path": "src/dash6/inset-actions.js",
+      "source": "custom-cards/dash6-satin-cards/src/inset-actions.js",
+      "sha256": "fb3b1fe4115ecf5f5263ebc6441f5e7120fe6e9b4fa040707e01775ec96f3d7b",
+      "bytes": 6201
+    },
+    {
+      "path": "src/dash6/graph-position.js",
+      "source": "custom-cards/dash6-satin-cards/src/graph-position.js",
+      "sha256": "6acdb8f7fa42c1aeee9d4d42048ddfa841bcd9924670f5b6aed32dc8d08b8706",
+      "bytes": 2937
+    },
+    {
+      "path": "src/dash6/door-switch.js",
+      "source": "custom-cards/dash6-satin-cards/src/door-switch.js",
+      "sha256": "3d16547e87fa33d321effa8feff31e2e62d8e0379818df271e576a84c8a033e0",
+      "bytes": 2683
+    },
+    {
+      "path": "src/dash6/door-switch-vertical.js",
+      "source": "custom-cards/dash6-satin-cards/src/door-switch-vertical.js",
+      "sha256": "9372fce6ffd3d41d08ceff7a8d7cc9f7e6acdfb788a8d2c598491bd3d8b66827",
+      "bytes": 1640
+    },
+    {
+      "path": "src/dash6/header-metrics.js",
+      "source": "custom-cards/dash6-satin-cards/src/header-metrics.js",
+      "sha256": "6779f87dcdf2141eeb84f64b1a10d730f5b55c3b211aaa5dda4e20bda28bb5c2",
+      "bytes": 1772
+    },
+    {
+      "path": "src/dash6/effect-lens.js",
+      "source": "custom-cards/dash6-satin-cards/src/effect-lens.js",
+      "sha256": "907ddcbcb7294a196c9c554305ae839731a08cc701bad3bfac8fbb3785653864",
+      "bytes": 1739
+    },
+    {
+      "path": "src/dash6/homepod-controls.js",
+      "source": "custom-cards/dash6-satin-cards/src/homepod-controls.js",
+      "sha256": "bd954e37c89dd66407f4756ef0514dc00dad1093b0a4b871ba954627090a4f7a",
+      "bytes": 9901
+    },
+    {
+      "path": "src/dash6/card-refinements.js",
+      "source": "custom-cards/dash6-satin-cards/src/card-refinements.js",
+      "sha256": "3e939b0f2a9ff005c04d09f8062f75ca064f801dc98d77f5b8b59f451da31a99",
+      "bytes": 6378
+    },
+    {
+      "path": "src/dash6/homepod-power.js",
+      "source": "custom-cards/dash6-satin-cards/src/homepod-power.js",
+      "sha256": "2b4e4ee6ba73243b70ecc3a60e8ad8863bca4ef943b156f600fb89ee9d5b53f1",
+      "bytes": 2113
+    },
+    {
+      "path": "src/dash6/homepod-card.js",
+      "source": "custom-cards/dash6-satin-cards/src/homepod-card.js",
+      "sha256": "b4896a21b4a14acef7ca7704c3e45b44533ca2d77da89e551810774ee2d4618a",
+      "bytes": 2231
+    },
+    {
+      "path": "src/dash6/media-refinements.js",
+      "source": "custom-cards/dash6-satin-cards/src/media-refinements.js",
+      "sha256": "dc1f690eb2ab13f9d7bb65440fb297a97560d17042c7864f3793f8e496df0fc8",
+      "bytes": 16676
+    },
+    {
+      "path": "src/dash6/interaction-refinements.js",
+      "source": "custom-cards/dash6-satin-cards/src/interaction-refinements.js",
+      "sha256": "0014fc44b321bd0e9b17489613786ab8e74130610de18f7edf600a7903621bfb",
+      "bytes": 26124
+    },
+    {
+      "path": "src/dash6/recessed-gauge-refinements.js",
+      "source": "custom-cards/dash6-satin-cards/src/recessed-gauge-refinements.js",
+      "sha256": "2051d2a4d9181b17c60cb2dae11c1b9f941cbf1d6ab9c08d89756fc58bd2f0c0",
+      "bytes": 3409
+    },
+    {
+      "path": "src/dash6/maintenance-button-refinements.js",
+      "source": "custom-cards/dash6-satin-cards/src/maintenance-button-refinements.js",
+      "sha256": "11ebd643a0b79ce233c6113f20aec76083114406e330ba8a4c54921a5731345f",
+      "bytes": 3643
+    },
+    {
+      "path": "src/dash6/fridge-material-refinements.js",
+      "source": "custom-cards/dash6-satin-cards/src/fridge-material-refinements.js",
+      "sha256": "d63554943e3a51db101813d78bf68ce770cd35d5694d9f5d1a0faa9edd79471f",
+      "bytes": 3468
+    },
+    {
+      "path": "src/dash6/media-browse-refinements.js",
+      "source": "custom-cards/dash6-satin-cards/src/media-browse-refinements.js",
+      "sha256": "ec3a57f9a1b2b3de7caab5667690ab6360bded9f47d79133f1d4ef011ab6bc23",
+      "bytes": 3649
+    },
+    {
+      "path": "src/dash6/media-material-refinements.js",
+      "source": "custom-cards/dash6-satin-cards/src/media-material-refinements.js",
+      "sha256": "5ea78bddbcdf568ec4fe0cb2b75b29001900eaa481c42031fd5e044b648df156",
+      "bytes": 3822
+    },
+    {
+      "path": "src/dash6/fan-mode-refinements.js",
+      "source": "custom-cards/dash6-satin-cards/src/fan-mode-refinements.js",
+      "sha256": "39ea1b7135f9429223e29374a33032cb407b38f479deacec3717a2b2316e7fe9",
+      "bytes": 9626
+    },
+    {
+      "path": "src/dash6/lighting-layout-refinements.js",
+      "source": "custom-cards/dash6-satin-cards/src/lighting-layout-refinements.js",
+      "sha256": "cfbad50ebd25e3fa3c3b8202baf5020c47753dfde296bf4f9cdfdea26df54006",
+      "bytes": 5313
+    }
+  ]
+}

@@ -3,7 +3,8 @@
 The installer installs every frontend dependency used by the supplied cards and
 layout adapters by default. Versions, official download URLs, byte sizes and
 SHA-256 checksums are fixed in [`dependencies.lock.json`](../dependencies.lock.json).
-All listed bytes were downloaded and verified on **2026-10-04**. The lock does
+The original dependency set was downloaded and verified on **2026-10-04**.
+Embedded View Card was additionally verified on **2026-10-13**. The lock does
 not track “latest” during installation. Release-asset checksums supplied by
 GitHub were also compared where available.
 
@@ -30,6 +31,7 @@ resource. Imported chunks remain next to that entrypoint.
 | Layout Card | v2.4.7 | `grid-layout`, pill and inline layout adapters | [Release](https://github.com/thomasloven/lovelace-layout-card/releases/tag/v2.4.7) |
 | More Info Card | commit `c0a9c942851c` | Compatibility with existing non-cover more-info cards | [Pinned source](https://github.com/thomasloven/lovelace-more-info-card/tree/c0a9c942851c1c5370e8de102eb96597fb845d85) |
 | Vertical Stack in Card | v1.1.4 | Compatibility with existing stack configurations | [Release](https://github.com/ofekashery/vertical-stack-in-card/releases/tag/v1.1.4) |
+| Embedded View Card | commit `739823b9b6f8` | Original embedding engine and editor, with a small Liquid Glass adapter | [Pinned source](https://github.com/redkanoon/embedded-view-card/tree/739823b9b6f89999203504cf13ed7d0247ecb0b8) |
 | Firemote | v4.1.9 | Apple TV / Fire TV remote in the media modal | [Release and setup](https://github.com/PRProd/HA-Firemote/releases/tag/v4.1.9), [device prerequisites](https://github.com/PRProd/HA-Firemote#prerequisites) |
 
 Ultra-Card is **not a single-file dependency**. The lock includes all 149 files
@@ -61,11 +63,51 @@ shim imports the same main module and needs no extra resource registration.
 
 The thermostat display uses Home Assistant's **native thermostat and climate
 controls**. It does not require `thermostat-dark-card` or the old Lovelace
-thermostat card. Cover, embedded-view and Roborock controls are supplied by this
-package and do not need separate third-party frontend copies. Existing
+thermostat card. Cover and Roborock controls are supplied by this package.
+Embedded View Card is downloaded separately from its original upstream with its
+version module, seven translation files, translation loader and MIT license.
+Only a small Liquid Glass subclass adapter is bundled: it preserves the existing
+`custom:dash6-embedded-view-card` name and editor, and adapts the resulting view
+to the Liquid Glass sections layout. It does not contain the upstream card
+implementation. Its private extension points are checked against the pinned
+commit; an incompatible separately installed version must be updated to a
+supported version. Existing registered upstream resources are reused. Existing
 `climate`, `cover` and `vacuum` entities must still be provided by their device
 integrations. Do not add an original frontend card whose custom-element tag is
 already supplied by this package.
+
+### Embedded View ownership and later HACS installations
+
+The original owns `embedded-view-card` and `embedded-view-card-editor`.
+Liquid Glass owns only its `dash6-embedded-view-card` adapter and editor. It
+does not modify the original constructor or globally patch CustomElementRegistry.
+
+When the integration starts, one registered original URL is reused verbatim,
+including its version query string. If no original resource exists, the pinned
+vendor copy is installed. The bootstrap checks both original element tags before
+importing; partially registered originals fail explicitly rather than loading a
+second implementation. Identical URL imports share the browser's ESM cache.
+
+For Storage-mode resources, the integration listens to Home Assistant's resource
+collection. A later HACS installation or URL update changes only the original
+Embedded import and the integration-owned bootstrap URL. Foreign resource rows,
+themes, dashboards, other modules and installed originals are not deleted or
+rewritten. An initial reconciliation closes the setup/listener race. Unload
+removes the listener and only the integration-owned notifications/extra module.
+
+More than one distinct registered `embedded-view-card.js` URL is a conflict;
+the integration never silently picks the last entry. Initial setup stops before
+file changes. A late conflict suspends only Liquid Glass's bootstrap and reports
+the problem, leaving foreign registrations for the user to resolve. Once one
+original remains, a collection change restores the owned loader automatically.
+
+**A source change requires a complete browser reload.** An already registered
+custom-element constructor cannot be replaced or unregistered. The integration
+shows a reload notification; it does not promise a seamless transition within an
+already open tab, or suppress failures from foreign code independently loaded
+twice. Fresh pages import only the selected canonical original URL. Replacing a
+YAML resource collection is reconciled at integration reload/startup; the live
+Storage/HACS listener does not apply to YAML resource editing.
 
 A separately installed, older `govee-segment-light-card` is optional legacy
 compatibility only. There is no verified public upstream artifact for that
@@ -200,6 +242,27 @@ Theme includes and per-user selection follow
 [Home Assistant's frontend documentation](https://www.home-assistant.io/integrations/frontend/#theme-configuration-splitting).
 Resource reload and the UI-managed/YAML distinction follow
 [Home Assistant's resource reload documentation](https://www.home-assistant.io/actions/lovelace.reload_resources/).
+
+## Dependencies after an integration update
+
+HACS installs the component directory, including its generated `bundle/` and
+exact dependency lock. After downloading a Liquid Glass update and restarting
+Home Assistant, every setup of the existing config entry reruns the locked
+installer. Newly added frontend dependencies and changed installer-owned pinned
+versions are installed automatically before the frontend bootstrap is registered.
+The user does not repeat the config flow or manually add these resources. A full
+browser reload activates the new modules. New bytes require internet access unless
+their exact verified content is already cached.
+
+Registered HACS modules remain owned and updated by HACS; the integration reuses
+their exact registered URLs instead of overriding their version. Optional backend
+components remain opt-in. Downloads and checksums are completed before target
+files change. A failed download/hash check leaves the previous installation
+untouched and raises a retryable setup failure; a target-write failure rolls back
+that invocation. Integration lifecycle regressions cover adding a dependency,
+changing a pinned version, HACS reuse, failure preservation and successful retry.
+The installer tests also assert that the HACS component's shipped lock and
+installer match the release source, preventing an accidentally stale package.
 
 ## Installer verification
 

@@ -7,6 +7,11 @@ The project's original theme and control code is MIT licensed; see `LICENSE`.
 - The DASH6 robot artwork includes the SVG/CSS animation from **roborock-vacuum-card**. Its upstream license is included in `licenses/ROBOROCK-LICENSE`; the original repository is listed in `dependencies.lock.json`.
 - The optional legacy SVG optics use **@samasante/liquid-glass**, React and React DOM. See `frontend/THIRD-PARTY-LICENSE.md`.
 
+The Embedded View Card implementation and editor by redkanoon are downloaded
+separately under their upstream MIT license. Liquid Glass bundles only its own
+subclass adapter; the upstream MIT license is installed next to the downloaded
+files. See the pinned entry in `dependencies.lock.json`.
+
 Third-party Home Assistant cards are downloaded separately from pinned official GitHub releases by the installer. Their license files are installed alongside those modules; see `docs/DEPENDENCIES.md` and `dependencies.lock.json`. Their source is not relicensed by this repository.
 
 The living-room wallpaper was generated for this project. It is included as the shared backdrop for the design demos.
