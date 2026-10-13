@@ -13,6 +13,9 @@ const backfill=planSectionPositions([item(2,2),item(2),item(6),item(2),item(4),i
 for(const p of backfill)if(p.expanded)assert.equal(p.position,2);
 
 const bundle=await build({entryPoints:['src/dash6/layouts.js'],bundle:true,write:false,format:'iife',loader:{'.css':'text'},logLevel:'silent'});
+// Real RenderCard and RoomSlot implementations expose adapter/shadow boundaries
+// that simple direct-child fixtures cannot represent.
+const adapters=await build({stdin:{contents:"import './src/dash6/profile-card.js';import './src/dash6/room-loader.js';",resolveDir:process.cwd()},bundle:true,write:false,format:'iife',loader:{'.css':'text'},logLevel:'silent'});
 const browser=await chromium.launch({headless:true});
 try {
  const page=await browser.newPage({viewport:{width:900,height:1000}});
@@ -40,6 +43,17 @@ try {
   });
  });
  await page.addScriptTag({content:bundle.outputFiles[0].text});
+ await page.evaluate(()=>{
+  for(const name of ['hui-grid-card','hui-vertical-stack-card','hui-horizontal-stack-card'])customElements.define(name,class extends HTMLElement {
+   constructor(){super();this.attachShadow({mode:'open'});}
+   async setConfig(config){this._config=config;const children=await Promise.all((config.cards||[]).map(c=>window.loadCardHelpers().then(h=>h.createCardElement(c))));this.shadowRoot.replaceChildren(...children);}
+  });
+  window.loadCardHelpers=async()=>({async createCardElement(config){
+   const tag=config.type.startsWith('custom:')?config.type.slice(7):'hui-'+config.type+'-card';
+   const child=document.createElement(tag);await child.setConfig?.(config);return child;
+  }});
+ });
+ await page.addScriptTag({content:adapters.outputFiles[0].text});
  await page.waitForFunction(()=>customElements.get('dash6-sections-view'));
  const create=async(spans,options={})=>page.evaluate(({spans,options})=>{
   document.querySelectorAll('hui-sections-view,dash6-sections-view').forEach(host=>host.remove());
@@ -105,6 +119,36 @@ try {
   host.dispatchEvent(new Event('card-visibility-changed'));
  }));await settle();
  for(const view of await state())assert.equal(view.sections[0].display,'block','Static content keeps mixed section visible');
+ // Production wrapping: RenderCard → native grid → four real RoomSlots,
+ // including each slot's hidden known/extra elements and Lit-rendered shadows.
+ await create([4,4,4]);await page.evaluate(async()=>{
+  window.wrappedSlots=[];
+  for(const host of views){
+   const section=host.shadowRoot.querySelector('.section');
+   const adapter=document.createElement('dash6-render-card');
+   section.replaceChildren(adapter);
+   await adapter.setConfig({type:'custom:dash6-render-card',definition:{type:'grid',cards:Array.from({length:4},(_,slot)=>({type:'custom:dash6-room-slot-card',room:'fixture',slot}))},skin:{css:''}});
+   await adapter.updateComplete;
+   const slots=[...adapter._child.shadowRoot.querySelectorAll('dash6-room-slot-card')];
+   slots.forEach(slot=>slot._visibility());wrappedSlots.push(slots);
+   host.dispatchEvent(new Event('card-visibility-changed'));
+  }
+ });await settle();
+ for(const view of await state()){
+  assert.equal(view.sections[0].display,'none','Real RenderCard wrapper does not count as fixed content');
+  assert.equal(view.sections[0].rect.height,0,'Empty wrapped section has no layout height');
+  assert.equal(view.sections[0].position,undefined,'Empty wrapped section gets no position');
+  assert.deepEqual(view.sections.slice(1).map(s=>[s.position,Number(s.span)]),[['1',4],['2',6]]);
+ }
+ await page.evaluate(()=>wrappedSlots.forEach(slots=>{
+  const slot=slots[0];slot._fixed=document.createElement('hui-tile-card');slot._known.append(slot._fixed);slot._visibility();
+ }));await settle();
+ for(const view of await state()){
+  assert.equal(view.sections[0].display,'block','Wrapped slot becomes visible');
+  assert.deepEqual(view.sections.map(s=>[s.row,s.position,Number(s.span)]),[['1','1',4],['1','2',6],['2','1',4]]);
+ }
+ await page.evaluate(()=>wrappedSlots.forEach(slots=>{const slot=slots[0];slot._fixed=null;slot._known.replaceChildren();slot._visibility();}));await settle();
+ for(const view of await state())assert.equal(view.sections[0].display,'none','Wrapped slot disappears again');
  // Visibility and resize updates need no setConfig / native Lit render.
  await create([4,4,4],{hiddenIndex:0});await settle();
  for(const width of [700,899,900,699,390,900]){
