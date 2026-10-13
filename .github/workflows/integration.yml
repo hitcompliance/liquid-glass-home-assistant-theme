@@ -36,5 +36,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium webkit
       - run: node tests/favorites-selection.mjs
+      - run: node tests/profiles-store.mjs
+      - run: node tests/favorites-masonry-browser.mjs
       - run: node tests/native-switch-lifecycle-browser.mjs
       - run: node tests/package-smoke.mjs
