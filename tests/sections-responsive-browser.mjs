@@ -44,9 +44,24 @@ try {
  });
  await page.addScriptTag({content:bundle.outputFiles[0].text});
  await page.evaluate(()=>{
+  customElements.define('hui-card',class extends HTMLElement {
+   constructor(){super();this.attachShadow({mode:'open'});}
+   setChild(child){this._card=child;this.shadowRoot.replaceChildren(child);}
+  });
+  window.nativeCardWrapper=child=>{const wrapper=document.createElement('hui-card');wrapper.setChild(child);return wrapper;};
+  window.deepQuery=(root,selector)=>{
+   const found=root.querySelector(selector);if(found)return found;
+   for(const node of root.querySelectorAll('*'))if(node.shadowRoot){const nested=deepQuery(node.shadowRoot,selector);if(nested)return nested;}
+   return null;
+  };
+  window.deepAll=(root,selector)=>{
+   const found=[...root.querySelectorAll(selector)];
+   for(const node of root.querySelectorAll('*'))if(node.shadowRoot)found.push(...deepAll(node.shadowRoot,selector));
+   return found;
+  };
   for(const name of ['hui-grid-card','hui-vertical-stack-card','hui-horizontal-stack-card'])customElements.define(name,class extends HTMLElement {
    constructor(){super();this.attachShadow({mode:'open'});}
-   async setConfig(config){this._config=config;const children=await Promise.all((config.cards||[]).map(c=>window.loadCardHelpers().then(h=>h.createCardElement(c))));this.shadowRoot.replaceChildren(...children);}
+   async setConfig(config){this._config=config;const children=await Promise.all((config.cards||[]).map(c=>window.loadCardHelpers().then(h=>h.createCardElement(c))));this.shadowRoot.replaceChildren(...children.map(nativeCardWrapper));}
   });
   window.loadCardHelpers=async()=>({async createCardElement(config){
    const tag=config.type.startsWith('custom:')?config.type.slice(7):'hui-'+config.type+'-card';
@@ -119,18 +134,20 @@ try {
   host.dispatchEvent(new Event('card-visibility-changed'));
  }));await settle();
  for(const view of await state())assert.equal(view.sections[0].display,'block','Static content keeps mixed section visible');
- // Production wrapping: RenderCard → native grid → four real RoomSlots,
+ // Production wrapping: hui-card → RenderCard → native vertical stack →
+ // hui-card → native grid → four hui-card
+ // adapters → real RoomSlots,
  // including each slot's hidden known/extra elements and Lit-rendered shadows.
  await create([4,4,4]);await page.evaluate(async()=>{
-  window.wrappedSlots=[];
+  window.wrappedSlots=[];window.wrappedAdapters=[];
   for(const host of views){
    const section=host.shadowRoot.querySelector('.section');
    const adapter=document.createElement('dash6-render-card');
-   section.replaceChildren(adapter);
-   await adapter.setConfig({type:'custom:dash6-render-card',definition:{type:'grid',cards:Array.from({length:4},(_,slot)=>({type:'custom:dash6-room-slot-card',room:'fixture',slot}))},skin:{css:''}});
+   section.replaceChildren(nativeCardWrapper(adapter));
+   await adapter.setConfig({type:'custom:dash6-render-card',definition:{type:'vertical-stack',cards:[{type:'grid',cards:Array.from({length:4},(_,slot)=>({type:'custom:dash6-room-slot-card',room:'fixture',slot}))}]},skin:{css:''}});
    await adapter.updateComplete;
-   const slots=[...adapter._child.shadowRoot.querySelectorAll('dash6-room-slot-card')];
-   slots.forEach(slot=>slot._visibility());wrappedSlots.push(slots);
+   const slots=deepAll(adapter._child.shadowRoot,'dash6-room-slot-card');
+   slots.forEach(slot=>slot._visibility());wrappedSlots.push(slots);wrappedAdapters.push(adapter);
    host.dispatchEvent(new Event('card-visibility-changed'));
   }
  });await settle();
@@ -149,6 +166,12 @@ try {
  }
  await page.evaluate(()=>wrappedSlots.forEach(slots=>{const slot=slots[0];slot._fixed=null;slot._known.replaceChildren();slot._visibility();}));await settle();
  for(const view of await state())assert.equal(view.sections[0].display,'none','Wrapped slot disappears again');
+ await page.evaluate(()=>wrappedAdapters.forEach(adapter=>{
+  const grid=deepQuery(adapter._child.shadowRoot,'hui-grid-card');
+  grid.shadowRoot.append(nativeCardWrapper(document.createElement('hui-tile-card')));
+  adapter.dispatchEvent(new Event('card-visibility-changed',{bubbles:true,composed:true}));
+ }));await settle();
+ for(const view of await state())assert.equal(view.sections[0].display,'block','Ordinary static card inside hui-card keeps mixed wrapped section visible');
  // Visibility and resize updates need no setConfig / native Lit render.
  await create([4,4,4],{hiddenIndex:0});await settle();
  for(const width of [700,899,900,699,390,900]){

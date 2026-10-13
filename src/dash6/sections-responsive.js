@@ -96,7 +96,7 @@ function dynamicEmpty(section) {
    || (node.localName === 'dash6-fast-block-card' && node._child)) fixed = true;
   // A real static card beside an empty list keeps the section visible. Stack,
   // grid and profile adapters are structural wrappers, not static content.
-  if (node.localName.endsWith('-card') && !['hui-heading-card','hui-grid-card','hui-horizontal-stack-card',
+  if (node.localName.endsWith('-card') && !['hui-card','hui-heading-card','hui-grid-card','hui-horizontal-stack-card',
    'hui-vertical-stack-card','dash6-stack-card','dash6-render-card','dash6-profile-card','dash6-fast-block-card',
    'layout-card','mod-card'].includes(node.localName) && !node.hidden
    && getComputedStyle(node).display !== 'none') fixed = true;
