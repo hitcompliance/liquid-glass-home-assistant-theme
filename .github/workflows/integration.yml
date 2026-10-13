@@ -39,6 +39,8 @@ jobs:
       - run: node tests/profiles-store.mjs
       - run: node tests/navigation-lens-browser.mjs
       - run: node tests/sections-width-browser.mjs
+      - run: node tests/responsive-layouts-browser.mjs
       - run: node tests/favorites-masonry-browser.mjs
       - run: node tests/native-switch-lifecycle-browser.mjs
+      - run: node tests/native-switch-wrapper-browser.mjs
       - run: node tests/package-smoke.mjs

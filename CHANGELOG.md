@@ -1,3 +1,9 @@
+## 3.1.21
+
+- Keep native glass switches bound to the current child during nested card reconfiguration and state updates.
+- Use single-column dashboard content below 700px, including embedded Sections and card grids.
+- Match missing navigation glass defaults to the shared bedroom reference material.
+
 # 3.1.20 / Cards 2.4.20
 
 - Respect configured embedded section widths; empty climate sections no longer collapse the entire desktop layout.

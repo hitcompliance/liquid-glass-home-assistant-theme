@@ -174,14 +174,25 @@ export class SatinNativeCard extends LitElement{
  static properties={hass:{attribute:false},_child:{state:true},_error:{state:true}};
  static styles=css`:host{display:block;min-width:0}.error{padding:12px;color:var(--error-color)}`;
  async setConfig(config){
-  this._definition=structuredClone(config.definition);this._lockTogglePlan=structuredClone(config.lock_toggle||null);this._adapter?.dispose();this._adapter=null;
+  this._definition=structuredClone(config.definition);this._lockTogglePlan=structuredClone(config.lock_toggle||null);this._adapter?.dispose();this._adapter=null;this._adapterChild=null;
   const generation=(this._generation||0)+1;this._generation=generation;
-  try{const helpers=await window.loadCardHelpers();const child=await helpers.createCardElement(this._definition);if(generation!==this._generation)return;child.hass=this.hass;this._child=child;this._error='';}
+  const definition=this._definition;
+  try{const helpers=await window.loadCardHelpers();const child=await helpers.createCardElement(definition);if(generation!==this._generation)return;child.hass=this.hass;this._childGeneration=generation;this._child=child;this._error='';}
   catch(error){if(generation===this._generation)this._error=error.message;}
  }
- async updated(){const child=this._child;if(!child)return;child.hass=this.hass;await child.updateComplete;if(child!==this._child||!this.isConnected)return;this._adapter??=bindSatinNativeCard(child,this._definition,{lockTogglePlan:this._lockTogglePlan});this._adapter.sync(this._definition);}
+ async updated(){
+  const child=this._child,generation=this._generation;
+  // Button Card reevaluates a custom field's config before forwarding hass.
+  // During async creation that hass update still sees the previous child. Never
+  // bind it to the new definition or retain its adapter for the replacement.
+  if(!child||this._childGeneration!==generation)return;
+  child.hass=this.hass;await child.updateComplete;
+  if(generation!==this._generation||child!==this._child||!this.isConnected||!child.isConnected)return;
+  if(this._adapterChild!==child){this._adapter?.dispose();this._adapter=bindSatinNativeCard(child,this._definition,{lockTogglePlan:this._lockTogglePlan});this._adapterChild=child;}
+  this._adapter.sync(this._definition);
+ }
  connectedCallback(){super.connectedCallback();this.requestUpdate();}
- disconnectedCallback(){this._adapter?.dispose();this._adapter=null;super.disconnectedCallback();}
+ disconnectedCallback(){this._adapter?.dispose();this._adapter=null;this._adapterChild=null;super.disconnectedCallback();}
  getCardSize(){return this._child?.getCardSize?.()??3;}
  getGridOptions(){return this._definition?.grid_options??this._child?.getGridOptions?.();}
  render(){return this._error?html`<div role="alert" class="error">${this._error}</div>`:html`${this._child}`;}

@@ -348,14 +348,26 @@ customElements.whenDefined('masonry-layout').then(()=>{
  sheet.replaceSync('.column{display:flex;flex-direction:column;gap:8px;padding-inline:4px;box-sizing:border-box}.column>*{margin:0!important;min-width:0;flex:none}');
  class FavoritesMasonry extends Base {
   static styles=[Base.styles,sheet];
+  _updateSize(){
+   if(window.matchMedia('(max-width:699px)').matches){this._columns=1;return;}
+   return super._updateSize();
+  }
   connectedCallback(){
    super.connectedCallback();
+   this._dash6NarrowViewport??=window.matchMedia('(max-width:699px)');
+   this._dash6ViewportChanged??=()=>this._updateSize();
+   this._dash6NarrowViewport.addEventListener('change',this._dash6ViewportChanged);
+   this._updateSize();
    if(this._config)return;
    const parent=this.getRootNode().host,config=parent?._config;
    if(config?.layout_type?.includes('dash6-favorites-masonry')){
     this.setConfig({type:this.localName,layout:config.layout,cards:config.cards});
     this.cards=parent._cards||[];
    }
+  }
+  disconnectedCallback(){
+   this._dash6NarrowViewport?.removeEventListener('change',this._dash6ViewportChanged);
+   super.disconnectedCallback();
   }
  }
  if(!customElements.get('dash6-favorites-masonry-layout'))customElements.define('dash6-favorites-masonry-layout',FavoritesMasonry);

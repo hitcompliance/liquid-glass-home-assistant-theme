@@ -9,13 +9,15 @@ const reference = process.env.DASH6_LAYOUT_CARD_REFERENCE;
 const contract = `
 class Masonry extends HTMLElement {
   static styles=[];
-  constructor(){super();this.attachShadow({mode:'open'});this._observer=new ResizeObserver(()=>this.draw());}
-  connectedCallback(){this._observer.observe(this);this.draw();}
+  constructor(){super();this.attachShadow({mode:'open'});this._observer=new ResizeObserver(()=>this._updateSize());}
+  connectedCallback(){this._observer.observe(this);this._updateSize();this.draw();}
+  _updateSize(){this._columns=Math.max(1,Math.min(3,Math.floor(this.clientWidth/300)));}
+  set _columns(value){if(this.__columns===value)return;this.__columns=value;this.draw();}get _columns(){return this.__columns||1;}
   disconnectedCallback(){this._observer.disconnect();}
   setConfig(config){this._config=config;this.draw();}
   set cards(value){this._cards=value;this.draw();}get cards(){return this._cards||[];}
   draw(){if(!this._config)return;this.shadowRoot.adoptedStyleSheets=this.constructor.styles.flat().filter(Boolean);
-    const cols=Math.max(1,Math.min(3,Math.floor(this.clientWidth/300)));const grid=document.createElement('div');
+    const cols=this._columns;const grid=document.createElement('div');
     grid.style.cssText='display:grid;grid-template-columns:repeat('+cols+',minmax(0,1fr))';
     for(let i=0;i<cols;i++){const col=document.createElement('div');col.className='column';grid.append(col);}
     this.cards.forEach((card,i)=>grid.children[i%cols].append(card));this.shadowRoot.replaceChildren(grid);}
@@ -64,6 +66,11 @@ try {
   const desktop = await state();
   assert.equal(desktop.configured, true); assert.equal(desktop.cards, 6); assert.ok(desktop.columns >= 2);
   assert.ok(desktop.gaps.every(gap => gap === '8px')); assert.ok(desktop.distances.every(gap => gap === 8));
+  await page.setViewportSize({width:700,height:900});
+  await page.waitForFunction(()=>fixture.shadowRoot.querySelector('dash6-favorites-masonry-layout').shadowRoot.querySelectorAll('.column').length===2);
+  await page.setViewportSize({width:699,height:900});
+  await page.waitForFunction(()=>fixture.shadowRoot.querySelector('dash6-favorites-masonry-layout').shadowRoot.querySelectorAll('.column').length===1);
+  const narrow=await state();assert.equal(narrow.cards,6);assert.equal(narrow.overflow,false);
   await page.setViewportSize({width: 390, height: 900});
   await page.waitForFunction(() => fixture.shadowRoot.querySelector('dash6-favorites-masonry-layout').shadowRoot.querySelectorAll('.column').length === 1, null, {timeout: 5000});
   const mobile = await state();
