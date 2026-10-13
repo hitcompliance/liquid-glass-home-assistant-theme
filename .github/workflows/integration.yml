@@ -24,3 +24,17 @@ jobs:
       - run: python -m pip install homeassistant==2026.9.0
       - run: python scripts/test-integration.py
       - run: python scripts/test-installer.py
+
+  cards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: node tests/favorites-selection.mjs
+      - run: node tests/native-switch-lifecycle-browser.mjs
+      - run: node tests/package-smoke.mjs
