@@ -1,3 +1,9 @@
+# 3.1.20 / Cards 2.4.20
+
+- Respect configured embedded section widths; empty climate sections no longer collapse the entire desktop layout.
+- Supply shared glass lens defaults for active navigation links in sidebar and mobile overlay.
+- Add responsive room-slot switch grids with a single outer frame.
+
 # 3.1.19 / Cards 2.4.19
 
 - Add the Favorites visual editor, group selection links, type labels, scrollable preview, dashboard/manual view ordering and selected descendants without unchecked wrappers.

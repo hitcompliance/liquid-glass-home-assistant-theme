@@ -419,18 +419,18 @@ button:not(.detail-link):focus-visible,[role=button]:not(.detail-link):focus-vis
 }
 :host(.dash6-nav-lens) #name,:host(.dash6-nav-lens) ha-icon{transition:color 150ms ease!important}
 @media(hover:hover){
- :host(.dash6-nav-lens) ha-card:hover{background:var(--dash6-nav-lens-hover-background)!important;border:var(--dash6-nav-lens-hover-border)!important;box-shadow:var(--dash6-nav-lens-hover-shadow)!important;scale:1!important}
+ :host(.dash6-nav-lens) ha-card:hover{background:var(--dash6-nav-lens-hover-background,rgba(255,255,255,.035))!important;border:var(--dash6-nav-lens-hover-border,1px solid rgba(255,255,255,.38))!important;box-shadow:var(--dash6-nav-lens-hover-shadow,inset 0 1px 0 rgba(255,255,255,.10),0 2px 5px rgba(0,0,0,.18))!important;scale:1!important}
  :host(.dash6-nav-lens) ha-card:hover #name{color:var(--primary-text-color)!important}
 }
 :host(.dash6-nav-lens[data-nav-active="true"]) ha-card,
 :host(.dash6-nav-lens[data-nav-active="true"]) ha-card:hover{
- background:var(--dash6-nav-lens-active-background)!important;border:var(--dash6-nav-lens-active-border)!important;box-shadow:var(--dash6-nav-lens-active-shadow)!important;
+ background:var(--dash6-nav-lens-active-background,linear-gradient(145deg,rgba(8,22,37,.50),rgba(22,47,65,.32)))!important;border:var(--dash6-nav-lens-active-border,1px solid rgba(205,234,255,.22))!important;box-shadow:var(--dash6-nav-lens-active-shadow,inset 0 2px 6px rgba(2,13,25,.48),inset 0 1px 0 rgba(255,255,255,.10),0 1px 0 rgba(255,255,255,.16))!important;
 }
 :host(.dash6-nav-lens[data-nav-active="true"]) #name{font-weight:600!important;color:var(--primary-text-color)!important}
 :host(.dash6-nav-lens[data-nav-active="true"]) ha-icon{color:var(--dash6-nav-lens-icon-color,#8bc5ff)!important}
 :host(.dash6-nav-lens) ha-card:active,
 :host(.dash6-nav-lens[data-nav-active="true"]) ha-card:active{
- scale:calc(1 - .02 * min(1,var(--dash5-elasticity,1)))!important;box-shadow:var(--dash6-nav-lens-pressed-shadow)!important;transition-duration:90ms!important;
+ scale:calc(1 - .02 * min(1,var(--dash5-elasticity,1)))!important;box-shadow:var(--dash6-nav-lens-pressed-shadow,inset 0 2px 6px rgba(2,13,25,.48),inset 0 1px 0 rgba(255,255,255,.10))!important;transition-duration:90ms!important;
 }
 :host(.dash6-nav-lens) ha-card:focus-visible{outline:2px solid var(--primary-color)!important;outline-offset:2px!important}
 @media(prefers-reduced-motion:reduce){:host(.dash6-nav-lens) ha-card{transition:none!important;scale:1!important}:host(.dash6-nav-lens) ha-card:active{scale:1!important}}

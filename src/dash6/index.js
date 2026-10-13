@@ -20,7 +20,7 @@ import './shoe-cabinet-card.js';
 import './local-camera-card.js';
 import './profile-card.js';
 import './theme-editor.js';
-console.info('DASH6 Satin 2.4.19: Lichtgruppen, Szenen und Statussteuerung.');
+console.info('DASH6 Satin 2.4.20: Lichtgruppen, Szenen und Statussteuerung.');
 
 import './demo-card.js';
 import './inset-actions.js';
