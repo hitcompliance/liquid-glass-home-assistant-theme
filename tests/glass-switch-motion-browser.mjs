@@ -42,10 +42,19 @@ try{
     document.documentElement.style.setProperty('--dash6-satin-enabled','1');await paint();await sleep(450);
     const themeMount=travel.length;travel.length=0;
     const lens=s.shadowRoot.querySelector('.lens'),pos=()=>parseFloat(getComputedStyle(lens).translate)||0;
-    s.hass=state(false);await s.updateComplete;await paint();const first=travel.length;
+    s.hass=state(false);await s.updateComplete;
+    // Inspect the real CSS transition in the same task as Lit's commit. Pause
+    // its clock at a finite midpoint so slow CI frames cannot finish and remove
+    // it before the identity check. CSS cancellation/restarts still create a
+    // different object and fail, including during the subsequent painted updates.
     const transition=lens.getAnimations().find(a=>a.transitionProperty==='translate');
-    for(let i=0;i<3;i++){s.setConfig({entity:'light.test'});s.hass=state(false,40+i*20);s._squeezing=i===1;s.visual={...s.model,brightness:40+i*20,color:'#aaf',satinColor:'#fa0',group:true,count:i,total:3,colors:['red','blue','green']};await s.updateComplete;await paint();}
-    const same=travel.length,retained=transition===lens.getAnimations().find(a=>a.transitionProperty==='translate');
+    if(!transition)throw Error('Real state change did not create a translate transition');
+    const travelDuration=transition.effect.getTiming().duration;
+    transition.pause();transition.currentTime=travelDuration/3;await transition.ready;await paint();const first=travel.length;
+    const inFlight={playState:transition.playState,currentTime:transition.currentTime,duration:travelDuration};
+    const identities=[];
+    for(let i=0;i<3;i++){s.setConfig({entity:'light.test'});s.hass=state(false,40+i*20);s._squeezing=i===1;s.visual={...s.model,brightness:40+i*20,color:'#aaf',satinColor:'#fa0',group:true,count:i,total:3,colors:['red','blue','green']};await s.updateComplete;await paint();identities.push(transition===lens.getAnimations().find(a=>a.transitionProperty==='translate'));}
+    const same=travel.length,retained=identities.every(Boolean);
     const beforeReverse=pos();s.visual=undefined;s.hass=state(true);await s.updateComplete;
     const reverseStart=pos();await paint();const reversals=travel.length;await sleep(500);const final=pos();
     const recreated=await make('recreated',false);for(let i=0;i<5;i++){recreated.hass=state(false,80+i);await recreated.updateComplete;await paint();}
@@ -58,10 +67,11 @@ try{
     frame.style.setProperty('width','42px');window.dispatchEvent(new Event('theme-changed'));await paint();const refreshedPlate=readPlate();
     adapter.control.shadowRoot.querySelector('button').click();await sleep(150);
     s.setConfig({entity:'light.test',child_lock:true});await s.updateComplete;s.shadowRoot.querySelector('button').click();await s.updateComplete;const rejected=s._rejecting;await sleep(520);
-    return {themeMount,first,same,retained,reversals,beforeReverse,reverseStart,final,recreatedStarts,lateStarts,redrawStarts,initialUnified,plate,redrawPlate,refreshedPlate,actions:actions.length,services:services.length,rejected,cleared:!s._rejecting,duration:getComputedStyle(lens).transitionDuration};
+    return {themeMount,first,same,inFlight,identities,retained,reversals,beforeReverse,reverseStart,final,recreatedStarts,lateStarts,redrawStarts,initialUnified,plate,redrawPlate,refreshedPlate,actions:actions.length,services:services.length,rejected,cleared:!s._rejecting,duration:getComputedStyle(lens).transitionDuration};
    });
    console.log(name+': '+JSON.stringify(result));
    assert.equal(result.themeMount,0,'delayed theme binding must not animate a known state');assert.equal(result.first,1);assert.equal(result.same,1);assert.equal(result.retained,true,'same-target in-flight transition retains its identity');assert.equal(result.reversals,2);
+   assert.equal(result.inFlight.playState,'paused');assert.ok(result.inFlight.currentTime>0&&result.inFlight.currentTime<result.inFlight.duration,'identity checks use a genuine unfinished transition');assert.deepEqual(result.identities,[true,true,true]);
    assert.ok(result.beforeReverse>0&&result.beforeReverse<55);assert.ok(Math.abs(result.beforeReverse-result.reverseStart)<5,'counterchange starts at current rendered position');assert.equal(result.final,0);assert.equal(result.recreatedStarts,0);assert.equal(result.lateStarts,0);assert.equal(result.redrawStarts,0);
    assert.equal(result.initialUnified,true,'fixture exercises unified glass before compact classification');
    const clearPlate={background:'rgba(0, 0, 0, 0)',image:'none',border:'0px',shadow:'none',before:'none',after:'none',marked:false,unified:false};assert.deepEqual(result.plate,clearPlate);assert.deepEqual(result.redrawPlate,clearPlate);assert.deepEqual(result.refreshedPlate,clearPlate);
@@ -74,6 +84,6 @@ try{
    await page.emulateMedia({reducedMotion:'reduce'});
    const reduced=await page.evaluate(async()=>{travel.length=0;const s=document.querySelector('#direct');s.hass=state(false);await s.updateComplete;await paint();return {starts:travel.length,scale:getComputedStyle(s.shadowRoot.querySelector('.lens')).scale};});
    assert.deepEqual(reduced,{starts:0,scale:'1'});assert.deepEqual(errors,[]);
-  }finally{await browser.close();}
+  }catch(error){throw new Error(name+' motion regression failed: '+error.message,{cause:error});}finally{await browser.close();}
  }
 }finally{await new Promise(resolve=>server.close(resolve));await rm(temp,{recursive:true,force:true});}
