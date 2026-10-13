@@ -2,7 +2,7 @@ name: HACS integration validation
 on:
   push:
     branches: [main]
-    paths: ['custom_components/**', 'scripts/test-integration.py', 'hacs.json', '.github/workflows/integration.yml']
+    paths: ['custom_components/**', 'scripts/test-integration.py', 'scripts/test-installer.py', 'src/**', 'tests/**', 'package.json', 'package-lock.json', 'hacs.json', '.github/workflows/integration.yml']
   pull_request:
   workflow_dispatch:
 permissions:
