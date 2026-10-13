@@ -71,3 +71,5 @@ import "./media-artwork-refinements.js";
 import "./overview-cover-refinements.js";
 
 import './favorites-gui.js';
+
+import './dashboard-refinements.js';
