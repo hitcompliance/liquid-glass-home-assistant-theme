@@ -40,6 +40,7 @@ try {
  }));
  for(const width of [700,699,390,700]){
   await page.setViewportSize({width,height:900});
+  await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
   const data=await measure();
   for(const item of data.slice(0,6)){
    assert.equal(item.rect[0].y===item.rect[1].y,width===700,`${item.name} at${width}`);

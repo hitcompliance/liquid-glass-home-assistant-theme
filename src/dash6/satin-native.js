@@ -67,7 +67,8 @@ function dispatchAction(host,icon,action){
  finally{host.removeEventListener('action',stop);}
 }
 const iconCSS=`
-#card[data-dash6-satin-native-compact]{width:88px!important;min-width:88px!important;height:44px!important;min-height:44px!important;padding:0!important;overflow:visible!important}
+#card[data-dash6-satin-native-compact]{width:88px!important;min-width:88px!important;height:44px!important;min-height:44px!important;padding:0!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+#card[data-dash6-satin-native-compact]::before,#card[data-dash6-satin-native-compact]::after{content:none!important;display:none!important;background:none!important;border:0!important;box-shadow:none!important}
 #img-cell[data-dash6-satin-native]{width:88px!important;min-width:88px!important;height:44px!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;overflow:visible!important}
 #img-cell[data-dash6-satin-native]>dash6-glass-switch{position:relative!important;display:inline-block!important}
 `;
@@ -106,7 +107,7 @@ export function bindSatinNativeCard(host,definition,{iconElement,dispatchNativeA
    // retain their original size, layout, and surrounding controls.
    const dimensions=Object.assign({},...(config.styles?.card||[]));
    if(config.show_name===false&&config.show_state===false&&dimensions.width==='42px'&&dimensions.height==='42px'){
-    compactFrame=icon.closest('#card');compactFrame?.setAttribute('data-dash6-satin-native-compact','');
+    compactFrame=icon.closest('#card');compactFrame?.setAttribute('data-dash6-satin-native-compact','');compactFrame?.removeAttribute('data-dash6-satin-surface');
    }
   }
   for(const name of pointerEvents)control.addEventListener(name,stop);

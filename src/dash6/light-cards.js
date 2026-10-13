@@ -891,6 +891,8 @@ export class Dash5LightCard extends Base {
     // Keep a currently open dialog alive across HA updates.
     const dialog=this._dialog,focusIndex=[...this.shadowRoot.querySelectorAll('button,input,select')].indexOf(this.shadowRoot.activeElement),oldCard=this.shadowRoot.querySelector('ha-card.card');if(!this.shadowRoot.querySelector('style'))addStyle(this.shadowRoot);
     const card=el('ha-card',{class:'card'}), head=el('div',{class:'head'}), targets=this._commandTargets?.(), on=targets?.length?targets.every(id=>stateFor(this._hass,id)?.state==='on'):state?.state==='on';
+    // Apply the imported common surface before asynchronous discovery can run.
+    if(this.hasAttribute('data-satin'))card.setAttribute('data-dash6-satin-surface','');
     const power=oldCard?.querySelector('dash6-glass-switch')||document.createElement('dash6-glass-switch');
     power.setConfig({...c,name:displayName(c,state),icon:c.icon||'mdi:lightbulb',group:this instanceof Dash5LightgroupCard||c.segments.length>0,member_entities:targets?.length?targets:c.segments.map(s=>s.entity)});power.managed=true;power.visual={...switchVisual({...c,name:displayName(c,state),group:this instanceof Dash5LightgroupCard||c.segments.length>0,member_entities:targets?.length?targets:c.segments.map(s=>s.entity)},optimisticStates(this._hass),lightColor),on};
     if(!power._dash6Bound){power.addEventListener('toggle-request',e=>{e.stopPropagation();this.send({},e.detail.on?'turn_on':'turn_off')});power._dash6Bound=true;}

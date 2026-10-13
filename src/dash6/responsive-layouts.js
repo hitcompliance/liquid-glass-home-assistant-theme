@@ -1,3 +1,6 @@
+import {installNativeResponsiveSections} from './sections-responsive.js';
+installNativeResponsiveSections();
+
 // Stack content-card containers below 700px. Device controls and pill adapters
 // retain their own layouts; desktop configurations remain authoritative.
 const css = `@media(max-width:699px){
@@ -26,7 +29,7 @@ const css = `@media(max-width:699px){
 }
 }`;
 
-for (const name of ['hui-grid-card', 'grid-layout', 'hui-sections-view', 'hui-masonry-view', 'masonry-layout']) {
+for (const name of ['hui-grid-card', 'grid-layout', 'hui-masonry-view', 'masonry-layout']) {
  customElements.whenDefined(name).then(() => {
   const proto = customElements.get(name).prototype;
   if (Object.hasOwn(proto, '_dash6ContentLayout700')) return;

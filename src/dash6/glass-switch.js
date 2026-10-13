@@ -45,7 +45,7 @@ export function mapDeviceSwitches(config){
 
 const bulb=svg`<path d="M9 18v-2.5a6.5 6.5 0 1 1 6 0V18M9 18h6M9.5 21h5"/>`;
 export class GlassSwitch extends LitElement{
- static properties={hass:{attribute:false},visual:{attribute:false},managed:{attribute:false},_config:{state:true},_rejecting:{state:true},_squeezing:{state:true}};
+ static properties={hass:{attribute:false},visual:{attribute:false},managed:{attribute:false},_config:{state:true},_rejecting:{state:true},_squeezing:{state:true},_satinMode:{attribute:'data-satin',type:Boolean},_switchStyle:{attribute:'data-style'}};
  static styles=css`
  :host{display:inline-block;flex:none;width:104px;height:64px;vertical-align:middle;--sw-ink:var(--primary-color);--sw-y:32%;--sw-alpha:.68;--sw-travel:54px;--sw-lens:50px;color:var(--primary-text-color);contain:layout style}
  *{box-sizing:border-box}button{position:relative;display:block;width:104px;height:64px;padding:0;border:0;background:transparent;color:inherit;cursor:pointer;touch-action:manipulation;isolation:isolate;-webkit-tap-highlight-color:transparent}
@@ -98,6 +98,10 @@ export class GlassSwitch extends LitElement{
  @media(hover:hover){:host([data-satin]) button:hover:not(:disabled):not(.rejecting) .lens{scale:var(--dash6-satin-switch-hover-scale,1.07)}}
  :host([data-satin]) button:active:not(:disabled):not(.rejecting) .lens,:host([data-satin]) button.squeezing .lens{scale:1;transform:scale(1.10,.86);transition-duration:90ms}
  :host([data-satin]) .rejecting .lens{animation:dash6-satin-denied 480ms ease-in-out}
+ /* Initialize/rebind a known state without travelling from a different material's
+    endpoint. Keep scale/transform feedback; only on/off travel is suppressed. */
+ :host([data-switch-settling]) .lens{transition-property:scale,transform!important}
+ :host([data-switch-settling]) .readout{transition:none!important}
  @keyframes dash6-satin-denied{0%,100%{transform:translateX(0)}20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(1px)}}
  @media(prefers-reduced-motion:reduce){*{transition:none!important}.rejecting .lens{animation:none}.rejecting .reject-tint{animation:none;opacity:1}}
  @media(prefers-reduced-motion:reduce){:host([data-satin]) .lens{scale:1!important;transform:none!important;animation:none!important}}
@@ -108,7 +112,16 @@ export class GlassSwitch extends LitElement{
  getCardSize(){return 1;}
  get model(){return this.visual||switchVisual(this._config||{},this.hass?.states||{},this.colorForState);}
  reject(){clearTimeout(this._denyTimer);this._rejecting=true;this.requestUpdate();this._denyTimer=setTimeout(()=>{this._rejecting=false;this.requestUpdate();},480);}
- connectedCallback(){super.connectedCallback();bindThemePreferences(this);this._groupCountRefresh=()=>this.requestUpdate();window.addEventListener('dash6-theme-settings-changed',this._groupCountRefresh);}
+ attributeChangedCallback(name,old,value){if((name==='data-satin'||name==='data-style')&&old!==value)this.setAttribute('data-switch-settling','');super.attributeChangedCallback(name,old,value);}
+ willUpdate(){
+  const v=this.model,presentation=this.hasAttribute('data-satin')+'|'+this.dataset.style,previous=this._motionState;
+  // Hass/config/color/group updates leave the CSS transition untouched. CSS
+  // itself reverses a genuine counterchange from the current visual position.
+  if(!previous||previous.entity!==this._config?.entity||previous.presentation!==presentation||!v.available)this.setAttribute('data-switch-settling','');
+  this._motionState=v.available?{entity:this._config?.entity,presentation}:null;
+ }
+ updated(){if(this.hasAttribute('data-switch-settling')){const lens=this.shadowRoot?.querySelector('.lens');if(lens)getComputedStyle(lens).translate;this.removeAttribute('data-switch-settling');}}
+ connectedCallback(){this._motionState=null;this.setAttribute('data-switch-settling','');super.connectedCallback();bindThemePreferences(this);this._groupCountRefresh=()=>this.requestUpdate();window.addEventListener('dash6-theme-settings-changed',this._groupCountRefresh);}
  cancelPress(){clearTimeout(this._pressTimer);this._pressTimer=null;this._squeezing=false;}
  disconnectedCallback(){super.disconnectedCallback();window.removeEventListener('dash6-theme-settings-changed',this._groupCountRefresh);unbindThemePreferences(this);clearTimeout(this._denyTimer);this.cancelPress();this._rejecting=false;}
  async activate(e){e?.stopPropagation();const v=this.model;if(!v.available||this._pressTimer)return;if(v.locked){this.reject();return;}const on=!v.on;

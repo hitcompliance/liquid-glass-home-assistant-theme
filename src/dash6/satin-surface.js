@@ -44,6 +44,7 @@ export function bindSatinMode(host,onChange){
 }
 export function unbindSatinMode(host){modes.delete(host);host.removeAttribute('data-satin');}
 function eligible(card){
+ if(card.hasAttribute('data-dash6-satin-native-compact'))return false;
  const host=card.getRootNode().host;
  for(let n=card;n;n=n.assignedSlot||n.parentNode||n.host)if(n.localName==='hui-media-control-card'||n.localName==='firemote-card')return false;
  if(structural.has(host?.localName)||host?.localName==='dash6-area-header')return false;

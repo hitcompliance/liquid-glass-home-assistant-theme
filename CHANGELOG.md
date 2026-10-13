@@ -1,3 +1,11 @@
+## 3.1.22
+
+- Shared native/embedded Sections widths: mobile full width, intermediate 5-column spans and space-aware second-column expansion.
+- Opt-in room-slot flush grids and combined known/dynamic domain cards.
+- Suppress unchanged-state switch travel during initialization and presentation changes; retain genuine transitions and interaction feedback.
+- Remove decorative plates from compact native switches; initialize lighting with the shared glass material.
+- Include the opt-in room-loader frontend asset in the package.
+
 ## 3.1.21
 
 - Keep native glass switches bound to the current child during nested card reconfiguration and state updates.
