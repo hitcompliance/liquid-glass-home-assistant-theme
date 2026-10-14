@@ -1,0 +1,48 @@
+import assert from 'node:assert/strict';
+import {chromium,webkit} from 'playwright';
+import {fanFixture} from './fan-mode-fixture.mjs';
+
+// Measures the real rendered lens and real CSS transition objects, not just
+// source text. All entities/services come from the isolated synthetic fixture.
+const fixture=await fanFixture();
+try{for(const engine of [chromium,webkit]){
+ const browser=await engine.launch();try{
+ const page=await browser.newPage({viewport:{width:390,height:844}});const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(fixture.url);await page.waitForFunction(()=>window.ready);
+ const result=await page.evaluate(async()=>{
+  const lens=sw.shadowRoot.querySelector('.lens');const readout=sw.shadowRoot.querySelector('.readout');
+  const pos=()=>parseFloat(getComputedStyle(lens).translate)||0;
+  const snapshot=()=>{const b=sw.shadowRoot.querySelector('.rail').getBoundingClientRect(),l=lens.getBoundingClientRect(),t=readout.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(readout);const text=range.getBoundingClientRect();return {mode:sw._mode,x:pos(),width:b.width,height:b.height,lensWidth:parseFloat(getComputedStyle(lens).width),lensHeight:parseFloat(getComputedStyle(lens).height),label:readout.textContent.trim(),textFits:text.left>=b.left-1&&text.right<=b.right+1&&text.top>=b.top-1&&text.bottom<=b.bottom+1&&text.width<=t.width+1,opacity:parseFloat(getComputedStyle(lens).opacity),trackGlow:parseFloat(getComputedStyle(sw.shadowRoot.querySelector('.track'),'::before').opacity),iconOpacity:parseFloat(getComputedStyle(sw.shadowRoot.querySelector('.icon')).opacity),iconFilter:getComputedStyle(sw.shadowRoot.querySelector('.icon')).filter,buttons:sw.shadowRoot.querySelectorAll('button').length,checked:[...sw.shadowRoot.querySelectorAll('[aria-checked=true]')].map(b=>b.dataset.mode),tabStops:[...sw.shadowRoot.querySelectorAll('button')].filter(b=>b.tabIndex===0).map(b=>b.dataset.mode),groupRole:sw.shadowRoot.querySelector('.rail').getAttribute('role'),lenses:sw.shadowRoot.querySelectorAll('.lens').length};};
+  await sleep(500);const initialStarts=travel.length;const auto=snapshot();
+  await stamp('on','on');await sleep(500);const on=snapshot();await stamp('off','on');await sleep(500);const off=snapshot();
+  travel.length=0;for(let i=0;i<3;i++){sw.setConfig({...config});sw.hass=state('off','on',{percentage:i});await sw.updateComplete;await paint();}window.dispatchEvent(new Event('theme-changed'));await paint();const duplicateStarts=travel.length;
+  sw.hass=state('on','off');await sw.updateComplete;
+  const motion=lens.getAnimations().find(a=>a.transitionProperty==='translate');if(!motion)throw Error('A real mode change did not start lens travel');
+  const duration=motion.effect.getTiming().duration;motion.pause();motion.currentTime=duration/3;await motion.ready;await paint();const firstStarts=travel.length;const ids=[];
+  for(let i=0;i<3;i++){sw.setConfig({...config});sw.hass=state('on','off',{percentage:i,other:i});await sw.updateComplete;await paint();ids.push(motion===lens.getAnimations().find(a=>a.transitionProperty==='translate'));}
+  const sameStarts=travel.length,beforeReverse=pos();sw.hass=state('off','on');await sw.updateComplete;const reverseStart=pos();await paint();const reversals=travel.length;await sleep(500);const final=pos();
+  const late=document.createElement('dash6-fan-mode-switch');late.id='late';late.setConfig(config);document.body.append(late);await paint();late.hass=state('on','on');await late.updateComplete;await paint();await sleep(500);const lateStarts=travel.filter(e=>e.id==='late').length;
+  const unavailable=await make('unavailable','unknown','off');const disabled=unavailable.shadowRoot.querySelector('button').disabled;
+  return {auto,on,off,initialStarts,duplicateStarts,firstStarts,sameStarts,ids,reversals,beforeReverse,reverseStart,final,duration,lateStarts,disabled,services:calls.length};
+ });
+ assert.equal(result.initialStarts,0,'initial mount must not replay travel');assert.equal(result.duplicateStarts,0,'same-mode/config/attributes/theme updates must not start travel');
+ for(const [mode,label]of [['auto','Auto'],['on','Ein'],['off','Aus']]){const g=result[mode];assert.equal(g.mode,mode);assert.equal(g.label,label);assert.equal(g.buttons,3,'three radio zones retain keyboard access');assert.equal(g.lenses,1,'one circular lens');assert.deepEqual(g.checked,[mode]);assert.deepEqual(g.tabStops,[mode]);assert.equal(g.groupRole,'radiogroup');assert.ok(Math.abs(g.width-120)<1,'120px control');assert.equal(g.height,44);assert.ok(Math.abs(g.lensWidth-31.5)<1);assert.ok(Math.abs(g.lensHeight-31.5)<1);assert.equal(g.textFits,true,'current label fits '+mode);}
+ assert.ok(result.auto.x<result.on.x&&result.on.x<result.off.x,'Auto left, Ein directly beside, Aus right');assert.ok(Math.abs(result.on.x-result.auto.x-33.5)<1,'second distinct position stays adjacent');assert.ok(Math.abs(result.off.x-result.on.x-48)<1,'third distinct position');assert.ok(result.off.trackGlow<result.on.trackGlow,'off disables colored track glow');assert.equal(result.off.iconOpacity,.45,'off icon follows normal Satin dimming');assert.equal(result.on.iconOpacity,1);assert.equal(result.auto.iconOpacity,1);assert.equal(result.off.iconFilter,'none');
+ assert.equal(result.firstStarts,1);assert.equal(result.sameStarts,1);assert.deepEqual(result.ids,[true,true,true],'same-target updates retain real unfinished animation');assert.equal(result.reversals,2);assert.ok(Math.abs(result.beforeReverse-result.reverseStart)<5,'reverse starts at current rendered position');assert.ok(Math.abs(result.final-result.off.x)<1);assert.equal(result.lateStarts,0,'first HA assignment after connection does not animate');assert.equal(result.disabled,true);assert.equal(result.services,0,'render/state updates never actuate devices');assert.equal(result.duration,360,'theme sets travel duration');
+ // Interactions use a real browser button and the original simulated service
+ // method. Only explicit UI actions may issue these fake commands.
+ await page.evaluate(async()=>{await stamp('on','off');calls=[];});
+ const radio=mode=>page.locator('#fan').locator('[data-mode='+mode+']');const control=radio('auto');await control.click();await page.waitForTimeout(20);assert.deepEqual(await page.evaluate(()=>calls),[['input_boolean','turn_on','input_boolean.example_force']],'click cycles Auto to Ein');
+ await page.evaluate(async()=>{await stamp('on','on');calls=[];});await radio('on').press('ArrowRight');assert.deepEqual(await page.evaluate(()=>calls),[['input_boolean','turn_off','input_boolean.example_force'],['fan','turn_off','fan.example']],'Right moves Ein to Aus');
+ await page.evaluate(async()=>{await stamp('off','off');calls=[];});await radio('off').press('Home');assert.deepEqual(await page.evaluate(()=>calls),[['fan','turn_on','fan.example']],'Home selects Auto');
+ await page.evaluate(async()=>{await stamp('on','off');calls=[];});await radio('auto').press('End');assert.deepEqual(await page.evaluate(()=>calls),[['fan','turn_off','fan.example']],'End selects Aus');
+ await page.evaluate(async()=>{await stamp('off','off');calls=[];});await radio('off').press('ArrowLeft');assert.deepEqual(await page.evaluate(()=>calls),[['fan','turn_on','fan.example'],['input_boolean','turn_on','input_boolean.example_force']],'Left wraps Aus to Ein');
+ await page.evaluate(async()=>{await stamp('on','off');calls=[];});await radio('on').press('Space');assert.deepEqual(await page.evaluate(()=>calls),[['input_boolean','turn_on','input_boolean.example_force']],'Space selects the focused Ein radio');
+ await page.evaluate(async()=>{await stamp('on','off');calls=[];});await radio('on').press('Enter');assert.deepEqual(await page.evaluate(()=>calls),[['input_boolean','turn_on','input_boolean.example_force']],'Enter selects the focused radio');
+ await page.evaluate(async()=>{await stamp('on','off');calls=[];});await radio('auto').press('ArrowDown');assert.deepEqual(await page.evaluate(()=>calls),[['input_boolean','turn_on','input_boolean.example_force']],'Down selects the next mode');
+ await page.evaluate(async()=>{await stamp('off','off');calls=[];});await radio('off').press('ArrowUp');assert.deepEqual(await page.evaluate(()=>calls),[['fan','turn_on','fan.example'],['input_boolean','turn_on','input_boolean.example_force']],'Up selects the previous mode');
+ assert.ok(await control.getAttribute('aria-label'),'control has accessible name');assert.equal(await page.evaluate(()=>[...sw.shadowRoot.querySelectorAll('button')].filter(b=>b.tabIndex===0).length),1,'radio group has one keyboard tab stop');
+ await page.emulateMedia({reducedMotion:'reduce'});const reduced=await page.evaluate(async()=>{travel=[];await stamp('off','off');await paint();return travel.length;});assert.equal(reduced,0,'reduced motion suppresses lens travel');assert.deepEqual(errors,[]);
+ const touch=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});try{const tp=await touch.newPage();await tp.goto(fixture.url);await tp.waitForFunction(()=>window.ready);await tp.locator('#fan [data-mode=off]').tap();await tp.waitForTimeout(20);assert.deepEqual(await tp.evaluate(()=>calls),[['input_boolean','turn_on','input_boolean.example_force']],'touch cycles current Auto to Ein regardless of touched radio');}finally{await touch.close();}
+ console.log('PASS '+engine.name()+': three 120px round-lens positions, label fit/off dimming, no initial/duplicate animation, transition identity/reverse continuity, keyboard/cycle accessibility and reduced motion.');
+ }finally{await browser.close();}
+}}finally{await fixture.close();}

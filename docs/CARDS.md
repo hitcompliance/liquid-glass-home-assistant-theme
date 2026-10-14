@@ -348,3 +348,7 @@ Die mitkopierte `dash5-light-cards-v2.js` ist ein Kompatibilitätseinstieg zum a
 ### Manuelle Reihenfolge
 
 Im Favoriten-Editor unter **Kartensortierung → Manuell** erscheinen die ausgewählten Karten und Überschriften mit Auf-/Ab-Tasten. Die Vorschau folgt jeder Änderung; der native Speichern-Button übernimmt sie dauerhaft. Die Reihenfolge steht in `manualCardOrder` als Liste der Auswahl-IDs. Gruppen behalten ihre eigene konfigurierte View-/Domain-Reihenfolge; innerhalb eines Containers können Karten desselben Kartenarrays verschoben werden. Neu ausgewählte Elemente folgen deterministisch. Quell-Views und gespeicherte Auswahlen bleiben unverändert.
+
+### Drei-Zustands-Lüfterschalter
+
+`custom:dash6-fan-card` verwendet eine einzelne runde Satin-Linse mit Rastpositionen **Auto → Ein → Aus**. Tippen/Klicken wechselt zyklisch; die Pfeiltasten sowie Home/End wählen einen Modus direkt. Hauptentity aus bedeutet Aus, Hauptentity ein bei ausgeschaltetem `force_switch_entity` bedeutet Auto, beide ein bedeutet Ein. Der Force-Schalter bleibt per YAML und GUI konfigurierbar. Wiederholte Zustandsmeldungen starten keine weitere Bewegungsanimation. Unbekannte oder nicht verfügbare Schaltzustände sperren die Bedienung.
