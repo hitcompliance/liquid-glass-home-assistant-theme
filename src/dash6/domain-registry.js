@@ -34,7 +34,7 @@ export function buildDomainRegistry(config,dashboardName='default'){
    }
    // Directly configured special cards outside domain wrappers also own all
    // their helpers. Structural/dynamic containers only recurse into real cards.
-   const structural=new Set(['custom:auto-entities','custom:dash6-auto-entities','custom:ultra-card','custom:dash6-ultra-card','custom:vertical-stack-in-card','custom:dash6-stack-card','custom:layout-card','custom:mod-card','custom:dash6-inline-layout','custom:embedded-view-card','custom:dash6-embedded-view-card']);
+   const structural=new Set(['custom:auto-entities','custom:dash6-auto-entities','custom:ultra-card','custom:dash6-ultra-card','custom:vertical-stack-in-card','custom:dash6-stack-card','custom:layout-card','custom:mod-card','custom:dash6-inline-layout','custom:dash6-direct-card','custom:dash6-render-card','custom:dash6-fast-block-card','custom:embedded-view-card','custom:dash6-embedded-view-card']);
    if(['custom:auto-entities','custom:dash6-auto-entities'].includes(value.type))return;
    if(value.type?.startsWith('custom:')&&!structural.has(value.type)){
     const exclusions=extractEntityReferences(value);if(exclusions.length)sections['fixed:'+path.join('/') ]={domain:exclusions[0].split('.')[0],area:value.area||null,exclusions};return;

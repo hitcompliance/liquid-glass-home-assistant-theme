@@ -12,11 +12,11 @@
     "backgrounds/living-room.jpg": {
       "sha256": "f07f2a33942f1319ac3f9101bf2e1e559fce2cca045678e3b1d9845d3c578d33"
     },
-    "chunks/chunk-5GPFXR4J.js": {
-      "sha256": "08adbcc013703ded65b4825f295c1ee1a31e96c2d9386c330087a5dcd3d5e568"
+    "chunks/chunk-4AWPLWXQ.js": {
+      "sha256": "2507eff0166872cc25cb75dff52526dc66714154cb55ac7ea169104d7f92766b"
     },
-    "chunks/chunk-5GPFXR4J.js.gz": {
-      "sha256": "790cb38efd9671012935c8c76b30f44df45c37b1842c93b941e2279d06ade903"
+    "chunks/chunk-4AWPLWXQ.js.gz": {
+      "sha256": "fff78d2a882e40c1bc7de7463522bceca9f72c48a200014a2a2da80d887961d4"
     },
     "chunks/chunk-DFDGPMRX.js": {
       "sha256": "f5a91e251e3ff6673c90e73861964e9bb954a2ff933b000b43df8fee4abb9253"
@@ -96,11 +96,11 @@
     "chunks/chunk-XLHNRXOT.js.gz": {
       "sha256": "1ebc6775a39b8c548bd8149fefad315acf2c54f463f6119c85820c224aafc989"
     },
-    "chunks/domain-editor-TUPR5334.js": {
-      "sha256": "171e64c46ee77f04258de9d812a78aec290ec3e93d979c6f823af4de458ec668"
+    "chunks/domain-editor-TWSBJNEC.js": {
+      "sha256": "f4cfbecd2443fcf4e14dc166865b25e6a8411025b2e2587379395bd1f4bffdd9"
     },
-    "chunks/domain-editor-TUPR5334.js.gz": {
-      "sha256": "80906908f75d15d14a196c96747c9e4992e8c23c9a1ded79cd6cf76e460d43f7"
+    "chunks/domain-editor-TWSBJNEC.js.gz": {
+      "sha256": "4c2b06327275b5d7a91e73f548e26a5e7c06cdd6086b57940b7a327c25124066"
     },
     "chunks/ikea-editor-P5P4YYPE.js": {
       "sha256": "b6280bb1c10ad18922534e738bae72e175ad848ffe9354a1621ea587a9cd3fb1"
@@ -157,10 +157,10 @@
       "sha256": "69d74236b81463a91dc596a2aef0e9b529bfd156fb461d016b457e3588f5d247"
     },
     "dash6-cards.js": {
-      "sha256": "d35554c45c36801ede1d6bc09884f339f906b73e80f8f545b9bf6264778096c7"
+      "sha256": "52838edfa5c51afa5e53e70185aebca0839eb1e12a57fb06456765901ba0e186"
     },
     "dash6-cards.js.gz": {
-      "sha256": "6f96602b6769cac0103ae22fda06836a5c2be4fae987659310b9cfb3db12101a"
+      "sha256": "6eb14755dfdb86eb0a7a40dd6ca2a61096f5d4f77359770dc36f60bf365b563f"
     },
     "licenses/LIT-LICENSE": {
       "sha256": "45d31799d0db956cc3eb5469346abbd9b7025babc5ff29fab10d7095da992ef1"

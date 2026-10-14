@@ -44,6 +44,7 @@ jobs:
       - run: node tests/demo-favorites-browser.mjs
       - run: node tests/theme-classes-browser.mjs
       - run: node tests/domain-registry.mjs
+      - run: node tests/domain-thin-shell.mjs
       - run: node tests/domain-scene-grid.mjs
       - run: node tests/domain-editor-browser.mjs
       - run: node tests/media-edit-controls-browser.mjs

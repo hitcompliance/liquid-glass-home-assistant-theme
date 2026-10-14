@@ -1,6 +1,7 @@
 // Pure composition shared by the live domain renderer and Favorites snapshots.
 const stacks=new Set(['custom:vertical-stack-in-card','custom:dash6-stack-card']);
 const flatten=cards=>(cards||[]).flatMap(card=>stacks.has(card.type)?card.cards||[]:[card]);
+const thinShell=shell=>({...shell,dash6_css:{...shell.dash6_css,class:[...new Set([...(shell.card_mod?.class||'').split(/\s+/),...(shell.dash6_css?.class||'').split(/\s+/),'dash6-thin-glass'].filter(Boolean))].join(' ')}});
 export function inlineDomainGridDefinition(config,initial,extra){
  const originals=config.cards||[];
  const columns=Math.min(10,Math.max(1,Number(config.columns)||(config.combine?1:2)));
@@ -13,7 +14,7 @@ export function inlineDomainGridDefinition(config,initial,extra){
  const items=[...flatten(initial),...additions].filter(card=>card.type!=='heading');
  if(!items.length){
   if(!config.keep_empty)return null;
-  return headings.length?{...(base||{type:'custom:vertical-stack-in-card'}),cards:headings}:null;
+  return headings.length?thinShell({...(base||{type:'custom:vertical-stack-in-card'}),cards:headings}):null;
  }
  const flush=config.edge_alignment==='flush';
  const layout=structuredClone(config.grid_layout||{}),narrow=`repeat(${mobile},minmax(0,1fr))`;
@@ -23,5 +24,5 @@ export function inlineDomainGridDefinition(config,initial,extra){
  // layout-card uses the first matching query. Put the narrowest conditions first.
  const mediaquery=Object.fromEntries(Object.entries(queries).sort(([a],[b])=>width(a)-width(b)));
  const grid={type:'custom:layout-card',layout_type:flush||config.combine?'custom:dash6-inline-flush-grid-layout':'custom:grid-layout',layout:{...layout,'grid-template-columns':`repeat(${columns},minmax(0,1fr))`,'grid-auto-rows':layout['grid-auto-rows']||'min-content',gap:'8px',card_margin:'0',margin:'0',padding:'0',mediaquery},cards:items};
- return flush?{type:'custom:dash6-domain-grid',headings,grid,breakpoint}:{...(base||{type:'custom:vertical-stack-in-card'}),cards:[...headings,grid]};
+ return thinShell(flush?{type:'custom:dash6-domain-grid',headings,grid,breakpoint}:{...(base||{type:'custom:vertical-stack-in-card'}),cards:[...headings,grid]});
 }

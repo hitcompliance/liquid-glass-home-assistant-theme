@@ -61,7 +61,7 @@ export function mapCards(config){
  if(c.type==='heading'&&!c.dash6_css&&!c.card_mod)c.dash6_css={class:'dash6-domain-heading'};
  if(c.dash6_css||c.card_mod||['custom:vertical-stack-in-card','vertical-stack','horizontal-stack','grid'].includes(c.type)){
   if(c.type==='custom:vertical-stack-in-card')c.type='custom:dash6-stack-card';
-  let style=rootCSS(c.dash6_css||c.card_mod);let active=!!c.dash6_active;if(c.entity?.startsWith('scene.'))delete c.dash6_active;if(style.includes('{%')){active=!!c.dash6_active;style=BASE_CSS+'\nha-card{min-height:64px;box-sizing:border-box}:host{margin:0!important}:host([data-active=true]) ha-card{border-color:var(--dash6-active-border)!important;box-shadow:var(--dash6-active-shadow)!important}';delete c.dash6_active;}const classes=(c.dash6_css||c.card_mod)?.class||'';delete c.card_mod;delete c.dash6_css;
+  let style=rootCSS(c.dash6_css)||rootCSS(c.card_mod);let active=!!c.dash6_active;if(c.entity?.startsWith('scene.'))delete c.dash6_active;if(style.includes('{%')){active=!!c.dash6_active;style=BASE_CSS+'\nha-card{min-height:64px;box-sizing:border-box}:host{margin:0!important}:host([data-active=true]) ha-card{border-color:var(--dash6-active-border)!important;box-shadow:var(--dash6-active-shadow)!important}';delete c.dash6_active;}const classes=(c.dash6_css||c.card_mod)?.class||'';delete c.card_mod;delete c.dash6_css;
   // Nested shadow geometry is provided by the dedicated thermostat/cover cards.
   return {type:'custom:dash6-render-card',definition:c,skin:{css:style,classes,active}};
  }
