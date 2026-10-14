@@ -2,11 +2,26 @@ import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {LitElement,html,css} from 'lit';
 import './external-editor.js';
 import {extractEntityReferences,domainCards,domainRegistrySnapshot} from './domain-registry.js';
+import {watchDomainRoom,localRoomData} from './domain-room-data.js';
 const copy=value=>structuredClone(value);
 export class DomainEditor extends LitElement{
- static properties={hass:{attribute:false},_config:{state:true},_selected:{state:true},_error:{state:true}};
+ static properties={hass:{attribute:false},_config:{state:true},_selected:{state:true},_error:{state:true},_formArea:{state:true}};
  static styles=css`:host{display:block;min-width:0}p{color:var(--secondary-text-color)}.cards,.add,.tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}button,select{min-height:44px;max-width:100%;border-radius:10px;border:1px solid var(--divider-color);background:var(--card-background-color);color:var(--primary-text-color);padding:8px;cursor:pointer}button[aria-pressed=true]{background:var(--primary-color);color:var(--text-primary-color)}select{flex:1}.error{color:var(--error-color)}.ids{font-size:12px;overflow-wrap:anywhere}`;
- setConfig(config){this._config=copy(config);this._selected=null;this._error='';}
+ setConfig(config){this._config=copy(config);this._selected=null;this._error='';this._resolveArea();}
+ connectedCallback(){super.connectedCallback();this._watchAreas();}
+ disconnectedCallback(){super.disconnectedCallback();this._stopAreas?.();this._stopAreas=null;this._areaConnection=null;this._areaData=null;}
+ _resolveArea(){
+  const area=this._config?.area,areas=[...(this._areaData?.areas||[]),...localRoomData(this.hass).areas],entry=areas.find(value=>value.area_id===area||value.id===area)||areas.find(value=>value.name===area);
+  // Only the selector's display value is normalized. The source YAML remains
+  // untouched until a user changes a form field and explicitly saves the draft.
+  this._formArea=entry?.area_id||entry?.id||area;
+ }
+ _watchAreas(){
+  if(!this.hass||!this.isConnected)return;const connection=this.hass.connection?.__dash6ActualConnection||this.hass.connection;
+  if(this._stopAreas&&connection===this._areaConnection){this._resolveArea();return;}
+  this._stopAreas?.();this._areaData=null;this._areaConnection=connection;
+  this._stopAreas=watchDomainRoom(this.hass,(data,error)=>{if(error)return;this._areaData=data;this._resolveArea();});
+ }
  emit(config){this._config=copy(config);this.dispatchEvent(new CustomEvent('config-changed',{detail:{config:copy(this._config)},bubbles:true,composed:true}));}
  change(patch){this.emit({...this._config,...copy(patch)});}
  entries(){
@@ -31,11 +46,11 @@ export class DomainEditor extends LitElement{
   this._selected=path;await this.updateComplete;
   const row=this.entries().find(row=>JSON.stringify(row.path)===JSON.stringify(path)),editor=this.renderRoot.querySelector('dash6-external-editor');if(row&&editor){editor.hass=this.hass;editor.setConfig(row.card);}
  }
- updated(changes){const editor=this.renderRoot.querySelector('dash6-external-editor');if(editor){editor.hass=this.hass;const row=this.entries().find(row=>JSON.stringify(row.path)===JSON.stringify(this._selected));if(row&&editor.__domainKey!==JSON.stringify(row.card)){editor.__domainKey=JSON.stringify(row.card);editor.setConfig(row.card);}}}
+ updated(changes){if(changes.has('hass'))this._watchAreas();if(changes.has('_config'))this._resolveArea();const editor=this.renderRoot.querySelector('dash6-external-editor');if(editor){editor.hass=this.hass;const row=this.entries().find(row=>JSON.stringify(row.path)===JSON.stringify(this._selected));if(row&&editor.__domainKey!==JSON.stringify(row.card)){editor.__domainKey=JSON.stringify(row.card);editor.setConfig(row.card);}}}
  render(){
   const c=this._config;if(!c)return html``;
   const selected=this.entries().find(row=>JSON.stringify(row.path)===JSON.stringify(this._selected));
-  return html`<ha-form .hass=${this.hass} .data=${{columns:2,show_heading:true,auto_entities:true,heading:'',...c}} .schema=${[{name:'heading',label:'Abschnittsüberschrift',selector:{text:{}}},{name:'show_heading',label:'Überschrift anzeigen (auch bei leerem Abschnitt)',selector:{boolean:{}}},{name:'area',label:'Raum / Bereich',selector:{area:{}}},{name:'domain',label:'Domain (z. B. light, sensor, switch)',selector:{text:{}}},{name:'auto_entities',label:'Weitere passende Raum-Entities dynamisch anzeigen',selector:{boolean:{}}},{name:'columns',label:'Spalten',selector:{number:{min:1,max:4,mode:'box'}}}]} .computeLabel=${field=>field.label} @value-changed=${event=>{event.stopPropagation();this.change(event.detail.value);}}></ha-form>
+  return html`<ha-form .hass=${this.hass} .data=${{columns:2,show_heading:true,auto_entities:true,heading:'',...c,area:this._formArea??c.area}} .schema=${[{name:'heading',label:'Abschnittsüberschrift',selector:{text:{}}},{name:'show_heading',label:'Überschrift anzeigen (auch bei leerem Abschnitt)',selector:{boolean:{}}},{name:'area',label:'Raum / Bereich',selector:{area:{}}},{name:'domain',label:'Domain (z. B. light, sensor, switch)',selector:{text:{}}},{name:'auto_entities',label:'Weitere passende Raum-Entities dynamisch anzeigen',selector:{boolean:{}}},{name:'columns',label:'Spalten',selector:{number:{min:1,max:10,mode:'box'}}}]} .computeLabel=${field=>field.label} @value-changed=${event=>{event.stopPropagation();this.change(event.detail.value);}}></ha-form>
   <p>Eigene Karten stehen vor der dynamischen Liste. Deren Haupt- und Hilfs-Entities werden automatisch in allen Domain-Listen dieser Raumansicht ausgeschlossen.</p>
   <div class="cards">${this.entries().map((row,index)=>html`<button aria-pressed=${JSON.stringify(row.path)===JSON.stringify(this._selected)} @click=${()=>this.select(row.path)}>${row.card.name||row.card.title||row.card.entity||row.card.type} · ${index+1}</button>`)}</div>
   <div class="add"><select aria-label="Kartenvorlage">${this.templates().map((template,index)=>html`<option value=${index}>${template.name}</option>`)}</select><button @click=${event=>this.add(event.currentTarget.parentElement.querySelector('select').value)}>Karte hinzufügen</button></div>

@@ -3,7 +3,7 @@ import {create} from './card-runtime.js';
 import {decodeInline,inlineEntities,pruneInline,watchInlineQuery} from './inline-query.js';
 import {inlineDomainGridDefinition} from './inline-domain-definition.js';
 import {domainCards,domainHeadingCards,domainDefinitionConfig,extractEntityReferences,dashboardContext,resolvedDomainRegistry,registryExclusions,relatedDomainViews} from './domain-registry.js';
-import {watchDomainRoom,roomDomainEntities,localRoomData} from './domain-room-data.js';
+import {watchDomainRoom,roomDomainEntities,roomDomainCards,localRoomData} from './domain-room-data.js';
 import {domainEditMode,openDomainSettings,syncDomainCogPortal,removeDomainCogPortal} from './domain-settings.js';
 const clone=value=>structuredClone(value);
 
@@ -87,7 +87,7 @@ class DomainCard extends HTMLElement{
   const context=dashboardContext(this,this._config),registry=resolvedDomainRegistry(context.config,context.dashboardName);
   const result=registryExclusions(registry,context.dashboardName,relatedDomainViews(context.config,context.viewNames));for(const id of this._ownedEntities||[])result.add(id);return result;
  }
- _roomCards(){if(this._config.auto_entities===false)return [];const connection=this._hass.connection?.__dash6ActualConnection||this._hass.connection;return roomDomainEntities(connection?.sendMessagePromise?this._roomData:localRoomData(this._hass),this._hass,this._config.area,this._config.domain,this._exclusions()).map(entity=>({...clone(this._config.dynamic_card||{type:'tile'}),entity}));}
+ _roomCards(){if(this._config.auto_entities===false)return [];const connection=this._hass.connection?.__dash6ActualConnection||this._hass.connection;return roomDomainCards(this._config,roomDomainEntities(connection?.sendMessagePromise?this._roomData:localRoomData(this._hass),this._hass,this._config.area,this._config.domain,this._exclusions()),this._hass);}
  _result(result,error){
   if(error){this._error(error);return;}
   const query=this._config.query,value=query.index===undefined?result:result?.[query.index];

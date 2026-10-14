@@ -2,7 +2,7 @@
 import {decodeInline,watchInlineQuery} from './inline-query.js';
 import {inlineDomainGridDefinition} from './inline-domain-definition.js';
 import {domainCards,domainDefinitionConfig,extractEntityReferences,buildDomainRegistry,registryExclusions,relatedDomainViews} from './domain-registry.js';
-import {watchDomainRoom,roomDomainEntities} from './domain-room-data.js';
+import {watchDomainRoom,roomDomainEntities,roomDomainCards} from './domain-room-data.js';
 const clone = value => structuredClone(value);
 const result = (status, card = null, error = null, count = 0) => ({status, card, error, count});
 const meaningful = value => value != null && value !== false && (Array.isArray(value) ? value.length > 0 : typeof value === 'object' ? Object.keys(value).length > 0 : true);
@@ -192,7 +192,7 @@ async function materializeRegistryDomain(source,hass,options){
   // A caller may supply the current dashboard to include sibling helper cards.
   if(options.dashboardConfig)for(const id of registryExclusions(buildDomainRegistry(options.dashboardConfig,source.dashboard||'default'),source.dashboard||'default',relatedDomainViews(options.dashboardConfig,[source.view])))exclusionIds.add(id);
   const config=domainDefinitionConfig(source),fixed=pruneRoomCards(config.cards,hass,null,null)||[];
-  const extra=source.auto_entities===false?[]:roomDomainEntities(data,hass,source.area,source.domain,exclusionIds).map(entity=>({...clone(source.dynamic_card||{type:'tile'}),entity}));
+  const extra=source.auto_entities===false?[]:roomDomainCards(source,roomDomainEntities(data,hass,source.area,source.domain,exclusionIds),hass);
   const definition=inlineDomainGridDefinition(config,fixed,extra)||{type:'vertical-stack',cards:[]};
   return result('ready',{type:'custom:dash6-render-card',definition},null,fixed.length+extra.length);
  }catch(error){return result('error',null,error?.message||String(error));}

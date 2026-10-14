@@ -12,6 +12,12 @@
     "backgrounds/living-room.jpg": {
       "sha256": "f07f2a33942f1319ac3f9101bf2e1e559fce2cca045678e3b1d9845d3c578d33"
     },
+    "chunks/chunk-5GPFXR4J.js": {
+      "sha256": "08adbcc013703ded65b4825f295c1ee1a31e96c2d9386c330087a5dcd3d5e568"
+    },
+    "chunks/chunk-5GPFXR4J.js.gz": {
+      "sha256": "790cb38efd9671012935c8c76b30f44df45c37b1842c93b941e2279d06ade903"
+    },
     "chunks/chunk-DFDGPMRX.js": {
       "sha256": "f5a91e251e3ff6673c90e73861964e9bb954a2ff933b000b43df8fee4abb9253"
     },
@@ -35,6 +41,12 @@
     },
     "chunks/chunk-JOD7NVUY.js.gz": {
       "sha256": "cda06ff4fd71943032b98ea9574519957233f7b187fa873125102f064b8650e4"
+    },
+    "chunks/chunk-K52QFNAK.js": {
+      "sha256": "8ee3494f6ba169c60848ead323a9ac27b9a3931acdd581ab0254065f904667a8"
+    },
+    "chunks/chunk-K52QFNAK.js.gz": {
+      "sha256": "fd0cdef0e6326537c4be6a09c8666024ea954fab219e2f928b35816238542420"
     },
     "chunks/chunk-KJZKFEJT.js": {
       "sha256": "dcd6d72ffcb6386ef2548859d87e7ee9a747950bd942eac7e32abe86207a5fd0"
@@ -60,18 +72,6 @@
     "chunks/chunk-Q2JOE3QH.js.gz": {
       "sha256": "19c16945041ef11bd73f189bb56999e0934eaba594d4c45a3813f7483c264975"
     },
-    "chunks/chunk-QLOBGXVT.js": {
-      "sha256": "8ffc16ba83102894d8ac9929a280f95b53f9fc19d6c3e2a830a0428d1e0070d5"
-    },
-    "chunks/chunk-QLOBGXVT.js.gz": {
-      "sha256": "b90b7a510deb06abad2e34801677ab912af45b5f93949140b372313a3d14c6e3"
-    },
-    "chunks/chunk-RIRDQLEW.js": {
-      "sha256": "e464057553d67093c37e56bf8902c4eb442106db5f3a8265cd2851c3e6285735"
-    },
-    "chunks/chunk-RIRDQLEW.js.gz": {
-      "sha256": "1478c1a2df33119763b44795498a6b82d07ae12f0c1f4267b99e5143e6e6e840"
-    },
     "chunks/chunk-UAFRGIH5.js": {
       "sha256": "820bbfb0cbd8d50b9f0fd20d7e5192c09dc5d1b79f21b45b8f4e5d7f71d05ade"
     },
@@ -90,17 +90,23 @@
     "chunks/chunk-WEVIARKR.js.gz": {
       "sha256": "6df7dd284faab9cad61652da5a80743ca67140df471203f78aa90b074e02622d"
     },
-    "chunks/domain-editor-2ALRCJNR.js": {
-      "sha256": "b412344a0d5da9584dad1bca7edd81eeccb595992d340bd1e2b178d839e93f52"
+    "chunks/chunk-XLHNRXOT.js": {
+      "sha256": "3819d44a6c25a56951870e11761d654dca310d45edd1b711d1d28e8b57928df1"
     },
-    "chunks/domain-editor-2ALRCJNR.js.gz": {
-      "sha256": "2cf6932b1d49f209a2e981032613f13ecac2b86666eeee2f8d5ca36031604d7c"
+    "chunks/chunk-XLHNRXOT.js.gz": {
+      "sha256": "1ebc6775a39b8c548bd8149fefad315acf2c54f463f6119c85820c224aafc989"
     },
-    "chunks/ikea-editor-NU2H7OES.js": {
-      "sha256": "2264a4ede6b3a911559abdef4d07d5ee0273f3bd32a40a25cc608f8a4e71118e"
+    "chunks/domain-editor-TUPR5334.js": {
+      "sha256": "171e64c46ee77f04258de9d812a78aec290ec3e93d979c6f823af4de458ec668"
     },
-    "chunks/ikea-editor-NU2H7OES.js.gz": {
-      "sha256": "c10e28ab4ed9e32b72c1758f1f5bd6aaa2302d2ec01164e1f44d66db5b49d61d"
+    "chunks/domain-editor-TUPR5334.js.gz": {
+      "sha256": "80906908f75d15d14a196c96747c9e4992e8c23c9a1ded79cd6cf76e460d43f7"
+    },
+    "chunks/ikea-editor-P5P4YYPE.js": {
+      "sha256": "b6280bb1c10ad18922534e738bae72e175ad848ffe9354a1621ea587a9cd3fb1"
+    },
+    "chunks/ikea-editor-P5P4YYPE.js.gz": {
+      "sha256": "934644e4926b69ff78e3f96a41ce99212a8bfdd0097e9fc9ba9efffb7594a306"
     },
     "chunks/inline-editor-5VBHIREC.js": {
       "sha256": "651b913fd4e6c4326f584cd45d554da78971453dddfd375aea1b4a50c0d0b6f7"
@@ -108,11 +114,11 @@
     "chunks/inline-editor-5VBHIREC.js.gz": {
       "sha256": "3ca11d120989679446768a75e9677b526858b9556e9c15555dd0911f1fa1eeb3"
     },
-    "chunks/light-editor-WQMOSPHK.js": {
-      "sha256": "6f1964edc2c5b6e7bc0ca527866f257b72bb49718a0583d18ad11903f22f6d0b"
+    "chunks/light-editor-LHPA65B7.js": {
+      "sha256": "77420e3335a1394891d1c9219610a30f826127e4a7e88b4eb6c513696190c752"
     },
-    "chunks/light-editor-WQMOSPHK.js.gz": {
-      "sha256": "e4e5458810f29c42ff5d62c1551d6d8f14a170f415103b215c172ab93438b7ea"
+    "chunks/light-editor-LHPA65B7.js.gz": {
+      "sha256": "cff787340b4c594268f852251607845203c601b4d52cd92ee443b9b7c4fc1b61"
     },
     "chunks/media-editor-X62AA3FC.js": {
       "sha256": "e1bdfdedcbb26da54f0720b1f6f4c7cb9362e370abd81b4745d54fd57f0adef2"
@@ -151,10 +157,10 @@
       "sha256": "69d74236b81463a91dc596a2aef0e9b529bfd156fb461d016b457e3588f5d247"
     },
     "dash6-cards.js": {
-      "sha256": "d5ee0a6a442159abd82068c6bb7e27a950b27d1939c8df921337d90a2809984b"
+      "sha256": "d35554c45c36801ede1d6bc09884f339f906b73e80f8f545b9bf6264778096c7"
     },
     "dash6-cards.js.gz": {
-      "sha256": "9cbe31720e68602a85a3f17af75d9d0f4bd0d245b286fad2db8715d71058597a"
+      "sha256": "6f96602b6769cac0103ae22fda06836a5c2be4fae987659310b9cfb3db12101a"
     },
     "licenses/LIT-LICENSE": {
       "sha256": "45d31799d0db956cc3eb5469346abbd9b7025babc5ff29fab10d7095da992ef1"

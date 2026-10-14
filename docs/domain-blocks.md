@@ -34,8 +34,24 @@ templates:
       entity: light.example
 ```
 
+`columns` accepts 1–10 columns. `grid_layout` preserves an existing native
+layout-card layout, including intermediate media queries; mobile area/domain
+blocks use one column below 700px. Queries are sorted narrowest first. For
+example, a scenes block can retain five desktop columns, four at 1199px, three
+at 899px, and one below 700px. Card gaps remain exactly 8px.
+
+Dynamic scene tiles receive the `dash6-scene-64` theme class and the latest
+activation marker within the preceding 12 hours. The native renderer continues
+to confirm scene targets against actual device states. Existing tile names,
+actions, and skins are preserved; `this.entity_id` placeholders in options are
+replaced with the current entity, including nested action targets.
+
 `area` accepts a registry area ID or an exact area name. `domain` is the original
 Home Assistant domain, such as `light`, `sensor`, or `media_player`.
+The editor resolves stored area names to native area IDs for the selector's
+display, using the existing shared registry snapshot or `hass.areas`. Display
+resolution does not edit the source YAML or emit a configuration change. A user
+form change emits the native area ID; Save then persists the explicit draft.
 `auto_entities: false` keeps a special block's configured cards without adding
 other domain members. `cards` and GUI-added `custom_cards` appear first; dynamic
 entities appear afterwards using `dynamic_card`. Existing stack attributes and

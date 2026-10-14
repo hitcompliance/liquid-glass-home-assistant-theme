@@ -32,3 +32,12 @@ export function roomDomainEntities(data,hass,area,domain,exclusions=new Set()){
   return id?.split('.')[0]===domain&&hass?.states?.[id]&&!value.hidden_by&&!value.disabled_by&&!live?.hidden_by&&!live?.disabled_by&&!exclusions.has(id)&&areaIds.has(value.area_id||devices.get(value.device_id)?.area_id);
  }).map(value=>value.entity_id||value.id).sort((a,b)=>(hass.states[a].attributes?.friendly_name||a).localeCompare(hass.states[b].attributes?.friendly_name||b,hass?.language));
 }
+export function roomDomainCards(config,ids,hass,now=Date.now()){
+ const substitute=(value,entity)=>typeof value==='string'?value.replaceAll('this.entity_id',entity):Array.isArray(value)?value.map(item=>substitute(item,entity)):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,substitute(item,entity)])):value;
+ const cards=ids.map(entity=>({...substitute(config.dynamic_card||{type:'tile'},entity),entity}));
+ if(config.domain==='scene'){
+  const latest=cards.reduce((best,card)=>{const time=Date.parse(hass?.states?.[card.entity]?.state)||0;return time>best.time?{entity:card.entity,time}:best;},{entity:'',time:0});
+  for(const card of cards){const skin=card.dash6_css||card.card_mod||{};card.dash6_css={...skin,class:[...new Set([...(skin.class||'').split(/\s+/).filter(Boolean),'dash6-scene-64'])].join(' ')};card.dash6_active=card.entity===latest.entity&&latest.time>now-43200000;}
+ }
+ return cards;
+}
