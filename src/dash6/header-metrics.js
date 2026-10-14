@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Power and energy share the header; only their display is rounded.
 (() => {
  const sheet=new CSSStyleSheet();sheet.replaceSync(`

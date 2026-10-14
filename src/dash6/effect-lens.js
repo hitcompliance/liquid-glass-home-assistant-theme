@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Momentary effect lens uses the same material as the combo-slider selection.
 (() => {
  const selector=':host([data-satin][data-satin][data-satin]) ha-card .effect-trigger,:host([data-satin][data-satin][data-satin]) ha-card .light-extras button[aria-label="Lichteffekt auswählen"]';

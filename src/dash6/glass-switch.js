@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {LitElement,html,css,svg} from 'lit';
 import {bindThemePreferences,unbindThemePreferences} from './material.js';
 

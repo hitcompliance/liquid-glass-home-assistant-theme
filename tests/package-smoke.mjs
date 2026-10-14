@@ -7,9 +7,11 @@ import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {chromium,webkit} from 'playwright';
 
-// Uses the checked-in portable dist, not the private staging bundle or a live HA.
+// Defaults to the checked-in portable dist; source regression runs may supply
+// a temporary distribution directory. Never connect to a live HA.
 // Only HA/vendor dependencies are stubs. Every package-owned Card is the real class.
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const distributionRoot=process.env.LIQUID_GLASS_TEST_DIST?resolve(process.env.LIQUID_GLASS_TEST_DIST):resolve(root,'dist');
 const yaml=path=>JSON.parse(execFileSync('ruby',['-ryaml','-rjson','-e','puts JSON.generate(YAML.safe_load(STDIN.read,aliases:true))'],{input:readFileSync(resolve(root,path)),encoding:'utf8'}));
 const dashboard=yaml('examples/dashboard.yaml'),themes=Object.assign({},...readdirSync(resolve(root,'themes')).filter(name=>/\.ya?ml$/.test(name)).map(name=>yaml('themes/'+name)));
 const profileIndex=JSON.parse(await readFile(resolve(root,'src/dash6/profile-index.json'),'utf8'));
@@ -23,8 +25,11 @@ function collect(value){if(Array.isArray(value))return value.forEach(collect);if
 collect(dashboard);
 const ownExamples=examples.filter(c=>c.type.startsWith('custom:dash')||['custom:vacuum-dock-card','custom:liquid-glass-card'].includes(c.type));
 ownExamples.push({type:'custom:dash6-favorites-card',title:'Favoriten',sources:[],selected:[]});
+ownExamples.push({type:'custom:dash6-direct-card',card:{type:'media-control',entity:'media_player.demo_inline'}});
+ownExamples.push({type:'custom:dash6-domain-card',cards:[{type:'tile',entity:'switch.demo_inline'}]});
+ownExamples.push({type:'custom:dash6-inline-layout',card:{type:'vertical-stack',cards:[{type:'heading',heading:'Example'},{type:'tile',entity:'switch.demo_inline'}]}});
 const ownTypes=[...new Set(ownExamples.map(c=>c.type.slice(7)))];
-assert.equal(ownTypes.length,30,'All documented types plus an empty Favorites card and optional SVG wrapper are tested');
+assert.equal(ownTypes.length,33,'All documented types plus direct containers, empty Favorites and optional SVG wrapper are tested');
 
 async function fixture(data){
  const {dashboard,examples,themes,profiles,demoConfigs}=data;
@@ -45,7 +50,7 @@ async function fixture(data){
   if(domain==='media_player')state='off';
   states[id]={entity_id:id,state,attributes:attrs,last_changed:'2026-10-01T12:00:00Z',last_updated:'2026-10-01T12:00:00Z'};
  };
- const scan=value=>{if(typeof value==='string'){for(const match of value.matchAll(/\b(?:light|switch|fan|input_boolean|input_select|select|sensor|binary_sensor|climate|cover|vacuum|lock|button|event|scene|media_player|remote)\.[a-z0-9_]+\b/g))make(match[0]);}else if(value&&typeof value==='object')Object.values(value).forEach(scan);};scan(dashboard);scan(profiles);
+ const scan=value=>{if(typeof value==='string'){for(const match of value.matchAll(/\b(?:light|switch|fan|input_boolean|input_select|select|sensor|binary_sensor|climate|cover|vacuum|lock|button|event|scene|media_player|remote)\.[a-z0-9_]+\b/g))make(match[0]);}else if(value&&typeof value==='object')Object.values(value).forEach(scan);};scan(dashboard);scan(profiles);scan(examples);
  states['light.demo_gruppe'].attributes.entity_id=['light.demo_lampe_links','light.demo_lampe_rechts'];
  states['light.demo_schrankgruppe'].attributes.entity_id=['light.demo_schrank_oben','light.demo_schrank_unten'];
  const read=async message=>{reads.push(message.type);if(message.type==='lovelace/config')return dashboard;if(message.type==='frontend/get_user_data')return {value:null};if(message.type?.endsWith('_registry/list'))return [];if(message.type?.startsWith('history/'))return {states:{}};return {};};
@@ -94,7 +99,7 @@ async function fixture(data){
 
 const html='<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{margin:20px;background:#101820;color:#fff;font:14px system-ui}#cards{display:flex;flex-wrap:wrap;align-items:start;gap:20px}.example{min-width:0}#profiles{display:flex;flex-wrap:wrap;gap:20px}#profiles>*{width:380px}</style></head><body><div id="cards"></div><div id="profiles"></div><script type="module">('+fixture.toString()+')('+JSON.stringify({dashboard,examples:ownExamples,themes,profiles,demoConfigs})+').catch(error=>{window.fatal=error.stack;console.error(error);});</script></body></html>';
 const requests=[],external=[],missing=[];
-const server=createServer(async(req,res)=>{const url=new URL(req.url,'http://localhost');try{if(url.pathname.startsWith('/package/')){const path=resolve(root,'.'+url.pathname.slice('/package'.length));assert.ok(path.startsWith(root+'/'));requests.push(url.pathname);res.setHeader('content-type',({'.js':'text/javascript','.json':'application/json','.jpg':'image/jpeg','.css':'text/css'})[extname(path)]||'application/octet-stream');res.end(await readFile(path));}else if(url.pathname==='/favicon.ico'){res.writeHead(204);res.end();}else{res.setHeader('content-type','text/html');res.end(html);}}catch(error){missing.push(url.pathname);res.writeHead(404);res.end(error.message);}});
+const server=createServer(async(req,res)=>{const url=new URL(req.url,'http://localhost');try{if(url.pathname.startsWith('/package/')){const temporary=url.pathname.startsWith('/package/dist/'),base=temporary?distributionRoot:root,path=resolve(base,'.'+url.pathname.slice(temporary?'/package/dist'.length:'/package'.length));assert.ok(path.startsWith(base+'/'));requests.push(url.pathname);res.setHeader('content-type',({'.js':'text/javascript','.json':'application/json','.jpg':'image/jpeg','.css':'text/css'})[extname(path)]||'application/octet-stream');res.end(await readFile(path));}else if(url.pathname==='/favicon.ico'){res.writeHead(204);res.end();}else{res.setHeader('content-type','text/html');res.end(html);}}catch(error){missing.push(url.pathname);res.writeHead(404);res.end(error.message);}});
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port;
 let browser;
 try{
@@ -120,7 +125,7 @@ try{
    window.favoritesEditor=editor;
   });
   assert.equal(await page.evaluate(()=>calls.length),0,'Mounting every card sends no service');assert.deepEqual(errors,[],'No runtime exceptions from actual portable classes');
-  const report=await page.evaluate(()=>mounts.map(({type,card})=>({type,tag:card.localName,error:card._error||'',connected:card.isConnected,shadow:!!card.shadowRoot})));for(const result of report){assert.equal(result.error,'',result.type);assert.equal(result.connected,true,result.type);assert.equal(result.shadow,true,result.type);}
+  const report=await page.evaluate(()=>mounts.map(({type,card})=>({type,tag:card.localName,error:typeof card._error==='string'?card._error:card.shadowRoot?.querySelector('.error')?.textContent||'',connected:card.isConnected,shadow:!!card.shadowRoot})));for(const result of report){assert.equal(result.error,'',result.type);assert.equal(result.connected,true,result.type);assert.equal(result.shadow,true,result.type);}
   assert.deepEqual(new Set(report.filter(r=>!r.type.startsWith('profile:')).map(r=>r.tag)),new Set(ownTypes));assert.equal(report.filter(r=>r.type.startsWith('profile:')).length,Object.keys(profileIndex).length,'All generic profiles are loaded and mounted');
   assert.equal(await page.evaluate(()=>areaProfile._child._config.filter.include[0].area),'Kitchen','Profile area replaces the actual static Auto-Entities area filter');
   await page.waitForFunction(()=>mounts.find(x=>x.type==='dash6-govee-light-card-v2').card.shadowRoot.querySelector('dash6-glass-switch')?.hasAttribute('data-satin'));

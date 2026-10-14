@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Refrigerator-specific content shares the standard IKEA/theme card surface.
 (() => {
  const surfaceCSS=`

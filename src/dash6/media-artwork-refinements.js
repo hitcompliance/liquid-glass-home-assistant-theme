@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Card-owned artwork and hover controls; touch and keyboard remain usable.
 (() => {
  const tags=['dash6-homepod-card','dash6-media-card','dash6-appletv-card'];

@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Shared theme refinements. Preserve native controls and service semantics.
 (() => {
  const enabled=h=>getComputedStyle(h).getPropertyValue('--dash6-satin-enabled').trim()==='1';

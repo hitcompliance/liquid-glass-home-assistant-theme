@@ -2,7 +2,7 @@ name: HACS integration validation
 on:
   push:
     branches: [main]
-    paths: ['custom_components/**', 'scripts/test-integration.py', 'scripts/test-installer.py', 'src/**', 'tests/**', 'package.json', 'package-lock.json', 'hacs.json', '.github/workflows/integration.yml']
+    paths: ['custom_components/**', 'scripts/**', 'src/**', 'tests/**', 'package.json', 'package-lock.json', 'hacs.json', '.github/workflows/integration.yml']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -29,17 +29,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - run: python -m pip install Jinja2==3.1.6
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium webkit
+      - run: npm run build:cards
       - run: node tests/favorites-selection.mjs
+      - run: node tests/favorites-inline-browser.mjs
       - run: node tests/profiles-store.mjs
+      - run: node tests/native-hook-registry.mjs
+      - run: node tests/inline-query.mjs
+        env:
+          DASH6_JINJA_PYTHON: python
+      - run: node tests/inline-runtime-browser.mjs
+      - run: node tests/inline-domain-browser.mjs
       - run: node tests/navigation-lens-browser.mjs
       - run: node tests/sections-width-browser.mjs
       - run: node tests/sections-responsive-browser.mjs
+      - run: node tests/sections-responsive-browser.mjs
+        env:
+          DASH6_TEST_BROWSER: webkit
       - run: node tests/room-slot-grid-browser.mjs
       - run: node tests/light-surface-first-render-browser.mjs
       - run: node tests/glass-switch-motion-browser.mjs

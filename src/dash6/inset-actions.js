@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Shared, pre-mount material for scene and door actions. No action handlers change.
 (() => {
  const group = ':host([data-satin][data-satin][data-satin]) ha-card .shoe-scenes.shoe-scenes,:host([data-satin][data-satin][data-satin]) ha-card .scene-recess.scene-recess,:host([data-satin][data-satin][data-satin]) ha-card .actions.actions';

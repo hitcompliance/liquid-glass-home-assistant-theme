@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import './config-editor.js';
 import {bindThemePreferences,unbindThemePreferences} from './material.js';
 import {bindSatinMode} from './satin-surface.js';

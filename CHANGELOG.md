@@ -1,3 +1,14 @@
+## 3.1.23 / Cards 2.4.23
+
+- Add direct inline card definitions, combined known/dynamic domain grids and inline layout visibility rules.
+- Preserve inline sidebar navigation definitions until the overlay creates its links and widgets.
+- Expand direct cards and inline domain queries in the Favorites catalog; retain saved snapshots, known-child IDs and selection exclusions during dynamic discovery.
+- Share differing inline templates through one subscription per connection and group, with isolated Jinja macro scopes, reconnect handling and subscription cleanup.
+- Decouple card mapping, material and interaction hooks from the compatibility profile store; existing profiles remain available.
+- Preserve responsive grids, hidden-entity filtering, first-render material and existing native device controls.
+- Scope native prototype extensions and preserve native instance setters in derived layouts.
+- Add Chromium/WebKit coverage for direct cards and domain grids, query lifecycle tests and Jinja namespace validation.
+
 ## 3.1.22
 
 - Shared native/embedded Sections widths: mobile full width, intermediate 5-column spans and space-aware second-column expansion.

@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Card-owned overview highlights and cover controls.
 (()=>{
  const addStyle=(root,id,css)=>{if(root.getElementById(id))return;const s=document.createElement('style');s.id=id;s.textContent=css;root.append(s);};

@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {bindThemePreferences,unbindThemePreferences} from './material.js';
 import {LitElement,html} from 'lit';
 import {initialize} from './vacuum-runtime.js';

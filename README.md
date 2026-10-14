@@ -107,6 +107,53 @@ controls:
 
 Die grafischen Karteneditoren sind der einfachste Einstieg. Lichtkarten innerhalb verschachtelter Dashboards können zusätzliche Einstellungen als Home-Assistant-Benutzerdaten speichern; sie überschreiben nur die jeweilige Karte. Der Theme-Editor speichert Sofortänderungen browserlokal und bietet einen Export für weitere Geräte. [Umstieg und Rücksetzen](docs/MIGRATION.md).
 
+## Direkte YAML-Karten und dynamische Inhalte
+
+Ab Integration **3.1.23 / Kartenpaket 2.4.23** können vollständige Kartendefinitionen direkt in der View stehen. Die bestehenden Spezialkarten werden mit ihrer normalen Konfiguration verwendet. Für eine native oder fremde Karte mit den gemeinsamen Material- und Bedienungsadaptern steht `dash6-direct-card` zur Verfügung:
+
+```yaml
+type: custom:dash6-direct-card
+card:
+  type: media-control
+  entity: media_player.demo_player
+```
+
+`dash6-domain-card` verbindet früh angezeigte bekannte Karten mit dynamisch ermittelten Karten. Im folgenden Beispiel gehören die Demo-Steckdose und weitere Schalter zu einem gemeinsam gerahmten Raster. Die Überschrift steht außerhalb des Rasters; ab 700px sind zwei Spalten sichtbar, darunter eine.
+
+```yaml
+type: custom:dash6-domain-card
+combine: true
+columns: 2
+mobile_columns: 1
+mobile_breakpoint: 700
+edge_alignment: flush
+cards:
+  - type: custom:vertical-stack-in-card
+    cards:
+      - type: heading
+        heading: Schalter
+      - type: tile
+        entity: switch.demo_socket
+known_entity_ids:
+  - switch.demo_socket
+query:
+  group: example-room
+  index: 0
+  canonical: true
+  template: |
+    {% set ns = namespace(cards=[]) %}
+    {% for id in area_entities('Beispielraum') | sort %}
+      {% if id.startswith('switch.') %}
+        {% set ns.cards = ns.cards + [{'type': 'tile', 'entity': id}] %}
+      {% endif %}
+    {% endfor %}
+    {{ [ns.cards] | to_json }}
+```
+
+Entitäten und Bereichsname sind erfundene Platzhalter. `query.template` liefert hier eine äußere Liste; `index: 0` wählt deren erste Kartenliste. `canonical: true` bedeutet, dass die Ausgabe bereits vollständige Kartenobjekte enthält. Die bekannten Entities werden aus den dynamischen Ergänzungen ausgeschlossen; fehlende und in der Registry ausgeblendete Entities entfallen.
+
+Mehrere Karten mit derselben `query.group` teilen pro Home-Assistant-Verbindung eine Template-Subscription, auch mit unterschiedlichen inline gespeicherten Templates. Der Gruppenname ist frei wählbar; alle Templates und Karten bleiben in der Dashboard-Konfiguration. Ohne Gruppe teilen identische Templates eine Subscription. Unveränderte Listen und reine Zustandsupdates verwenden bestehende Karten weiter. Weitere Optionen und die inline konfigurierbare Layoutsichtbarkeit stehen in [CARDS.md](docs/CARDS.md#direkte-inline-konfiguration).
+
 ## Bestehende Dashboards weiterverwenden
 
 Die ursprünglichen Themes und Ressourcen können weiterverwendet werden. Das aktuelle Gesamtmodul ersetzt beim Umstieg die ältere DASH6-Ressource: Beide registrieren dieselben `dash6-*`-Elemente und dürfen nicht gleichzeitig geladen werden. Das Gesamtmodul bietet auch die DASH5-v2-Kompatibilität (einschließlich Multi-Light-Aliasnamen); der separate Kompatibilitätseinstieg wird nicht zusätzlich registriert. [MIGRATION.md](docs/MIGRATION.md) erklärt Zuordnung und Rückweg.
@@ -217,6 +264,6 @@ Shared glass surfaces restore the reference material after native style updates 
 
 ### Favorites editor and dependency upgrades (3.1.19)
 
-`custom:dash6-favorites-card` provides a hierarchical visual editor for selecting cards and headings across dashboard views. Selected children can render without their unselected wrapper. Group actions, card type labels, a scrollable preview, source/domain grouping and manual view/domain ordering are supported. Source view ordering follows the dashboard before additional views alphabetically.
+`custom:dash6-favorites-card` provides a hierarchical visual editor for selecting cards and headings across dashboard views. Selected children can render without their unselected wrapper. Group actions, card type labels, a scrollable preview, source/domain grouping and manual view/domain ordering are supported. Source view ordering follows the dashboard before additional views alphabetically. Direct inline cards retain their original child hierarchy. Inline domain blocks offer on-demand discovery through the shared template subscription; known-child exclusions and saved selections remain intact.
 
 After a HACS integration update and Home Assistant restart, newly listed dependencies are installed automatically. Existing HACS resources remain HACS-managed. See [upgrade behavior](docs/INSTALLATION.md#aktualisierung-und-neue-abhängigkeiten). Embedded View Card remains separately owned; the adapter uses its own custom-element names and avoids competing registrations.

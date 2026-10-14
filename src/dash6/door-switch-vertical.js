@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Native vertical geometry: icons never rotate with the track.
 (() => {
  const sheet=new CSSStyleSheet();sheet.replaceSync(`

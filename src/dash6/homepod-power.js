@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Apple TV media power cannot connect a disconnected HomePod. Its companion
 // remote owns the connection; resolve it by registry device, never by name.
 (() => {

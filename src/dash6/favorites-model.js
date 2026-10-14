@@ -4,7 +4,7 @@ const compare = (a, b) => String(a ?? '').localeCompare(String(b ?? ''), 'de', {
 const childrenOf = node => node.children || [];
 const asSet = ids => new Set(ids || []);
 const walkNodes = (nodes, visit) => { for (const node of nodes || []) { visit(node); walkNodes(childrenOf(node), visit); } };
-const STRUCTURAL_KEYS = new Set(['cards', 'card', 'definition', 'sections', 'rows', 'columns', 'modules', 'external_card', 'card_config', 'config', 'overrides', 'custom_fields', 'layout']);
+const STRUCTURAL_KEYS = new Set(['cards', 'card', 'definition', 'headings', 'grid', 'sections', 'rows', 'columns', 'modules', 'external_card', 'card_config', 'config', 'overrides', 'custom_fields', 'layout']);
 export const GROUPINGS = ['source_view', 'source_view_domain', 'domain', 'domain_source_view', 'none'];
 export const DEFAULT_DOMAIN_ORDER = ['climate', 'sensor', 'scene', 'light', 'cover', 'fan', 'media_player', 'vacuum', 'switch', 'lock', 'camera', 'binary_sensor', 'other'];
 
@@ -41,7 +41,7 @@ export function extractCatalog(config, source = {}, options = {}) {
         for (const [fieldName, field] of Object.entries(child)) descend(field, [...absolutePath, key, fieldName], [...childRelative, key, fieldName], nextOwner, metadata, false);
         continue;
       }
-      const position = ['cards', 'card', 'definition', 'card_config', 'overrides', 'external_card'].includes(key);
+      const position = ['cards', 'card', 'definition', 'headings', 'grid', 'card_config', 'overrides', 'external_card'].includes(key);
       descend(child, [...absolutePath, key], [...childRelative, key], nextOwner, metadata, position);
     }
     if (nextOwner && nextOwner !== owner && !nextOwner.domain) {
@@ -74,6 +74,21 @@ export function selectionState(node, selectedIds) {
   const selected = asSet(selectedIds); let count = 0; let total = 0;
   walkNodes([node], child => { total++; if (selected.has(child.id)) count++; });
   return {checked: selected.has(node.id), partial: count > 0 && count < total};
+}
+
+/** Retain checked/unchecked known cards when a user expands a dynamic source. */
+export function reconcileDynamicSelection(previous,replacement,selectedIds){
+ const selected=asSet(selectedIds),known=new Map(),oldIds=new Set();
+ const identity=value=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a.localeCompare(b))):item);
+ walkNodes([previous],node=>{oldIds.add(node.id);if(node===previous)return;const key=identity(node.card);if(!known.has(key))known.set(key,[]);known.get(key).push(node);});
+ const nextSelected=(selectedIds||[]).filter(id=>!oldIds.has(id));
+ function visit(node,inherited,root=false){
+  const match=root?previous:known.get(identity(node.card))?.shift();
+  const checked=match?selected.has(match.id):inherited;
+  const next={...node,id:match?.id||node.id,children:(node.children||[]).map(child=>visit(child,checked))};
+  if(checked)nextSelected.push(next.id);return next;
+ }
+ return {node:visit(replacement,selected.has(previous.id),true),selected:[...new Set(nextSelected)]};
 }
 
 function replaceAtPath(root, path, value, remove = false) {

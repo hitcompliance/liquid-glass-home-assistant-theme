@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Liquid Glass adapter for the separately installed Embedded View Card.
 // Upstream owns view resolution, visibility, live updates and the editor.
 // The pinned implementation is loaded by integration-bootstrap before this bundle.

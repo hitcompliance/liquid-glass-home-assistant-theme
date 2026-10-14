@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import {build} from 'esbuild';
 import {createServer} from 'node:http';
 import {chromium} from 'playwright';
 
@@ -28,7 +30,10 @@ customElements.define('layout-card',class extends HTMLElement {
   setConfig(config){this._config=config;this._cards=config.cards.map(card=>window.loadCardHelpersSync.createCardElement(card));}
   connectedCallback(){this.shadowRoot.innerHTML='<style>:host{display:block}dash6-favorites-masonry-layout{display:block}</style>';this.shadowRoot.append(document.createElement('dash6-favorites-masonry-layout'));}
 });`;
-const refinements = await readFile(new URL('../src/dash6/dashboard-refinements.js', import.meta.url), 'utf8');
+// Include the actual scope/registry dependency rather than serving its import
+// request the fixture HTML through the fallback route.
+const bundled=await build({entryPoints:[fileURLToPath(new URL('../src/dash6/dashboard-refinements.js',import.meta.url))],bundle:true,write:false,format:'esm'});
+const refinements=bundled.outputFiles[0].text;
 const layout = reference ? await readFile(reference, 'utf8') : contract;
 const html = `<!doctype html><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{margin:0}layout-card{display:block;width:100%}</style><script type="module">
 customElements.define('neutral-fixture-card',class extends HTMLElement {

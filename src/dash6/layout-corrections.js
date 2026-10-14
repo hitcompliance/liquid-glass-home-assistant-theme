@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // One thermostat surface and an inset navigation lens. No device actions.
 (() => {
  const enabled=h=>getComputedStyle(h).getPropertyValue('--dash6-satin-enabled').trim()==='1';

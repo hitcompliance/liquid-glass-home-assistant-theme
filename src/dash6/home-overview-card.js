@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Overview links contain plain live values, without nested buttons or surfaces.
 class HomeOverview extends HTMLElement {
  constructor(){super();this.attachShadow({mode:'open'});}

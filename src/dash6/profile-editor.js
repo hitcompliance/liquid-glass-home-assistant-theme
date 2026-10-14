@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {LitElement,html,css} from 'lit';
 import {loadProfile} from './profiles-store.js';
 import './config-editor.js';

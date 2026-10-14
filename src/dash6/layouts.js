@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import './external-editor.js';
 import './responsive-layouts.js';
 import {css,unsafeCSS,html} from 'lit';

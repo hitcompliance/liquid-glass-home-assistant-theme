@@ -1,5 +1,5 @@
 import {build} from 'esbuild';
-import {chromium} from 'playwright';
+import {chromium,webkit} from 'playwright';
 import assert from 'node:assert/strict';
 import {planSectionPositions} from '../src/dash6/sections-responsive.js';
 
@@ -16,7 +16,7 @@ const bundle=await build({entryPoints:['src/dash6/layouts.js'],bundle:true,write
 // Real RenderCard and RoomSlot implementations expose adapter/shadow boundaries
 // that simple direct-child fixtures cannot represent.
 const adapters=await build({stdin:{contents:"import './src/dash6/profile-card.js';import './src/dash6/room-loader.js';",resolveDir:process.cwd()},bundle:true,write:false,format:'iife',loader:{'.css':'text'},logLevel:'silent'});
-const browser=await chromium.launch({headless:true});
+const browser=await (process.env.DASH6_TEST_BROWSER==='webkit'?webkit:chromium).launch({headless:true});
 try {
  const page=await browser.newPage({viewport:{width:900,height:1000}});
  await page.goto('about:blank');

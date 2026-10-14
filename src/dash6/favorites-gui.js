@@ -1,13 +1,14 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {LitElement, html, css} from 'lit';
-import {materializeDynamicCard, resolveRoomSlot} from './favorites-dynamic-catalog.js';
-import {extractCatalog, toggleSelection, selectionState, filterSelectedTree, normalizeOptions, groupFavorites, sourceViewKey, compareSourceViews, DEFAULT_DOMAIN_ORDER, normalizeViewLabel} from './favorites-model.js';
+import {materializeDynamicCard, resolveRoomSlot,resolveInlineDomain} from './favorites-dynamic-catalog.js';
+import {extractCatalog, toggleSelection, selectionState,reconcileDynamicSelection, filterSelectedTree, normalizeOptions, groupFavorites, sourceViewKey, compareSourceViews, DEFAULT_DOMAIN_ORDER, normalizeViewLabel} from './favorites-model.js';
 
 const TYPE = 'custom:dash6-favorites-card';
 const clone = value => structuredClone(value);
 const treeWalk = (nodes, visit) => { for (const node of nodes || []) { visit(node); treeWalk(node.children, visit); } };
 const catalogLabel = (card, hass) => card._favorites_load_error ? `Kartenprofil ${card.profile} (nicht auflösbar)` : [card.heading, card.title, card.name].find(value => typeof value === 'string' && !/\[\[\[|\{%|\{\{/.test(value)) || hass?.states?.[card.entity]?.attributes?.friendly_name || card.entity || (card.profile && `Kartenprofil ${card.profile}`) || ({'custom:auto-entities': 'Dynamische Karten', 'custom:dash6-room-slot-card': 'Dynamischer Raumblock'}[card.type]) || card.type;
 const labels = {climate: 'Klima', sensor: 'Sensoren', scene: 'Szenen', light: 'Beleuchtung', cover: 'Verdunklung', fan: 'Lüfter', media_player: 'Medien', vacuum: 'Staubsauger', switch: 'Schalter', lock: 'Schlösser', camera: 'Kameras', binary_sensor: 'Zustände', other: 'Weitere Karten'};
-const STRUCTURAL = ['views', 'layout', 'cards', 'card', 'definition', 'sections', 'rows', 'columns', 'modules', 'card_config', 'external_card', 'config', 'overrides', 'custom_fields'];
+const STRUCTURAL = ['views', 'layout', 'cards', 'card', 'definition', 'headings','grid','sections', 'rows', 'columns', 'modules', 'card_config', 'external_card', 'config', 'overrides', 'custom_fields'];
 
 export function favoritesConfig(value = {}) {
   const config = {...value, type: TYPE, title: value.title ?? 'Favoriten', dashboard: value.dashboard ?? 'dash-6', sources: clone(value.sources || []), selected: [...(value.selected || value.selected_ids || [])]};
@@ -39,6 +40,7 @@ function visibleConfig(input, hass, showHeadings) {
   if (input.type === 'external_card' && !result.card_config) return null;
   if (['conditional', 'custom:mod-card'].includes(input.type) && !result.card) return null;
   if (input.type === 'custom:dash6-render-card' && !result.definition) return null;
+  if (input.type === 'custom:dash6-domain-grid' && !result.grid) return null;
   if (input.definition && !result.definition) return null;
   if (input.card && !result.card && !input.filter) return null;
   return result;
@@ -63,6 +65,8 @@ async function resolveProfiles(value, ancestors = new Set(), hass) {
   if (!value || typeof value !== 'object') return value;
   if (value.type === TYPE || value.type === 'custom:dash6-favorites-gui') return null;
   let result = clone(value);
+  if(result.type==='custom:dash6-direct-card'&&result.card)return resolveProfiles(result.card,ancestors,hass);
+  if(result.type==='custom:dash6-domain-card')result=resolveInlineDomain(result);
   if (result.type === 'custom:dash6-room-slot-card') result = await resolveRoomSlot(result, hass);
   if (result.type === 'custom:dash6-profile-card' && result.profile) {
     if (ancestors.has(result.profile)) throw new Error(`Zyklisches Kartenprofil: ${result.profile}`);
@@ -77,9 +81,10 @@ async function resolveProfiles(value, ancestors = new Set(), hass) {
     } else result = definition;
     return resolveProfiles(result, next, hass);
   }
-  for (const key of STRUCTURAL) if (result[key] && typeof result[key] === 'object') result[key] = key === 'custom_fields' ? Object.fromEntries(await Promise.all(Object.entries(result[key]).map(async ([name, field]) => [name, await resolveProfiles(field, ancestors)]))) : await resolveProfiles(result[key], ancestors, hass);
+  for (const key of STRUCTURAL) if (result[key] && typeof result[key] === 'object') result[key] = key === 'custom_fields' ? Object.fromEntries(await Promise.all(Object.entries(result[key]).map(async ([name, field]) => [name, await resolveProfiles(field, ancestors,hass)]))) : await resolveProfiles(result[key], ancestors, hass);
   return result;
 }
+export {resolveProfiles};
 
 function readonlyHass(hass) {
   if (!hass) return hass;
@@ -234,13 +239,11 @@ class FavoritesEditor extends LitElement {
     this._dynamicBusy ??= new Set(); if (this._dynamicBusy.has(node.id)) return; this._dynamicBusy.add(node.id); this.requestUpdate();
     try {
       const result = await materializeDynamicCard(node.card, this.hass); if (result.status !== 'ready') throw new Error(result.error || 'Diese dynamische Auswahl kann nicht einzeln aufgelöst werden.');
-      const originalIds = new Set(); treeWalk(node.children, child => originalIds.add(child.id));
-      const wasSelected = this._config.selected.includes(node.id);
       const [resolved] = extractCatalog(result.card, node.source, {idPrefix: `dynamic:${node.id}:`, cardLabel: card => catalogLabel(card, this.hass)});
-      const replacement = {...resolved, id: node.id, label: `${node.label} · ermittelte Karten`, source: node.source, path: node.path, absolutePath: node.absolutePath, order: node.order};
+      const fresh = {...resolved, id: node.id, label: `${node.label} · ermittelte Karten`, source: node.source, path: node.path, absolutePath: node.absolutePath, order: node.order};
+      const {node:replacement,selected}=reconcileDynamicSelection(node,fresh,this._config.selected);
       const swap = nodes => nodes.map(item => item.id === node.id ? replacement : {...item, children: swap(item.children || [])});
       this._catalog = swap(this._catalog);
-      let selected = this._config.selected.filter(id => !originalIds.has(id)); if (wasSelected) selected = toggleSelection(this._catalog, selected, node.id, true);
       this._emit({selected, sources: this._snapshots(selected)}); this._error = '';
     } catch (error) { this._error = error.message; }
     finally { this._dynamicBusy.delete(node.id); this.requestUpdate(); }
@@ -248,7 +251,7 @@ class FavoritesEditor extends LitElement {
   _matches(node) { const q = (this._search || '').trim().toLocaleLowerCase('de'); return !q || [node.label, node.card?.type, node.source?.title, node.domain].some(value => String(value || '').toLocaleLowerCase('de').includes(q)) || (node.children || []).some(child => this._matches(child)); }
   _treeNode(node) {
     const state = selectionState(node, this._config.selected);
-    return html`<div class="row"><input type="checkbox" aria-label=${node.label} .checked=${state.checked} .indeterminate=${state.partial && !state.checked} @change=${event => this._choose(node, event.target.checked)}><span>${node.label} <span class="card-type">(${node.card?.type || (node.heading ? 'heading' : 'card')})</span>${state.partial ? html`<span class="partial"> · Teilauswahl</span>` : ''}</span></div>${node.card?._favorites_room_source || node.card?.type === 'custom:auto-entities' && node.card.filter?.template ? html`<button class="dynamic-load" ?disabled=${this._dynamicBusy?.has(node.id)} @click=${() => this._materialize(node)}>${this._dynamicBusy?.has(node.id) ? 'Ermittelt …' : 'Enthaltene Karten ermitteln'}</button>` : ''}${node.children?.length ? html`<details open><summary class="partial">${node.children.length} Unterkarten</summary><div class="children">${node.children.filter(child => this._matches(child)).map(child => this._treeNode(child))}</div></details>` : ''}`;
+    return html`<div class="row"><input type="checkbox" aria-label=${node.label} .checked=${state.checked} .indeterminate=${state.partial && !state.checked} @change=${event => this._choose(node, event.target.checked)}><span>${node.label} <span class="card-type">(${node.card?.type || (node.heading ? 'heading' : 'card')})</span>${state.partial ? html`<span class="partial"> · Teilauswahl</span>` : ''}</span></div>${node.card?._favorites_room_source || node.card?._favorites_inline_source || ['custom:auto-entities','custom:dash6-auto-entities'].includes(node.card?.type) && node.card.filter?.template ? html`<button class="dynamic-load" ?disabled=${this._dynamicBusy?.has(node.id)} @click=${() => this._materialize(node)}>${this._dynamicBusy?.has(node.id) ? 'Ermittelt …' : 'Enthaltene Karten ermitteln'}</button>` : ''}${node.children?.length ? html`<details open><summary class="partial">${node.children.length} Unterkarten</summary><div class="children">${node.children.filter(child => this._matches(child)).map(child => this._treeNode(child))}</div></details>` : ''}`;
   }
   _orderedViews() {
     const byKey = new Map();

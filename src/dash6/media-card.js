@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {LitElement,html,css,unsafeCSS} from 'lit';
 import BASE_CSS from './base.css';
 import {buttonCSS,bindThemePreferences,unbindThemePreferences} from './material.js';

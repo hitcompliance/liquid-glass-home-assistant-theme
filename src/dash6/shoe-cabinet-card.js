@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {Dash5LightgroupCard,el,button} from './light-cards.js';
 import {reportError} from './error-indicator.js';
 import {sceneMatches,sceneTarget} from './scene-state.js';

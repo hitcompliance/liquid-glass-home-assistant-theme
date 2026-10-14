@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Robot SVG/CSS adapted from strange-v/roborock-vacuum-card (MIT); see licenses/ROBOROCK-LICENSE.
 import {switchVisual} from './glass-switch.js';
 import MAINTENANCE_CSS from './maintenance.css';

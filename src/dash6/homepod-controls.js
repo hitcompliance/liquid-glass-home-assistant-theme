@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {inDashboardScope} from './scope.js';
 // Keep the native HomePod card and its artwork; add transport and a glass volume row.
 (() => {

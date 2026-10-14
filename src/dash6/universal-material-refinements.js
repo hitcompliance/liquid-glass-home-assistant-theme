@@ -1,9 +1,10 @@
+import {inDashboardScope} from './scope.js';
 // One Satin material for every visible dashboard card; layout and graph layers stay clear.
 (() => {
  const marker='data-dash6-unified-glass',clear='data-dash6-clear-shell';
  const structural=new Set(['ultra-card','dash6-ultra-card','dash6-stack-card','dash6-embedded-card','grid-layout','masonry-layout','layout-card','dash6-pill-layout','dash6-inline-pill-layout','hui-heading-card','embedded-view-card','dash6-embedded-view-card','mini-graph-card','hui-vertical-stack-card','hui-horizontal-stack-card','hui-grid-card','auto-entities','dash6-auto-entities']);
  const ancestors=n=>{const a=[];for(let x=n;x;x=x.assignedSlot||x.parentNode||x.host)a.push(x);return a;};
- const gate=n=>getComputedStyle(n).getPropertyValue('--dash6-satin-enabled').trim()==='1'&&ancestors(n).some(x=>x.localName==='ha-panel-lovelace'||x.hasAttribute?.('data-dash6-satin-preview'));
+ const gate=n=>inDashboardScope()&&getComputedStyle(n).getPropertyValue('--dash6-satin-enabled').trim()==='1'&&ancestors(n).some(x=>x.localName==='ha-panel-lovelace'||x.hasAttribute?.('data-dash6-satin-preview'));
  const roots=new Map(),surfaces=new Set();let queued=false,current=null,frame=0;
  const background='radial-gradient(ellipse 95% 75% at var(--dash6-satin-pointer-x,32%) var(--dash6-satin-pointer-y,0%),rgba(255,255,255,calc(var(--dash6-satin-hover-gloss,.20) * var(--dash6-satin-hovered,0))),transparent 64%),linear-gradient(135deg,rgba(255,255,255,var(--dash6-satin-card-gloss,.14)),transparent 48%,rgba(255,255,255,.025)),rgba(24,28,34,var(--dash6-satin-card-opacity,.70))';
  const props={background,border:'1px solid rgba(230,240,248,.22)','border-bottom-color':'rgba(255,255,255,.045)','box-shadow':'inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 2px rgba(0,0,0,.12),0 8px 24px rgba(0,0,0,.18)','backdrop-filter':'blur(var(--dash6-satin-frost,8px)) saturate(1.08)','-webkit-backdrop-filter':'blur(var(--dash6-satin-frost,8px)) saturate(1.08)','border-radius':'var(--dash5-card-radius,16px)','background-clip':'padding-box'};
@@ -27,7 +28,7 @@
  function leave(){if(current){current.style.setProperty('--dash6-satin-hovered','0');current=null;}if(frame)cancelAnimationFrame(frame);frame=0;}
  document.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const n=e.composedPath().find(x=>x.hasAttribute?.(marker));if(!n){leave();return;}if(current!==n){leave();current=n;}if(frame)cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{frame=0;if(!current?.isConnected)return;const r=current.getBoundingClientRect();current.style.setProperty('--dash6-satin-hovered','1');current.style.setProperty('--dash6-satin-pointer-x',Math.max(0,Math.min(100,(e.clientX-r.left)/(r.width||1)*100))+'%');current.style.setProperty('--dash6-satin-pointer-y',Math.max(0,Math.min(100,(e.clientY-r.top)/(r.height||1)*100))+'%');});},{passive:true,capture:true});
  document.addEventListener('pointerout',e=>{if(current&&!ancestors(e.relatedTarget).includes(current))leave();},{passive:true,capture:true});document.addEventListener('pointerleave',leave,{passive:true});window.addEventListener('blur',leave);
- const attach=Element.prototype.attachShadow;Element.prototype.attachShadow=function(options){const root=attach.call(this,options);if(options.mode==='open')queueMicrotask(()=>{if(this.isConnected)observe(root);});return root;};
+ const attach=Element.prototype.attachShadow;Element.prototype.attachShadow=function(options){const root=attach.call(this,options);if(inDashboardScope()&&options.mode==='open')queueMicrotask(()=>{if(this.isConnected)observe(root);});return root;};
  for(const event of ['location-changed','theme-changed','dash6-theme-settings-changed'])window.addEventListener(event,schedule);
  observe(document);new MutationObserver(schedule).observe(document.documentElement,{attributes:true,attributeFilter:['style','class','data-dash6-satin-preview']});
 })();
