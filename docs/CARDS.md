@@ -344,3 +344,7 @@ Die mitkopierte `dash5-light-cards-v2.js` ist ein Kompatibilitätseinstieg zum a
 ## Interaktive Demo-Karte
 
 `custom:dash6-demo-card` enthält eine `card:` mit einer eigenen DASH6-Karte. Sie stellt lokale Beispielzustände bereit und fängt Service-, API- und WebSocket-Zugriffe ab. Die Demo benötigt keine Geräte. `examples/demo-dashboard.yaml` zeigt acht Kartenbeispiele in drei Views mit den Design-Prinzipien. Für echte Geräte die Hülle weglassen und eigene Entitäten verwenden.
+
+### Manuelle Reihenfolge
+
+Im Favoriten-Editor unter **Kartensortierung → Manuell** erscheinen die ausgewählten Karten und Überschriften mit Auf-/Ab-Tasten. Die Vorschau folgt jeder Änderung; der native Speichern-Button übernimmt sie dauerhaft. Die Reihenfolge steht in `manualCardOrder` als Liste der Auswahl-IDs. Gruppen behalten ihre eigene konfigurierte View-/Domain-Reihenfolge; innerhalb eines Containers können Karten desselben Kartenarrays verschoben werden. Neu ausgewählte Elemente folgen deterministisch. Quell-Views und gespeicherte Auswahlen bleiben unverändert.

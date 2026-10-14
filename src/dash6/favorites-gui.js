@@ -2,7 +2,7 @@ import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {LitElement, html, css} from 'lit';
 import {createDemoContext} from './demo-card.js';
 import {materializeDynamicCard, resolveRoomSlot,resolveInlineDomain} from './favorites-dynamic-catalog.js';
-import {extractCatalog, toggleSelection, selectionState,reconcileDynamicSelection, filterSelectedTree, normalizeOptions, groupFavorites, sourceViewKey, compareSourceViews, DEFAULT_DOMAIN_ORDER, normalizeViewLabel} from './favorites-model.js';
+import {extractCatalog, toggleSelection, selectionState,reconcileDynamicSelection, filterSelectedTree, normalizeOptions, groupFavorites, moveManualCardOrder, sourceViewKey, compareSourceViews, DEFAULT_DOMAIN_ORDER, normalizeViewLabel} from './favorites-model.js';
 
 const TYPE = 'custom:dash6-favorites-card';
 const clone = value => structuredClone(value);
@@ -49,7 +49,7 @@ function visibleConfig(input, hass, showHeadings) {
 
 export function favoritesRenderConfig(value, hass) {
   const config = favoritesConfig(value);
-  const selected = filterSelectedTree(config.sources, config.selected).map(node => ({...node, card: visibleConfig(node.card, hass, config.headings || headingCard(node.card))})).filter(node => node.card);
+  const selected = filterSelectedTree(config.sources, config.selected, config).map(node => ({...node, card: visibleConfig(node.card, hass, config.headings || headingCard(node.card))})).filter(node => node.card);
   function renderNode(node) {
     if (!node.kind) return node.card;
     const cards = node.children.map(renderNode).filter(Boolean);
@@ -148,7 +148,7 @@ class FavoritesCard extends LitElement {
 
 class FavoritesEditor extends LitElement {
   static properties = {hass: {attribute: false}, _config: {state: true}, _catalog: {state: true}, _preview: {state: true}, _loading: {state: true}, _error: {state: true}, _allDashboards: {state: true}, _nativeEditor: {state: true}, _search: {state: true}};
-  static styles = css`:host{display:block;min-width:0}.panes{display:grid;grid-template-columns:minmax(260px,.9fr) minmax(300px,1.1fr);gap:16px}:host([native-dialog]) .panes{grid-template-columns:minmax(0,1fr)}:host([native-dialog]) .preview-pane{display:none}.pane{min-width:0;border:1px solid var(--divider-color);border-radius:16px;padding:12px}.tree{max-height:65vh;overflow:auto}.row{display:flex;align-items:flex-start;gap:8px;padding:5px 0}.row input{width:20px;height:20px;flex:none;margin:0}.row span{overflow-wrap:anywhere}.children{margin-left:22px;border-left:1px solid var(--divider-color);padding-left:10px}.group-actions{font-size:13px;font-weight:400;white-space:nowrap}.group-actions a{color:var(--primary-color);text-decoration:none}.group-actions a:hover{text-decoration:underline}.card-type{opacity:.7}.partial{color:var(--secondary-text-color);font-size:12px}h3{margin:0 0 8px}h4{margin:14px 0 6px}label.field{min-width:0;display:flex;flex-direction:column;gap:4px;margin:8px 0}input[type=text],select{font:inherit;padding:8px;border:1px solid var(--divider-color);border-radius:8px;background:var(--card-background-color);color:var(--primary-text-color);min-width:0}.controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 12px}.span{grid-column:1/-1}.preview{user-select:none;min-height:150px;max-height:65vh;overflow:auto;overscroll-behavior:contain}.preview-content{pointer-events:none}.error{color:var(--error-color)}button{font:inherit;border:1px solid var(--divider-color);border-radius:8px;padding:8px;background:var(--card-background-color);color:var(--primary-text-color);cursor:pointer}p{margin:8px 0;font-size:13px;color:var(--secondary-text-color)}@media(max-width:750px){.panes{grid-template-columns:minmax(0,1fr)}.tree,.preview{max-height:45vh}.controls{grid-template-columns:1fr}}`;
+  static styles = css`:host{display:block;min-width:0}.panes{display:grid;grid-template-columns:minmax(260px,.9fr) minmax(300px,1.1fr);gap:16px}:host([native-dialog]) .panes{grid-template-columns:minmax(0,1fr)}:host([native-dialog]) .preview-pane{display:none}.pane{min-width:0;border:1px solid var(--divider-color);border-radius:16px;padding:12px}.tree{max-height:65vh;overflow:auto}.row{display:flex;align-items:flex-start;gap:8px;padding:5px 0}.row input{width:20px;height:20px;flex:none;margin:0}.row span{overflow-wrap:anywhere}.children{margin-left:22px;border-left:1px solid var(--divider-color);padding-left:10px}.manual-order{max-height:45vh;overflow:auto}.order-row{display:flex;align-items:center;gap:8px;padding:4px 0}.order-row>span{flex:1;min-width:0;overflow-wrap:anywhere}.order-row button{min-width:44px;min-height:44px;flex:none}.order-row button:disabled{opacity:.35;cursor:default}.order-row button:focus-visible{outline:2px solid var(--primary-color);outline-offset:2px}.group-actions{font-size:13px;font-weight:400;white-space:nowrap}.group-actions a{color:var(--primary-color);text-decoration:none}.group-actions a:hover{text-decoration:underline}.card-type{opacity:.7}.partial{color:var(--secondary-text-color);font-size:12px}h3{margin:0 0 8px}h4{margin:14px 0 6px}label.field{min-width:0;display:flex;flex-direction:column;gap:4px;margin:8px 0}input[type=text],select{font:inherit;padding:8px;border:1px solid var(--divider-color);border-radius:8px;background:var(--card-background-color);color:var(--primary-text-color);min-width:0}.controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 12px}.span{grid-column:1/-1}.preview{user-select:none;min-height:150px;max-height:65vh;overflow:auto;overscroll-behavior:contain}.preview-content{pointer-events:none}.error{color:var(--error-color)}button{font:inherit;border:1px solid var(--divider-color);border-radius:8px;padding:8px;background:var(--card-background-color);color:var(--primary-text-color);cursor:pointer}p{margin:8px 0;font-size:13px;color:var(--secondary-text-color)}@media(max-width:750px){.panes{grid-template-columns:minmax(0,1fr)}.tree,.preview{max-height:45vh}.controls{grid-template-columns:1fr}}`;
   connectedCallback() {
     super.connectedCallback();
     let parent = this;
@@ -284,6 +284,36 @@ class FavoritesEditor extends LitElement {
     [order[index], order[target]] = [order[target], order[index]];
     this._emit({viewOrderMode: 'manual', manualViewOrder: order});
   }
+  _orderedCards() {
+    const config = withDashboardViewOrder(this._config);
+    return groupFavorites(filterSelectedTree(config.sources, config.selected, config), {...config, domainLabels: labels});
+  }
+  _setCardSort(sort) {
+    const manualCardOrder = [...this._config.manualCardOrder];
+    if (sort === 'manual' && !manualCardOrder.length) {
+      // Start with the current visible order, including selected descendants.
+      treeWalk(this._orderedCards(), node => {if (!node.kind) manualCardOrder.push(node.id);});
+    }
+    this._emit({sort, manualCardOrder});
+  }
+  _moveCard(siblings, id, direction) {
+    this._emit({sort: 'manual', manualCardOrder: moveManualCardOrder(siblings, this._config.manualCardOrder, id, direction)});
+  }
+  _manualOrderRows(nodes) {
+    return nodes.map((node, index) => {
+      const slots = new Map();
+      for (const child of node.children || []) {
+        // Single-card slots cannot exchange cards with another layout slot.
+        const key = child.orderSlot ?? child.id;
+        if (!slots.has(key)) slots.set(key, []); slots.get(key).push(child);
+      }
+      return html`<div class="order-row"><span>${node.label} <span class="card-type">(${node.card?.type || 'card'})</span></span><button type="button" aria-label=${`${node.label} nach oben verschieben`} ?disabled=${index === 0} @click=${() => this._moveCard(nodes, node.id, -1)}>↑</button><button type="button" aria-label=${`${node.label} nach unten verschieben`} ?disabled=${index === nodes.length - 1} @click=${() => this._moveCard(nodes, node.id, 1)}>↓</button></div>${slots.size ? html`<div class="children">${[...slots.values()].map(children => this._manualOrderRows(children))}</div>` : ''}`;
+    });
+  }
+  _manualOrderTree(nodes) {
+    if (!nodes.some(node => node.kind)) return this._manualOrderRows(nodes);
+    return nodes.map(node => html`<h4>${node.label}</h4><div class="children">${this._manualOrderTree(node.children)}</div>`);
+  }
   _groupLinks(label, nodes, viewKey) {
     const choose = (event, selected) => {
       event.preventDefault(); event.stopPropagation();
@@ -314,7 +344,8 @@ class FavoritesEditor extends LitElement {
     return html`<div class="controls">
       <label class="field">Titel<input type="text" .value=${c.title} @change=${event => this._emit({title: event.target.value})}></label>
       <label class="field">Gruppierung<select aria-label="Gruppierung" .value=${c.grouping} @change=${event => this._emit({grouping: event.target.value})}><option value="source_view">Quellansicht</option><option value="source_view_domain">Quellansicht → Domain</option><option value="domain">Domain</option><option value="domain_source_view">Domain → Quellansicht</option><option value="none">Keine Gruppierung</option></select></label>
-      <label class="field">Kartensortierung<select aria-label="Kartensortierung" .value=${c.sort} @change=${event => this._emit({sort: event.target.value})}><option value="domain_alpha">Domain → alphabetisch</option><option value="alpha">Alphabetisch</option><option value="source_domain_alpha" ?disabled=${c.grouping !== 'domain'}>Quellansicht → Domain → alphabetisch</option></select></label>
+      <label class="field">Kartensortierung<select aria-label="Kartensortierung" .value=${c.sort} @change=${event => this._setCardSort(event.target.value)}><option value="domain_alpha">Domain → alphabetisch</option><option value="alpha">Alphabetisch</option><option value="source_domain_alpha" ?disabled=${c.grouping !== 'domain'}>Quellansicht → Domain → alphabetisch</option><option value="manual">Manuell</option></select></label>
+      ${c.sort === 'manual' ? html`<div class="span"><h3>Karten und Überschriften sortieren</h3><p>Aufwärts und abwärts verschieben Karten innerhalb ihrer Gruppe und Unterkarten innerhalb ihres Kartenrasters. Neue Elemente folgen in Quellreihenfolge.</p><div class="manual-order" role="region" aria-label="Manuelle Kartenreihenfolge">${this._manualOrderTree(this._orderedCards())}</div></div>` : ''}
       <label class="field">Domain-Reihenfolge<select aria-label="Domain-Reihenfolge" .value=${c.domainOrder} @change=${event => this._emit({domainOrder: event.target.value})}><option value="source_view_order" ?disabled=${!domainSourceAllowed}>Reihenfolge der Quellansicht</option><option value="alpha">Alphabetisch</option><option value="manual">Eigene Reihenfolge</option></select></label>
       <label class="field">View-Reihenfolge<select aria-label="View-Reihenfolge" .value=${c.viewOrderMode || 'dashboard'} @change=${event => this._emit({viewOrderMode: event.target.value, manualViewOrder: event.target.value === 'manual' ? this._orderedViews().map(sourceViewKey) : c.manualViewOrder || []})}><option value="dashboard">Dashboard-Reihenfolge</option><option value="manual">Manuell überschreiben</option></select></label>
       ${c.viewOrderMode === 'manual' ? html`<div class="span"><p>Nicht aufgeführte Views folgen in Dashboard-Reihenfolge; zusätzliche Views danach alphabetisch.</p>${this._orderedViews().map((node, index, nodes) => html`<div class="row"><span style="flex:1">${normalizeViewLabel(node.source?.title || node.source?.view)}${node.source?.dashboard !== c.dashboard ? html` · ${node.source?.dashboard}` : ''}</span><button aria-label=${`${normalizeViewLabel(node.source?.title || node.source?.view)} nach oben`} ?disabled=${index === 0} @click=${() => this._moveView(sourceViewKey(node), -1)}>↑</button><button aria-label=${`${normalizeViewLabel(node.source?.title || node.source?.view)} nach unten`} ?disabled=${index === nodes.length - 1} @click=${() => this._moveView(sourceViewKey(node), 1)}>↓</button></div>`)}</div>` : ''}
