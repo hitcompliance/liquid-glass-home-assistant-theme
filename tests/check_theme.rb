@@ -8,7 +8,12 @@ abort 'HACS requires exactly one theme YAML file' unless theme_files.length == 1
 
 themes = YAML.load_file(theme_files.first)
 expected = ['Liquid Glass', 'Liquid Glass Motion', 'DASH6 Modern Glass', 'DASH6 Modern Glass (apple-konform)', 'DASH6 Modern Glass (stark elastisch)', 'DASH6 Modern Glass (apple-konform, stark elastisch)', 'DASH6 Modern Glass (Safari SVG-Linsen)', 'DASH6 Satin Glass']
+expected = expected.map { |name| name.include?('Satin') ? name : name + ' (outdated)' }
 abort 'Unexpected theme names' unless themes.keys.sort == expected.sort
+
+themes.each do |name, vars|
+  abort "Missing card-mod theme identity for #{name}" unless vars['card-mod-theme'] == name
+end
 
 themes.select { |name, _| name.start_with?('Liquid Glass') }.each do |name, vars|
   abort "Missing card-mod theme identity for #{name}" unless vars['card-mod-theme'] == name
@@ -27,8 +32,8 @@ satin = themes.fetch('DASH6 Satin Glass')
   abort "Missing Satin material #{key}" unless satin.key?(key)
 end
 abort 'Satin gate missing' unless satin['dash6-satin-enabled'].to_s == '1'
-abort 'Static variant animates' unless themes['Liquid Glass']['lg-motion-duration'] == '0ms'
-abort 'Motion variant has no transition' unless themes['Liquid Glass Motion']['lg-motion-duration'] == '180ms'
+abort 'Static variant animates' unless themes['Liquid Glass (outdated)']['lg-motion-duration'] == '0ms'
+abort 'Motion variant has no transition' unless themes['Liquid Glass Motion (outdated)']['lg-motion-duration'] == '180ms'
 abort 'Missing wallpaper' unless File.file?(File.join(root, 'assets', 'liquid-glass-living-room.jpg'))
 abort 'Invalid HACS manifest' unless JSON.parse(File.read(File.join(root, 'hacs.json')))['name']
 

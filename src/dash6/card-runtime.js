@@ -13,10 +13,17 @@ import BASE_CSS from './base.css';
 import {materialCSS,materialValue} from './material.js';
 import {sceneMatches,sceneTarget} from './scene-state.js';
 import {overlay,remote,remoteMain,remoteSubview} from './hooks.js';
+import {themeClassCSS} from './theme-classes.js';
 const clone=x=>structuredClone(x);
 const sheetCache=new Map();
 const originalType=type=>type?.startsWith('custom:')?type.slice(7):'hui-'+type+'-card';
 function rootCSS(mod){return typeof mod?.style==='string'?mod.style:mod?.style?.['.']||'';}
+function mappedSkin(definition,source){
+ const skin=source.dash6_css||source.card_mod;
+ if(!skin)return definition;
+ delete definition.dash6_css;delete definition.card_mod;
+ return {type:'custom:dash6-render-card',definition,skin:{css:rootCSS(skin),classes:skin.class||'',active:!!source.dash6_active}};
+}
 export function mapCards(config){
  if(!config||typeof config!=='object')return config;
  if(Array.isArray(config))return config.map(mapCards);
@@ -27,13 +34,16 @@ export function mapCards(config){
  // Area pills belong directly to the thin header surface, without a nested card.
  if(c.cards?.[0]?.type==='custom:dash6-area-header')c.cards=c.cards.map((child,index)=>{if(!index)return child;const auto=child.type==='custom:mod-card'?child.card:child;if(auto?.type!=='custom:auto-entities')return child;const pills=auto.card;if(pills?.type==='custom:layout-card'){delete pills.card_mod;delete pills.dash6_css;pills.layout={...pills.layout,padding:'0',background:'transparent'};}return auto;});
  const protectedVendor=!vendorLockAllowsSwitch(c);
- if(!protectedVendor&&isLegacyIkea(c))return ikeaConfig(c);
+ if(!protectedVendor&&isLegacyIkea(c))return mappedSkin(ikeaConfig(c),c);
  const metered=protectedVendor?c:mapSatinGraphConfig(c);if(metered!==c)return metered;
- if(c.type?.startsWith('custom:dash6-'))return c;
- if(c.type==='custom:embedded-view-card'){c.type='custom:dash6-embedded-view-card';delete c.card_mod;delete c.dash6_css;return c;}
+ if(c.type?.startsWith('custom:dash6-')){
+  if(c.dash6_css){const classes=c.dash6_css.class||'',style=rootCSS(c.dash6_css);delete c.dash6_css;return {type:'custom:dash6-render-card',definition:c,skin:{css:style,classes}};}
+  return c;
+ }
+ if(c.type==='custom:embedded-view-card'){c.type='custom:dash6-embedded-view-card';return mappedSkin(c,config);}
  if(c.type==='custom:layout-card'&&c.layout?.display==='flex')c.layout_type='custom:dash6-pill-layout';
- if(c.type==='thermostat')return {type:'custom:dash6-thermostat-card',entity:c.entity,modes:c.features?.find(f=>f.type==='climate-hvac-modes')?.hvac_modes};
- if(c.type==='custom:more-info-card'&&c.entity?.startsWith('cover.'))return {type:'custom:dash6-cover-card',entity:c.entity};
+ if(c.type==='thermostat')return mappedSkin({type:'custom:dash6-thermostat-card',entity:c.entity,modes:c.features?.find(f=>f.type==='climate-hvac-modes')?.hvac_modes},c);
+ if(c.type==='custom:more-info-card'&&c.entity?.startsWith('cover.'))return mappedSkin({type:'custom:dash6-cover-card',entity:c.entity},c);
  if(c.styles){const transform=x=>Array.isArray(x)?x.map(transform):x&&typeof x==='object'?Object.fromEntries(Object.entries(x).map(([key,v])=>{const k=key==='box_shadow'?'box-shadow':key;return [k,typeof v==='string'?materialValue(k,v):transform(v)]})):x;c.styles=transform(c.styles);}
  // Framed nested button-card icons receive their material before the first render.
  if(c.type==='custom:button-card'&&c.entity&&c.styles?.img_cell?.some(v=>v.border||v['border-radius'])&&inDashboardScope()){
@@ -47,11 +57,11 @@ export function mapCards(config){
  }
  if(c.type==='custom:auto-entities')c.type='custom:dash6-auto-entities';
  if(c.type==='custom:apexcharts-card')c.type='custom:dash6-apexcharts-card';
- if(c.type==='media-control'&&!c.dash6_css&&!c.card_mod)c.dash6_css={style:''};
- if(c.type==='heading'&&!c.dash6_css&&!c.card_mod)c.dash6_css={style:''};
+ if(c.type==='media-control'&&!c.dash6_css&&!c.card_mod)c.dash6_css={class:'dash6-media'};
+ if(c.type==='heading'&&!c.dash6_css&&!c.card_mod)c.dash6_css={class:'dash6-domain-heading'};
  if(c.dash6_css||c.card_mod||['custom:vertical-stack-in-card','vertical-stack','horizontal-stack','grid'].includes(c.type)){
   if(c.type==='custom:vertical-stack-in-card')c.type='custom:dash6-stack-card';
-  let style=rootCSS(c.dash6_css||c.card_mod);let active=false;if(style.includes('{%')){active=!!c.dash6_active;style=BASE_CSS+'\nha-card{min-height:64px;box-sizing:border-box}:host{margin:0!important}:host([data-active=true]) ha-card{border-color:var(--dash6-active-border)!important;box-shadow:var(--dash6-active-shadow)!important}';delete c.dash6_active;}const classes=(c.dash6_css||c.card_mod)?.class||'';delete c.card_mod;delete c.dash6_css;
+  let style=rootCSS(c.dash6_css)||rootCSS(c.card_mod);let active=!!c.dash6_active;if(c.entity?.startsWith('scene.'))delete c.dash6_active;if(style.includes('{%')){active=!!c.dash6_active;style=BASE_CSS+'\nha-card{min-height:64px;box-sizing:border-box}:host{margin:0!important}:host([data-active=true]) ha-card{border-color:var(--dash6-active-border)!important;box-shadow:var(--dash6-active-shadow)!important}';delete c.dash6_active;}const classes=(c.dash6_css||c.card_mod)?.class||'';delete c.card_mod;delete c.dash6_css;
   // Nested shadow geometry is provided by the dedicated thermostat/cover cards.
   return {type:'custom:dash6-render-card',definition:c,skin:{css:style,classes,active}};
  }
@@ -71,7 +81,9 @@ export class RenderCard extends LitElement {
    const protectedVendor=!vendorLockAllowsSwitch(config),metered=protectedVendor?config:mapSatinGraphConfig(config);
    if(metered!==config&&c.skin?.css){metered.definition.dash6_css={style:c.skin.css,class:c.skin.classes||''};}
    delete config.card_mod;
-   const child=await helpers.createCardElement(!protectedVendor&&isLegacyIkea(config)?ikeaConfig(config):metered);
+   const definition=!protectedVendor&&isLegacyIkea(config)?ikeaConfig(config):metered;
+   if(definition.type==='custom:dash6-ikea-card'&&c.skin?.classes)definition.theme_classes=c.skin.classes;
+   const child=await helpers.createCardElement(definition);
    if(generation!==this._generation)return;
    let cssText=config.type==='media-control'?'ha-card{border-radius:16px!important;overflow:hidden}:host([data-media-idle]) ha-card{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important}:host([data-media-idle]) .color-block,:host([data-media-idle]) .no-img{background:transparent!important}':BASE_CSS+'\n'+(c.skin?.css||'');
    if(cssText.includes('{%'))cssText=BASE_CSS+'\nha-card{min-height:64px}';
@@ -91,8 +103,18 @@ export class RenderCard extends LitElement {
    this.syncSwitchIcon(child,config);child.hass=scopedHass(this.hass);this._child=child;this._error='';
   }catch(error){this._error=String(error.message||error);}
  }
+ _applyThemeClasses(){
+  const child=this._child,root=child?.shadowRoot;
+  if(!root||child.localName==='dash6-ikea-card')return;
+  const text=themeClassCSS(this,this._config?.skin?.classes);
+  if(text===this._themeClassText&&child===this._themeClassChild)return;
+  if(this._themeClassSheet)root.adoptedStyleSheets=root.adoptedStyleSheets.filter(sheet=>sheet!==this._themeClassSheet);
+  this._themeClassText=text;this._themeClassChild=child;
+  this._themeClassSheet=null;
+  if(text){const sheet=new CSSStyleSheet();sheet.replaceSync(materialCSS(text)+'\n'+BASE_CSS.slice(BASE_CSS.indexOf('/* Scoped material geometry:')));root.adoptedStyleSheets=[...root.adoptedStyleSheets,sheet];this._themeClassSheet=sheet;}
+ }
  syncSwitchIcon(child,config=this._config?.definition){if(config?.entity?.startsWith('switch.')&&child.classList.contains('dash6-card-icon-lens')){child.dataset.mainDomain='switch';child.dataset.mainState=this.hass?.states?.[config.entity]?.state||'unknown';}}
- updated(){if(this._child){const child=this._child;if(this._config.definition?.type==='media-control'){const state=this.hass?.states[this._config.definition.entity]?.state;child.toggleAttribute('data-media-idle',!['playing','buffering'].includes(state));}Promise.resolve(child.updateComplete).then(()=>{if(child!==this._child||!child.isConnected||!nativeSwitchPlan(this._config.definition))return;this._satinNative??=bindSatinNativeCard(child,this._config.definition);this._satinNative.sync(this._config.definition);});this.syncSwitchIcon(this._child);if(this._child.classList.contains('dash6-nav-lens'))this._child.dataset.navActive=String(this._config?.definition?.tap_action?.navigation_path===location.pathname);this._child.hass=scopedHass(this.hass);if(this._child.classList.contains('dash6-weather-split')){const child=this._child;Promise.resolve(child.updateComplete).then(()=>{if(!child.isConnected)return;const card=child.shadowRoot?.querySelector('ha-card');if(card)child.style.setProperty('--dash6-weather-border',getComputedStyle(card).borderLeftWidth);});}const entity=this._config?.definition?.entity;if(entity?.startsWith('scene.')){this._sceneNotify??=()=>this.requestUpdate();const target=sceneTarget(this.hass,entity,this._sceneNotify);this._child.dataset.active=String(!!this._config.skin?.active&&sceneMatches(target,this.hass?.states||{}));}}}
+ updated(){this._applyThemeClasses();if(this._child){const child=this._child;if(this._config.definition?.type==='media-control'){const state=this.hass?.states[this._config.definition.entity]?.state;child.toggleAttribute('data-media-idle',!['playing','buffering'].includes(state));}Promise.resolve(child.updateComplete).then(()=>{if(child!==this._child||!child.isConnected||!nativeSwitchPlan(this._config.definition))return;this._satinNative??=bindSatinNativeCard(child,this._config.definition);this._satinNative.sync(this._config.definition);});this.syncSwitchIcon(this._child);if(this._child.classList.contains('dash6-nav-lens'))this._child.dataset.navActive=String(this._config?.definition?.tap_action?.navigation_path===location.pathname);this._child.hass=scopedHass(this.hass);if(this._child.classList.contains('dash6-weather-split')){const child=this._child;Promise.resolve(child.updateComplete).then(()=>{if(!child.isConnected)return;const card=child.shadowRoot?.querySelector('ha-card');if(card)child.style.setProperty('--dash6-weather-border',getComputedStyle(card).borderLeftWidth);});}const entity=this._config?.definition?.entity;if(entity?.startsWith('scene.')){this._sceneNotify??=()=>this.requestUpdate();const target=sceneTarget(this.hass,entity,this._sceneNotify);this._child.dataset.active=String(!!this._config.skin?.active&&sceneMatches(target,this.hass?.states||{}));}}}
  getCardSize(){return this._child?.getCardSize?.()??3;}
  getGridOptions(){return this._config?.definition?.grid_options??this._child?.getGridOptions?.()??{columns:12};}
  render(){return this._error?html`<div role="alert" class="error">${this._error}</div>`:html`${this._child}`;}

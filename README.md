@@ -1,6 +1,6 @@
 # Liquid Glass für Home Assistant
 
-Ein vollständiges Glas-Paket für Home Assistant: dunkle Themes, interaktive Custom-Cards und ein grafischer Materialeditor. **DASH6 Satin Glass** verbindet sanft gefrostetes Rauchglas mit kleinen beleuchteten Schaltern, versenkten Reglern und flachen Glaslinsen. Die ursprünglichen Liquid-Glass-Themes bleiben erhalten.
+Ein vollständiges Glas-Paket für Home Assistant: dunkle Themes, interaktive Custom-Cards und ein grafischer Materialeditor. **DASH6 Satin Glass** verbindet sanft gefrostetes Rauchglas mit kleinen beleuchteten Schaltern, versenkten Reglern und flachen Glaslinsen. Die ursprünglichen Varianten bleiben mit dem Zusatz **(outdated)** verfügbar; **DASH6 Satin Glass** ist die aktuelle Standardvariante.
 
 **[Interaktive Demo](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/)** · [Installation](docs/INSTALLATION.md) · [Karten und Einstellungen](docs/CARDS.md) · [Abhängigkeiten](docs/DEPENDENCIES.md) · [Umstieg](docs/MIGRATION.md)
 
@@ -23,7 +23,9 @@ Das Theme bestimmt Farben und Material. Das zusätzliche Kartenmodul liefert Sch
 
 ## Interaktives Demo-Dashboard
 
-[examples/demo-dashboard.yaml](examples/demo-dashboard.yaml) enthält drei Views: **Licht und Material**, **Bedienung und Bewegung** sowie **Klima und Prinzipien**. Licht, Lichtgruppe, Steckdose, Ventilator-Schalter, Rollo und Dual-Thermostat sind bedienbar. Die `dash6-demo-card`-Hülle stellt lokale Beispielzustände bereit und fängt Geräteaktionen ab. Es werden keine eigenen Geräte benötigt und keine echten Serviceaufrufe gesendet.
+[examples/demo-dashboard.yaml](examples/demo-dashboard.yaml) enthält vier Views: **Licht und Material**, **Bedienung und Bewegung**, **Klima und Prinzipien** sowie **Favoriten**. Licht, Lichtgruppe, Steckdose, Ventilator-Schalter, Rollo und Dual-Thermostat sind bedienbar. Die `dash6-demo-card`-Hülle stellt lokale Beispielzustände bereit und fängt Geräteaktionen ab. Es werden keine eigenen Geräte benötigt und keine echten Serviceaufrufe gesendet.
+
+Die Favoriten-View enthält eine vorbereitete Auswahl sicher simulierter Karten. **Favoriten bearbeiten** öffnet dieselbe hierarchische Auswahl, Gruppierung, Sortierung und Vorschau wie der native Favoriten-Karteneditor. Änderungen werden ausschließlich als Demo-Einstellung in diesem Browser gespeichert. Eigene Favoriten-Karten speichern ihre Konfiguration weiterhin über den nativen Dashboard-Editor.
 
 Die Integration zeigt das interaktive Demo-Dashboard automatisch als **Liquid Glass Demo** in der Seitenleiste. Es benötigt keine Geräte. Beide Beispiel-Dateien liegen zusätzlich unter `liquid-glass/examples/` im Konfigurationsverzeichnis; dort lässt sich eine eigene, editierbare Kopie erstellen.
 
@@ -31,14 +33,16 @@ Die Integration zeigt das interaktive Demo-Dashboard automatisch als **Liquid Gl
 
 | Name in Home Assistant | Gestaltung |
 | --- | --- |
-| **Liquid Glass** | Ursprüngliches dunkles Glas ohne zusätzliche Bewegungsanimation |
-| **Liquid Glass Motion** | Ursprüngliches Glas mit dezenten Einblendungen und Hover-/Fokusübergängen |
-| **DASH6 Modern Glass** | Ursprüngliche DASH6-Materialvariante |
-| **DASH6 Modern Glass (apple-konform)** | Zurückhaltende DASH6-Variante |
-| **DASH6 Modern Glass (stark elastisch)** | DASH6 mit stärkerer elastischer Rückmeldung |
-| **DASH6 Modern Glass (apple-konform, stark elastisch)** | Kombination der beiden DASH6-Varianten |
-| **DASH6 Modern Glass (Safari SVG-Linsen)** | DASH6-Variante mit SVG-Linsen |
+| **Liquid Glass (outdated)** | Ursprüngliches dunkles Glas ohne zusätzliche Bewegungsanimation |
+| **Liquid Glass Motion (outdated)** | Ursprüngliches Glas mit dezenten Einblendungen und Hover-/Fokusübergängen |
+| **DASH6 Modern Glass (outdated)** | Ursprüngliche DASH6-Materialvariante |
+| **DASH6 Modern Glass (apple-konform) (outdated)** | Zurückhaltende DASH6-Variante |
+| **DASH6 Modern Glass (stark elastisch) (outdated)** | DASH6 mit stärkerer elastischer Rückmeldung |
+| **DASH6 Modern Glass (apple-konform, stark elastisch) (outdated)** | Kombination der beiden DASH6-Varianten |
+| **DASH6 Modern Glass (Safari SVG-Linsen) (outdated)** | DASH6-Variante mit SVG-Linsen |
 | **DASH6 Satin Glass** | Sanft gefrostetes, flacheres Rauchglas und kompakte Satin-Bedienelemente |
+
+Die Integration wählt **DASH6 Satin Glass** bei Einrichtung und nach Updates automatisch als gespeicherte Home-Assistant-Vorgabe für Hell und Dunkel. Explizite Theme-Auswahlen im Benutzerprofil oder in Views haben weiterhin Vorrang. Alle sieben älteren Varianten tragen den Zusatz **(outdated)**.
 
 Satin wird durch die aktive Theme-Variable `dash6-satin-enabled: '1'` eingeschaltet. Das öffentliche Gesamtmodul unterstützt beliebige Dashboard-Pfade. Die ältere optionale SVG-Erweiterung hat einen eigenen, engeren Geltungsbereich; siehe [Installation](docs/INSTALLATION.md#optionale-ursprüngliche-svg-optik).
 

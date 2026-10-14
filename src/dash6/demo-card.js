@@ -54,4 +54,12 @@ class DemoCard extends LitElement{
  getCardSize(){return 4;}
 }
 customElements.define('dash6-demo-card',DemoCard);
+// A promoted Favorites child must remain isolated even without its demo wrapper.
+export function createDemoContext(realHass,onChange){
+ const owner=new DemoCard();owner._states=initialStates();
+ owner._realLocale=realHass?.locale;owner._language=realHass?.language;owner._localize=realHass?.localize;
+ const context={hass:null};
+ owner._child={set hass(value){context.hass=value;onChange?.(value);}};
+ owner._sync();return context;
+}
 window.customCards??=[];window.customCards.push({type:'dash6-demo-card',name:'Liquid Glass · Interaktive Demo',description:'DASH6-Karten mit isolierten simulierten Zuständen und ohne Gerätezugriff.',preview:true});

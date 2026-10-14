@@ -5,6 +5,8 @@ from pathlib import Path
 import shutil
 import subprocess
 root = Path(__file__).resolve().parents[1]
+# The shipped Favorites snapshots follow the authored simulated demo cards.
+subprocess.run(['python3', str(root / 'scripts' / 'generate-demo-dashboard.py')], check=True)
 component = root / 'custom_components' / 'liquid_glass'
 bundle = component / 'bundle'
 shutil.rmtree(bundle, ignore_errors=True)
@@ -24,4 +26,4 @@ strings['config']['step']['user'].update(title='Set up Liquid Glass', descriptio
 strings['config']['abort']['already_configured'] = 'Liquid Glass is already configured.'
 (component / 'strings.json').write_text(json.dumps(strings, indent=2) + '\n')
 (component / 'translations/en.json').write_text(json.dumps(strings, indent=2) + '\n')
-print('Built self-contained HACS integration 3.1.23')
+print('Built self-contained HACS integration 3.1.24')

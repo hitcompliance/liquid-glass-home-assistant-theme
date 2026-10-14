@@ -5,7 +5,7 @@ import './light-cards.js';
 export const IKEA_DEFAULTS={name:'',icon:'',room:'',power_entity:'',energy_entity:'',switch_style:'liquid_glass',child_lock:false,child_lock_entity:'',led_entity:'',height:118,graph:{show:true,span:'24h',interval:'15min',update_interval:'15min',minimum:100,color:'#6ec7ff'},hold_action:{action:'more-info'}};
 const unwrap=c=>c?.type==='custom:dash6-render-card'?unwrap(c.definition):c;
 export function isLegacyIkea(c){return !c?._dash6_ikea_definition&&c?.type==='custom:button-card'&&!!c.entity&&!!c.custom_fields?.slot_1&&!!unwrap(c.custom_fields?.graph?.card)?.series?.[0]?.entity;}
-export function ikeaConfig(c){const ids=c.triggers_update||[];return {type:'custom:dash6-ikea-card',entity:c.entity,power_entity:ids.find(id=>id.startsWith('sensor.')&&/(power|leistung)$/.test(id))||unwrap(c.custom_fields.graph.card).series[0].entity,energy_entity:ids.find(id=>id.startsWith('sensor.')&&/(energy|energie)$/.test(id))||'',child_lock_entity:ids.find(id=>id.endsWith('_child_lock'))||'',led_entity:ids.find(id=>id.endsWith('_led_enable'))||'',icon:unwrap(c.custom_fields.icon?.card)?.icon||'mdi:power-socket-eu',room:c.entity.includes('buro_')?'Büro':'',hold_action:c.hold_action||{action:'more-info'}};}
+export function ikeaConfig(c){const ids=c.triggers_update||[];return {type:'custom:dash6-ikea-card',entity:c.entity,power_entity:ids.find(id=>id.startsWith('sensor.')&&/(power|leistung)$/.test(id))||unwrap(c.custom_fields.graph.card).series[0].entity,energy_entity:ids.find(id=>id.startsWith('sensor.')&&/(energy|energie)$/.test(id))||'',child_lock_entity:ids.find(id=>id.endsWith('_child_lock'))||'',led_entity:ids.find(id=>id.endsWith('_led_enable'))||'',icon:unwrap(c.custom_fields.icon?.card)?.icon||'mdi:power-socket-eu',room:c.entity.includes('buro_')?'Büro':'',hold_action:c.hold_action||{action:'more-info'},...(c.dash6_css?{dash6_css:structuredClone(c.dash6_css)}:{}),...(c.card_mod?{card_mod:structuredClone(c.card_mod)}:{})};}
 // Shared chart definition from the existing IKEA card, including its external
 // portal tooltip. Derived Satin cards use this exact chart instead of a second
 // graph/tooltip implementation.
@@ -25,6 +25,8 @@ export function ikeaDefinition(raw){const c={...IKEA_DEFAULTS,...raw,graph:{...I
  if(c.switch_style!=='classic'){d.styles.grid=[{'grid-template-areas':'"icon title slot_1" "icon status slot_2" "graph graph slot_3"'},{'grid-template-columns':'112px minmax(0,1fr) minmax(86px,auto)'},{'grid-template-rows':'32px 32px minmax(0,1fr)'}];}
  if(!c.led_entity)delete d.custom_fields.slot_3;
  const graph=ikeaBackgroundGraph(c);if(graph)d.custom_fields.graph={card:graph};else delete d.custom_fields.graph;
+ // Preserve caller classes on the existing inner material wrapper, not another outer card.
+ const classes=[c.theme_classes,(c.dash6_css||c.card_mod)?.class].filter(Boolean).join(' ');if(classes)d.dash6_css.class=[...new Set(((d.dash6_css.class||'')+' '+classes).split(/\s+/).filter(Boolean))].join(' ');
  if(c.definition)d.type=c.definition.type||d.type;return d;
 }
 class IkeaCard extends LitElement{

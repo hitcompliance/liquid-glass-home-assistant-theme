@@ -2,6 +2,9 @@ import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {create} from './card-runtime.js';
 import {decodeInline,inlineEntities,pruneInline,watchInlineQuery} from './inline-query.js';
 import {inlineDomainGridDefinition} from './inline-domain-definition.js';
+import {domainCards,domainHeadingCards,domainDefinitionConfig,extractEntityReferences,dashboardContext,resolvedDomainRegistry,registryExclusions,relatedDomainViews} from './domain-registry.js';
+import {watchDomainRoom,roomDomainEntities,roomDomainCards,localRoomData} from './domain-room-data.js';
+import {domainEditMode,openDomainSettings,syncDomainCogPortal,removeDomainCogPortal} from './domain-settings.js';
 const clone=value=>structuredClone(value);
 
 // Keep layout-card's original grid implementation and remove only its margins.
@@ -38,15 +41,21 @@ customElements.define('dash6-domain-grid',DomainGrid);
 
 class DomainCard extends HTMLElement{
  constructor(){
-  super();this.attachShadow({mode:'open'});this.shadowRoot.innerHTML='<style>:host{display:block;min-width:0}.content{display:grid;min-width:0;gap:8px}.error{color:var(--error-color)}.error:empty{display:none}</style><div class="content"><div class="known"></div><div class="extra"></div></div><div class="error" role="alert"></div>';
+  super();this.attachShadow({mode:'open'});this.shadowRoot.innerHTML=`<style>
+:host{display:block;min-width:0;position:relative}.content{display:grid;min-width:0;gap:8px}.error{color:var(--error-color)}.error:empty{display:none}
+.domain-cog{position:absolute;right:8px;top:0;width:44px;height:44px;display:grid;place-items:center;z-index:4;border:1px solid var(--divider-color);border-radius:12px;background:var(--card-background-color);color:var(--primary-text-color);cursor:pointer}.domain-cog[hidden]{display:none}.domain-cog ha-icon{--mdc-icon-size:22px}:host([data-domain-empty-content][data-domain-edit]){min-height:44px}
+.domain-settings{width:min(780px,calc(100vw - 32px));max-height:calc(100dvh - 32px);box-sizing:border-box;overflow:auto;padding:20px;border:1px solid var(--divider-color);border-radius:20px;background:var(--card-background-color);color:var(--primary-text-color)}.domain-settings::backdrop{background:rgba(0,0,0,.66);backdrop-filter:blur(6px)}.domain-settings h2{margin:0 0 16px;font-size:22px}.domain-settings footer{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.domain-settings footer button{min-height:44px;padding:8px 16px;border:1px solid var(--divider-color);border-radius:12px;background:var(--secondary-background-color);color:var(--primary-text-color);cursor:pointer}
+</style><div class="content"><div class="known"></div><div class="extra"></div></div><button class="domain-cog" hidden title="Abschnitt konfigurieren" aria-label="Abschnitt konfigurieren"><ha-icon icon="mdi:cog-outline"></ha-icon></button><div class="error" role="alert"></div>`;
   this._known=this.shadowRoot.querySelector('.known');this._extra=this.shadowRoot.querySelector('.extra');this.empty=true;this.builds=0;
+  this.shadowRoot.querySelector('.domain-cog').addEventListener('click',event=>{event.stopPropagation();openDomainSettings(this).catch(error=>this._error(error));});
+  this._locationChanged=()=>{this._syncEdit();this._draw();};this._registryChanged=()=>this._draw();
  }
- static getConfigElement(){return document.createElement('dash6-config-editor');}
+ static async getConfigElement(){await import('./domain-editor.js');return document.createElement('dash6-domain-editor');}
  setConfig(config){
   const signature=JSON.stringify(config);if(signature===this._configSignature)return;
   this._configSignature=signature;this._stopQuery();this._config=clone(config);this._allowed=null;this._extraDefs=[];this._fixedKey='';this._extraKey='';
   this._generation=(this._generation||0)+1;this._fixedGeneration=(this._fixedGeneration||0)+1;
-  this._start();this._draw();
+  this._ownedEntities=extractEntityReferences(domainCards(this._config));this._roomData=null;this._start();this._syncEdit();this._draw();
  }
  set hass(hass){
   const changed=this._connection&&this._connection!==(hass?.connection?.__dash6ActualConnection||hass?.connection);
@@ -55,16 +64,30 @@ class DomainCard extends HTMLElement{
   this._start();this._draw();
  }
  get hass(){return this._hass;}
- connectedCallback(){this._start();this._draw();}
- disconnectedCallback(){this._stopQuery();this._generation=(this._generation||0)+1;this._fixedGeneration=(this._fixedGeneration||0)+1;this._fixedKey='';this._extraKey='';}
+ connectedCallback(){window.addEventListener('location-changed',this._locationChanged);window.addEventListener('popstate',this._locationChanged);window.addEventListener('dash6-domain-registry-changed',this._registryChanged);this._start();this._syncEdit();this._draw();}
+ disconnectedCallback(){window.removeEventListener('location-changed',this._locationChanged);window.removeEventListener('popstate',this._locationChanged);window.removeEventListener('dash6-domain-registry-changed',this._registryChanged);removeDomainCogPortal(this);this._domainDialog?.remove();this._domainDialog=null;this._stopQuery();this._generation=(this._generation||0)+1;this._fixedGeneration=(this._fixedGeneration||0)+1;this._fixedKey='';this._extraKey='';}
  _stopQuery(){this._stop?.();this._stop=null;this._connection=null;this._queryToken=(this._queryToken||0)+1;}
  _start(){
-  if(!this._config||!this._hass||!this.isConnected||this._stop||!this._config.query?.template)return;
+  if(!this._config||!this._hass||!this.isConnected||this._stop)return;
+  if(this._config.area&&this._config.domain){
+   if(this._config.auto_entities===false)return;
+   this._connection=this._hass.connection?.__dash6ActualConnection||this._hass.connection;const token=this._queryToken;
+   this._stop=watchDomainRoom(this._hass,(data,error)=>{if(token!==this._queryToken)return;if(error){this._error(error);return;}this._roomData=data;this._error('');this._draw();});return;
+  }
+  if(!this._config.query?.template)return;
   this._connection=this._hass.connection?.__dash6ActualConnection||this._hass.connection;
   const token=this._queryToken;
   this._stop=watchInlineQuery(this._hass,this._config.query,(result,error)=>{if(token===this._queryToken)this._result(result,error);});
  }
  _error(error){this.shadowRoot.querySelector('.error').textContent=error?String(error.message||error):'';}
+ _syncEdit(){const edit=domainEditMode();this.toggleAttribute('data-domain-edit',edit);this.shadowRoot.querySelector('.domain-cog').hidden=!edit;this.toggleAttribute('data-domain-no-heading',!this._headings().length);syncDomainCogPortal(this);}
+ _headings(){return domainHeadingCards(this._config);}
+ _definitionConfig(){return domainDefinitionConfig(this._config.area&&this._config.domain?{...this._config,keep_empty:domainEditMode()}:this._config);}
+ _exclusions(){
+  const context=dashboardContext(this,this._config),registry=resolvedDomainRegistry(context.config,context.dashboardName);
+  const result=registryExclusions(registry,context.dashboardName,relatedDomainViews(context.config,context.viewNames));for(const id of this._ownedEntities||[])result.add(id);return result;
+ }
+ _roomCards(){if(this._config.auto_entities===false)return [];const connection=this._hass.connection?.__dash6ActualConnection||this._hass.connection;return roomDomainCards(this._config,roomDomainEntities(connection?.sendMessagePromise?this._roomData:localRoomData(this._hass),this._hass,this._config.area,this._config.domain,this._exclusions()),this._hass);}
  _result(result,error){
   if(error){this._error(error);return;}
   const query=this._config.query,value=query.index===undefined?result:result?.[query.index];
@@ -72,31 +95,33 @@ class DomainCard extends HTMLElement{
   if(!Array.isArray(cards)){this._error('Ungültige Kartenliste');return;}
   cards=cards.map(card=>card.type==='external_card'&&card.card_config?card.card_config:card);
   this._allowed=new Set(inlineEntities(cards));
-  const known=new Set(this._config.known_entity_ids||inlineEntities(this._config.cards));
+  const known=new Set([...this._config.known_entity_ids||[],...extractEntityReferences(domainCards(this._config))]);
   this._extraDefs=pruneInline(cards,this._hass,null,known)||[];this._error('');this._draw();
  }
  async _draw(){
   if(!this._config||!this._hass||!this.isConnected)return;
   try{
-   if(Number(this._config.columns)>1||this._config.combine===true){await this._grid();return;}
-   const fixed=pruneInline(this._config.cards||[],this._hass,this._allowed)||[];
-   const extra=pruneInline(this._extraDefs,this._hass)||[];
+   this._syncEdit();const config=this._definitionConfig();
+   if(config.area&&config.domain){this._extraDefs=this._roomCards();this._allowed=null;}
+   if(Number(config.columns)>1||config.combine===true){await this._grid(config);return;}
+   const fixed=pruneInline(config.cards||[],this._hass,this._allowed)||[];
+   const extra=pruneInline(this._extraDefs,this._hass,null,this._exclusions())||[];
    await Promise.all([
     this._replace('fixed',fixed.length?{type:'vertical-stack',cards:fixed}:null),
     this._replace('extra',extra.length?{...clone(this._config.container||{type:'vertical-stack'}),[this._config.card_param||'cards']:extra}:null)
    ]);
   }catch(error){this._error(error);}
  }
- async _grid(){
-  const originals=this._config.cards||[],initial=pruneInline(originals,this._hass,this._allowed)||[];
-  const extra=pruneInline(this._extraDefs,this._hass)||[];
-  const definition=inlineDomainGridDefinition(this._config,initial,extra);
+ async _grid(config=this._definitionConfig()){
+  const originals=config.cards||[],initial=pruneInline(originals,this._hass,this._allowed)||[];
+  const extra=pruneInline(this._extraDefs,this._hass,null,this._exclusions())||[];
+  const definition=inlineDomainGridDefinition({...config,keep_empty:config.keep_empty||domainEditMode()},initial,extra);
   this._dynamic=null;this._extra.replaceChildren();this._extraKey='';
   await this._replace('fixed',definition);
  }
  async _replace(which,definition){
   const fixed=which==='fixed',keyName=fixed?'_fixedKey':'_extraKey',generationName=fixed?'_fixedGeneration':'_generation';
-  const key=JSON.stringify(definition);if(key===this[keyName])return;
+  const key=JSON.stringify(definition);if(key===this[keyName]){this._visibility();return;}
   this[keyName]=key;const generation=this[generationName]=(this[generationName]||0)+1;
   const target=fixed?this._known:this._extra;
   if(!definition){this[fixed?'_fixed':'_dynamic']=null;target.replaceChildren();this._visibility();return;}
@@ -105,8 +130,9 @@ class DomainCard extends HTMLElement{
   child.hass=this._hass;this[fixed?'_fixed':'_dynamic']=child;target.replaceChildren(child);this.builds++;this._visibility();
  }
  _visibility(){
-  const previous=this.empty;this.empty=!this._fixed&&!this._dynamic;this._known.hidden=!this._fixed;this._extra.hidden=!this._dynamic;
+  const previous=this.empty;this.empty=!this._fixed&&!this._dynamic&&!domainEditMode();this.toggleAttribute('data-domain-empty-content',!this._fixed&&!this._dynamic);this._known.hidden=!this._fixed;this._extra.hidden=!this._dynamic;
   this.toggleAttribute('data-dash6-empty',this.empty);if(previous!==this.empty)this.dispatchEvent(new Event('card-visibility-changed',{bubbles:true,composed:true}));
+  syncDomainCogPortal(this);
  }
  getCardSize(){return this.empty?0:4;}
  getGridOptions(){return this._config?.grid_options??{columns:12};}
@@ -115,7 +141,7 @@ customElements.define('dash6-domain-card',DomainCard);
 
 const scan=(root,callback)=>{for(const element of root.children||[]){callback(element);scan(element,callback);if(element.shadowRoot)scan(element.shadowRoot,callback);}};
 class InlineLayout extends HTMLElement{
- constructor(){super();this.attachShadow({mode:'open'});this.shadowRoot.innerHTML='<style>:host{display:block;min-width:0}.error{color:var(--error-color)}.error:empty{display:none}</style><div class="content"></div><div class="error" role="alert"></div>';}
+ constructor(){super();this.attachShadow({mode:'open'});this.shadowRoot.innerHTML='<style>:host{display:block;min-width:0}.error{color:var(--error-color)}.error:empty{display:none}</style><div class="content"></div><div class="error" role="alert"></div>';this._inlineLocationChanged=()=>this._apply();}
  static getConfigElement(){return document.createElement('dash6-config-editor');}
  setConfig(config){
   const signature=JSON.stringify(config);if(signature===this._signature)return;
@@ -126,8 +152,8 @@ class InlineLayout extends HTMLElement{
   this._hass=hass;if(this._child)this._child.hass=hass;this._start();
  }
  get hass(){return this._hass;}
- connectedCallback(){this._start();}
- disconnectedCallback(){this._stopQuery();this._generation=(this._generation||0)+1;this._cardKey='';this._observer?.disconnect();}
+ connectedCallback(){window.addEventListener('location-changed',this._inlineLocationChanged);window.addEventListener('popstate',this._inlineLocationChanged);this._start();}
+ disconnectedCallback(){window.removeEventListener('location-changed',this._inlineLocationChanged);window.removeEventListener('popstate',this._inlineLocationChanged);this._stopQuery();this._generation=(this._generation||0)+1;this._cardKey='';this._observer?.disconnect();}
  _stopQuery(){this._stop?.();this._stop=null;this._connection=null;this._queryToken=(this._queryToken||0)+1;}
  async _start(){
   if(!this._config||!this._hass||!this.isConnected)return;
@@ -151,7 +177,7 @@ class InlineLayout extends HTMLElement{
   const roots=new Set([this.shadowRoot.querySelector('.content')]);
   scan(this._child,element=>{if(element.shadowRoot)roots.add(element.shadowRoot);});if(this._child.shadowRoot)roots.add(this._child.shadowRoot);
   for(const rule of this._config.visibility||[]){
-   if(!rule.id)continue;const values=(rule.indices||[]).map(index=>this._result[index]===true),visible=rule.mode==='any'?values.some(Boolean):values.every(Boolean);
+   if(!rule.id)continue;const values=(rule.indices||[]).map(index=>this._result[index]===true),visible=domainEditMode()||(rule.mode==='any'?values.some(Boolean):values.every(Boolean));
    scan(this.shadowRoot.querySelector('.content'),element=>{if(['responsive-row-','responsive-col-','responsive-mod-'].some(prefix=>element.classList?.contains(prefix+rule.id))){if(visible)element.style.removeProperty('display');else element.style.setProperty('display','none','important');}});
   }
   for(const root of roots)this._observer?.observe(root,{childList:true,subtree:true});

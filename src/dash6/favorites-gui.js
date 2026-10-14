@@ -1,5 +1,6 @@
 import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {LitElement, html, css} from 'lit';
+import {createDemoContext} from './demo-card.js';
 import {materializeDynamicCard, resolveRoomSlot,resolveInlineDomain} from './favorites-dynamic-catalog.js';
 import {extractCatalog, toggleSelection, selectionState,reconcileDynamicSelection, filterSelectedTree, normalizeOptions, groupFavorites, sourceViewKey, compareSourceViews, DEFAULT_DOMAIN_ORDER, normalizeViewLabel} from './favorites-model.js';
 
@@ -110,25 +111,39 @@ async function createCard(config) {
 }
 
 class FavoritesCard extends LitElement {
-  static properties = {hass: {attribute: false}, _body: {state: true}, _header: {state: true}, _error: {state: true}};
+  static properties = {hass: {attribute: false}, _body: {state: true}, _header: {state: true}, _error: {state: true},_demoEditor:{state:true}};
   static styles = css`:host{display:block;min-width:0}.favorites{display:flex;flex-direction:column;gap:8px}.favorites>*{min-width:0;margin:0!important}.error{color:var(--error-color);padding:12px}`;
   static getConfigElement() { return document.createElement('dash6-favorites-editor'); }
   static getStubConfig() { return favoritesConfig(); }
-  setConfig(value) { this._config = favoritesConfig(value); this._signature = ''; this._build(); }
+  setConfig(value) { this._config = favoritesConfig(value);if(value.demo_gui&&!this._demoLoaded){this._demoLoaded=true;try{const saved=JSON.parse(localStorage.getItem(this._demoKey())||'null');if(saved?.demo_gui)this._config=favoritesConfig(saved);}catch{}} this._signature = ''; this._build(); }
+  _demoKey(){return 'dash6-demo-favorites:'+this._config.dashboard;}
+  _renderHass(){
+    if(!this._config?.demo_gui)return this.hass;
+    this._demoContext??=createDemoContext(this.hass,value=>{for(const card of [this._header,this._body])if(card)card.hass=value;});
+    return this._demoContext.hass;
+  }
+  _editDemo(){
+    const editor=document.createElement('dash6-favorites-editor');editor.hass=this._renderHass();editor.setConfig(this._config);
+    this._demoDraft=clone(this._config);editor.addEventListener('config-changed',event=>{event.stopPropagation();this._demoDraft=clone(event.detail.config);});
+    this._demoEditor=editor;this._demoEscape=event=>{if(event.key==='Escape')this._closeDemo();};window.addEventListener('keydown',this._demoEscape);
+  }
+  _closeDemo(){window.removeEventListener('keydown',this._demoEscape);this._demoEditor=null;}
+  _saveDemo(){try{localStorage.setItem(this._demoKey(),JSON.stringify(this._demoDraft));this.setConfig(this._demoDraft);this._closeDemo();}catch(error){this._error=error.message;}}
+  disconnectedCallback(){super.disconnectedCallback();this._closeDemo();}
   getCardSize() { return Math.max(3, Math.ceil((this.getBoundingClientRect()?.height || 200) / 50)); }
-  updated(changed) { if (changed.has('hass') && this.hass?.entities !== this._registry) { this._registry = this.hass?.entities; this._build(); } for (const card of [this._header, this._body]) if (card) card.hass = this.hass; }
+  updated(changed) { if (changed.has('hass') && this.hass?.entities !== this._registry) { this._registry = this.hass?.entities; this._build(); } for (const card of [this._header, this._body]) if (card) card.hass = this._renderHass(); }
   async _build() {
     if (!this._config) return;
-    const body = favoritesRenderConfig(withDashboardViewOrder(this._config), this.hass), signature = JSON.stringify([this._config.title, body]);
+    const body = favoritesRenderConfig(withDashboardViewOrder(this._config), this._renderHass()), signature = JSON.stringify([this._config.title, body]);
     if (signature === this._signature) return;
     this._signature = signature; const token = this._token = (this._token || 0) + 1;
     try {
       const [header, rendered] = await Promise.all([createCard({type: 'custom:dash6-area-header', title: this._config.title, show_clock: true, time_zone: 'Europe/Berlin'}), createCard(body)]);
       if (token !== this._token) return;
-      header.hass = this.hass; rendered.hass = this.hass; this._header = header; this._body = rendered; this._error = '';
+      header.hass = this._renderHass(); rendered.hass = this._renderHass(); this._header = header; this._body = rendered; this._error = '';
     } catch (error) { if (token === this._token) {this._error = error.message; this._signature = '';} }
   }
-  render() { return html`<div class="favorites">${this._header || ''}${this._body || ''}${this._error ? html`<div class="error">${this._error}</div>` : ''}</div>`; }
+  render() { return html`<style>.favorites{position:relative}.demo-cog{position:absolute;right:8px;top:8px;z-index:5;border:1px solid var(--divider-color);border-radius:10px;background:var(--card-background-color);color:inherit;padding:8px;cursor:pointer}.demo-backdrop{position:fixed;inset:0;z-index:10000;background:#0008;display:grid;place-items:center;padding:16px}.demo-dialog{max-width:1200px;width:100%;max-height:90vh;overflow:auto;background:var(--card-background-color);border:1px solid var(--divider-color);border-radius:16px;padding:16px;box-sizing:border-box}.demo-actions{display:flex;gap:8px;justify-content:flex-end}.demo-actions button{min-height:44px;font:inherit;padding:8px 16px}</style><div class="favorites">${this._header || ''}${this._body || ''}${this._config?.demo_gui?html`<button class="demo-cog" aria-label="Favoriten bearbeiten" @click=${this._editDemo}><ha-icon icon="mdi:cog"></ha-icon></button>`:''}${this._error ? html`<div class="error">${this._error}</div>` : ''}</div>${this._demoEditor?html`<div class="demo-backdrop" @click=${()=>this._closeDemo()}><div class="demo-dialog" role="dialog" aria-label="Demo-Favoriten konfigurieren" aria-modal="true" @click=${event=>event.stopPropagation()}><p>Simulation. Änderungen werden nur in diesem Browser gespeichert.</p>${this._demoEditor}<div class="demo-actions"><button @click=${()=>this._closeDemo()}>Abbrechen</button><button @click=${()=>this._saveDemo()}>Demo speichern</button></div></div></div>`:''}`; }
 }
 
 class FavoritesEditor extends LitElement {
@@ -230,7 +245,9 @@ class FavoritesEditor extends LitElement {
     if (signature === this._previewSignature) return;
     this._previewSignature = signature; const token = this._previewToken = (this._previewToken || 0) + 1;
     try {
-      const card = await createCard(this._config);
+      // A demo draft preview must reflect the current edit rather than loading
+      // its saved browser preference or offering another settings launcher.
+      const card = await createCard({...this._config, demo_gui: false});
       if (token !== this._previewToken) return;
       card.hass = readonlyHass(this.hass); card.setAttribute('inert', ''); this._preview = card;
     } catch (error) {if (token === this._previewToken) {this._error = error.message; this._previewSignature = '';}}

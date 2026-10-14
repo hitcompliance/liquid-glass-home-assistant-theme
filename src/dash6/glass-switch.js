@@ -30,7 +30,7 @@ export function mapDeviceSwitches(config){
  // the lock is active, templated, or unclear, including keyboard handling.
  const plainToggle=c.tap_action&&Object.keys(c.tap_action).every(key=>key==='action')&&!['confirmation','protect','pin','PIN'].some(key=>Object.hasOwn(c,key));
  const simple=c.type==='custom:button-card'&&plainToggle&&/^(light|switch|fan|input_boolean)\./.test(c.entity||'')&&c.tap_action?.action==='toggle'&&c.show_name===false&&c.show_state===false&&!Object.keys(c.custom_fields||{}).length&&auxiliaryActions.every(key=>!c[key]||c[key].action==='none');
- if(simple)return {type:'custom:dash6-glass-switch',entity:c.entity,icon:c.icon,name:c.name,switch_style:c.switch_style||'liquid_glass',child_lock:c.child_lock||false,child_lock_entity:c.child_lock_entity||''};
+ if(simple)return {type:'custom:dash6-glass-switch',entity:c.entity,icon:c.icon,name:c.name,switch_style:c.switch_style||'liquid_glass',child_lock:c.child_lock||false,child_lock_entity:c.child_lock_entity||'',...(c.dash6_css?{dash6_css:c.dash6_css}:{}),...(c.card_mod?{card_mod:c.card_mod}:{})};
  const device=c.custom_fields?.device?.card;
  if(c.type==='custom:button-card'&&c.entity?.startsWith('fan.')&&device?.tap_action?.action==='toggle'){
   c.switch_style??='liquid_glass';c.child_lock??=false;c.child_lock_entity??='';
