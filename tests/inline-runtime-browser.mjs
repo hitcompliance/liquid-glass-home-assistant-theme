@@ -18,7 +18,7 @@ class Neutral extends HTMLElement{
  connectedCallback(){const card=this.shadowRoot.querySelector('ha-card');this.initialHeight=getComputedStyle(card).height;this.initialRadius=getComputedStyle(card).borderRadius;}
  getCardSize(){return 2;}
 }
-customElements.define('neutral-device',Neutral);customElements.define('hui-heading-card',class extends Neutral{});
+customElements.define('neutral-device',Neutral);customElements.define('hui-heading-card',class extends Neutral{});customElements.define('hui-entities-card',class extends Neutral{});
 window.loadCardHelpers=async()=>({createCardElement:config=>{const tag=config.type.startsWith('custom:')?config.type.slice(7):'hui-'+config.type+'-card';const card=document.createElement(tag);card.setConfig(config);return card;}});
 await import('/runtime.js');
 window.hass={states:{'sensor.neutral':{state:'12',attributes:{}}},entities:{}};
@@ -42,6 +42,17 @@ try{
    await page.evaluate(()=>{card.remove();document.body.append(card);});await page.waitForFunction(()=>card._child?.isConnected);
    assert.equal(await page.evaluate(()=>card._publicConfig.card.entity),'sensor.neutral','inline definition survives reconnect');
    assert.equal(await page.evaluate(()=>window.__dash6Cards.mapCards({type:'thermostat',entity:'climate.neutral'}).type),'custom:dash6-thermostat-card');
+   await page.evaluate(async()=>{
+    window.sidebar=[{type:'custom:vertical-stack-in-card',cards:[{type:'custom:button-card',name:'Example room',icon:'mdi:home',tap_action:{action:'navigate',navigation_path:'/example/room'}}]},{type:'entities',entities:['sensor.neutral']}];
+    await card.setConfig({card:{...card._publicConfig.card,variables:{room_title:'Example room',sidebar_cards:sidebar}}});
+   });await page.waitForFunction(()=>card._child?.isConnected&&card._child._config?.variables?.sidebar_cards);
+   assert.equal(await page.evaluate(()=>JSON.stringify(card._child._config.variables.sidebar_cards)===JSON.stringify(sidebar)),true,'deferred sidebar definitions remain raw');
+   await page.evaluate(()=>{window.__dash6Cards.overlay(card._child,hass,null);card._child.dispatchEvent(new CustomEvent('action',{detail:{action:'tap'},bubbles:true,composed:true}));});
+   await page.waitForFunction(()=>document.querySelector('#embedded-sidebar-modal nav[aria-label="Raumnavigation"] a'));
+   assert.equal(await page.locator('#embedded-sidebar-modal nav[aria-label="Raumnavigation"] a.dash6-nav-lens').count(),1);
+   assert.equal(await page.locator('#embedded-sidebar-modal nav a').getAttribute('href'),'/example/room');
+   assert.equal(await page.locator('#embedded-sidebar-modal .widgets > hui-entities-card').count(),1,'non-navigation inline widget uses the card factory');
+   await page.locator('#embedded-sidebar-modal .close').click();assert.equal(await page.locator('#embedded-sidebar-modal').count(),0);
    assert.equal(await page.evaluate(()=>actions.length),0);assert.deepEqual(errors,[]);
   }finally{await browser.close();}
  }

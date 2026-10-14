@@ -1,4 +1,6 @@
 /** Lazy, read-only evaluation of template-only auto-entities sources. */
+import {decodeInline,watchInlineQuery} from './inline-query.js';
+import {inlineDomainGridDefinition} from './inline-domain-definition.js';
 const clone = value => structuredClone(value);
 const result = (status, card = null, error = null, count = 0) => ({status, card, error, count});
 const meaningful = value => value != null && value !== false && (Array.isArray(value) ? value.length > 0 : typeof value === 'object' ? Object.keys(value).length > 0 : true);
@@ -23,6 +25,12 @@ export async function resolveRoomSlot(card, hass, options = {}) {
     if (!slot || !Array.isArray(slot.initial)) return clone(card);
     return {type: 'custom:dash6-render-card', definition: {type: 'vertical-stack', cards: clone(slot.initial)}, _favorites_room_source: {room: card.room, slot: card.slot, url}};
   } catch {return clone(card);}
+}
+
+/** Keep catalog paths equivalent to legacy slot expansion, without a lookup. */
+export function resolveInlineDomain(card){
+ if(card?.type!=='custom:dash6-domain-card')return clone(card);
+ return {type:'custom:dash6-render-card',definition:{type:'vertical-stack',cards:clone(card.cards||[])},...(card.query?.template?{_favorites_inline_source:clone(card)}:{})};
 }
 
 function decodeRoomValue(value) {
@@ -132,6 +140,42 @@ function firstTemplateResult(hass, template, options) {
   });
 }
 
+function firstInlineResult(hass,query,options){
+ return new Promise((resolve,reject)=>{
+  let finished=false,stop,cleanupPending=false;
+  const cleanup=()=>{clearTimeout(timer);options.signal?.removeEventListener('abort',abort);if(stop){stop();stop=null;}else cleanupPending=true;};
+  const finish=(error,value)=>{if(finished)return;finished=true;cleanup();error?reject(error):resolve(value);};
+  const abort=()=>finish(new Error('Die dynamische Auswahl wurde abgebrochen.'));
+  const timer=setTimeout(()=>finish(new Error('Zeitüberschreitung beim Lesen der dynamischen Karten.')),options.timeoutMs);
+  if(options.signal?.aborted){abort();return;}options.signal?.addEventListener('abort',abort,{once:true});
+  stop=watchInlineQuery(hass,query,(value,error)=>finish(error?new Error(error.message||String(error)):null,value));
+  if(cleanupPending){stop?.();stop=null;}
+ });
+}
+
+async function materializeInlineDomain(card,hass,options){
+ const source=card._favorites_inline_source||card;
+ if(typeof source.query?.template!=='string'||!hass?.connection?.subscribeMessage)return result('error',null,'Die Home-Assistant-Templateverbindung ist noch nicht verfügbar.');
+ try{
+  const timeoutMs=Number.isFinite(options.timeoutMs)?Math.max(1,options.timeoutMs):10000;
+  const raw=await firstInlineResult(hass,source.query,{...options,timeoutMs});
+  const value=source.query.index===undefined?raw:raw?.[source.query.index];
+  const definitions=source.query.canonical?value:decodeInline(value);
+  if(!Array.isArray(definitions))return result('error',null,'Das Inline-Template hat keine gültige Kartenliste geliefert.');
+  const configured=definitions.map(item=>item?.type==='external_card'&&item.card_config?item.card_config:item);
+  const allowed=new Set(primaryIds(configured));
+  const fixed=pruneRoomCards(clone(source.cards||[]),hass,allowed,null)||[];
+  const extra=pruneRoomCards(configured,hass,null,new Set(source.known_entity_ids||primaryIds(source.cards)))||[];
+  let definition;
+  if(Number(source.columns)>1||source.combine===true)definition=inlineDomainGridDefinition(source,fixed,extra);
+  else{
+   const param=source.card_param||'cards';if(typeof param!=='string'||['__proto__','constructor','prototype'].includes(param))return result('error',null,'Der Inline-Block besitzt einen ungültigen Kartenparameter.');
+   definition={type:'vertical-stack',cards:[...fixed,...(extra.length?[{...clone(source.container||{type:'vertical-stack'}),[param]:extra}]:[])]};
+  }
+  return result('ready',{type:'custom:dash6-render-card',definition:definition||{type:'vertical-stack',cards:[]}},null,fixed.length+extra.length);
+ }catch(error){return result('error',null,error?.message||String(error));}
+}
+
 /**
  * Invoke only after the user expands a dynamic source.
  * Resolves {status:'ready'|'unsupported'|'error', card, error, count}.
@@ -139,6 +183,7 @@ function firstTemplateResult(hass, template, options) {
  * (native default: 'entities'; layouts normally configure card_param:'cards').
  */
 export async function materializeDynamicCard(card, hass, options = {}) {
+  if(card?._favorites_inline_source||card?.type==='custom:dash6-domain-card')return materializeInlineDomain(card,hass,options);
   if (card?._favorites_room_source) return materializeRoomSlot(card, hass, options);
   if (!['custom:auto-entities', 'custom:dash6-auto-entities'].includes(card?.type) || typeof card.filter?.template !== 'string') return result('unsupported', null, 'Diese Quelle besitzt kein unterstütztes Auto-Entities-Template.');
   const extraFilters = Object.entries(card.filter).filter(([key, value]) => key !== 'template' && meaningful(value));

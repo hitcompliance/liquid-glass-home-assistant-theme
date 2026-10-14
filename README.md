@@ -264,6 +264,6 @@ Shared glass surfaces restore the reference material after native style updates 
 
 ### Favorites editor and dependency upgrades (3.1.19)
 
-`custom:dash6-favorites-card` provides a hierarchical visual editor for selecting cards and headings across dashboard views. Selected children can render without their unselected wrapper. Group actions, card type labels, a scrollable preview, source/domain grouping and manual view/domain ordering are supported. Source view ordering follows the dashboard before additional views alphabetically.
+`custom:dash6-favorites-card` provides a hierarchical visual editor for selecting cards and headings across dashboard views. Selected children can render without their unselected wrapper. Group actions, card type labels, a scrollable preview, source/domain grouping and manual view/domain ordering are supported. Source view ordering follows the dashboard before additional views alphabetically. Direct inline cards retain their original child hierarchy. Inline domain blocks offer on-demand discovery through the shared template subscription; known-child exclusions and saved selections remain intact.
 
 After a HACS integration update and Home Assistant restart, newly listed dependencies are installed automatically. Existing HACS resources remain HACS-managed. See [upgrade behavior](docs/INSTALLATION.md#aktualisierung-und-neue-abhängigkeiten). Embedded View Card remains separately owned; the adapter uses its own custom-element names and avoids competing registrations.

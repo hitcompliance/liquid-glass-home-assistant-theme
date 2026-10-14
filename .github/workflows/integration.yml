@@ -41,6 +41,7 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
       - run: npm run build:cards
       - run: node tests/favorites-selection.mjs
+      - run: node tests/favorites-inline-browser.mjs
       - run: node tests/profiles-store.mjs
       - run: node tests/native-hook-registry.mjs
       - run: node tests/inline-query.mjs

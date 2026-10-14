@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 import {build} from '../node_modules/esbuild/lib/main.js';
-import {extractCatalog, filterSelectedTree, toggleSelection, selectionState} from '../src/dash6/favorites-model.js';
+import {extractCatalog, filterSelectedTree, toggleSelection, selectionState,reconcileDynamicSelection} from '../src/dash6/favorites-model.js';
+import {resolveInlineDomain,materializeDynamicCard} from '../src/dash6/favorites-dynamic-catalog.js';
+import {watchInlineQuery} from '../src/dash6/inline-query.js';
 
 const metadata = {dashboard: 'dash-6', view: 'room', title: 'Raum', viewOrder: 2};
 const walk = (value, visit) => {
@@ -71,7 +73,7 @@ const bundle = await build({entryPoints: [fileURLToPath(new URL('../src/dash6/fa
 }]});
 globalThis.window ??= {};
 globalThis.customElements ??= {get: () => true, define: () => {}};
-const {favoritesRenderConfig} = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
+const {favoritesRenderConfig,resolveProfiles} = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
 
 test('four neutral room sources render selected scenes after unchecking their frames and headings', () => {
   const sources = ['Room A', 'Room B', 'Room C', 'Room D'].flatMap((title, index) => extractCatalog({
@@ -115,4 +117,63 @@ test('unchecking a parent then reselecting its child renders that child without 
   const rendered = favoritesRenderConfig({sources: catalog, selected, grouping: 'none', headings: false}, {entities: {}});
   assert.deepEqual(rendered.cards, [sceneSource()]);
   assert.equal(count(rendered, card => card.type === 'custom:vertical-stack-in-card' || card.type === 'heading'), 0);
+});
+
+test('fresh direct definitions retain legacy expanded profile hierarchy IDs',async()=>{
+ const definition={type:'custom:vertical-stack-in-card',cards:[{type:'heading',heading:'Devices'},{type:'tile',entity:'switch.neutral'}]};
+ const view=card=>({path:'room',title:'Room',cards:[{type:'custom:ultra-card',rows:[{columns:[{modules:[{type:'external_card',id:'module',card_config:card}]}]}]}]});
+ const legacy=view({type:'custom:dash6-profile-card',profile:'neutral-fixture'}),direct=view({type:'custom:dash6-direct-card',card:definition});
+ const before=[JSON.stringify(legacy),JSON.stringify(direct)];window.__dash6Cards={loadProfile:async()=>structuredClone(definition)};
+ const oldCatalog=extractCatalog(await resolveProfiles(legacy),metadata,{view:true}),newCatalog=extractCatalog(await resolveProfiles(direct),metadata,{view:true});
+ const ids=nodes=>nodes.flatMap(node=>[node.id,...ids(node.children)]);assert.deepEqual(ids(newCatalog),ids(oldCatalog));assert.deepEqual(newCatalog,oldCatalog);
+ assert.deepEqual([JSON.stringify(legacy),JSON.stringify(direct)],before,'source configurations stay unchanged');
+});
+
+const known={type:'tile',entity:'switch.known'};
+const domainSource=()=>({type:'custom:dash6-domain-card',cards:[{type:'custom:vertical-stack-in-card',cards:[{type:'heading',heading:'Devices'},known]}],known_entity_ids:['switch.known'],combine:true,columns:2,mobile_columns:1,mobile_breakpoint:700,edge_alignment:'flush',query:{template:'{{ fixture_cards | to_json }}',group:'neutral-inline-group',index:0,canonical:true}});
+const domainHass=()=>({states:Object.fromEntries(['known','extra','hidden'].map(name=>['switch.'+name,{state:'on',attributes:{}}])),entities:{'switch.hidden':{hidden_by:'user'}}});
+const definitions=()=>[known,{type:'tile',entity:'switch.extra',styles:{grid:[{'grid-template-areas':'"i"'}]}},{type:'tile',entity:'switch.hidden'}];
+
+test('inline domain known children use the same synthetic hierarchy as legacy room slots',async()=>{
+ const input=domainSource(),before=JSON.stringify(input),resolved=await resolveProfiles(input);
+ const expected={type:'custom:dash6-render-card',definition:{type:'vertical-stack',cards:input.cards}};
+ const paths=nodes=>nodes.flatMap(node=>[node.absolutePath,...paths(node.children)]);
+ assert.deepEqual(paths(extractCatalog(resolved,metadata)),paths(extractCatalog(expected,metadata)));
+ assert.deepEqual(resolved._favorites_inline_source,input);assert.equal(JSON.stringify(input),before);
+});
+
+test('on-demand grouped inline materialization preserves canonical CSS, filtering and shared grid optics',async()=>{
+ const source=domainSource(),resolved=resolveInlineDomain(source),hass=domainHass();let subscriptions=0,unsubscribed=0;
+ hass.connection={subscribeMessage:async(callback,message)=>{subscriptions++;assert.ok(message.template.includes('__dash6_inline_query_0'));setTimeout(()=>callback({result:JSON.stringify({'0':JSON.stringify([definitions()])})}),0);return()=>unsubscribed++;}};
+ const before=JSON.stringify(source),materialized=await materializeDynamicCard(resolved,hass,{timeoutMs:200});assert.equal(materialized.status,'ready');
+ const frame=materialized.card.definition;assert.equal(frame.type,'custom:dash6-domain-grid');assert.equal(frame.headings[0].heading,'Devices');
+ assert.deepEqual(frame.grid.cards.map(card=>card.entity),['switch.known','switch.extra']);assert.equal(frame.grid.cards[1].styles.grid[0]['grid-template-areas'],'"i"');
+ assert.equal(frame.grid.layout['grid-template-columns'],'repeat(2,minmax(0,1fr))');assert.equal(frame.grid.layout.mediaquery['(max-width: 699px)']['grid-template-columns'],'repeat(1,minmax(0,1fr))');
+ assert.equal(subscriptions,1);assert.equal(unsubscribed,1);assert.equal(JSON.stringify(source),before);assert.equal('_favorites_inline_source' in materialized.card,false,'snapshot is static after explicit discovery');
+});
+
+test('Favorites discovery reuses an already active grouped template and leaves its subscription intact',async()=>{
+ const source=domainSource(),hass=domainHass();let callback,subscriptions=0,unsubscribed=0;
+ hass.connection={subscribeMessage:async(fn)=>{callback=fn;subscriptions++;return()=>unsubscribed++;}};
+ const stop=watchInlineQuery(hass,source.query,()=>{});await new Promise(resolve=>setTimeout(resolve,20));callback({result:JSON.stringify({'0':JSON.stringify([definitions()])})});
+ const result=await materializeDynamicCard(resolveInlineDomain(source),hass,{timeoutMs:100});assert.equal(result.status,'ready');assert.equal(subscriptions,1);assert.equal(unsubscribed,0);stop();assert.equal(unsubscribed,1);
+});
+
+test('dynamic expansion preserves excluded known children and a checked parent without mutating snapshots',()=>{
+ const previous=extractCatalog(resolveInlineDomain(domainSource()),metadata)[0],snapshot=JSON.stringify(previous);
+ const leaves=[];walk(previous,node=>{if(node.card?.entity==='switch.known')leaves.push(node);});const knownNode=leaves[0];
+ let selected=toggleSelection([previous],[],previous.id,true);selected=toggleSelection([previous],selected,knownNode.id,false);
+ const next=extractCatalog({type:'custom:dash6-render-card',definition:{type:'custom:dash6-domain-grid',headings:[{type:'heading',heading:'Devices'}],grid:{type:'custom:layout-card',cards:[known,{type:'tile',entity:'switch.extra'}]}}},metadata,{idPrefix:'dynamic:'})[0];
+ const reconciled=reconcileDynamicSelection(previous,next,selected);assert.equal(reconciled.node.id,previous.id);assert.ok(reconciled.selected.includes(previous.id));assert.equal(reconciled.selected.includes(knownNode.id),false);
+ const rendered=favoritesRenderConfig({sources:[reconciled.node],selected:reconciled.selected,grouping:'none',headings:true},domainHass());
+ assert.equal(count(rendered,card=>card.entity==='switch.known'),0);assert.equal(count(rendered,card=>card.entity==='switch.extra'),1);assert.equal(JSON.stringify(previous),snapshot);
+ const partial=reconcileDynamicSelection(previous,next,[knownNode.id]);assert.ok(partial.selected.includes(knownNode.id));assert.equal(partial.selected.includes(previous.id),false);
+ const onlyKnown=favoritesRenderConfig({sources:[partial.node],selected:partial.selected,grouping:'none',headings:false},domainHass());assert.deepEqual(onlyKnown.cards,[known]);
+});
+
+test('stored legacy selections render byte-identically after resolving an unrelated fresh inline catalog',async()=>{
+ const sources=extractCatalog({type:'custom:dash6-stack-card',cards:[{type:'heading',heading:'Existing'},{type:'tile',entity:'switch.known'},sceneSource('Neutral')]},metadata);
+ const selected=toggleSelection(sources,[],sources[0].id,true),config={sources,selected,grouping:'none',headings:true},before=JSON.stringify(config);
+ const rendered=JSON.stringify(favoritesRenderConfig(config,domainHass()));await resolveProfiles({views:[{path:'room',cards:[domainSource(),{type:'custom:dash6-direct-card',card:{type:'tile',entity:'switch.extra'}}]}]});
+ assert.equal(JSON.stringify(config),before);assert.equal(JSON.stringify(favoritesRenderConfig(config,domainHass())),rendered);
 });

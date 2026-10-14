@@ -21,6 +21,9 @@ export function mapCards(config){
  if(!config||typeof config!=='object')return config;
  if(Array.isArray(config))return config.map(mapCards);
  const c=mapDeviceSwitches(config);
+ // Overlay navigation inspects the original container type before creating its
+ // other cards. Keep this deferred configuration boundary completely raw.
+ if(Object.hasOwn(config,'sidebar_cards'))c.sidebar_cards=clone(config.sidebar_cards);
  // Area pills belong directly to the thin header surface, without a nested card.
  if(c.cards?.[0]?.type==='custom:dash6-area-header')c.cards=c.cards.map((child,index)=>{if(!index)return child;const auto=child.type==='custom:mod-card'?child.card:child;if(auto?.type!=='custom:auto-entities')return child;const pills=auto.card;if(pills?.type==='custom:layout-card'){delete pills.card_mod;delete pills.dash6_css;pills.layout={...pills.layout,padding:'0',background:'transparent'};}return auto;});
  const protectedVendor=!vendorLockAllowsSwitch(c);
@@ -39,7 +42,7 @@ export function mapCards(config){
  }
  if(c.type?.includes('dash5-govee-light-card-v2')||c.type?.includes('dash5-multi-light-card-v2')||c.type?.includes('dash5-lightgroup-card-v2'))c.type=c.type.replace('dash5-','dash6-');
  if(!protectedVendor)for(const [key,value]of Object.entries(c)){
-  if(key==='filter'||key==='styles'||key==='card_mod'||key==='dash6_css'||(c.type==='custom:auto-entities'&&key==='card'))continue;
+  if(key==='filter'||key==='styles'||key==='card_mod'||key==='dash6_css'||key==='sidebar_cards'||(c.type==='custom:auto-entities'&&key==='card'))continue;
   if(value&&typeof value==='object')c[key]=mapCards(value);
  }
  if(c.type==='custom:auto-entities')c.type='custom:dash6-auto-entities';

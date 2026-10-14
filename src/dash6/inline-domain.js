@@ -1,9 +1,8 @@
 import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {create} from './card-runtime.js';
 import {decodeInline,inlineEntities,pruneInline,watchInlineQuery} from './inline-query.js';
+import {inlineDomainGridDefinition} from './inline-domain-definition.js';
 const clone=value=>structuredClone(value);
-const stacks=new Set(['custom:vertical-stack-in-card','custom:dash6-stack-card']);
-const flattenDomain=cards=>(cards||[]).flatMap(card=>stacks.has(card.type)?card.cards||[]:[card]);
 
 // Keep layout-card's original grid implementation and remove only its margins.
 const flushGridReady=customElements.whenDefined('grid-layout').then(()=>{
@@ -91,19 +90,9 @@ class DomainCard extends HTMLElement{
  async _grid(){
   const originals=this._config.cards||[],initial=pruneInline(originals,this._hass,this._allowed)||[];
   const extra=pruneInline(this._extraDefs,this._hass)||[];
-  const columns=Math.min(4,Math.max(1,Number(this._config.columns)||(this._config.combine?1:2)));
-  const mobile=Math.min(columns,Math.max(1,Number(this._config.mobile_columns)||1));
-  const breakpoint=Math.max(320,Number(this._config.mobile_breakpoint)||700);
-  const base=originals.find(card=>stacks.has(card.type));
-  const headings=flattenDomain(originals).filter(card=>card.type==='heading');
-  const headingNames=new Set(headings.map(card=>card.heading));
-  const additions=extra.flatMap(card=>stacks.has(card.type)&&card.cards?.some(child=>child.type==='heading'&&headingNames.has(child.heading))?card.cards:[card]);
-  const items=[...flattenDomain(initial),...additions].filter(card=>card.type!=='heading');
-  const flush=this._config.edge_alignment==='flush';
-  const grid={type:'custom:layout-card',layout_type:flush||this._config.combine?'custom:dash6-inline-flush-grid-layout':'custom:grid-layout',layout:{'grid-template-columns':`repeat(${columns},minmax(0,1fr))`,'grid-auto-rows':'min-content',gap:'8px',card_margin:'0',margin:'0',padding:'0',mediaquery:{[`(max-width: ${breakpoint-1}px)`]:{'grid-template-columns':`repeat(${mobile},minmax(0,1fr))`}}},cards:items};
-  const definition=flush?{type:'custom:dash6-domain-grid',headings,grid,breakpoint}:{...(base||{type:'custom:vertical-stack-in-card'}),cards:[...headings,grid]};
+  const definition=inlineDomainGridDefinition(this._config,initial,extra);
   this._dynamic=null;this._extra.replaceChildren();this._extraKey='';
-  await this._replace('fixed',items.length?definition:null);
+  await this._replace('fixed',definition);
  }
  async _replace(which,definition){
   const fixed=which==='fixed',keyName=fixed?'_fixedKey':'_extraKey',generationName=fixed?'_fixedGeneration':'_generation';
