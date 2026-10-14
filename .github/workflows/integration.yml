@@ -69,6 +69,8 @@ jobs:
       - run: node tests/room-slot-grid-browser.mjs
       - run: node tests/light-surface-first-render-browser.mjs
       - run: node tests/glass-switch-motion-browser.mjs
+      - run: node tests/fan-mode-refinements.mjs
+      - run: node tests/fan-mode-switch-browser.mjs
       - run: node tests/responsive-layouts-browser.mjs
       - run: node tests/favorites-masonry-browser.mjs
       - run: node tests/native-switch-lifecycle-browser.mjs

@@ -1,3 +1,8 @@
+## 3.1.27 / Cards 2.4.27
+
+- Replace segmented fan modes with one round Satin lens and three positions: Auto, On, Off.
+- Preserve main/force service ordering and unavailable guards; animate only genuine state transitions.
+
 ## 3.1.26 / Cards 2.4.26
 
 - Add a saved manual Favorites card and heading order with accessible move controls and immediate preview updates.
