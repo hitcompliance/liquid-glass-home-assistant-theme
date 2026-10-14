@@ -1,3 +1,8 @@
+## 3.1.26 / Cards 2.4.26
+
+- Add a saved manual Favorites card and heading order with accessible move controls and immediate preview updates.
+- Preserve existing source selection, groups and nested layouts; newly selected elements follow deterministically.
+
 ## 3.1.25 / Cards 2.4.25
 
 - Restore inset Satin dashboard tabs and a moving glass lens on the native Home Assistant tab group.

@@ -49,6 +49,8 @@ jobs:
       - run: node tests/domain-editor-browser.mjs
       - run: node tests/media-edit-controls-browser.mjs
       - run: node tests/favorites-selection.mjs
+      - run: node tests/favorites-manual-order.mjs
+      - run: node tests/favorites-manual-order-browser.mjs
       - run: node tests/favorites-inline-browser.mjs
       - run: node tests/profiles-store.mjs
       - run: node tests/native-hook-registry.mjs

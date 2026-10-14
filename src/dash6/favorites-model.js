@@ -112,13 +112,14 @@ function removalPath(card, path) {
 }
 
 /** Keep selected containers; promote selected descendants past unchecked wrappers. */
-export function filterSelectedTree(catalog, selectedIds) {
+export function filterSelectedTree(catalog, selectedIds, options = {}) {
   const selected = asSet(selectedIds);
+  const manualCompare = manualCardComparator(options.manualCardOrder, (a, b) => (a.order ?? 0) - (b.order ?? 0) || compare(a.id, b.id));
   function collect(nodes) {
     return (nodes || []).flatMap(node => selected.has(node.id) ? materialize(node) : collect(childrenOf(node)));
   }
   function materialize(node) {
-    const card = clone(node.card); const children = [], detached = [];
+    const card = clone(node.card); const children = [], detached = [], arraySlots = new Map();
     // Reverse storage order prevents array removals from moving later child paths.
     const patches = childrenOf(node).map(child => {
       const kept = collect([child]);
@@ -134,9 +135,13 @@ export function filterSelectedTree(catalog, selectedIds) {
       for (const key of path.slice(0, -1)) parent = parent?.[key];
       if (kept.length && Array.isArray(parent)) {
         parent.splice(path.at(-1), 1, ...kept.map(child => child.card));
-        children.push(...kept);
+        // Promoted descendants occupy their former wrapper's array, regardless
+        // of their original catalog path. Track the actual cloned array.
+        if (!arraySlots.has(parent)) arraySlots.set(parent, []);
+        const members = kept.map(child => ({...child, orderSlot: JSON.stringify(path.slice(0, -1))}));
+        arraySlots.get(parent).push(...members); children.push(...members);
       } else if (kept.length === 1) {
-        replaceAtPath(card, path, kept[0].card); children.push(kept[0]);
+        replaceAtPath(card, path, kept[0].card); children.push({...kept[0], orderSlot: null});
       } else {
         // A single-card slot cannot contain several cards without inventing a wrapper.
         replaceAtPath(card, removalPath(node.card, path), undefined, true);
@@ -145,6 +150,16 @@ export function filterSelectedTree(catalog, selectedIds) {
     }
     children.sort((a, b) => a.order - b.order);
     detached.sort((a, b) => a.order - b.order);
+    if (options.sort === 'manual') {
+      for (const [array, members] of arraySlots) {
+        const positions = members.map(child => array.indexOf(child.card)).sort((a, b) => a - b);
+        const ordered = [...members].sort(manualCompare);
+        positions.forEach((position, index) => {array[position] = ordered[index].card;});
+        // Keep the editor's effective hierarchy in the same order as rendering.
+        const childPositions = children.map((child, index) => members.includes(child) ? index : -1).filter(index => index >= 0);
+        childPositions.forEach((position, index) => {children[position] = ordered[index];});
+      }
+    }
     return [{...node, card, children}, ...detached];
   }
   return collect(catalog);
@@ -152,7 +167,7 @@ export function filterSelectedTree(catalog, selectedIds) {
 
 export function normalizeOptions(options = {}) {
   const grouping = GROUPINGS.includes(options.grouping) ? options.grouping : 'source_view';
-  let sort = ['alpha', 'source_domain_alpha', 'domain_alpha'].includes(options.sort) ? options.sort : 'domain_alpha';
+  let sort = ['manual', 'alpha', 'source_domain_alpha', 'domain_alpha'].includes(options.sort) ? options.sort : 'domain_alpha';
   if (sort === 'source_domain_alpha' && grouping !== 'domain') sort = 'domain_alpha';
   let domainOrder = ['manual', 'alpha', 'source_view_order'].includes(options.domainOrder) ? options.domainOrder : 'source_view_order';
   if (domainOrder === 'source_view_order' && !['source_view', 'source_view_domain'].includes(grouping)) domainOrder = 'manual';
@@ -160,7 +175,29 @@ export function normalizeOptions(options = {}) {
     dashboard: options.dashboard ?? 'dash-6',
     viewOrderMode: options.viewOrderMode === 'manual' ? 'manual' : 'dashboard',
     manualViewOrder: [...new Set(Array.isArray(options.manualViewOrder) ? options.manualViewOrder.filter(key => typeof key === 'string') : [])],
+    manualCardOrder: [...new Set(Array.isArray(options.manualCardOrder) ? options.manualCardOrder.filter(key => typeof key === 'string') : [])],
     manualDomainOrder: [...new Set(Array.isArray(options.manualDomainOrder) ? options.manualDomainOrder : DEFAULT_DOMAIN_ORDER)]};
+}
+
+function manualCardComparator(ids = [], fallback) {
+  const ranks = new Map((Array.isArray(ids) ? ids : []).map((id, index) => [id, index]));
+  return (a, b) => {
+    const ai = ranks.get(a.id), bi = ranks.get(b.id);
+    if (ai !== undefined && bi !== undefined) return ai - bi;
+    if (ai !== undefined) return -1; if (bi !== undefined) return 1;
+    return fallback(a, b);
+  };
+}
+
+/** Move visible siblings only; preserve saved positions of deselected cards. */
+export function moveManualCardOrder(siblings, storedOrder, id, direction) {
+  const order = normalizeOptions({manualCardOrder: storedOrder}).manualCardOrder;
+  const index = siblings.findIndex(node => node.id === id), target = index + direction;
+  if (![-1, 1].includes(direction) || index < 0 || target < 0 || target >= siblings.length) return order;
+  for (const node of siblings) if (!order.includes(node.id)) order.push(node.id);
+  const a = order.indexOf(id), b = order.indexOf(siblings[target].id);
+  [order[a], order[b]] = [order[b], order[a]];
+  return order;
 }
 
 export const sourceViewKey = node => `${node.source?.dashboard || ''}/${normalizeViewLabel(node.source?.title || node.source?.view)}`;
@@ -202,6 +239,7 @@ export function groupFavorites(nodes, rawOptions = {}) {
     const ai = index(a), bi = index(b); if (ai !== bi) return ai < bi ? -1 : 1;
     return (a.order ?? 0) - (b.order ?? 0);
   };
+  const manualCompare = manualCardComparator(options.manualCardOrder, (a, b) => sourcePosition(a, b) || compare(a.id, b.id));
   const domainComparator = items => (a, b) => {
     if (options.domainOrder === 'alpha') return compare(a, b);
     if (options.domainOrder === 'manual') {
@@ -218,6 +256,7 @@ export function groupFavorites(nodes, rawOptions = {}) {
     return compare(a, b);
   };
   function itemCompare(a, b, domainCompare) {
+    if (options.sort === 'manual') return manualCompare(a, b);
     if (options.sort === 'source_domain_alpha') { const delta = compareSourceViews(a, b, options, nodes); if (delta) return delta; }
     if (options.sort === 'domain_alpha') { const delta = domainCompare(domainKey(a), domainKey(b)); if (delta) return delta; }
     return compare(a.label, b.label) || compare(a.id, b.id);
