@@ -58,6 +58,7 @@ jobs:
       - run: node tests/inline-runtime-browser.mjs
       - run: node tests/inline-domain-browser.mjs
       - run: node tests/navigation-lens-browser.mjs
+      - run: node tests/native-dashboard-navigation-browser.mjs
       - run: node tests/sections-width-browser.mjs
       - run: node tests/sections-responsive-browser.mjs
       - run: node tests/sections-responsive-browser.mjs

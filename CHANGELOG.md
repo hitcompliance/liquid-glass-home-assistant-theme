@@ -1,3 +1,10 @@
+## 3.1.25 / Cards 2.4.25
+
+- Restore inset Satin dashboard tabs and a moving glass lens on the native Home Assistant tab group.
+- Detect slotted native view tabs and active selection while retaining native keyboard navigation and edit-mode scrolling.
+- Restore native indicators when the theme is off or the frozen comparison dashboard is active.
+- Add Chromium/WebKit regressions for selection, resizing, scrolling and runtime cleanup.
+
 ## 3.1.23 / Cards 2.4.23
 
 - Add direct inline card definitions, combined known/dynamic domain grids and inline layout visibility rules.

@@ -91,7 +91,8 @@ function ensureStyle(root){
 }
 function observeRoot(root){
  if(!active||roots.has(root))return;
- const item={style:null,observer:null};
+ const item={style:null,observer:null,slotchange:null};
+ item.slotchange=event=>{const group=event.target?.parentElement;if(satinGroupCandidate(group)&&!groups.has(group)){const controller=bindSatinGroup(group);if(controller){groups.set(group,controller);ensureStyle(root);}}};root.addEventListener('slotchange',item.slotchange);
  item.observer=new MutationObserver(records=>{
   if(!active)return;
   let removed=false;
@@ -112,7 +113,7 @@ function prune(){
  for(const [host,controller] of climates)if(!host.isConnected){controller.dispose();climates.delete(host);}
  for(const [group,controller] of groups)if(!group.isConnected){controller.dispose();groups.delete(group);}
  for(const card of cards)if(!card.isConnected)cards.delete(card);
- for(const [root,item] of roots)if(root.host&&!root.host.isConnected){item.observer.disconnect();item.style?.remove();roots.delete(root);}
+ for(const [root,item] of roots)if(root.host&&!root.host.isConnected){item.observer.disconnect();root.removeEventListener('slotchange',item.slotchange);item.style?.remove();roots.delete(root);}
  for(const [host,item] of modes)if(item.seenConnected&&!host.isConnected)modes.delete(host);
 }
 export function refreshSatinSurfaces(){
@@ -156,7 +157,7 @@ function syncScope(){
   for(const card of cards)card.removeAttribute('data-dash6-satin-surface');cards.clear();for(const controller of groups.values())controller.dispose();groups.clear();
   for(const controller of climates.values())controller.dispose();climates.clear();
   for(const item of themeScopes.values())item.observer.disconnect();themeScopes.clear();
-  for(const item of roots.values()){item.observer.disconnect();item.style?.remove();}roots.clear();
+  for(const [root,item] of roots){item.observer.disconnect();root.removeEventListener('slotchange',item.slotchange);item.style?.remove();}roots.clear();
  }
 }
 export function startSatinSurfaces(){
