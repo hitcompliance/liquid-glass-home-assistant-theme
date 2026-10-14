@@ -22,6 +22,7 @@
 | `custom:dash6-area-header` | Bereichsname/Uhr/Datum; `title` |
 | `custom:dash6-theme-editor-card` | Grafischer Materialeditor; optionale Vorgaben |
 | `custom:dash6-stack-card` | Gemeinsamer Stack; `cards` |
+| `custom:dash6-favorites-card` | Hierarchische Kartenauswahl mit gespeicherten Snapshots; Einrichtung im GUI-Editor |
 | `custom:dash6-embedded-view-card` | Vorhandene View einbetten; `view` oder dynamisches Ziel |
 | `custom:dash6-ultra-card` | Ultra-Card mit integrierten DASH6-Editoren; native Ultra-Konfiguration |
 | `custom:dash6-render-card` | Bestehende Karte mit DASH6-Adapter; `definition` |
@@ -75,6 +76,12 @@ Die Template-Ausgabe bestimmt nach dem ersten Ergebnis auch, welche bekannten En
 `custom:dash6-inline-layout` enthält das vollständige Layout unter `card`. Seine `query` verwendet dieselben Template-/Gruppenschlüssel. `visibility` ist eine Liste aus `{id, indices, mode}`: Die referenzierten Ergebnispositionen müssen boolesche Werte liefern; `mode: any` verlangt mindestens einen wahren Wert, sonst müssen alle wahr sein. Betroffene vorhandene Layoutelemente tragen die Klasse `responsive-row-<id>`, `responsive-col-<id>` oder `responsive-mod-<id>`. Diese Adapteroption ist für bestehende Layouts mit solchen IDs gedacht; native HA-Sichtbarkeit bleibt für einfache neue Layouts die passende Wahl.
 
 Direkte Karten und Templates benötigen keine Profil- oder Raumkonfigurationsdatei. Die vorhandenen Beispielprofile und ihre API bleiben für bestehende Konfigurationen verfügbar.
+
+## Favoriten aus direkten Karten
+
+Der Favoriten-Editor löst `dash6-direct-card` transparent auf: Die enthaltene Karte und ihre Unterkarten behalten dieselbe Auswahlhierarchie wie eine zuvor expandierte Profilkarte. Bei `dash6-domain-card` werden die bekannten Karten sofort angeboten. **Enthaltene Karten ermitteln** liest die inline konfigurierte Abfrage auf Wunsch, verwendet gegebenenfalls eine bereits aktive Gruppen-Subscription und erstellt eine statische Auswahl der aktuell verfügbaren Karten.
+
+Bekannte abgewählte Unterkarten bleiben beim Ermitteln abgewählt; neue Unterkarten folgen dem Auswahlzustand ihres Containers. Ausgeblendete Entities entfallen. Bereits gespeicherte Favoriten-Snapshots werden beim Aktualisieren des Katalogs beibehalten. Die Vorschau bleibt schreibgeschützt; Quell-Views werden durch die Auswahl nicht verändert.
 
 ## Licht, Lichtgruppe und Schuhschrank
 
