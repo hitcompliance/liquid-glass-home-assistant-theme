@@ -7,7 +7,8 @@ import {fileURLToPath} from 'node:url';
 // Isolated synthetic states only. The fixture never connects to Home Assistant.
 export async function fanFixture(){
  const temp=await mkdtemp(tmpdir()+'/fan-modes-');
- await build({entryPoints:[fileURLToPath(new URL('../src/dash6/fan-mode-refinements.js',import.meta.url))],bundle:true,format:'esm',outfile:temp+'/fixture.js'});
+ const fan=fileURLToPath(new URL('../src/dash6/fan-mode-refinements.js',import.meta.url)),ikea=fileURLToPath(new URL('../src/dash6/ikea-card.js',import.meta.url));
+ await build({stdin:{contents:`export * from ${JSON.stringify(fan)};export {ikeaBackgroundGraph} from ${JSON.stringify(ikea)};`,resolveDir:fileURLToPath(new URL('..',import.meta.url))},bundle:true,format:'esm',outfile:temp+'/fixture.js',loader:{'.css':'text'}});
  const html=`<!doctype html><html data-dash6-satin-preview><head><meta name="viewport" content="width=device-width"><style>
  html{--primary-text-color:#fff;--primary-color:#8af;--error-color:#f55;--dash6-satin-enabled:1;--dash6-satin-switch-duration:360ms;--dash6-satin-elastic-duration:240ms}body{background:#182027;margin:24px}
  </style></head><body><script type="module">
@@ -28,12 +29,15 @@ export async function fanFixture(){
  });
  const attach=Element.prototype.attachShadow;
  Element.prototype.attachShadow=function(options){const root=attach.call(this,options);root.addEventListener('transitionrun',e=>{if(e.target.classList.contains('lens')&&e.propertyName==='translate')travel.push({id:this.id,time:performance.now()});});return root;};
- await import('/fixture.js');
+ window.fanModule=await import('/fixture.js');
  window.sleep=ms=>new Promise(r=>setTimeout(r,ms));window.paint=async()=>{await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await sleep(30);};
  window.config={entity:'fan.example',force_switch_entity:'input_boolean.example_force'};
  window.state=(main='on',force='off',extra={})=>({states:{'fan.example':{state:main,attributes:extra},'input_boolean.example_force':{state:force,attributes:{}}},callService:async(d,s,p)=>{calls.push([d,s,p.entity_id]);}});
  window.make=async(id='fan',main='on',force='off')=>{const s=document.createElement('dash6-fan-mode-switch');s.id=id;s.setConfig(config);s.hass=state(main,force);document.body.append(s);await s.updateComplete;await paint();return s;};
- window.stamp=async(main,force,extra={})=>{sw.hass=state(main,force,extra);await sw.updateComplete;await paint();};window.sw=await make();window.ready=true;
+ // Each stamp starts an independent synthetic scenario. A previous service
+ // recorder may intentionally omit state acknowledgements; detach/reconnect
+ // clears that obsolete feedback wait through the real public lifecycle.
+ window.stamp=async(main,force,extra={})=>{if(sw._pendingMode&&!sw._busy){sw.remove();document.body.append(sw);}sw.hass=state(main,force,extra);await sw.updateComplete;await paint();};window.sw=await make();window.ready=true;
  window.timerState=(state,seconds,extra={})=>({state,attributes:{remaining:'00:'+String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0'),...(state==='active'?{finishes_at:new Date(clock.now+seconds*1000).toISOString()}:{}),...extra}});
  window.setTimer=async(timer,main='on',force='on')=>{sw.setConfig({...config,timer_entity:'timer.example'});const h=state(main,force);if(timer)h.states['timer.example']=timer;sw.hass=h;await sw.updateComplete;await paint();return h;};
  </script></body></html>`;

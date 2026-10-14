@@ -71,6 +71,7 @@ jobs:
       - run: node tests/glass-switch-motion-browser.mjs
       - run: node tests/fan-mode-refinements.mjs
       - run: node tests/fan-mode-switch-browser.mjs
+      - run: node tests/fan-card-browser.mjs
       - run: node tests/responsive-layouts-browser.mjs
       - run: node tests/favorites-masonry-browser.mjs
       - run: node tests/native-switch-lifecycle-browser.mjs

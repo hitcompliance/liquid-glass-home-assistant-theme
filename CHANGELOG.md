@@ -1,3 +1,8 @@
+## 3.1.30 / Cards 2.4.30
+
+- The three-state fan switch depresses only the pressed target and rolls its lens after release.
+- Fan cards own their two-line header, formatted measurements and shared IKEA background graph with external tooltip.
+
 ## 3.1.29 / Cards 2.4.29
 
 - Allow the Off target to end a pending force cycle when the main fan is already off.

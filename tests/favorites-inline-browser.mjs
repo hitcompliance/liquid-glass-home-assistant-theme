@@ -22,7 +22,7 @@ try{
   const browser=await engine.launch({headless:true});
   try{
    const page=await browser.newPage({viewport:{width:1200,height:1000}}),errors=[];page.on('pageerror',error=>errors.push(error.message));
-   await page.goto('http://127.0.0.1:'+server.address().port+'/example/favorites');await page.waitForFunction(()=>editor._catalog?.length===2&&!editor._loading);
+   await page.goto('http://127.0.0.1:'+server.address().port+'/example/favorites');await page.waitForFunction(()=>window.editor?._catalog?.length===2&&!window.editor?._loading);
    assert.equal(await page.evaluate(()=>editor._catalog[1].card.type),'tile','fresh direct card is transparently resolved');
    await page.getByRole('textbox',{name:'Karten oder Ansichten suchen',exact:true}).fill('Room');
    const root=page.getByRole('checkbox',{name:'custom:dash6-render-card',exact:true});await root.check();await page.getByRole('checkbox',{name:'Known',exact:true}).uncheck();
