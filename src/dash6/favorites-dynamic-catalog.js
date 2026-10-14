@@ -1,6 +1,8 @@
 /** Lazy, read-only evaluation of template-only auto-entities sources. */
 import {decodeInline,watchInlineQuery} from './inline-query.js';
 import {inlineDomainGridDefinition} from './inline-domain-definition.js';
+import {domainCards,domainDefinitionConfig,extractEntityReferences,buildDomainRegistry,registryExclusions,relatedDomainViews} from './domain-registry.js';
+import {watchDomainRoom,roomDomainEntities} from './domain-room-data.js';
 const clone = value => structuredClone(value);
 const result = (status, card = null, error = null, count = 0) => ({status, card, error, count});
 const meaningful = value => value != null && value !== false && (Array.isArray(value) ? value.length > 0 : typeof value === 'object' ? Object.keys(value).length > 0 : true);
@@ -30,7 +32,7 @@ export async function resolveRoomSlot(card, hass, options = {}) {
 /** Keep catalog paths equivalent to legacy slot expansion, without a lookup. */
 export function resolveInlineDomain(card){
  if(card?.type!=='custom:dash6-domain-card')return clone(card);
- return {type:'custom:dash6-render-card',definition:{type:'vertical-stack',cards:clone(card.cards||[])},...(card.query?.template?{_favorites_inline_source:clone(card)}:{})};
+ return {type:'custom:dash6-render-card',definition:{type:'vertical-stack',cards:clone(domainCards(card))},...(card.query?.template||card.area&&card.domain?{_favorites_inline_source:clone(card)}:{})};
 }
 
 function decodeRoomValue(value) {
@@ -155,6 +157,7 @@ function firstInlineResult(hass,query,options){
 
 async function materializeInlineDomain(card,hass,options){
  const source=card._favorites_inline_source||card;
+ if(source.area&&source.domain)return materializeRegistryDomain(source,hass,options);
  if(typeof source.query?.template!=='string'||!hass?.connection?.subscribeMessage)return result('error',null,'Die Home-Assistant-Templateverbindung ist noch nicht verfügbar.');
  try{
   const timeoutMs=Number.isFinite(options.timeoutMs)?Math.max(1,options.timeoutMs):10000;
@@ -173,6 +176,25 @@ async function materializeInlineDomain(card,hass,options){
    definition={type:'vertical-stack',cards:[...fixed,...(extra.length?[{...clone(source.container||{type:'vertical-stack'}),[param]:extra}]:[])]};
   }
   return result('ready',{type:'custom:dash6-render-card',definition:definition||{type:'vertical-stack',cards:[]}},null,fixed.length+extra.length);
+ }catch(error){return result('error',null,error?.message||String(error));}
+}
+
+async function materializeRegistryDomain(source,hass,options){
+ try{
+  const timeoutMs=Number.isFinite(options.timeoutMs)?Math.max(1,options.timeoutMs):10000;
+  const data=await new Promise((resolve,reject)=>{
+   let stop,done=false,pending=false;const cleanup=()=>{clearTimeout(timer);options.signal?.removeEventListener('abort',abort);if(stop)stop();else pending=true;};
+   const finish=(value,error)=>{if(done)return;done=true;cleanup();error?reject(error):resolve(value);};const abort=()=>finish(null,Error('Die dynamische Auswahl wurde abgebrochen.'));
+   const timer=setTimeout(()=>finish(null,Error('Zeitüberschreitung beim Lesen der Raum-Entities.')),timeoutMs);if(options.signal?.aborted){abort();return;}options.signal?.addEventListener('abort',abort,{once:true});
+   stop=watchDomainRoom(hass,(value,error)=>finish(value,error));if(pending)stop();
+  });
+  const exclusionIds=new Set(extractEntityReferences(domainCards(source)));
+  // A caller may supply the current dashboard to include sibling helper cards.
+  if(options.dashboardConfig)for(const id of registryExclusions(buildDomainRegistry(options.dashboardConfig,source.dashboard||'default'),source.dashboard||'default',relatedDomainViews(options.dashboardConfig,[source.view])))exclusionIds.add(id);
+  const config=domainDefinitionConfig(source),fixed=pruneRoomCards(config.cards,hass,null,null)||[];
+  const extra=source.auto_entities===false?[]:roomDomainEntities(data,hass,source.area,source.domain,exclusionIds).map(entity=>({...clone(source.dynamic_card||{type:'tile'}),entity}));
+  const definition=inlineDomainGridDefinition(config,fixed,extra)||{type:'vertical-stack',cards:[]};
+  return result('ready',{type:'custom:dash6-render-card',definition},null,fixed.length+extra.length);
  }catch(error){return result('error',null,error?.message||String(error));}
 }
 

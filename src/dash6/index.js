@@ -21,7 +21,7 @@ import './local-camera-card.js';
 import './inline-card.js';
 import './profile-card.js';
 import './theme-editor.js';
-console.info('DASH6 Satin 2.4.23: Direkte Karten und gemeinsame Inline-Abfragen.');
+console.info('DASH6 Satin 2.4.24: Direkte Karten und gemeinsame Inline-Abfragen.');
 
 import './demo-card.js';
 import './inset-actions.js';

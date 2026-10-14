@@ -11,7 +11,10 @@ export function inlineDomainGridDefinition(config,initial,extra){
  const headingNames=new Set(headings.map(card=>card.heading));
  const additions=extra.flatMap(card=>stacks.has(card.type)&&card.cards?.some(child=>child.type==='heading'&&headingNames.has(child.heading))?card.cards:[card]);
  const items=[...flatten(initial),...additions].filter(card=>card.type!=='heading');
- if(!items.length)return null;
+ if(!items.length){
+  if(!config.keep_empty)return null;
+  return headings.length?{...(base||{type:'custom:vertical-stack-in-card'}),cards:headings}:null;
+ }
  const flush=config.edge_alignment==='flush';
  const grid={type:'custom:layout-card',layout_type:flush||config.combine?'custom:dash6-inline-flush-grid-layout':'custom:grid-layout',layout:{'grid-template-columns':`repeat(${columns},minmax(0,1fr))`,'grid-auto-rows':'min-content',gap:'8px',card_margin:'0',margin:'0',padding:'0',mediaquery:{[`(max-width: ${breakpoint-1}px)`]:{'grid-template-columns':`repeat(${mobile},minmax(0,1fr))`}}},cards:items};
  return flush?{type:'custom:dash6-domain-grid',headings,grid,breakpoint}:{...(base||{type:'custom:vertical-stack-in-card'}),cards:[...headings,grid]};

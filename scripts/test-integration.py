@@ -9,7 +9,7 @@ import sys
 import tempfile
 import unittest
 from types import SimpleNamespace
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch, AsyncMock, Mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from homeassistant.core import HomeAssistant
@@ -32,8 +32,12 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.config.mkdir()
         self.hass = HomeAssistant(str(self.config))
         self.hass.http = SimpleNamespace(async_register_static_paths=AsyncMock())
-        self.hass.data[frontend.DATA_THEMES] = {'My theme': {'primary-color': '#123456'}}
-        self.hass.data[frontend.DATA_DEFAULT_THEME] = 'default'
+        # Initialize the actual native schema/service and event behavior, while
+        # keeping theme persistence in memory for the isolated test config.
+        self.theme_store = SimpleNamespace(async_load=AsyncMock(return_value=None),
+                                          async_delay_save=Mock())
+        with patch.object(frontend, 'Store', return_value=self.theme_store):
+            await frontend._async_setup_themes(self.hass, {'My theme': {'primary-color': '#123456'}})
         self.hass.data[frontend.DATA_EXTRA_MODULE_URL] = frontend.UrlManager(lambda *args: None, [])
         self.hass.data[frontend.DATA_PANELS] = {}
         self.ll = LovelaceData('yaml', {}, ResourceYAMLCollection([]), {})
@@ -66,7 +70,15 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn('DASH6 Satin Glass',self.hass.data[frontend.DATA_THEMES])
         frontend._validate_themes(self.hass.data[frontend.DATA_THEMES])
         loaded = await self.ll.dashboards[integration.DEMO].async_load(False)
-        self.assertEqual(len(loaded['views']),3)
+        self.assertEqual(len(loaded['views']),4)
+        favorites = next(view for view in loaded['views'] if view['path'] == 'favoriten')
+        card = favorites['sections'][0]['cards'][1]
+        self.assertEqual(card['type'], 'custom:dash6-favorites-card')
+        self.assertTrue(card['demo_gui'])
+        self.assertEqual(card['dashboard'], integration.DEMO)
+        self.assertTrue(card['sources'])
+        self.assertTrue(card['selected'])
+        self.assertTrue(all(node['card']['type'] == 'custom:dash6-demo-card' for node in card['sources']))
         self.assertTrue(frontend.async_panel_exists(self.hass,integration.DEMO))
         self.assertEqual(len(self.hass.data[frontend.DATA_EXTRA_MODULE_URL].urls),1)
         self.assertFalse((self.config/'configuration.yaml').exists())
@@ -78,6 +90,80 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.hass.data[frontend.DATA_THEMES],{'My theme': {'primary-color':'#123456'}})
         self.assertFalse(self.hass.data[frontend.DATA_EXTRA_MODULE_URL].urls)
         self.assertTrue((self.config/'www/liquid-glass/dash6-cards.js').exists())
+
+    async def test_first_install_persists_satin_for_both_backend_modes(self):
+        self.hass.data[frontend.DATA_DEFAULT_THEME] = 'My theme'
+        self.hass.data[frontend.DATA_DEFAULT_DARK_THEME] = 'My theme'
+        await integration.async_setup_entry(self.hass, self.entry)
+        self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_THEME], integration.DEFAULT_THEME)
+        self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_DARK_THEME], integration.DEFAULT_THEME)
+        self.theme_store.async_delay_save.assert_called()
+        save, delay = self.theme_store.async_delay_save.call_args.args
+        self.assertEqual(save(), {frontend.DATA_DEFAULT_THEME: integration.DEFAULT_THEME,
+                                  frontend.DATA_DEFAULT_DARK_THEME: integration.DEFAULT_THEME})
+        self.assertEqual(delay, frontend.THEMES_SAVE_DELAY)
+        await integration.async_unload_entry(self.hass, self.entry)
+        self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_THEME], 'My theme')
+        self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_DARK_THEME], 'My theme')
+        self.assertEqual(self.theme_store.async_delay_save.call_args.args[0](),
+                         {frontend.DATA_DEFAULT_THEME: 'My theme', frontend.DATA_DEFAULT_DARK_THEME: 'My theme'})
+
+    async def test_update_selects_satin_without_reconfiguring_existing_entry(self):
+        await integration.async_setup_entry(self.hass, self.entry)
+        await self.hass.services.async_call('frontend', 'set_theme',
+                                           {'name': 'My theme', 'name_dark': 'My theme'}, blocking=True)
+        await integration.async_unload_entry(self.hass, self.entry)
+        await integration.async_setup_entry(self.hass, self.entry)
+        self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_THEME], integration.DEFAULT_THEME)
+        self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_DARK_THEME], integration.DEFAULT_THEME)
+        self.assertEqual(self.entry.data, {'demo_dashboard': True})
+
+    async def test_unload_preserves_later_manual_theme_choice(self):
+        await integration.async_setup_entry(self.hass, self.entry)
+        await self.hass.services.async_call('frontend', 'set_theme',
+                                           {'name': 'My theme', 'name_dark': 'My theme'}, blocking=True)
+        await integration.async_unload_entry(self.hass, self.entry)
+        self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_THEME], 'My theme')
+        self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_DARK_THEME], 'My theme')
+
+    async def test_unload_restores_native_no_dark_preference(self):
+        await integration.async_setup_entry(self.hass, self.entry)
+        await integration.async_unload_entry(self.hass, self.entry)
+        await self.hass.async_block_till_done()
+        self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_THEME], 'default')
+        self.assertIsNone(self.hass.data.get(frontend.DATA_DEFAULT_DARK_THEME))
+        self.assertNotIn(integration.DEFAULT_THEME, self.hass.data[frontend.DATA_THEMES],
+                         'a queued setup/theme event cannot republish after unload')
+
+    async def test_existing_frozen_and_same_named_theme_preserved(self):
+        frozen = {'primary-color': '#112233'}
+        local_satin = {'primary-color': '#223344'}
+        self.hass.data[frontend.DATA_THEMES].update({'Local Frozen Comparison': frozen,
+                                                   integration.DEFAULT_THEME: local_satin})
+        await integration.async_setup_entry(self.hass, self.entry)
+        self.assertEqual(self.hass.data[frontend.DATA_THEMES]['Local Frozen Comparison'], frozen)
+        self.assertEqual(self.hass.data[frontend.DATA_THEMES][integration.DEFAULT_THEME], local_satin)
+        await integration.async_unload_entry(self.hass, self.entry)
+        self.assertEqual(self.hass.data[frontend.DATA_THEMES]['Local Frozen Comparison'], frozen)
+        self.assertEqual(self.hass.data[frontend.DATA_THEMES][integration.DEFAULT_THEME], local_satin)
+
+    async def test_missing_satin_aborts_before_install_or_default_selection(self):
+        path = self.bundle / 'themes.json'
+        themes = json.loads(path.read_text())
+        themes.pop(integration.DEFAULT_THEME)
+        path.write_text(json.dumps(themes))
+        with self.assertRaisesRegex(ConfigEntryNotReady, 'Satin default theme is missing'):
+            await integration.async_setup_entry(self.hass, self.entry)
+        self.assertEqual(self.calls, [])
+        self.assertFalse((self.config / 'www').exists())
+        self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_THEME], 'default')
+        self.theme_store.async_delay_save.assert_not_called()
+
+    async def test_bundled_non_satin_variants_are_explicitly_outdated(self):
+        themes = runtime.load_themes()
+        self.assertEqual(len(themes), 8)
+        self.assertTrue(all('Satin' in name or name.endswith(' (outdated)') for name in themes))
+        self.assertTrue(all(theme['card-mod-theme'] == name for name, theme in themes.items()))
 
     def release_dependency(self, dep_id, payload, revision='b' * 40):
         url = 'https://raw.githubusercontent.com/example/' + dep_id + '/' + revision + '/' + dep_id + '.js'
@@ -346,6 +432,9 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(self.hass.data[frontend.DATA_EXTRA_MODULE_URL].urls)
         self.assertNotIn('DASH6 Satin Glass',self.hass.data[frontend.DATA_THEMES])
         self.assertNotIn('test',self.hass.data[integration.DOMAIN])
+        self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_THEME], 'default')
+        self.assertIsNone(self.hass.data.get(frontend.DATA_DEFAULT_DARK_THEME))
+        self.theme_store.async_delay_save.assert_not_called()
 
     async def test_config_flow_defaults_and_single_instance(self):
         flow=LiquidGlassConfigFlow()

@@ -436,7 +436,7 @@ views:
   - title: Ursprünglicher SVG-Wrapper
     path: svg-beispiel
     subview: true
-    theme: Liquid Glass
+    theme: Liquid Glass (outdated)
     cards:
       - type: custom:liquid-glass-card
         card:

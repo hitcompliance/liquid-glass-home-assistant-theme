@@ -10,7 +10,7 @@ Ab Home Assistant **2026.9.0**:
 2. Home Assistant neu starten.
 3. **Einstellungen → Geräte & Dienste → Integration hinzufügen → Liquid Glass** öffnen.
 4. **Interaktives Demo-Dashboard anzeigen** eingeschaltet lassen. Optional **Dual Smart Thermostat zusätzlich installieren** auswählen.
-5. **Liquid Glass Demo** in der Seitenleiste öffnen. Für eigene Dashboards **DASH6 Satin Glass** im Profil oder in der View auswählen.
+5. **Liquid Glass Demo** in der Seitenleiste öffnen. Die Integration wählt **DASH6 Satin Glass** automatisch als Vorgabe für Hell und Dunkel. Bereits explizit gewählte Profil-/View-Themes haben Vorrang; dort bei Bedarf Satin auswählen.
 
 Es ist kein Installer-Kommando erforderlich. Die Einrichtung lädt fehlende Frontend-Module (Ultra Card, Card Mod, Button Card, Mushroom und die übrigen festgelegten Abhängigkeiten) per HTTPS und prüft Größe und SHA-256. Alle Downloads werden vor den Ziel-Schreibvorgängen geprüft; geänderte vorhandene Dateien werden zuvor unter `backups/liquid-glass/<Zeitstempel>/` gesichert. Internetzugriff auf GitHub ist während der ersten Einrichtung erforderlich; weitere Starts verwenden den Download-Cache.
 
@@ -22,19 +22,21 @@ Themes und Karten werden durch die Integration registriert, auch bei YAML-verwal
 2. Home Assistant neu starten, damit die aktualisierte Integration geladen wird.
 3. Geöffnete Browser-/Companion-Seiten vollständig neu laden.
 
+Bei diesem Start wird **DASH6 Satin Glass** erneut als gespeicherte Vorgabe für Hell und Dunkel gewählt. Eigene Profil-/View-Auswahlen bleiben erhalten.
+
 Beim nächsten Einrichten der bereits konfigurierten Integration wird der **mit dem neuen Release gelieferte** Dependency-Lock erneut geprüft. Neu aufgenommene Frontend-Abhängigkeiten werden automatisch heruntergeladen und vor den eigenen Karten geladen; von Liquid Glass verwaltete Vendor-Dateien werden auf die neue festgelegte Version aktualisiert. Ein erneuter Einrichtungsdialog oder manuelles Hinzufügen dieser Ressourcen ist nicht nötig. Neue oder geänderte Dateien benötigen Internetzugriff, sofern ihre geprüften Bytes noch nicht im lokalen Download-Cache vorhanden sind. Bereits separat registrierte HACS-Module bleiben bei ihrem bestehenden Ressourcen-Eintrag und werden weiterhin durch HACS aktualisiert.
 
 Schlägt ein Download oder seine Größen-/Hashprüfung fehl, bleiben die bisherigen installierten Dateien erhalten. Home Assistant meldet die Einrichtung vorübergehend als fehlgeschlagen und kann sie erneut versuchen; nach Behebung der Verbindung oder des Downloadproblems werden die fehlenden Dateien installiert. Bei einem Schreibfehler stellt der Installer die in diesem Aufruf bereits veränderten Dateien wieder her. Die normale Einrichtung verändert keine Geräte, Entitäten oder eigenen Dashboards. Optionale Backend-Integrationen bleiben an ihre bestehende ausdrückliche Auswahl gebunden.
 
 Dual Smart Thermostat ist eine optionale **Backend-Integration**. Eine bestehende Installation wird nicht überschrieben. Bei erstmaliger Installation erscheint eine Neustart-Mitteilung; danach müssen die eigenen Heizungs-/Sensor-Entitäten konfiguriert werden. Native Thermostat-Karten benötigen diese Integration nicht.
 
-Das Demo-Dashboard unter `/liquid-glass-demo` ist eine von Liquid Glass verwaltete YAML-Demo mit lokalen simulierten Geräten. Seine Karten steuern keine echten Geräte. Ein bereits vorhandenes Dashboard mit dieser Adresse bleibt erhalten; dann lässt die Integration ihre Demo aus und meldet dies im Protokoll. Für eigene Änderungen `liquid-glass/examples/demo-dashboard.yaml` in ein neues Dashboard kopieren. Das Konfigurationsbeispiel `dashboard.yaml` benötigt dagegen eigene Entitäten.
+Das Demo-Dashboard unter `/liquid-glass-demo` ist eine von Liquid Glass verwaltete YAML-Demo mit lokalen simulierten Geräten. Seine Karten steuern keine echten Geräte. Die View **Favoriten** enthält eine vorbereitete Kartenauswahl und eine bedienbare Favoriten-GUI; ihre Einstellungen werden ausschließlich browserlokal für die Demo gespeichert. Ein bereits vorhandenes Dashboard mit dieser Adresse bleibt erhalten; dann lässt die Integration ihre Demo aus und meldet dies im Protokoll. Für eigene Änderungen `liquid-glass/examples/demo-dashboard.yaml` in ein neues Dashboard kopieren. Das Konfigurationsbeispiel `dashboard.yaml` benötigt dagegen eigene Entitäten.
 
 ### Umstieg von der bisherigen Theme-Installation
 
 Falls das Repository bereits als **Theme** in HACS eingetragen ist: diesen HACS-Eintrag entfernen und dasselbe Repository als **Integration** hinzufügen. Die YAML-Themes bleiben als manuelle Installationsalternative im Repository. Vorhandene Theme-Namen werden nicht überschrieben. Ältere separat installierte `dash6-cards.js`-/Govee-/Multi-Light-Ressourcen vor Aktivierung entfernen, damit keine Custom Elements doppelt registriert werden; siehe [MIGRATION.md](MIGRATION.md). Die Integration bricht bei einem erkannten fremden `dash6-cards.js`-Eintrag mit einem Hinweis ab.
 
-Beim Deaktivieren/Entfernen der Liquid-Glass-Integration verschwinden ihre Laufzeit-Ressource und ihre eigene Demo. Installierte Dateien, Download-Cache und Sicherungen bleiben erhalten. Bereits vorhandene HACS-Ressourcen, Geräte und Dashboards werden nicht entfernt. Eigene Dashboards benötigen das Kartenmodul weiter; vor dem Entfernen auf andere Karten umstellen. Bei Theme-Reload ergänzt die Integration fehlende Paket-Themes erneut.
+Beim Deaktivieren/Entfernen der Liquid-Glass-Integration verschwinden ihre Laufzeit-Ressource und ihre eigene Demo. Installierte Dateien, Download-Cache und Sicherungen bleiben erhalten. Bereits vorhandene HACS-Ressourcen, Geräte und Dashboards werden nicht entfernt. Eigene Dashboards benötigen das Kartenmodul weiter; vor dem Entfernen auf andere Karten umstellen. Bei Theme-Reload ergänzt die Integration fehlende Paket-Themes erneut. Beim Entladen werden die zuvor gewählten Backend-Themes wiederhergestellt, sofern sie noch verfügbar sind und seit der Einrichtung keine andere Vorgabe gewählt wurde.
 
 ### Prüfstand
 
@@ -155,7 +157,7 @@ Die bestehende Erweiterung `frontend/dash5-glass.js` bleibt optional. Sie kopier
 1. Die Datei nach `/config/www/liquid-glass/dash5-glass.js` kopieren, sofern nicht schon vom Installer kopiert.
 2. Als Modulressource registrieren.
 3. Das Hintergrundbild kopieren.
-4. Die ursprüngliche Ansicht **`/dash-5/wohnzimmer`** mit **Liquid Glass** oder **Liquid Glass Motion** öffnen.
+4. Die ursprüngliche Ansicht **`/dash-5/wohnzimmer`** mit **Liquid Glass (outdated)** oder **Liquid Glass Motion (outdated)** öffnen.
 
 Nur in diesem Geltungsbereich startet die ältere Optik. Der ✦-Button öffnet ihren eigenen Editor; Werte werden browserlokal gespeichert und als JSON exportiert. Der Wrapper `custom:liquid-glass-card` akzeptiert die ursprüngliche innere Karte unter `card` und optische Einstellungen unter `glass`. Details stehen in [CARDS.md](CARDS.md). Diese Ressource ist für Satin nicht erforderlich.
 
@@ -176,7 +178,7 @@ Nach Installation die gewünschte View auf Desktop und Smartphone prüfen: Ein/A
 
 ## Demo-Dashboard mit Design-Prinzipien
 
-Der Installer kopiert `examples/demo-dashboard.yaml` nach `liquid-glass/examples/demo-dashboard.yaml`. Nach Laden des Hauptmoduls und der Abhängigkeiten ein neues Dashboard erstellen und dessen Rohkonfiguration durch diese YAML ersetzen. Die drei Views zeigen interaktive Karten mit simulierten lokalen Zuständen; eigene Entitäten sind nicht erforderlich. Gerätebefehle werden von `dash6-demo-card` abgefangen. Das vollständige Beispiel `examples/dashboard.yaml` bleibt für echte eigene Geräte verfügbar.
+Der Installer kopiert `examples/demo-dashboard.yaml` nach `liquid-glass/examples/demo-dashboard.yaml`. Nach Laden des Hauptmoduls und der Abhängigkeiten ein neues Dashboard erstellen und dessen Rohkonfiguration durch diese YAML ersetzen. Die vier Views einschließlich Favoriten-GUI zeigen interaktive Karten mit simulierten lokalen Zuständen; eigene Entitäten sind nicht erforderlich. Gerätebefehle werden von `dash6-demo-card` abgefangen. Das vollständige Beispiel `examples/dashboard.yaml` bleibt für echte eigene Geräte verfügbar.
 
 ## Paketentwicklung
 

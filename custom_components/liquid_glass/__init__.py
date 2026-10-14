@@ -13,6 +13,7 @@ from .installer import resource_basename, InstallError
 
 DOMAIN = 'liquid_glass'
 DEMO = 'liquid-glass-demo'
+DEFAULT_THEME = 'DASH6 Satin Glass'
 _LOGGER = logging.getLogger(__name__)
 
 def _module_urls(hass, resources):
@@ -85,6 +86,8 @@ async def async_setup_entry(hass, entry):
         themes = frontend._validate_themes(themes)
         if not themes:
             raise ValueError('No valid bundled themes found')
+        if DEFAULT_THEME not in themes:
+            raise ValueError('Bundled Satin default theme is missing')
         report = await hass.async_add_executor_job(install, hass.config.config_dir, existing, entry.data.get('dual_smart_thermostat', False))
     except Exception as err:
         # Download/hash/path failures leave frontend registration untouched.
@@ -94,11 +97,16 @@ async def async_setup_entry(hass, entry):
         hass.data[DOMAIN + '_local_registered'] = True
     previous = {name: hass.data[frontend.DATA_THEMES].get(name) for name in themes}
     def publish_themes(event=None):
+        if not state['active']:
+            return
         table = hass.data[frontend.DATA_THEMES]
         # Theme reload replaces the native theme table; re-add only missing themes.
         for name, theme in themes.items():
             table.setdefault(name, theme)
-    state = {'themes': themes, 'previous': previous, 'unsub': None, 'resource_unsub': None,
+    default_themes = {frontend.DATA_DEFAULT_THEME: hass.data.get(frontend.DATA_DEFAULT_THEME, 'default'),
+                      frontend.DATA_DEFAULT_DARK_THEME: hass.data.get(frontend.DATA_DEFAULT_DARK_THEME)}
+    state = {'themes': themes, 'previous': previous, 'default_themes': default_themes,
+             'defaults_selected': False, 'unsub': None, 'resource_unsub': None,
              'active': True, 'bootstrap': None, 'demo': None, 'report': report}
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = state
     try:
@@ -117,6 +125,13 @@ async def async_setup_entry(hass, entry):
                 state['demo'] = demo
                 ll.dashboards[DEMO] = demo
                 frontend.async_register_built_in_panel(hass, 'lovelace', sidebar_title=conf['title'], sidebar_icon=conf['icon'], frontend_url_path=DEMO, config={'mode': 'yaml'})
+        # The native service persists both backend preferences and informs open
+        # clients. This runs on first setup and after an integration update.
+        # Explicit per-user or per-view theme choices remain native HA overrides.
+        state['defaults_selected'] = True
+        await hass.services.async_call('frontend', 'set_theme',
+                                      {'name': DEFAULT_THEME, 'name_dark': DEFAULT_THEME},
+                                      blocking=True)
     except Exception as err:
         await async_unload_entry(hass, entry)
         raise ConfigEntryNotReady(f'Liquid Glass frontend registration failed: {err}') from err
@@ -146,9 +161,20 @@ async def async_unload_entry(hass, entry):
                 table.pop(name, None)
             else:
                 table[name] = old
-    for key in (frontend.DATA_DEFAULT_THEME, frontend.DATA_DEFAULT_DARK_THEME):
-        if hass.data.get(key) not in table and hass.data.get(key) not in ('default', None):
-            hass.data[key] = 'default' if key == frontend.DATA_DEFAULT_THEME else None
+    restore = {}
+    for key, field in ((frontend.DATA_DEFAULT_THEME, 'name'),
+                       (frontend.DATA_DEFAULT_DARK_THEME, 'name_dark')):
+        current = hass.data.get(key)
+        owned = state['defaults_selected'] and current == DEFAULT_THEME
+        missing = current not in table and current not in ('default', None)
+        if owned or missing:
+            old = state['default_themes'][key]
+            target = old if old in table or old == 'default' else ('default' if field == 'name' else None)
+            if current != target:
+                restore[field] = target if target is not None else 'none'
+    if restore:
+        # Persist recovery through HA too; keep a user's later manual selection.
+        await hass.services.async_call('frontend', 'set_theme', restore, blocking=True)
     ll = hass.data[LOVELACE_DATA]
     if state['demo'] is not None and ll.dashboards.get(DEMO) is state['demo']:
         ll.dashboards.pop(DEMO)
