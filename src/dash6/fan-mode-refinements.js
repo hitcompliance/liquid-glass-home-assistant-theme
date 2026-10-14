@@ -100,7 +100,7 @@ button:not(:disabled):is(:hover,:focus-visible) .ghost{opacity:1;border-color:rg
 .rail{grid-template-columns:repeat(3,40px)}
 button{position:absolute;left:calc(var(--slot,0)*40px);width:40px;transition:none}
 .ghost,button[data-mode=on] .ghost,button[data-mode=off] .ghost{left:4.25px;opacity:.4;scale:1;background:transparent;box-shadow:none;border:1px solid rgba(234,241,247,.45);visibility:visible}
-button[aria-checked=true] .ghost{opacity:1;background:var(--dash6-satin-switch-lens-background,linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.07)));box-shadow:var(--dash6-satin-switch-lens-shadow,inset 0 1px 2px rgba(255,255,255,.24),0 2px 5px rgba(0,0,0,.25))}
+button[aria-checked=true] .ghost{visibility:visible;opacity:1;background:var(--dash6-satin-switch-lens-background,linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.07)));box-shadow:var(--dash6-satin-switch-lens-shadow,inset 0 1px 2px rgba(255,255,255,.24),0 2px 5px rgba(0,0,0,.25))}
 .rail:not([aria-disabled=true]):is(:hover,:focus-within) .ghost{opacity:.4;scale:1}
 .rail:not([aria-disabled=true]) button:not(:disabled):not([aria-checked=true]):is(:hover,:focus-visible) .ghost{opacity:.8;background:rgba(255,255,255,.08);box-shadow:inset 0 1px 1px rgba(255,255,255,.13),0 1px 2px rgba(0,0,0,.2)}
 button[aria-checked=true] .ghost,.rail:not([aria-disabled=true]):is(:hover,:focus-within) button[aria-checked=true] .ghost{opacity:1}
