@@ -1,3 +1,8 @@
+## 3.1.31 / Cards 2.4.31
+
+- Shoe cabinet scenes retain their configured fill or Satin button background, including active and hover states. Scene groups keep their transparent container and 8px spacing.
+- Chromium and WebKit regression coverage for configured gradients, theme fallback and re-rendering.
+
 ## 3.1.30 / Cards 2.4.30
 
 - The three-state fan switch depresses only the pressed target and rolls its lens after release.
