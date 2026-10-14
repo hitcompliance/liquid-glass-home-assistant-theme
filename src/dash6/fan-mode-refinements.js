@@ -2,45 +2,60 @@ import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Three explicit fan modes, with serial state changes and no startup commands.
 (() => {
  const usable=s=>s&&['on','off'].includes(s.state);
+ const durationSeconds=value=>{
+  if(typeof value==='number')return Number.isFinite(value)&&value>=0?value:null;
+  const match=typeof value==='string'&&value.match(/^(\d+):(\d{1,2}):(\d{1,2}(?:\.\d+)?)$/);
+  return match?Number(match[1])*3600+Number(match[2])*60+Number(match[3]):null;
+ };
+ const countdownText=seconds=>seconds===null?'—':seconds===0?'0':seconds>=60?String(Math.ceil(seconds/60)):String(Math.ceil(Math.max(0,seconds)))+'s';
  class TripleSwitch extends HTMLElement{
   constructor(){
    super();
    this.attachShadow({mode:'open'}).innerHTML=`<style>
 :host{display:block;width:120px;max-width:100%;height:44px;font:10.5px/14px system-ui;color:var(--primary-text-color);--fan-ink:var(--dash6-satin-fallback-color,#ffd65a)}
-.rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));position:relative;isolation:isolate;width:100%;height:44px;cursor:pointer}
+.rail{display:grid;grid-template-columns:36px 40px minmax(0,1fr);position:relative;isolation:isolate;width:100%;height:44px;cursor:pointer}
 .track{position:absolute;inset:var(--dash6-satin-switch-track-top,3.5px) 0 auto;height:37px;box-sizing:border-box;border-radius:19px;border:var(--dash6-satin-switch-track-border,1px solid rgba(234,241,247,.2));background:var(--dash6-satin-switch-track-background,linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.015)),rgba(32,39,45,.6));box-shadow:var(--dash6-satin-switch-track-shadow,inset 0 1px 1px rgba(255,255,255,.09),inset 0 -1px 2px rgba(0,0,0,.18),0 3px 7px rgba(0,0,0,.19));backdrop-filter:var(--dash6-satin-control-filter,blur(9px));-webkit-backdrop-filter:var(--dash6-satin-control-filter,blur(9px));pointer-events:none}
 .track::before,.track::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none}
 .track::before{background:radial-gradient(ellipse at 38% 110%,color-mix(in srgb,var(--fan-ink) 72%,transparent),color-mix(in srgb,var(--fan-ink) 24%,transparent) 60%,transparent);opacity:.38;transition:opacity 220ms ease}
 .track::after{background:var(--dash6-satin-switch-track-gloss,linear-gradient(145deg,rgba(255,255,255,.12),transparent 49%,rgba(255,255,255,.02)))}
-.lens{position:absolute;z-index:1;top:calc(var(--dash6-satin-switch-track-top,3.5px) + 2.75px);left:3.5px;width:31.5px;height:31.5px;box-sizing:border-box;border-radius:50%;translate:0 0;pointer-events:none;transition:translate var(--dash6-satin-switch-duration,500ms) cubic-bezier(.22,1.16,.35,1),scale var(--dash6-satin-elastic-duration,380ms) cubic-bezier(.22,1.5,.36,1),transform 90ms ease-out}
+.lens{position:absolute;z-index:3;top:calc(var(--dash6-satin-switch-track-top,3.5px) + 2.75px);left:3.5px;width:31.5px;height:31.5px;box-sizing:border-box;border-radius:50%;translate:0 0;pointer-events:auto;transition:translate var(--dash6-satin-switch-duration,500ms) cubic-bezier(.22,1.16,.35,1),scale var(--dash6-satin-elastic-duration,380ms) cubic-bezier(.22,1.5,.36,1),transform 90ms ease-out}
 .bowl,.rim,.shine{position:absolute;inset:0;box-sizing:border-box;border-radius:inherit;pointer-events:none}
 .bowl{background:var(--dash6-satin-switch-lens-background,var(--dash6-satin-lens-background,linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.07))));border:var(--dash6-satin-switch-lens-border,var(--dash6-satin-lens-border,1px solid rgba(255,255,255,.47)));box-shadow:var(--dash6-satin-switch-lens-shadow,inset 0 1px 2px rgba(255,255,255,.24),inset 0 -1px 1px rgba(255,255,255,.08),0 2px 5px rgba(0,0,0,.25));backdrop-filter:var(--dash6-satin-lens-filter,blur(7px) saturate(1.15));-webkit-backdrop-filter:var(--dash6-satin-lens-filter,blur(7px) saturate(1.15))}
 .rim{border:1px solid color-mix(in srgb,var(--fan-ink) 32%,rgba(255,255,255,.2))}
 .shine{inset:1px;background:var(--dash6-satin-switch-lens-gloss,radial-gradient(ellipse at 32% 4%,rgba(255,255,255,.28),transparent 55%))}
 .icon{position:absolute;inset:0;display:grid;place-items:center;color:color-mix(in srgb,var(--fan-ink) 26%,#fff);filter:drop-shadow(0 0 3px color-mix(in srgb,var(--fan-ink) 35%,transparent))}ha-icon{--mdc-icon-size:18px}
+.countdown{position:absolute;inset:0;display:none;place-items:center;font:600 10.5px/1 system-ui;color:rgba(248,249,251,.94)}
+:host([data-mode=on]) .countdown{display:grid}:host([data-mode=on]) .icon{display:none}
 .readout{position:absolute;left:71px;top:var(--dash6-satin-switch-track-top,3.5px);height:37px;width:45px;display:grid;place-items:center;color:rgba(244,247,250,.8);pointer-events:none}
 :host([data-mode=off]) .readout{left:3.5px;width:81.5px}
 :host([data-mode=off]) .track::before,:host(:not([data-mode])) .track::before{opacity:0}
 :host([data-mode=off]) .icon{color:var(--dash6-icon-lens-white,rgba(248,249,251,.94));filter:none;opacity:var(--dash6-satin-switch-off-icon-opacity,.45)}
 :host([data-mode=off]) .rim{border-color:rgba(240,248,255,.12)}
 button{position:relative;z-index:2;width:100%;height:44px;border:0;background:transparent;padding:0;color:inherit;cursor:inherit;outline:none;-webkit-tap-highlight-color:transparent}
+.ghost{position:absolute;top:calc(var(--dash6-satin-switch-track-top,3.5px) + 2.75px);left:3.5px;width:31.5px;height:31.5px;box-sizing:border-box;border-radius:50%;display:grid;place-items:center;font:600 10px/1 system-ui;color:rgba(248,249,251,.8);border:1px solid rgba(234,241,247,.28);background:var(--dash6-satin-switch-lens-background,var(--dash6-satin-lens-background,linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.07))));box-shadow:inset 0 1px 2px rgba(255,255,255,.12),0 1px 3px rgba(0,0,0,.2);opacity:0;scale:.92;transition:opacity 150ms ease,scale var(--dash6-satin-elastic-duration,380ms) cubic-bezier(.22,1.5,.36,1);pointer-events:auto}
+button[data-mode=on] .ghost{left:1px}button[data-mode=off] .ghost{left:9px}
+button[aria-checked=true] .ghost{visibility:hidden}
+.rail:not([aria-disabled=true]):is(:hover,:focus-within) .ghost{opacity:.72;scale:1}
+.rail:not([aria-disabled=true]):is(:hover,:focus-within) .readout{opacity:0}
+button:not(:disabled):is(:hover,:focus-visible) .ghost{opacity:1;border-color:rgba(248,249,251,.65)}
 .rail:has(button:focus-visible) .track{outline:2px solid var(--primary-color);outline-offset:2px}
 .rail[aria-disabled=true]{cursor:default;opacity:.5}
 @media(hover:hover){.rail:not([aria-disabled=true]):hover .lens{scale:var(--dash6-satin-switch-hover-scale,1.07)}}
-.rail:not([aria-disabled=true]):has(button:active) .lens{scale:1;transform:scale(1.10,.86);transition-duration:90ms}
+.rail:not([aria-disabled=true]):active .lens{scale:1;transform:scale(1.10,.86);transition-duration:90ms}
 :host([data-switch-settling]) .lens{transition-property:scale,transform!important}
 .error{color:var(--error-color);font:12px/16px system-ui}.error:empty{display:none}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.lens{scale:1!important;transform:none!important}}
-</style><div class="rail" role="radiogroup" aria-disabled="true" aria-label="Lüftermodus" aria-description="Tippen wechselt Auto, Ein, Aus. Mit Pfeiltasten direkt auswählen." data-dash6-own-group><span class="track" aria-hidden="true"></span><span class="lens" aria-hidden="true"><span class="bowl"></span><span class="rim"></span><span class="icon"><ha-icon></ha-icon></span><span class="shine"></span></span><span class="readout" aria-hidden="true"></span></div><div class="error" role="alert"></div>`;
+</style><div class="rail" role="radiogroup" aria-disabled="true" aria-label="Lüftermodus" aria-description="Auto, zeitbegrenztes Ein oder Aus direkt auswählen. Pfeiltasten wechseln den Modus." data-dash6-own-group><span class="track" aria-hidden="true"></span><span class="lens" aria-hidden="true"><span class="bowl"></span><span class="rim"></span><span class="icon"><ha-icon></ha-icon></span><span class="shine"></span><span class="countdown"></span></span><span class="readout" aria-hidden="true"></span></div><div class="error" role="alert"></div>`;
    this._options=[['auto','Auto','mdi:autorenew'],['on','Ein','mdi:fan'],['off','Aus','mdi:power']];
    const rail=this.shadowRoot.querySelector('.rail');
    for(const [value,label]of this._options){
-    const b=document.createElement('button');b.type='button';b.dataset.mode=value;b.setAttribute('role','radio');b.setAttribute('aria-label',label);b.setAttribute('aria-checked','false');b.disabled=true;b.tabIndex=-1;b.addEventListener('keydown',e=>this.key(e,value));rail.append(b);
+    const b=document.createElement('button');b.type='button';b.dataset.mode=value;b.setAttribute('role','radio');b.setAttribute('aria-label',label);b.setAttribute('aria-checked','false');b.title=label;const ghost=document.createElement('span');ghost.className='ghost';ghost.dataset.mode=value;ghost.setAttribute('aria-hidden','true');ghost.textContent=value==='auto'?'Auto':value==='on'?'60':'0';b.append(ghost);b.disabled=true;b.tabIndex=-1;b.addEventListener('keydown',e=>this.key(e,value));rail.append(b);
    }
-   rail.addEventListener('click',e=>{e.stopPropagation();this.select(this._options[(this._options.findIndex(x=>x[0]===this._mode)+1)%3][0]);});
+   rail.addEventListener('click',e=>{e.stopPropagation();const mode=e.target.closest('button')?.dataset.mode||(e.target.closest('.lens')?this._mode:null);if(mode)this.select(mode);});
   }
   connectedCallback(){this._motionState=null;this.sync();}
-  setConfig(c){if(!/^(fan|switch)\./.test(c.entity||''))throw Error('Lüfter- oder Schalter-Entity auswählen.');if(c.force_switch_entity&&!/^(switch|input_boolean)\./.test(c.force_switch_entity))throw Error('Force-Schalter muss switch oder input_boolean sein.');this._config={...c};this.sync();}
+  disconnectedCallback(){this.stopTimer();}
+  setConfig(c){if(!/^(fan|switch)\./.test(c.entity||''))throw Error('Lüfter- oder Schalter-Entity auswählen.');if(c.force_switch_entity&&!/^(switch|input_boolean)\./.test(c.force_switch_entity))throw Error('Force-Schalter muss switch oder input_boolean sein.');if(c.timer_entity&&!/^timer\./.test(c.timer_entity))throw Error('Timer-Entity auswählen.');this._config={...c};this.sync();}
   set hass(h){this._hass=h;this.sync();}get hass(){return this._hass;}
   sync(){
    if(!this._config)return;
@@ -63,8 +78,39 @@ button{position:relative;z-index:2;width:100%;height:44px;border:0;background:tr
    this.shadowRoot.querySelector('.rail').setAttribute('aria-disabled',String(!valid||!!this._busy));
    for(const b of this.shadowRoot.querySelectorAll('button')){b.disabled=!valid||!!this._busy;b.setAttribute('aria-checked',String(b.dataset.mode===mode));b.tabIndex=b.dataset.mode===mode||!mode&&b.dataset.mode==='auto'?0:-1;}
    if(settle&&this.isConnected){getComputedStyle(lens).translate;this.removeAttribute('data-switch-settling');}
+   this.updateCountdown();this.syncTimer();
    this.title=!this._config.force_switch_entity?'Force-Schalter konfigurieren':!valid?'Lüfter oder Force-Schalter nicht verfügbar':'Lüftermodus';
   }
+  timerSeconds(){
+   if(!this._config?.timer_entity)return 3600;
+   const timer=this._hass?.states[this._config.timer_entity];
+   if(timer?.state==='idle')return 0;
+   if(timer?.state==='paused')return durationSeconds(timer.attributes?.remaining);
+   if(timer?.state==='active'){
+    const end=Date.parse(timer.attributes?.finishes_at);
+    return Number.isFinite(end)?Math.max(0,(end-Date.now())/1000):null;
+   }
+   return null;
+  }
+  updateCountdown(){
+   const seconds=this.timerSeconds(),text=countdownText(seconds),countdown=this.shadowRoot.querySelector('.countdown');
+   if(countdown.textContent!==text)countdown.textContent=text;
+   const duration=durationSeconds(this._hass?.states[this._config?.timer_entity]?.attributes?.duration)??3600;
+   const preview=countdownText(duration),ghost=this.shadowRoot.querySelector('.ghost[data-mode=on]');
+   if(ghost.textContent!==preview)ghost.textContent=preview;
+   const on=this.shadowRoot.querySelector('button[data-mode=on]');
+   const remaining=seconds===null?'Restzeit nicht verfügbar':seconds>=60?Math.ceil(seconds/60)+' Minuten Restzeit':Math.ceil(Math.max(0,seconds))+' Sekunden Restzeit';
+   const title=this._mode==='on'?'Ein · '+remaining:'Ein · '+Math.ceil(duration/60)+' Minuten',label=this._mode==='on'?'Ein · '+remaining:'Ein';
+   if(on.title!==title)on.title=title;
+   if(on.getAttribute('aria-label')!==label)on.setAttribute('aria-label',label);
+  }
+  syncTimer(){
+   const timer=this._hass?.states[this._config?.timer_entity];
+   const active=this.isConnected&&timer?.state==='active'&&Number.isFinite(Date.parse(timer.attributes?.finishes_at));
+   if(active&&!this._timerInterval)this._timerInterval=setInterval(()=>this.updateCountdown(),1000);
+   else if(!active)this.stopTimer();
+  }
+  stopTimer(){if(this._timerInterval){clearInterval(this._timerInterval);this._timerInterval=null;}}
   async select(mode){if(this._busy||mode===this._mode||!this._options.some(x=>x[0]===mode))return;const c=this._config,h=this._hass;if(!c)return;if(!usable(h?.states[c.entity])||!usable(h?.states[c.force_switch_entity]))return;this._busy=true;this.sync();const error=this.shadowRoot.querySelector('.error');error.textContent='';try{const main=c.entity,force=c.force_switch_entity;const steps=mode==='off'?[[force,false],[main,false]]:mode==='auto'?[[force,false],[main,true]]:[[main,true],[force,true]];for(const [id,on]of steps){if(h.states[id]?.state===(on?'on':'off'))continue;await h.callService(id.split('.')[0],on?'turn_on':'turn_off',{entity_id:id});}}catch(e){error.textContent=e.message||String(e);}finally{this._busy=false;this.sync();}}
   key(e,mode){
    const opts=this._options.map(x=>x[0]);
@@ -79,8 +125,8 @@ button{position:relative;z-index:2;width:100%;height:44px;border:0;background:tr
  customElements.define('dash6-fan-mode-switch',TripleSwitch);
  class FanCard extends HTMLElement{
   constructor(){super();this.attachShadow({mode:'open'}).innerHTML='<style>:host{display:block;min-width:min(360px,calc(100vw - 32px))!important}.content{width:100%;min-width:0}.content>*{display:block;width:100%;min-width:0}.error{color:var(--error-color)}</style><div class="content"></div><div class="error" role="alert"></div>';}
-  static getConfigElement(){const e=document.createElement('dash6-basic-editor');e.schema=[{name:'entity',label:'Haupt-Entity des Lüfters',selector:{entity:{domain:['fan','switch']}}},{name:'force_switch_entity',label:'Force-Schalter für Dauerbetrieb',selector:{entity:{domain:['switch','input_boolean']}}},{name:'name',label:'Name',selector:{text:{}}},{name:'power_entity',label:'Leistungssensor',selector:{entity:{domain:'sensor'}}},{name:'energy_entity',label:'Energiesensor',selector:{entity:{domain:'sensor'}}}];return e;}
-  async setConfig(c){this._config=structuredClone(c);const token=this._token=(this._token||0)+1;let d=structuredClone(c.definition||{type:'custom:button-card',entity:c.entity,name:c.name||'Lüfter',show_icon:false,show_state:true,custom_fields:{},styles:{grid:[{'grid-template-areas':'"device n" "device s"'},{'grid-template-columns':'132px minmax(0,1fr)'}],card:[{padding:'12px'}]}});d.entity=c.entity;d.custom_fields??={};if(c.name){d.variables={...d.variables,dash6_fan_name:c.name};d.custom_fields.title='[[[ return variables.dash6_fan_name; ]]]';}d.variables={...d.variables,dash6_force:c.force_switch_entity,dash6_power:c.power_entity,dash6_energy:c.energy_entity};d.custom_fields.status="[[[ const f=states[variables.dash6_force]; if(entity.state==='off')return 'Aus'; if(!f||entity.state!=='on'||!['on','off'].includes(f.state))return 'Nicht verfügbar'; return f.state==='on'?'Ein · Dauerbetrieb':'Auto'; ]]]";if(c.power_entity||c.energy_entity)d.custom_fields.values="[[[ return [variables.dash6_power,variables.dash6_energy].filter(Boolean).map(id=>{const s=states[id];return s?s.state+' '+(s.attributes.unit_of_measurement||''):'—';}).join('<br>'); ]]]";if(c.power_entity){d.custom_fields.graph={card:{type:'custom:mini-graph-card',entities:[{entity:c.power_entity}],hours_to_show:24,show:{name:false,icon:false,state:false,legend:false,labels:false},points_per_hour:2,group_by:'interval',aggregate_func:'avg',upper_bound:'~100',update_interval:900}};}if(!c.definition){d.show_name=false;d.show_state=false;d.styles.grid=[{'grid-template-areas':'"device title values" "device status values" "graph graph graph"'},{'grid-template-columns':'132px minmax(0,1fr) minmax(70px,auto)'}];d.custom_fields.title??='Lüfter';}d.custom_fields.device={card:{type:'custom:dash6-fan-mode-switch',entity:c.entity,force_switch_entity:c.force_switch_entity}};d.triggers_update=[...new Set([...(d.triggers_update||[]),c.entity,c.force_switch_entity].filter(Boolean))];for(const row of d.styles?.grid||[])if(row['grid-template-columns'])row['grid-template-columns']='132px minmax(0,1fr) minmax(70px,auto)';d.styles??={};d.styles.custom_fields??={};d.styles.custom_fields.device=[{'align-self':'start'},{'padding-left':'8px'},{'padding-top':'8px'},{'z-index':'3'}];try{const child=await window.__dash6Cards.create(d);if(token!==this._token)return;child.hass=this._hass;this._card=child;this.shadowRoot.querySelector('.content').replaceChildren(child);}catch(e){this.shadowRoot.querySelector('.error').textContent=e.message||String(e);}}
+  static getConfigElement(){const e=document.createElement('dash6-basic-editor');e.schema=[{name:'entity',label:'Haupt-Entity des Lüfters',selector:{entity:{domain:['fan','switch']}}},{name:'force_switch_entity',label:'Force-Schalter für Dauerbetrieb',selector:{entity:{domain:['switch','input_boolean']}}},{name:'timer_entity',label:'Optionaler Dauerbetrieb-Timer',selector:{entity:{domain:'timer'}}},{name:'name',label:'Name',selector:{text:{}}},{name:'power_entity',label:'Leistungssensor',selector:{entity:{domain:'sensor'}}},{name:'energy_entity',label:'Energiesensor',selector:{entity:{domain:'sensor'}}}];return e;}
+  async setConfig(c){this._config=structuredClone(c);const token=this._token=(this._token||0)+1;let d=structuredClone(c.definition||{type:'custom:button-card',entity:c.entity,name:c.name||'Lüfter',show_icon:false,show_state:true,custom_fields:{},styles:{grid:[{'grid-template-areas':'"device n" "device s"'},{'grid-template-columns':'132px minmax(0,1fr)'}],card:[{padding:'12px'}]}});d.entity=c.entity;d.custom_fields??={};if(c.name){d.variables={...d.variables,dash6_fan_name:c.name};d.custom_fields.title='[[[ return variables.dash6_fan_name; ]]]';}d.variables={...d.variables,dash6_force:c.force_switch_entity,dash6_power:c.power_entity,dash6_energy:c.energy_entity};d.custom_fields.status="[[[ const f=states[variables.dash6_force]; if(entity.state==='off')return 'Aus'; if(!f||entity.state!=='on'||!['on','off'].includes(f.state))return 'Nicht verfügbar'; return f.state==='on'?'Ein · Dauerbetrieb':'Auto'; ]]]";if(c.power_entity||c.energy_entity)d.custom_fields.values="[[[ return [variables.dash6_power,variables.dash6_energy].filter(Boolean).map(id=>{const s=states[id];return s?s.state+' '+(s.attributes.unit_of_measurement||''):'—';}).join('<br>'); ]]]";if(c.power_entity){d.custom_fields.graph={card:{type:'custom:mini-graph-card',entities:[{entity:c.power_entity}],hours_to_show:24,show:{name:false,icon:false,state:false,legend:false,labels:false},points_per_hour:2,group_by:'interval',aggregate_func:'avg',upper_bound:'~100',update_interval:900}};}if(!c.definition){d.show_name=false;d.show_state=false;d.styles.grid=[{'grid-template-areas':'"device title values" "device status values" "graph graph graph"'},{'grid-template-columns':'132px minmax(0,1fr) minmax(70px,auto)'}];d.custom_fields.title??='Lüfter';}d.custom_fields.device={card:{type:'custom:dash6-fan-mode-switch',entity:c.entity,force_switch_entity:c.force_switch_entity,timer_entity:c.timer_entity}};d.triggers_update=[...new Set([...(d.triggers_update||[]),c.entity,c.force_switch_entity,c.timer_entity].filter(Boolean))];for(const row of d.styles?.grid||[])if(row['grid-template-columns'])row['grid-template-columns']='132px minmax(0,1fr) minmax(70px,auto)';d.styles??={};d.styles.custom_fields??={};d.styles.custom_fields.device=[{'align-self':'start'},{'padding-left':'8px'},{'padding-top':'8px'},{'z-index':'3'}];try{const child=await window.__dash6Cards.create(d);if(token!==this._token)return;child.hass=this._hass;this._card=child;this.shadowRoot.querySelector('.content').replaceChildren(child);}catch(e){this.shadowRoot.querySelector('.error').textContent=e.message||String(e);}}
   set hass(h){this._hass=h;if(this._card)this._card.hass=h;}get hass(){return this._hass;}
   getCardSize(){return this._card?.getCardSize?.()||3;}
  }

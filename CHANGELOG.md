@@ -1,3 +1,9 @@
+## 3.1.28 / Cards 2.4.28
+
+- Show direct fan mode targets on hover and focus with matching circular hit areas.
+- Support optional native timer entities with live remaining minutes, final-minute seconds, pause and interval cleanup.
+- Keep countdown updates independent of switch travel animations.
+
 ## 3.1.27 / Cards 2.4.27
 
 - Replace segmented fan modes with one round Satin lens and three positions: Auto, On, Off.
