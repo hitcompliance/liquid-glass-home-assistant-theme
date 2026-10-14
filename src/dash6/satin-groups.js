@@ -2,7 +2,7 @@ import {inDashboardScope} from './scope.js';
 import {thermostatAncestor,thermostatModeGroup} from './satin-climate.js';
 // Material only: original controls retain selection, keyboard handling and actions.
 const controllers=new WeakMap();
-const itemSelector='button,[role=button],[role=radio],[role=tab],[role=checkbox],[role=menuitemradio],[role=menuitemcheckbox],ha-control-button,ha-outlined-icon-button,ha-icon-button,ha-button,mushroom-button';
+const itemSelector='button,[role=button],[role=radio],[role=tab],[role=checkbox],[role=menuitemradio],[role=menuitemcheckbox],ha-control-button,ha-outlined-icon-button,ha-icon-button,ha-button,mushroom-button,ha-tab-group-tab';
 const knownGroups='.device-tabs,.shoe-scenes,.scene-buttons,.button-group,.modes,.preset-options,.mode-buttons,.preset-buttons,.transport,.actions,.buttons,.choice-grid,.room-grid,.dock-grid,.empty-mode-grid,.actions-row,[role=tablist],[role=radiogroup],[role=group],[role=toolbar],[role=menu]';
 export const satinGroupCSS=`
 [data-dash6-satin-group]{isolation:isolate;box-sizing:border-box!important;border-radius:10px!important;background:var(--dash6-satin-control-background)!important;border:var(--dash6-satin-control-border)!important;box-shadow:var(--dash6-satin-control-shadow)!important;gap:0!important;padding:3px!important}
@@ -16,31 +16,47 @@ export const satinGroupCSS=`
 :host(mushroom-button-group) [data-dash6-satin-group]{width:100%!important}
 :host(mushroom-button-group) [data-dash6-satin-group] ::slotted(*){margin-inline:0!important;--bg-color:transparent;--bg-color-disabled:transparent;--control-border-radius:8px}
 :host(ha-control-button-group) [data-dash6-satin-group] ::slotted(*){margin-inline:0!important;--control-button-background-color:transparent;--control-button-background-opacity:0;--control-button-border-radius:8px}
+:host(ha-tab-group[data-dash6-satin-navigation]) .tabs ::slotted(ha-tab-group-tab[data-dash6-satin-group-item]){position:relative;z-index:2!important;background:transparent!important;box-shadow:none!important;border-radius:8px!important;scale:1!important;translate:0!important;margin-inline:0!important}
 @media(prefers-reduced-motion:reduce){[data-dash6-satin-group]>.dash6-satin-group-lens{transition:none!important;scale:1!important}}
 `;
-function directItems(group){const slot=group.querySelector(':scope>slot');if(slot)return slot.assignedElements({flatten:true}).filter(el=>el.matches(itemSelector));return [...group.children].filter(el=>el.matches(itemSelector));}
-function selected(item){const sources=[item];if(item.shadowRoot)sources.push(...item.shadowRoot.querySelectorAll('[aria-pressed],[aria-selected],[aria-checked],.selected,.active'));return sources.some(el=>['aria-pressed','aria-selected','aria-checked'].some(name=>el.getAttribute(name)==='true')||el.classList.contains('selected')||el.classList.contains('active'));}
+export function satinNavigationHost(host){return host?.localName==='ha-tab-group'&&host.getRootNode().host?.localName==='hui-root'&&!!host.closest('.header,.toolbar,.tab-bar,app-toolbar');}
+function nativeNavigation(group){const host=group?.getRootNode?.().host;return satinNavigationHost(host)&&group===host.shadowRoot?.querySelector('.tabs');}
+function directItems(group){
+ const native=nativeNavigation(group),slot=group.querySelector(native?'slot[name=nav]':':scope>slot');
+ const items=slot?slot.assignedElements({flatten:true}).filter(el=>el.matches(itemSelector)):[...group.children].filter(el=>el.matches(itemSelector));
+ return native?items.filter(item=>item.localName==='ha-tab-group-tab'&&!item.hidden&&!item.classList.contains('hide-tab')&&item.getAttribute('aria-hidden')!=='true'&&getComputedStyle(item).display!=='none'&&getComputedStyle(item).visibility!=='hidden'):items;
+}
+function selected(item){
+ if(item.localName==='ha-tab-group-tab'){
+  // Lit reflects active/ARIA after updating its boolean property. False is
+  // authoritative too, so the outgoing tab cannot briefly retain a second lens.
+  if(typeof item.active==='boolean')return item.active;
+  if(item.hasAttribute('active')||item.selected===true)return true;
+ }
+ const sources=[item];if(item.shadowRoot)sources.push(...item.shadowRoot.querySelectorAll('[aria-pressed],[aria-selected],[aria-checked],.selected,.active'));return sources.some(el=>['aria-pressed','aria-selected','aria-checked'].some(name=>el.getAttribute(name)==='true')||el.classList.contains('selected')||el.classList.contains('active'));
+}
 export function satinGroupCandidate(group){
  if(group?.hasAttribute?.('data-dash6-own-group'))return false;
  for(let n=group;n;n=n.assignedSlot||n.parentNode||n.host)if(n.localName==='hui-media-control-card'||n.localName==='firemote-card')return false;
  if(group?.nodeType!==1||group.getRootNode().host?.localName==='dash6-glass-segments')return false;
  if(thermostatAncestor(group)&&!thermostatModeGroup(group))return false;
  const host=group.getRootNode().host;
- if(['ha-tab-group','ha-tabs','wa-tab-group','app-toolbar'].includes(host?.localName))return false;
+ if(['ha-tab-group','ha-tabs','wa-tab-group','app-toolbar'].includes(host?.localName))return nativeNavigation(group)&&directItems(group).length>=1;
  if(host?.localName==='dash6-vacuum-card'&&group.classList.contains('actions-row'))return false;
  const explicit=group.matches(knownGroups)||['ha-control-select','ha-control-button-group','mushroom-button-group'].includes(host?.localName)&&group.classList.contains('container');
  return explicit&&directItems(group).length>=2;
 }
 export function bindSatinGroup(group){
  if(controllers.has(group))return controllers.get(group);if(!satinGroupCandidate(group))return;
- const lenses=new Map(),marked=new Set(),nestedObservers=new Map(),staticPosition=getComputedStyle(group).position==='static';let queued=false,disposed=false;
+ const lenses=new Map(),marked=new Set(),nestedObservers=new Map(),staticPosition=getComputedStyle(group).position==='static',nativeHost=nativeNavigation(group)?group.getRootNode().host:null;let queued=false,disposed=false;
  function lensFor(item){if(lenses.has(item))return lenses.get(item);const lens=document.createElement('span');lens.className='dash6-satin-group-lens';lens.setAttribute('aria-hidden','true');group.append(lens);lenses.set(item,lens);return lens;}
  function update(){
-  queued=false;if(disposed)return;const enabled=inDashboardScope()&&satinGroupCandidate(group)&&getComputedStyle(group).getPropertyValue('--dash6-satin-enabled').trim()==='1';group.toggleAttribute('data-dash6-satin-group',enabled);group.toggleAttribute('data-dash6-satin-group-static',enabled&&staticPosition);
-  const items=directItems(group),activeItems=enabled?items.filter(selected):[];
+  queued=false;if(disposed)return;const items=directItems(group),selectedItems=items.filter(selected),enabled=inDashboardScope()&&satinGroupCandidate(group)&&getComputedStyle(group).getPropertyValue('--dash6-satin-enabled').trim()==='1'&&(!nativeHost||selectedItems.length===1);group.toggleAttribute('data-dash6-satin-group',enabled);group.toggleAttribute('data-dash6-satin-group-static',enabled&&staticPosition);
+  nativeHost?.toggleAttribute('data-dash6-satin-navigation',enabled);
+  const activeItems=enabled?selectedItems:[];
   if(activeItems.length===1&&lenses.size===1&&!lenses.has(activeItems[0])){const lens=lenses.values().next().value;lenses.clear();lenses.set(activeItems[0],lens);}
-  for(const item of marked)if(!enabled||!items.includes(item)){item.removeAttribute('data-dash6-satin-group-item');marked.delete(item);resize.unobserve(item);}
-  if(enabled)for(const item of items)if(!marked.has(item)){item.setAttribute('data-dash6-satin-group-item','');marked.add(item);resize.observe(item);}
+  for(const item of marked)if(!enabled||!items.includes(item)){item.removeAttribute('data-dash6-satin-group-item');if(nativeHost)item.removeAttribute('data-dash6-satin-navigation-item');marked.delete(item);resize.unobserve(item);}
+  if(enabled)for(const item of items)if(!marked.has(item)){item.setAttribute('data-dash6-satin-group-item','');if(nativeHost)item.setAttribute('data-dash6-satin-navigation-item','');marked.add(item);resize.observe(item);}
   for(const item of items)if(item.shadowRoot&&!nestedObservers.has(item.shadowRoot)){const o=new MutationObserver(schedule);o.observe(item.shadowRoot,{subtree:true,attributes:true,attributeFilter:['aria-pressed','aria-selected','aria-checked','class'],childList:true});nestedObservers.set(item.shadowRoot,o);}
   for(const [item,lens] of lenses)if(!activeItems.includes(item)){lens.remove();lenses.delete(item);}if(!enabled)return;
   const base=group.getBoundingClientRect(),scrollX=group.scrollLeft,scrollY=group.scrollTop;
@@ -48,11 +64,16 @@ export function bindSatinGroup(group){
  }
  function schedule(){if(!queued&&!disposed){queued=true;queueMicrotask(update);}}
  const observer=new MutationObserver(records=>{if(records.some(r=>r.type==='attributes'&&!r.target.classList?.contains('dash6-satin-group-lens')||r.type==='childList'&&[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&!n.classList?.contains('dash6-satin-group-lens'))))schedule();});
- observer.observe(group,{subtree:true,attributes:true,attributeFilter:['aria-pressed','aria-selected','aria-checked','class','disabled'],childList:true});
+ observer.observe(group,{subtree:true,attributes:true,attributeFilter:['aria-pressed','aria-selected','aria-checked','active','selected','class','disabled'],childList:true});
+ // Assigned tabs live outside .tabs' shadow subtree. Read their native state
+ // without replacing WebAwesome's selection, focus or navigation handlers.
+ const nativeObserver=nativeHost?new MutationObserver(schedule):null;
+ nativeObserver?.observe(nativeHost,{subtree:true,attributes:true,attributeFilter:['active','selected','aria-selected','aria-disabled','class','disabled','hidden','style'],childList:true});
+ nativeHost?.addEventListener('wa-tab-show',schedule);nativeHost?.addEventListener('wa-tab-hide',schedule);nativeHost?.shadowRoot.addEventListener('scroll',schedule,true);
  const resize=new ResizeObserver(schedule);resize.observe(group);
  const over=event=>{const item=event.composedPath().find(el=>marked.has(el));for(const [target,lens] of lenses)target===item&&!item.disabled&&item.getAttribute('aria-disabled')!=='true'?lens.style.scale='var(--dash6-satin-segment-hover-scale,1.035)':lens.style.removeProperty('scale');};
  const reset=()=>{for(const lens of lenses.values())lens.style.removeProperty('scale');};
  const press=event=>{const item=event.composedPath().find(el=>marked.has(el));if(!item||item.disabled||item.getAttribute('aria-disabled')==='true')return;const lens=lenses.get(item);if(lens)lens.style.scale='.97';};
  const listeners={pointerover:over,pointerleave:reset,pointerdown:press,pointerup:reset,pointercancel:reset,lostpointercapture:reset,slotchange:schedule};for(const [name,handler] of Object.entries(listeners))group.addEventListener(name,handler);
- const api={update,dispose(){disposed=true;observer.disconnect();for(const o of nestedObservers.values())o.disconnect();resize.disconnect();for(const [name,handler] of Object.entries(listeners))group.removeEventListener(name,handler);for(const lens of lenses.values())lens.remove();for(const item of marked)item.removeAttribute('data-dash6-satin-group-item');group.removeAttribute('data-dash6-satin-group');group.removeAttribute('data-dash6-satin-group-static');controllers.delete(group);}};controllers.set(group,api);update();return api;
+ const api={update,dispose(){disposed=true;observer.disconnect();nativeObserver?.disconnect();nativeHost?.removeEventListener('wa-tab-show',schedule);nativeHost?.removeEventListener('wa-tab-hide',schedule);nativeHost?.shadowRoot.removeEventListener('scroll',schedule,true);nativeHost?.removeAttribute('data-dash6-satin-navigation');for(const o of nestedObservers.values())o.disconnect();resize.disconnect();for(const [name,handler] of Object.entries(listeners))group.removeEventListener(name,handler);for(const lens of lenses.values())lens.remove();for(const item of marked){item.removeAttribute('data-dash6-satin-group-item');if(nativeHost)item.removeAttribute('data-dash6-satin-navigation-item');}group.removeAttribute('data-dash6-satin-group');group.removeAttribute('data-dash6-satin-group-static');controllers.delete(group);}};controllers.set(group,api);update();return api;
 }
