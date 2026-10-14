@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {errorIndicator,reportError} from './error-indicator.js';
 import {bindThemePreferences,unbindThemePreferences} from './material.js';
 import {LitElement,html,css} from 'lit';

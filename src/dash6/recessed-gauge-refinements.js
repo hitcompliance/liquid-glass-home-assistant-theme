@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Recessed thermostat tracks; glass handles retain their native drag behavior.
 (() => {
  const menuCSS=`:host dialog{background:linear-gradient(135deg,rgba(249,251,253,.67),rgba(220,230,240,.51))!important;box-shadow:inset 0 1px 2px rgba(255,255,255,.85),0 22px 46px rgba(0,0,0,.58),0 5px 14px rgba(0,0,0,.35)!important;backdrop-filter:blur(18px) saturate(1.2)!important;-webkit-backdrop-filter:blur(18px) saturate(1.2)!important}:host dialog button.preset-menu-row.preset-menu-row.preset-menu-row.preset-menu-row.preset-menu-row,:host dialog button.preset-menu-row.preset-menu-row.preset-menu-row.preset-menu-row.preset-menu-row:active{scale:1!important;translate:0!important;transform:none!important;transition:none!important}`;

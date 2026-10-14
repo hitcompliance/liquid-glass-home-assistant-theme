@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import './config-editor.js';
 import {LitElement,html} from 'lit';
 import {defaults} from './media-card.js';

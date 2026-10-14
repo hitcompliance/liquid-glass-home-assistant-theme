@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {bindThemePreferences,unbindThemePreferences} from './material.js';
 
 // This lens previews the native range locally; it never sends device commands.

@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Reserve a real 90px summary region before optional row modules.
 (() => {
  customElements.whenDefined('dash6-lightgroup-card-v2').then(() => {

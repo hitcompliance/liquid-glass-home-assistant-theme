@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import './config-editor.js';
 import {SWITCH_TYPES} from './glass-switch.js';
 import {Base,copy,el,button,emit,loadEntityRegistry,addStyle,clamp,automaticSegments,suggestions,normalizeConfig} from './light-cards.js';

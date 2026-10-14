@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Shared light switches and exact spacing, scoped to the active Satin theme.
 (() => {
  const enabled=h=>getComputedStyle(h).getPropertyValue('--dash6-satin-enabled').trim()==='1';

@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {html} from 'lit';
 import {ConfigEditor} from './config-editor.js';
 import {IKEA_DEFAULTS} from './ikea-card.js';

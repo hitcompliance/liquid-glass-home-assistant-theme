@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Door status uses the same switch element as the IKEA cards.
 (() => {
  const switchSheet=new CSSStyleSheet();switchSheet.replaceSync(`

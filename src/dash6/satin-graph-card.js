@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {LitElement,html,css} from 'lit';
 import {ikeaBackgroundGraph,isLegacyIkea} from './ikea-card.js';
 import {bindSatinMode,unbindSatinMode} from './satin-surface.js';

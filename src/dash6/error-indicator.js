@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // The deadline belongs to the error occurrence, never to a card re-render.
 export class ErrorNotice {
   constructor({timer=(fn,ms)=>setTimeout(fn,ms),clearTimer=handle=>clearTimeout(handle),now=Date.now,onChange=()=>{}}={}){Object.assign(this,{timer,clearTimer,now,onChange});this.message='';this.deadline=0;}

@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Reusable HomePod card. Keep HA artwork, transport and the shared Satin slider.
 class HomePodCard extends HTMLElement {
   static async getConfigElement() {

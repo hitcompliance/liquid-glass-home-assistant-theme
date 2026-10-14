@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {SWITCH_SCHEMA} from './glass-switch.js';
 import './config-editor.js';
 import {LitElement,html,css} from 'lit';

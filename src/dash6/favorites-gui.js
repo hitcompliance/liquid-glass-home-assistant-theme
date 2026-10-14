@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {LitElement, html, css} from 'lit';
 import {materializeDynamicCard, resolveRoomSlot} from './favorites-dynamic-catalog.js';
 import {extractCatalog, toggleSelection, selectionState, filterSelectedTree, normalizeOptions, groupFavorites, sourceViewKey, compareSourceViews, DEFAULT_DOMAIN_ORDER, normalizeViewLabel} from './favorites-model.js';

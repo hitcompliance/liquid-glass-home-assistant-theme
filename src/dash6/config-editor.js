@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {LitElement,html,css} from 'lit';
 const clone=x=>structuredClone(x);
 export const EDITOR_VERSION='2026.10.04-36';

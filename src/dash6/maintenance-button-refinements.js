@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Presentation only: the native maintenance confirmation and reset stay intact.
 (() => {
  const target='.maintenance-dialog button:is(.maintenance-reset,.confirm-yes,.confirm-cancel)';

@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {scopedHass,watchRegistries} from './shared-data.js';
 import {errorIndicator,reportError} from './error-indicator.js';
 import {bindThemePreferences,unbindThemePreferences} from './material.js';

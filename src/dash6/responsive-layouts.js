@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {installNativeResponsiveSections} from './sections-responsive.js';
 installNativeResponsiveSections();
 

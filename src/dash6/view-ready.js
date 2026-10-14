@@ -31,7 +31,7 @@ function probe(){
   if(!ids.has(el))ids.set(el,++nextId);
   key.push(ids.get(el));
   if(el.isUpdatePending)pending=true;
-  if((tag==='dash6-profile-card'||tag==='dash6-render-card')&&!el._child&&!el._error)pending=true;
+  if(['dash6-profile-card','dash6-render-card','dash6-direct-card'].includes(tag)&&!el._child&&!el._error)pending=true;
   if(tag==='dash6-auto-entities'&&el._dash6InitialBuilt===false&&!el.error)pending=true;
   if(tag==='dash6-embedded-view-card'&&!el._activeViewElement&&!el._error&& !el.querySelector('.error'))pending=true;
   if(tag==='img'&&!el.complete)pending=true;

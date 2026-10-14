@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {LitElement,html,css} from 'lit';
 import {bindThemePreferences,unbindThemePreferences} from './material.js';
 class AreaHeader extends LitElement{

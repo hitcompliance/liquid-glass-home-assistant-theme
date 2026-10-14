@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Three explicit fan modes, with serial state changes and no startup commands.
 (() => {
  const usable=s=>s&&['on','off'].includes(s.state);

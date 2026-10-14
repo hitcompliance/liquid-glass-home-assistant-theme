@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {displacementPixels} from './displacement-map.js';
 import {LitElement,html,svg,css} from 'lit';
 import {surface,} from './material.js';

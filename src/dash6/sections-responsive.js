@@ -91,13 +91,13 @@ function dynamicEmpty(section) {
  let fixed = false;
  scan(section, node => {
   if (node.localName === 'dash6-auto-entities') {dynamic.push(Boolean(node._dash6Signature) && node.empty);return false;}
-  if (node.localName === 'dash6-room-slot-card') {dynamic.push(Boolean(node.empty));return false;}
+  if (['dash6-room-slot-card','dash6-domain-card'].includes(node.localName)) {dynamic.push(Boolean(node.empty));return false;}
   if (['dash6-media-card','dash6-appletv-card'].includes(node.localName)
    || (node.localName === 'dash6-fast-block-card' && node._child)) fixed = true;
   // A real static card beside an empty list keeps the section visible. Stack,
   // grid and profile adapters are structural wrappers, not static content.
   if (node.localName.endsWith('-card') && !['hui-card','hui-heading-card','hui-grid-card','hui-horizontal-stack-card',
-   'hui-vertical-stack-card','dash6-stack-card','dash6-render-card','dash6-profile-card','dash6-fast-block-card',
+   'hui-vertical-stack-card','dash6-stack-card','dash6-render-card','dash6-profile-card','dash6-direct-card','dash6-inline-layout','dash6-domain-grid','dash6-fast-block-card',
    'layout-card','mod-card'].includes(node.localName) && !node.hidden
    && getComputedStyle(node).display !== 'none') fixed = true;
  });

@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Previously live-verified DASH6 refinements, now owned by the published bundle.
 ;(()=>{
 const CLIMATE_PATH='/dash-6/heizung-klima';

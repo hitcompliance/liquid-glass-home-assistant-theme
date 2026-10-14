@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Keep the native media browser action; present it as the last transport button.
 (() => {
  const managed=card=>{if(card._satinMediaHeader)return true;for(let n=card;n;n=n.assignedSlot||n.parentNode||n.host)if(['dash6-homepod-card','dash6-appletv-card','dash6-media-card'].includes(n.localName))return true;return false;};

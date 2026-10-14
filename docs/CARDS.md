@@ -25,6 +25,9 @@
 | `custom:dash6-embedded-view-card` | Vorhandene View einbetten; `view` oder dynamisches Ziel |
 | `custom:dash6-ultra-card` | Ultra-Card mit integrierten DASH6-Editoren; native Ultra-Konfiguration |
 | `custom:dash6-render-card` | Bestehende Karte mit DASH6-Adapter; `definition` |
+| `custom:dash6-direct-card` | Vollständige Inline-Karte mit Material-/Bedienungsadaptern; `card` |
+| `custom:dash6-domain-card` | Bekannte und dynamische Inline-Karten; `cards`, optional `query` |
+| `custom:dash6-inline-layout` | Inline-Layout mit Template-Sichtbarkeitsregeln; `card`, `query`, `visibility` |
 | `custom:dash6-profile-card` | Neutrales Beispielprofil; `profile`, optional `overrides` |
 | `custom:dash6-satin-native-card` | Button-/Mushroom-Icon-Schalter; Vendor-Karte unter `definition` |
 | `custom:dash6-satin-graph-card` | Button-Karte mit Hintergrundgraph; Vendor-Karte unter `definition` |
@@ -37,6 +40,41 @@
 | `custom:liquid-glass-card` | Optionaler ursprünglicher SVG-Wrapper; `card` und `glass` |
 
 `dash6-glass-segments`, Slider-Linsen, Dialogelemente und Editoren sind interne Komponenten. Sie werden von den Karten aufgebaut. `custom:dash6-pill-layout` und `custom:dash6-inline-pill-layout` sind Layouttypen für Layout Card; `custom:dash6-sections-view` ist ein Viewtyp, keine Card.
+
+## Direkte Inline-Konfiguration
+
+Eigene Spezialkarten können direkt in einer View stehen. `custom:dash6-direct-card` verwendet unter `card` die vollständige native oder fremde Konfiguration und stellt die gemeinsamen Material- und Interaktionsadapter bereit. Fremdkarten müssen weiterhin separat installiert sein. Der native Karteneditor und die vollständige Konfiguration bleiben über den Wrapper-Editor erreichbar.
+
+```yaml
+type: custom:dash6-direct-card
+card:
+  type: entities
+  entities:
+    - sensor.demo_temperature
+```
+
+Für eine bekannte Kartenliste und spätere dynamische Ergänzungen dient `custom:dash6-domain-card`. [Das README enthält ein vollständiges Rasterbeispiel](../README.md#direkte-yaml-karten-und-dynamische-inhalte).
+
+| Schlüssel | Bedeutung |
+| --- | --- |
+| `cards` | Vollständige bekannte Kartendefinitionen; werden vor der ersten Template-Antwort dargestellt |
+| `known_entity_ids` | Aus dynamischen Ergänzungen ausgeschlossene IDs; ohne Angabe werden sie aus `cards` ermittelt |
+| `query.template` | Inline gespeichertes HA-Jinja-Template; liefert eine Kartenliste oder mit `index` eine Liste von Ergebnissen |
+| `query.index` | Optionaler Index der Kartenliste innerhalb der Template-Ausgabe |
+| `query.canonical` | `true`, wenn die gewählte Ausgabe bereits vollständige Kartenobjekte enthält; JSON-Strings innerhalb der Karten bleiben unverändert |
+| `query.group` | Freier Gruppenname; unterschiedliche Templates derselben Gruppe teilen pro Verbindung eine Subscription |
+| `combine` | `true` führt bekannte und dynamische Karten in einem gemeinsamen Raster zusammen |
+| `columns`, `mobile_columns` | Eine bis vier Desktopspalten und gewünschte Mobilspalten; bei einem kombinierten Raster jeweils mindestens eine |
+| `mobile_breakpoint` | Wechsel zur mobilen Spaltenzahl; Standard `700` |
+| `edge_alignment` | `flush`: bündiges Desktop-Raster mit äußerer Überschrift; Mobilansicht mit 8px Innenabstand |
+| `container`, `card_param` | Bei getrennten Listen: Container für dynamische Karten und Zielfeld; Standard vertikaler Stack und `cards` |
+| `grid_options` | Native HA-Grid-Angaben des Containers |
+
+Die Template-Ausgabe bestimmt nach dem ersten Ergebnis auch, welche bekannten Entity-Karten weiterhin zur Liste gehören. Fehlende und ausgeblendete Entities werden ausgeschlossen. Ein leerer Domain-Block signalisiert der Sections-Ansicht, dass er entfallen kann. Identische Ergebnisse und Zustandsupdates erzeugen keine neue Container-Karte.
+
+`custom:dash6-inline-layout` enthält das vollständige Layout unter `card`. Seine `query` verwendet dieselben Template-/Gruppenschlüssel. `visibility` ist eine Liste aus `{id, indices, mode}`: Die referenzierten Ergebnispositionen müssen boolesche Werte liefern; `mode: any` verlangt mindestens einen wahren Wert, sonst müssen alle wahr sein. Betroffene vorhandene Layoutelemente tragen die Klasse `responsive-row-<id>`, `responsive-col-<id>` oder `responsive-mod-<id>`. Diese Adapteroption ist für bestehende Layouts mit solchen IDs gedacht; native HA-Sichtbarkeit bleibt für einfache neue Layouts die passende Wahl.
+
+Direkte Karten und Templates benötigen keine Profil- oder Raumkonfigurationsdatei. Die vorhandenen Beispielprofile und ihre API bleiben für bestehende Konfigurationen verfügbar.
 
 ## Licht, Lichtgruppe und Schuhschrank
 

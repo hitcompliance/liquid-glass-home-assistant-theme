@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Native controls retain their events; additions only render material and explicit configuration.
 (() => {
  const copy=x=>structuredClone(x),edit=()=>new URLSearchParams(location.search).get('edit')==='1';

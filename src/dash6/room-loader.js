@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Room-scoped, opt-in loader. Original profiles remain available for backups.
 (()=>{
  const clone=x=>structuredClone(x),queries=new Map();

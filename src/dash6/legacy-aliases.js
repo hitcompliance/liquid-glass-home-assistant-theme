@@ -1,3 +1,4 @@
+import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Retain the public DASH5 v2 card names while using the current Satin implementation.
 // Remove an older standalone resource before migrating: Custom Elements cannot be redefined.
 const aliases={
