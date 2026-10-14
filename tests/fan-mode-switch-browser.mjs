@@ -41,6 +41,13 @@ try{for(const engine of [chromium,webkit]){
  await page.evaluate(async()=>{await stamp('on','off');calls=[];});await radio('auto').press('ArrowDown');assert.deepEqual(await page.evaluate(()=>calls),[['input_boolean','turn_on','input_boolean.example_force']],'Down selects the next mode');
  await page.evaluate(async()=>{await stamp('off','off');calls=[];});await radio('off').press('ArrowUp');assert.deepEqual(await page.evaluate(()=>calls),[['fan','turn_on','fan.example'],['input_boolean','turn_on','input_boolean.example_force']],'Up selects the previous mode');
  assert.ok(await control.getAttribute('aria-label'),'control has accessible name');assert.equal(await page.evaluate(()=>[...sw.shadowRoot.querySelectorAll('button')].filter(b=>b.tabIndex===0).length),1,'radio group has one keyboard tab stop');
+ // A displayed Off state can still have an enabled Force switch. Selecting
+ // the active Off lens normalizes that pair without switching the fan again.
+ await page.evaluate(async()=>{await stamp('off','on');await sleep(500);calls=[];travel=[];});await page.locator('#fan .lens').click();
+ assert.deepEqual(await page.evaluate(()=>calls),[['input_boolean','turn_off','input_boolean.example_force']],'active Off lens disables an enabled Force switch');
+ assert.equal(await page.evaluate(()=>sw.shadowRoot.querySelector('button[aria-checked=true]').dataset.mode),'off');assert.equal(await page.evaluate(()=>travel.length),0,'normalizing Force keeps the Off lens stationary');
+ await page.evaluate(async()=>{await stamp('off','off');calls=[];travel=[];});await page.locator('#fan .lens').click();assert.deepEqual(await page.evaluate(()=>calls),[],'complete Off pair is a no-op');assert.equal(await page.evaluate(()=>travel.length),0);
+ await page.evaluate(async()=>{await stamp('on','on');await sleep(500);calls=[];});await page.locator('#fan .lens').click();assert.deepEqual(await page.evaluate(()=>calls),[],'complete Ein pair is a no-op');
  // Hover reveals only the inactive circular targets with direct hit areas.
  await page.evaluate(async()=>{document.activeElement?.blur();await stamp('on','off');calls=[];});await radio('on').hover();await page.waitForTimeout(250);
  const ghosts=await page.evaluate(()=>[...sw.shadowRoot.querySelectorAll('.ghost')].map(g=>{const r=g.getBoundingClientRect(),b=g.closest('button').getBoundingClientRect();return {mode:g.dataset.mode,text:g.textContent.trim(),opacity:getComputedStyle(g).visibility==='hidden'?0:parseFloat(getComputedStyle(g).opacity),w:r.width,h:r.height,hit:r.left>=b.left-.1&&r.right<=b.right+.1&&r.top>=b.top-.1&&r.bottom<=b.bottom+.1};}));

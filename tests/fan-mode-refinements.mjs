@@ -17,7 +17,7 @@ try{for(const engine of [chromium,webkit]){
   ['on','on','auto',[['input_boolean','turn_off','input_boolean.example_force']]],
   ['on','off','on',[['input_boolean','turn_on','input_boolean.example_force']]],
   ['on','off','off',[['fan','turn_off','fan.example']]],
-  ['off','on','off',[]],['on','off','auto',[]],['on','on','on',[]]
+  ['off','on','off',[['input_boolean','turn_off','input_boolean.example_force']]],['off','off','off',[]],['on','off','auto',[]],['on','on','on',[]]
  ]){
   await page.evaluate(async([a,f,mode])=>{await stamp(a,f);calls=[];await sw.select(mode);},[a,f,mode]);assert.deepEqual(await page.evaluate(()=>calls),expected,a+'/'+f+' -> '+mode);
  }

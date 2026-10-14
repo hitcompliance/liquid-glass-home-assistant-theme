@@ -1,3 +1,8 @@
+## 3.1.29 / Cards 2.4.29
+
+- Allow the Off target to end a pending force cycle when the main fan is already off.
+- Skip duplicate service requests only after both main and force states match the requested mode.
+
 ## 3.1.28 / Cards 2.4.28
 
 - Show direct fan mode targets on hover and focus with matching circular hit areas.
