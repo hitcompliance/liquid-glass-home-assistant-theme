@@ -5,6 +5,21 @@ const fixture=await fanFixture();
 try{for(const engine of [chromium,webkit]){
  const browser=await engine.launch();try{
  const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(fixture.url);await page.waitForFunction(()=>window.ready);
+ // Fresh mounts cover every checked selector without an animation masking
+ // an accidental CSS visibility/opacity override in the settled state.
+ for(const [main,force,active]of [['on','off','auto'],['on','on','on'],['off','off','off']]){
+  await page.evaluate(([main,force])=>make('material',main,force),[main,force]);
+  const material=()=>page.evaluate(()=>[...document.querySelector('#material').shadowRoot.querySelectorAll('button')].map(b=>{const g=b.querySelector('.ghost'),css=getComputedStyle(g),rect=g.getBoundingClientRect();return {mode:b.dataset.mode,checked:b.getAttribute('aria-checked'),visibility:css.visibility,display:css.display,opacity:Number(css.opacity),shadow:css.boxShadow,background:css.backgroundImage,width:rect.width,height:rect.height,left:parseFloat(getComputedStyle(b).left)};}));
+  await page.mouse.move(350,800);await page.waitForTimeout(180);const initial=await material();
+  for(const item of initial){assert.equal(item.visibility,'visible',active+' initial '+item.mode+' visibility');assert.notEqual(item.display,'none',active+' initial '+item.mode+' display');assert.ok(item.width>30&&item.height>30,'every target has a rendered circle');assert.equal(item.opacity,item.mode===active?1:.4,active+' initial '+item.mode+' opacity');assert.equal(item.checked,String(item.mode===active));}
+  const raised=initial.find(item=>item.mode===active);assert.equal(raised.left,0,'fresh active '+active+' owns left slot');assert.notEqual(raised.shadow,'none','active circle is raised');
+  for(const hovered of ['auto','on','off']){
+   await page.locator('#material button[data-mode='+hovered+']').hover();await page.waitForTimeout(180);
+   for(const item of await material()){assert.equal(item.visibility,'visible');assert.notEqual(item.display,'none');assert.equal(item.opacity,item.mode===active?1:item.mode===hovered?.8:.4,active+' checked / '+hovered+' hovered / '+item.mode+' opacity');if(item.mode===active){assert.equal(item.shadow,raised.shadow,'active raised shadow survives rail hover');assert.equal(item.background,raised.background,'active raised background survives rail hover');}}
+  }
+  await page.evaluate(()=>document.querySelector('#material').remove());
+ }
+ await page.mouse.move(350,500);assert.deepEqual(await page.evaluate(()=>calls),[],'material and hover checks never send services');
  const view=()=>page.evaluate(()=>({mode:sw._mode,phase:sw.dataset.phase||null,order:[...sw.shadowRoot.querySelectorAll('button')].sort((a,b)=>parseFloat(getComputedStyle(a).left)-parseFloat(getComputedStyle(b).left)).map(b=>b.dataset.mode),buttons:[...sw.shadowRoot.querySelectorAll('button')].map(b=>({mode:b.dataset.mode,left:parseFloat(getComputedStyle(b).left),opacity:parseFloat(getComputedStyle(b.firstChild).opacity),shadow:getComputedStyle(b.firstChild).boxShadow,checked:b.getAttribute('aria-checked')})),busy:sw.shadowRoot.querySelector('.rail').getAttribute('aria-busy'),pressed:sw.dataset.pressed||null,calls:calls.length}));
  await page.waitForTimeout(200);assert.deepEqual((await view()).order,['auto','on','off']);assert.equal((await view()).phase,null);assert.equal(await page.evaluate(()=>getComputedStyle(sw.shadowRoot.querySelector('button[aria-checked=true] .ghost')).visibility),'visible','initial active Auto remains visible');assert.equal(await page.evaluate(()=>travel.length),0);
  const radio=mode=>page.locator('#fan button[data-mode='+mode+']');await page.mouse.move(350,500);assert.equal((await view()).buttons.find(b=>b.mode==='off').opacity,.4);
@@ -24,7 +39,7 @@ try{for(const engine of [chromium,webkit]){
  const timerPage=await browser.newPage();try{
   await timerPage.goto(fixture.url+'?clock=1');await timerPage.waitForFunction(()=>window.ready);
   const timerResult=await timerPage.evaluate(async()=>{
-   const text=()=>sw.shadowRoot.querySelector('.lens .countdown').textContent.trim();const cases={};
+   const text=()=>sw.shadowRoot.querySelector('button[data-mode=on] .ghost').textContent.trim();const cases={};
    const original=await setTimer(timerState('active',121));await sleep(500);travel=[];const before=JSON.stringify(original.states);for(const e of Object.values(original.states)){Object.freeze(e.attributes);Object.freeze(e);}Object.freeze(original.states);
    cases.active121=text();clock.advance(1);cases.active120=text();clock.advance(61);cases.active59=text();clock.advance(59);cases.active0=text();await paint();const tickStarts=travel.length,readonly=before===JSON.stringify(original.states);
    await setTimer(timerState('active',60));cases.boundary60=text();clock.advance(1);cases.boundary59=text();clock.advance(59);cases.boundary0=text();

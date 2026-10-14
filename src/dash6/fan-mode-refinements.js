@@ -60,57 +60,35 @@ export function fanDefinition(c){
    super();
    this.attachShadow({mode:'open'}).innerHTML=`<style>
 :host{display:block;width:120px;max-width:100%;height:44px;font:10.5px/14px system-ui;color:var(--primary-text-color);--fan-ink:var(--dash6-satin-fallback-color,#ffd65a)}
-.rail{display:grid;grid-template-columns:36px 40px minmax(0,1fr);position:relative;isolation:isolate;width:100%;height:44px;cursor:pointer}
+.rail{display:grid;grid-template-columns:repeat(3,40px);position:relative;isolation:isolate;width:100%;height:44px;cursor:pointer}
 .track{position:absolute;inset:var(--dash6-satin-switch-track-top,3.5px) 0 auto;height:37px;box-sizing:border-box;border-radius:19px;border:var(--dash6-satin-switch-track-border,1px solid rgba(234,241,247,.2));background:var(--dash6-satin-switch-track-background,linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.015)),rgba(32,39,45,.6));box-shadow:var(--dash6-satin-switch-track-shadow,inset 0 1px 1px rgba(255,255,255,.09),inset 0 -1px 2px rgba(0,0,0,.18),0 3px 7px rgba(0,0,0,.19));backdrop-filter:var(--dash6-satin-control-filter,blur(9px));-webkit-backdrop-filter:var(--dash6-satin-control-filter,blur(9px));pointer-events:none}
 .track::before,.track::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none}
 .track::before{background:radial-gradient(ellipse at 38% 110%,color-mix(in srgb,var(--fan-ink) 72%,transparent),color-mix(in srgb,var(--fan-ink) 24%,transparent) 60%,transparent);opacity:.38;transition:opacity 220ms ease}
 .track::after{background:var(--dash6-satin-switch-track-gloss,linear-gradient(145deg,rgba(255,255,255,.12),transparent 49%,rgba(255,255,255,.02)))}
-.lens{position:absolute;z-index:3;top:calc(var(--dash6-satin-switch-track-top,3.5px) + 2.75px);left:3.5px;width:31.5px;height:31.5px;box-sizing:border-box;border-radius:50%;translate:0 0;pointer-events:auto;transition:translate var(--dash6-satin-switch-duration,500ms) cubic-bezier(.22,1.16,.35,1),scale var(--dash6-satin-elastic-duration,380ms) cubic-bezier(.22,1.5,.36,1),transform 90ms ease-out}
-.rolling{position:absolute;inset:0;border-radius:inherit;rotate:var(--fan-roll,0deg);transition:rotate var(--dash6-satin-switch-duration,500ms) cubic-bezier(.22,1.16,.35,1)}
+.lens{position:absolute;z-index:3;top:calc(var(--dash6-satin-switch-track-top,3.5px) + 2.75px);left:4.25px;width:31.5px;height:31.5px;box-sizing:border-box;border-radius:50%;translate:0 0;pointer-events:none;opacity:0;transition:translate var(--dash6-satin-switch-duration,500ms) ease-in-out}
+.rolling{position:absolute;inset:0;border-radius:inherit}
 .bowl,.rim,.shine{position:absolute;inset:0;box-sizing:border-box;border-radius:inherit;pointer-events:none}
 .bowl{background:var(--dash6-satin-switch-lens-background,var(--dash6-satin-lens-background,linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.07))));border:var(--dash6-satin-switch-lens-border,var(--dash6-satin-lens-border,1px solid rgba(255,255,255,.47)));box-shadow:var(--dash6-satin-switch-lens-shadow,inset 0 1px 2px rgba(255,255,255,.24),inset 0 -1px 1px rgba(255,255,255,.08),0 2px 5px rgba(0,0,0,.25));backdrop-filter:var(--dash6-satin-lens-filter,blur(7px) saturate(1.15));-webkit-backdrop-filter:var(--dash6-satin-lens-filter,blur(7px) saturate(1.15))}
 .rim{border:1px solid color-mix(in srgb,var(--fan-ink) 32%,rgba(255,255,255,.2))}
 .shine{inset:1px;background:var(--dash6-satin-switch-lens-gloss,radial-gradient(ellipse at 32% 4%,rgba(255,255,255,.28),transparent 55%))}
-.icon{position:absolute;inset:0;display:grid;place-items:center;color:color-mix(in srgb,var(--fan-ink) 26%,#fff);filter:drop-shadow(0 0 3px color-mix(in srgb,var(--fan-ink) 35%,transparent))}ha-icon{--mdc-icon-size:18px}
-.countdown{position:absolute;inset:0;display:none;place-items:center;font:600 10.5px/1 system-ui;color:rgba(248,249,251,.94)}
-:host([data-mode=on]) .countdown{display:grid}:host([data-mode=on]) .icon{display:none}
-.readout{position:absolute;left:71px;top:var(--dash6-satin-switch-track-top,3.5px);height:37px;width:45px;display:grid;place-items:center;color:rgba(244,247,250,.8);pointer-events:none}
-:host([data-mode=off]) .readout{left:3.5px;width:81.5px}
 :host([data-mode=off]) .track::before,:host(:not([data-mode])) .track::before{opacity:0}
-:host([data-mode=off]) .icon{color:var(--dash6-icon-lens-white,rgba(248,249,251,.94));filter:none;opacity:var(--dash6-satin-switch-off-icon-opacity,.45)}
-:host([data-mode=off]) .rim{border-color:rgba(240,248,255,.12)}
-button{position:relative;z-index:2;width:100%;height:44px;border:0;background:transparent;padding:0;color:inherit;cursor:inherit;outline:none;-webkit-tap-highlight-color:transparent}
-.ghost{position:absolute;top:calc(var(--dash6-satin-switch-track-top,3.5px) + 2.75px);left:3.5px;width:31.5px;height:31.5px;box-sizing:border-box;border-radius:50%;display:grid;place-items:center;font:600 10px/1 system-ui;color:rgba(248,249,251,.8);border:1px solid rgba(234,241,247,.28);background:var(--dash6-satin-switch-lens-background,var(--dash6-satin-lens-background,linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.07))));box-shadow:inset 0 1px 2px rgba(255,255,255,.12),0 1px 3px rgba(0,0,0,.2);opacity:0;scale:.92;transition:opacity 150ms ease,scale var(--dash6-satin-elastic-duration,380ms) cubic-bezier(.22,1.5,.36,1);pointer-events:auto}
-button[data-mode=on] .ghost{left:1px}button[data-mode=off] .ghost{left:9px}
-button[aria-checked=true] .ghost{visibility:hidden}
-.rail:not([aria-disabled=true]):is(:hover,:focus-within) .ghost{opacity:.72;scale:1}
-.rail:not([aria-disabled=true]):is(:hover,:focus-within) .readout{opacity:0}
-button:not(:disabled):is(:hover,:focus-visible) .ghost{opacity:1;border-color:rgba(248,249,251,.65)}
+button{position:absolute;z-index:2;left:calc(var(--slot,0)*40px);width:40px;height:44px;border:0;background:transparent;padding:0;color:inherit;cursor:inherit;outline:none;-webkit-tap-highlight-color:transparent}
+.ghost{position:absolute;top:calc(var(--dash6-satin-switch-track-top,3.5px) + 2.75px);left:4.25px;width:31.5px;height:31.5px;box-sizing:border-box;border-radius:50%;display:grid;place-items:center;font:600 10px/1 system-ui;color:rgba(248,249,251,.8);border:1px solid rgba(234,241,247,.45);background:transparent;box-shadow:none;opacity:.4;transition:opacity 150ms ease;pointer-events:auto}
 .rail:has(button:focus-visible) .track{outline:2px solid var(--primary-color);outline-offset:2px}
 .rail[aria-disabled=true]{cursor:default;opacity:.5}
-@media(hover:hover){.rail:not([aria-disabled=true]) .lens:hover{scale:var(--dash6-satin-switch-hover-scale,1.07)}}
-:host([data-pressed=auto]) button[data-mode=auto] .ghost,:host([data-pressed=on]) button[data-mode=on] .ghost,:host([data-pressed=off]) button[data-mode=off] .ghost{opacity:1;background:rgba(10,14,19,.48);box-shadow:var(--dash6-satin-switch-pressed-shadow,inset 0 4px 7px rgba(0,0,0,.7),inset 0 -1px 1px rgba(255,255,255,.14));scale:1}
-:host([data-pressed=auto][data-mode=auto]) .bowl,:host([data-pressed=on][data-mode=on]) .bowl,:host([data-pressed=off][data-mode=off]) .bowl{box-shadow:var(--dash6-satin-switch-pressed-shadow,inset 0 4px 7px rgba(0,0,0,.7),inset 0 -1px 1px rgba(255,255,255,.14))}
-:host([data-switch-settling]) .lens{transition-property:scale,transform!important}:host([data-switch-settling]) .rolling{transition:none!important}
+:host([data-switch-settling]) .lens{transition:none!important}
 .error{color:var(--error-color);font:12px/16px system-ui}.error:empty{display:none}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.lens{scale:1!important;transform:none!important}}
 
 :host([data-pressed=auto]) button[data-mode=auto]:not([aria-checked=true]) .ghost,:host([data-pressed=on]) button[data-mode=on]:not([aria-checked=true]) .ghost,:host([data-pressed=off]) button[data-mode=off]:not([aria-checked=true]) .ghost{opacity:1!important;background:rgba(10,14,19,.48)!important;box-shadow:inset 0 4px 7px rgba(0,0,0,.7),inset 0 -1px 1px rgba(255,255,255,.14)!important}
 /* Equal targets; the confirmed active mode owns the first slot. */
-.rail{grid-template-columns:repeat(3,40px)}
-button{position:absolute;left:calc(var(--slot,0)*40px);width:40px;transition:none}
-.ghost,button[data-mode=on] .ghost,button[data-mode=off] .ghost{left:4.25px;opacity:.4;scale:1;background:transparent;box-shadow:none;border:1px solid rgba(234,241,247,.45);visibility:visible}
 button[aria-checked=true] .ghost{visibility:visible;opacity:1;background:var(--dash6-satin-switch-lens-background,linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.07)));box-shadow:var(--dash6-satin-switch-lens-shadow,inset 0 1px 2px rgba(255,255,255,.24),0 2px 5px rgba(0,0,0,.25))}
-.rail:not([aria-disabled=true]):is(:hover,:focus-within) .ghost{opacity:.4;scale:1}
 .rail:not([aria-disabled=true]) button:not(:disabled):not([aria-checked=true]):is(:hover,:focus-visible) .ghost{opacity:.8;background:rgba(255,255,255,.08);box-shadow:inset 0 1px 1px rgba(255,255,255,.13),0 1px 2px rgba(0,0,0,.2)}
-button[aria-checked=true] .ghost,.rail:not([aria-disabled=true]):is(:hover,:focus-within) button[aria-checked=true] .ghost{opacity:1}
-.lens{left:4.25px;pointer-events:none;opacity:0!important;transition:translate var(--dash6-satin-switch-duration,500ms) ease-in-out}
 .lens .icon,.lens .countdown,.readout{display:none!important}
 :host([data-phase=collect]) .lens,:host([data-phase=carry]) .lens{opacity:1!important}
 :host([data-phase=raise]) .ghost{transition:none!important}
 :host([data-phase=raise]) button:not([aria-checked=true]) .ghost,:host([data-phase=collect]) button:not([aria-checked=true]) .ghost,:host([data-phase=carry]) button:not([aria-checked=true]) .ghost{opacity:0!important;background:transparent;box-shadow:none}
 :host([data-phase=carry]) button[aria-checked=true]{transition:left var(--dash6-satin-switch-duration,500ms) ease-in-out}
-:host([data-pressed]) button[aria-checked=true] .ghost{box-shadow:var(--dash6-satin-switch-lens-shadow,inset 0 1px 2px rgba(255,255,255,.24),0 2px 5px rgba(0,0,0,.25))}
 </style><div class="rail" role="radiogroup" aria-disabled="true" aria-label="Lüftermodus" aria-description="Auto, zeitbegrenztes Ein oder Aus direkt auswählen. Pfeiltasten wechseln den Modus." data-dash6-own-group><span class="track" aria-hidden="true"></span><span class="lens" aria-hidden="true"><span class="rolling"><span class="bowl"></span><span class="rim"></span><span class="shine"></span></span><span class="icon"><ha-icon></ha-icon></span><span class="countdown"></span></span><span class="readout" aria-hidden="true"></span></div><div class="error" role="alert"></div>`;
    this._options=[['auto','Auto','mdi:autorenew'],['on','Ein','mdi:fan'],['off','Aus','mdi:power']];
    const rail=this.shadowRoot.querySelector('.rail');
@@ -136,8 +114,8 @@ button[aria-checked=true] .ghost,.rail:not([aria-disabled=true]):is(:hover,:focu
     if(!valid||reached&&!this._busy)this.clearPending();else mode=this._pendingMode.from;
    }
    const identity=this._config.entity+'|'+(this._config.force_switch_entity||'');
-   // Rebind/initial state settles immediately. Attribute-only updates preserve an
-   // in-flight CSS transition, including its continuous reversal on counterchange.
+   // Rebind/initial state settles immediately. Identical and attribute-only
+   // updates preserve the current staged journey without restarting it.
    const settle=!mode||!this._motionState||this._motionState!==identity;
    if(settle)this.setAttribute('data-switch-settling','');
    this._motionState=mode?identity:null;this._mode=mode;
