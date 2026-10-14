@@ -94,6 +94,23 @@ button:not(:disabled):is(:hover,:focus-visible) .ghost{opacity:1;border-color:rg
 :host([data-switch-settling]) .lens{transition-property:scale,transform!important}:host([data-switch-settling]) .rolling{transition:none!important}
 .error{color:var(--error-color);font:12px/16px system-ui}.error:empty{display:none}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}.lens{scale:1!important;transform:none!important}}
+
+:host([data-pressed=auto]) button[data-mode=auto]:not([aria-checked=true]) .ghost,:host([data-pressed=on]) button[data-mode=on]:not([aria-checked=true]) .ghost,:host([data-pressed=off]) button[data-mode=off]:not([aria-checked=true]) .ghost{opacity:1!important;background:rgba(10,14,19,.48)!important;box-shadow:inset 0 4px 7px rgba(0,0,0,.7),inset 0 -1px 1px rgba(255,255,255,.14)!important}
+/* Equal targets; the confirmed active mode owns the first slot. */
+.rail{grid-template-columns:repeat(3,40px)}
+button{position:absolute;left:calc(var(--slot,0)*40px);width:40px;transition:none}
+.ghost,button[data-mode=on] .ghost,button[data-mode=off] .ghost{left:4.25px;opacity:.4;scale:1;background:transparent;box-shadow:none;border:1px solid rgba(234,241,247,.45);visibility:visible}
+button[aria-checked=true] .ghost{opacity:1;background:var(--dash6-satin-switch-lens-background,linear-gradient(145deg,rgba(255,255,255,.24),rgba(255,255,255,.07)));box-shadow:var(--dash6-satin-switch-lens-shadow,inset 0 1px 2px rgba(255,255,255,.24),0 2px 5px rgba(0,0,0,.25))}
+.rail:not([aria-disabled=true]):is(:hover,:focus-within) .ghost{opacity:.4;scale:1}
+.rail:not([aria-disabled=true]) button:not(:disabled):is(:hover,:focus-visible) .ghost{opacity:.8;background:rgba(255,255,255,.08);box-shadow:inset 0 1px 1px rgba(255,255,255,.13),0 1px 2px rgba(0,0,0,.2)}
+button[aria-checked=true] .ghost,.rail:not([aria-disabled=true]):is(:hover,:focus-within) button[aria-checked=true] .ghost{opacity:1}
+.lens{left:4.25px;pointer-events:none;opacity:0!important;transition:translate var(--dash6-satin-switch-duration,500ms) ease-in-out}
+.lens .icon,.lens .countdown,.readout{display:none!important}
+:host([data-phase=collect]) .lens,:host([data-phase=carry]) .lens{opacity:1!important}
+:host([data-phase=raise]) .ghost{transition:none!important}
+:host([data-phase=raise]) button:not([aria-checked=true]) .ghost,:host([data-phase=collect]) button:not([aria-checked=true]) .ghost,:host([data-phase=carry]) button:not([aria-checked=true]) .ghost{opacity:0!important;background:transparent;box-shadow:none}
+:host([data-phase=carry]) button[aria-checked=true]{transition:left var(--dash6-satin-switch-duration,500ms) ease-in-out}
+:host([data-pressed]) button[aria-checked=true] .ghost{box-shadow:var(--dash6-satin-switch-lens-shadow,inset 0 1px 2px rgba(255,255,255,.24),0 2px 5px rgba(0,0,0,.25))}
 </style><div class="rail" role="radiogroup" aria-disabled="true" aria-label="Lüftermodus" aria-description="Auto, zeitbegrenztes Ein oder Aus direkt auswählen. Pfeiltasten wechseln den Modus." data-dash6-own-group><span class="track" aria-hidden="true"></span><span class="lens" aria-hidden="true"><span class="rolling"><span class="bowl"></span><span class="rim"></span><span class="shine"></span></span><span class="icon"><ha-icon></ha-icon></span><span class="countdown"></span></span><span class="readout" aria-hidden="true"></span></div><div class="error" role="alert"></div>`;
    this._options=[['auto','Auto','mdi:autorenew'],['on','Ein','mdi:fan'],['off','Aus','mdi:power']];
    const rail=this.shadowRoot.querySelector('.rail');
@@ -105,8 +122,8 @@ button:not(:disabled):is(:hover,:focus-visible) .ghost{opacity:1;border-color:rg
    rail.addEventListener('click',e=>{e.stopPropagation();if(this._cancelledPointer&&e.detail>0){this._cancelledPointer=false;return;}this._cancelledPointer=false;const mode=this.eventMode(e);this.cancelPress();if(mode)this.select(mode);});
    this._releasePointer=e=>{if(e.pointerId!==this._pressedPointer)return;if(e.type==='pointercancel')this._cancelledPointer=true;this.cancelPress();};
   }
-  connectedCallback(){this._motionState=null;this.sync();}
-  disconnectedCallback(){this.stopTimer();this.cancelPress();this.clearPending();}
+  connectedCallback(){this._motionState=null;this._reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');this._motionChange=()=>{if(this._reduceMotion.matches)this.settleSlots(this._mode);};this._reduceMotion.addEventListener('change',this._motionChange);this.sync();}
+  disconnectedCallback(){this._reduceMotion?.removeEventListener('change',this._motionChange);this.cancelJourney();this.stopTimer();this.cancelPress();this.clearPending();}
   setConfig(c){if(!/^(fan|switch)\./.test(c.entity||''))throw Error('Lüfter- oder Schalter-Entity auswählen.');if(c.force_switch_entity&&!/^(switch|input_boolean)\./.test(c.force_switch_entity))throw Error('Force-Schalter muss switch oder input_boolean sein.');if(c.timer_entity&&!/^timer\./.test(c.timer_entity))throw Error('Timer-Entity auswählen.');if(this._config&&(this._config.entity!==c.entity||this._config.force_switch_entity!==c.force_switch_entity))this.clearPending();this._config={...c};this.sync();}
   set hass(h){this._hass=h;this.sync();}get hass(){return this._hass;}
   sync(){
@@ -125,9 +142,10 @@ button:not(:disabled):is(:hover,:focus-visible) .ghost{opacity:1;border-color:rg
    if(settle)this.setAttribute('data-switch-settling','');
    this._motionState=mode?identity:null;this._mode=mode;
    const lens=this.shadowRoot.querySelector('.lens');
+   if(settle)this.settleSlots(mode);
    if(this.dataset.mode!==mode){
     if(mode)this.dataset.mode=mode;else delete this.dataset.mode;
-    const travel={auto:0,on:33.5,off:81.5}[mode]||0;lens.style.translate=travel+'px 0';this.style.setProperty('--fan-roll',(travel/15.75*180/Math.PI)+'deg');lens.style.opacity=mode?'1':'0';
+    if(settle||!mode)this.settleSlots(mode);else this.journey(mode);
     const option=this._options.find(x=>x[0]===mode);
     this.shadowRoot.querySelector('.readout').textContent=option?.[1]||'—';
     this.shadowRoot.querySelector('.icon ha-icon').setAttribute('icon',option?.[2]||'mdi:fan');
@@ -140,6 +158,19 @@ button:not(:disabled):is(:hover,:focus-visible) .ghost{opacity:1;border-color:rg
    if(settle&&this.isConnected){getComputedStyle(lens).translate;this.removeAttribute('data-switch-settling');}
    this.updateCountdown();this.syncTimer();
    this.title=!this._config.force_switch_entity?'Force-Schalter konfigurieren':!valid?'Lüfter oder Force-Schalter nicht verfügbar':'Lüftermodus';
+  }
+  cancelJourney(){this._journeyToken=(this._journeyToken||0)+1;for(const id of this._phaseTimers||[])clearTimeout(id);this._phaseTimers=[];delete this.dataset.phase;}
+  slotOrder(mode){return [mode,...this._options.map(x=>x[0]).filter(x=>x!==mode)].filter(Boolean);}
+  settleSlots(mode){this.cancelJourney();this._order=this.slotOrder(mode);for(const b of this.shadowRoot.querySelectorAll('button'))b.style.setProperty('--slot',Math.max(0,this._order.indexOf(b.dataset.mode)));this.shadowRoot.querySelector('.lens').style.translate='0px 0';}
+  journey(mode){
+   if(matchMedia('(prefers-reduced-motion: reduce)').matches){this.settleSlots(mode);return;}
+   this.cancelJourney();const token=this._journeyToken,lens=this.shadowRoot.querySelector('.lens'),buttons=[...this.shadowRoot.querySelectorAll('button')],target=buttons.find(b=>b.dataset.mode===mode),slot=Number(target.style.getPropertyValue('--slot'))||0;
+   const duration=parseFloat(getComputedStyle(this).getPropertyValue('--dash6-satin-switch-duration'))||500;
+   const later=(ms,fn)=>this._phaseTimers.push(setTimeout(()=>{if(this._journeyToken===token)fn();},ms));
+   this.dataset.phase='raise';lens.style.translate='0px 0';
+   later(160,()=>{this.dataset.phase='collect';lens.style.translate=(slot*40)+'px 0';});
+   later(160+duration,()=>{this.dataset.phase='carry';this._order=this.slotOrder(mode);for(const b of buttons)b.style.setProperty('--slot',this._order.indexOf(b.dataset.mode));lens.style.translate='0px 0';});
+   later(160+duration*2,()=>{this.dataset.phase='reveal';later(160,()=>{delete this.dataset.phase;});});
   }
   timerSeconds(){
    if(!this._config?.timer_entity)return 3600;
@@ -157,7 +188,7 @@ button:not(:disabled):is(:hover,:focus-visible) .ghost{opacity:1;border-color:rg
    if(countdown.textContent!==text)countdown.textContent=text;
    const duration=durationSeconds(this._hass?.states[this._config?.timer_entity]?.attributes?.duration)??3600;
    const preview=countdownText(duration),ghost=this.shadowRoot.querySelector('.ghost[data-mode=on]');
-   if(ghost.textContent!==preview)ghost.textContent=preview;
+   const shown=this._mode==='on'?text:preview;if(ghost.textContent!==shown)ghost.textContent=shown;
    const on=this.shadowRoot.querySelector('button[data-mode=on]');
    const remaining=seconds===null?'Restzeit nicht verfügbar':seconds>=60?Math.ceil(seconds/60)+' Minuten Restzeit':Math.ceil(Math.max(0,seconds))+' Sekunden Restzeit';
    const title=this._mode==='on'?'Ein · '+remaining:'Ein · '+Math.ceil(duration/60)+' Minuten',label=this._mode==='on'?'Ein · '+remaining:'Ein';
@@ -182,12 +213,12 @@ button:not(:disabled):is(:hover,:focus-visible) .ghost{opacity:1;border-color:rg
     const main=c.entity,force=c.force_switch_entity;
     const steps=mode==='off'?[[force,false],[main,false]]:mode==='auto'?[[force,false],[main,true]]:[[main,true],[force,true]];
     for(const [id,on]of steps){if(h.states[id]?.state===(on?'on':'off'))continue;await h.callService(id.split('.')[0],on?'turn_on':'turn_off',{entity_id:id});}
-   }catch(e){this.clearPending();error.textContent=e.message||String(e);}
+   }catch(e){this.clearPending();this._motionState=null;error.textContent=e.message||String(e);}
    finally{
     this._busy=false;this.sync();
     // Service acknowledgements may precede the final state publish. Hold the
     // previous real position until the complete pair arrives; never invent On.
-    if(this._pendingMode&&this.isConnected)this._feedbackTimer=setTimeout(()=>{this.clearPending();this.sync();},1500);
+    if(this._pendingMode&&this.isConnected)this._feedbackTimer=setTimeout(()=>{this.clearPending();this._motionState=null;this.sync();},1500);
    }
   }
   eventMode(e){return e.target.closest('button')?.dataset.mode||(e.target.closest('.lens')?this._mode:null);}
@@ -203,7 +234,7 @@ button:not(:disabled):is(:hover,:focus-visible) .ghost{opacity:1;border-color:rg
    window.removeEventListener('pointerup',this._releasePointer,true);window.removeEventListener('pointercancel',this._releasePointer,true);
   }
   key(e,mode){
-   const opts=this._options.map(x=>x[0]);
+   const opts=this._order||this._options.map(x=>x[0]);
    if([' ','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(e.key)){
     e.preventDefault();e.stopPropagation();if(e.repeat||this._busy||this._pendingMode||e.currentTarget.disabled)return;
     const i=e.key==='Home'?0:e.key==='End'?2:[' ','Enter'].includes(e.key)?opts.indexOf(mode):(opts.indexOf(mode)+(['ArrowRight','ArrowDown'].includes(e.key)?1:2))%3;
