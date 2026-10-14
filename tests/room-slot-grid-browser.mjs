@@ -2,9 +2,14 @@
 // Set DASH6_LAYOUT_CARD_REFERENCE to a separately installed original for live parity.
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import {build} from 'esbuild';
 import {createServer} from 'node:http';
 import {chromium,webkit} from 'playwright';
-const loader=await readFile(new URL('../src/dash6/room-loader.js',import.meta.url),'utf8');
+// Bundle the real source and its scope/registry imports. Serving only the entry
+// text made relative module requests receive this server's HTML fixture.
+const bundled=await build({entryPoints:[fileURLToPath(new URL('../src/dash6/room-loader.js',import.meta.url))],bundle:true,write:false,format:'esm'});
+const loader=bundled.outputFiles[0].text;
 const reference=process.env.DASH6_LAYOUT_CARD_REFERENCE;
 const contract=`
 class Grid extends HTMLElement{
