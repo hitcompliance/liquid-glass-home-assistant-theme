@@ -37,8 +37,10 @@ templates:
 `columns` accepts 1–10 columns. `grid_layout` preserves an existing native
 layout-card layout, including intermediate media queries; mobile area/domain
 blocks use one column below 700px. Queries are sorted narrowest first. For
-example, a scenes block can retain five desktop columns, four at 1199px, three
-at 899px, and one below 700px. Card gaps remain exactly 8px.
+example, non-scene blocks retain their explicitly configured intermediate grid
+widths. Scene blocks use flex wrap: 150px basis/minimum, 300px maximum (bounded
+by container width), with exactly 8px gaps. They do not use fixed scene-column
+breakpoints.
 
 Dynamic scene tiles receive the `dash6-scene-64` theme class and the latest
 activation marker within the preceding 12 hours. The native renderer continues
@@ -85,9 +87,10 @@ dash6_registry:
                 - sensor.office_power
 ```
 
-All entity references inside a configured custom card count, including segment
+Entity references inside configured device cards count, including segment
 arrays, graphs, helpers, action targets, entity-keyed maps, and references in
-templates. A service name such as `light.turn_on` is not an entity. Structural
+templates. Diagram-only copies in `variables.sidebar_cards` do not exclude a
+device control from the room. A service name such as `light.turn_on` is not an entity. Structural
 cards recurse into configured cards; dynamic auto-entities queries are not
 treated as static cards. Exclusions are combined across domain blocks in the
 same view, including the parent and content views of embedded rooms. Thus a
@@ -102,3 +105,13 @@ Migration tools can import `buildDomainRegistry`, `extractEntityReferences`, and
 `replaceDomainConfig` from `src/dash6/domain-registry.js` without browser globals.
 Existing Favorites snapshots are unchanged; fresh area/domain sources can be
 expanded lazily through the same room registry reader.
+
+## Global name exclusions
+
+The native dashboard settings editor stores domain-specific name lists in the
+dashboard root `dash6_global_exclusions`. Matching is a case-insensitive friendly
+name substring; entity ID is only the fallback when no friendly name exists.
+An explicitly empty list is valid. Integration/device-class exclusions and
+room-local entity/helper exclusions remain separate. Global name filtering
+affects dynamic generic domain lists, not configured device cards, pills,
+diagrams or the isolated frozen comparison dashboard.

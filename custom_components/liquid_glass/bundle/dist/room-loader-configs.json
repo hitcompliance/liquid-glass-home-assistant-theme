@@ -1,0 +1,33 @@
+{
+  "demo": {
+    "template": "{{ {'0': [{\"type\": \"heading\", \"heading\": \"Dynamischer Demo-Raum\"}, {\"type\": \"custom:dash6-govee-light-card-v2\", \"entity\": \"light.liquid_glass_demo_lampe\", \"name\": \"Raumlader · Demo\", \"discovery\": {\"enabled\": false}}]} | to_json }}",
+    "fixtures": [],
+    "visibility": [],
+    "slots": {
+      "lights": {
+        "index": 0,
+        "initial": [
+          {
+            "type": "heading",
+            "heading": "Dynamischer Demo-Raum"
+          },
+          {
+            "type": "custom:dash6-govee-light-card-v2",
+            "entity": "light.liquid_glass_demo_lampe",
+            "name": "Raumlader · Demo",
+            "discovery": {
+              "enabled": false
+            }
+          }
+        ],
+        "known": [
+          "light.liquid_glass_demo_lampe"
+        ],
+        "container": {
+          "type": "vertical-stack"
+        },
+        "param": "cards"
+      }
+    }
+  }
+}

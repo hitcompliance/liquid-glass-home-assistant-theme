@@ -241,6 +241,14 @@ def package_files(root: Path) -> list[File]:
             files.append(File("www/liquid-glass-living-room.jpg", backdrop.read_bytes(), "original theme backdrop"))
     for example in sorted((root / "examples").glob("*.yaml")):
         files.append(File("liquid-glass/examples/" + example.name, example.read_bytes(), "example dashboard"))
+    support = root / "support"
+    if support.is_symlink():
+        raise InstallError("Package support directory is a symlink")
+    for source in sorted(support.rglob("*")):
+        if source.is_symlink():
+            raise InstallError("Package support files contain a symlink")
+        if source.is_file():
+            files.append(File("liquid-glass/support/" + source.relative_to(support).as_posix(), source.read_bytes(), "optional device scripts and documentation"))
     return files
 
 
@@ -353,7 +361,7 @@ def resources(dependencies: list[dict], files: list[File], svg: bool) -> list[di
             asset = next(a for a in dependency["assets"] if a["path"] == entry)
             rows.append({"url": "/local/liquid-glass/vendor/" + dependency["id"] + "/" + entry + "?v=" + asset["sha256"][:12], "type": "module"})
     paths = {f.path: f.data for f in files}
-    names = ["dash6-cards.js", "vacuum-dock-card.js"]
+    names = ["dash6-cards.js", "vacuum-dock-card.js", "room-loader.js"]
     if svg:
         names.append("dash5-glass.js")
         if "www/liquid-glass/dash5-glass.js" not in paths:

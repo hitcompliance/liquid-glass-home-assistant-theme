@@ -1,187 +1,76 @@
-# Installation
+# Installation von DASH6 Satin Glass
 
-Für den vollständigen Satin-Look sind YAML-Theme **und** JavaScript-Kartenmodul nötig. Fertige Dateien sind enthalten; auf Home Assistant ist kein Node-/npm-Build erforderlich. Siehe [DEPENDENCIES.md](DEPENDENCIES.md) für die zu den gewünschten Karten passenden Fremdmodule.
+## Empfohlen: HACS-Integration
 
-## Automatische Installation mit HACS
+Voraussetzungen: Home Assistant **2026.9.0 oder neuer**, ein aktueller Browser und [HACS](https://www.hacs.xyz/docs/use/download/download/). HACS muss der Nutzer selbst installieren. Die erste Einrichtung benötigt HTTPS-Zugriff auf GitHub und dessen Downloadserver.
 
-Ab Home Assistant **2026.9.0**:
-
-1. [In HACS hinzufügen](https://my.home-assistant.io/redirect/hacs_repository/?owner=hitcompliance&repository=liquid-glass-home-assistant-theme&category=integration), Kategorie **Integration**, herunterladen.
+1. [Repository in HACS hinzufügen](https://my.home-assistant.io/redirect/hacs_repository/?owner=hitcompliance&repository=liquid-glass-home-assistant-theme&category=integration). Kategorie **Integration**, herunterladen.
 2. Home Assistant neu starten.
 3. **Einstellungen → Geräte & Dienste → Integration hinzufügen → Liquid Glass** öffnen.
-4. **Interaktives Demo-Dashboard anzeigen** eingeschaltet lassen. Optional **Dual Smart Thermostat zusätzlich installieren** auswählen.
-5. **Liquid Glass Demo** in der Seitenleiste öffnen. Die Integration wählt **DASH6 Satin Glass** automatisch als Vorgabe für Hell und Dunkel. Bereits explizit gewählte Profil-/View-Themes haben Vorrang; dort bei Bedarf Satin auswählen.
+4. **Interaktives Demo-Dashboard anzeigen** eingeschaltet lassen. **Dual Smart Thermostat** nur auswählen, wenn diese optionale Backendintegration für eigene Thermostate benötigt wird.
+5. **Liquid Glass Demo** in der Seitenleiste öffnen. Das Theme **DASH6 Satin Glass** wird als Backendvorgabe für Hell und Dunkel gesetzt. Explizite Benutzer-/View-Auswahlen haben weiterhin Vorrang.
 
-Es ist kein Installer-Kommando erforderlich. Die Einrichtung lädt fehlende Frontend-Module (Ultra Card, Card Mod, Button Card, Mushroom und die übrigen festgelegten Abhängigkeiten) per HTTPS und prüft Größe und SHA-256. Alle Downloads werden vor den Ziel-Schreibvorgängen geprüft; geänderte vorhandene Dateien werden zuvor unter `backups/liquid-glass/<Zeitstempel>/` gesichert. Internetzugriff auf GitHub ist während der ersten Einrichtung erforderlich; weitere Starts verwenden den Download-Cache.
+Die Integration installiert die eigenen Karten samt Chunks, Bildern, Profilen und Lizenzen sowie zwölf fehlende Fremdmodule automatisch. Sie registriert die Ressourcen auch bei YAML-Ressourcenverwaltung. Die [vollständige Tabelle](DEPENDENCIES.md) erklärt jede Abhängigkeit und nennt ausdrücklich, was selbst einzurichten ist. `configuration.yaml` und `.storage` werden nicht direkt editiert. Es sind weder Terminalbefehle noch zusätzliche Frontend-HACS-Einträge erforderlich.
 
-Themes und Karten werden durch die Integration registriert, auch bei YAML-verwalteten Ressourcen. `configuration.yaml` und `.storage` werden nicht direkt verändert. Vorhandene Ressourcen werden anhand ihres Dateinamens wiederverwendet. HACS bleibt für deren Updates zuständig; fehlende Vendor-Kopien werden mit Liquid Glass ausgeliefert/installiert und sind keine eigenen HACS-Einträge. Nach Aktualisierungen Home Assistant neu starten und die Browserseite vollständig neu laden, nötigenfalls den Frontend-Cache leeren.
+Vorhandene passende HACS-Module werden über ihre bestehenden URLs wiederverwendet. Deren Version und Updates bleiben in HACS. Fehlende Module werden anhand des mitgelieferten Locks mit SHA-256 und Dateigröße geprüft und unter `www/liquid-glass/vendor/` installiert; sie erscheinen nicht als eigene HACS-Repositories. Alle benötigten Lazy-Chunks, Übersetzungen und Lizenzen sind im Downloadplan enthalten. Geänderte bestehende Dateien werden vorab unter `backups/liquid-glass/<Zeitstempel>/` gesichert. Download-/Prüfsummenfehler brechen vor Zieländerungen ab; Schreibfehler werden zurückgerollt.
 
-### Aktualisierung und neue Abhängigkeiten
+## Demo und virtuelle Entities
 
-1. Das Liquid-Glass-Update in HACS herunterladen.
-2. Home Assistant neu starten, damit die aktualisierte Integration geladen wird.
-3. Geöffnete Browser-/Companion-Seiten vollständig neu laden.
+Die aktivierte Demo erzeugt **91 virtuelle Entities** unter `*.liquid_glass_demo_*`, mit eigenen Geräten und acht Bereichen `DASH6 Demo · <Raum>`. Dazu gehören Licht, Sensor/Binärsensor, Schalter, Lüfter, Rollo, Klima, Medienplayer, Remote, Roboter, Schloss, Tasten, Auswahl, Zahl, Szenen, Update, Wetter und Kamera. Es werden keine echten Geräte integriert oder angesprochen.
 
-Bei diesem Start wird **DASH6 Satin Glass** erneut als gespeicherte Vorgabe für Hell und Dunkel gewählt. Eigene Profil-/View-Auswahlen bleiben erhalten.
+Das Dashboard `/liquid-glass-demo` zeigt Zuhause, Wohnzimmer, Küche, Schlafzimmer, Flur, Badezimmer, Büro, Waschkeller, Energie sowie zusätzliche Karten-/Layoutansichten und Favoriten. Florin und private Gerätekennungen sind ausgeschlossen. Die Dummy-Entities können auch in den Entwicklerwerkzeugen oder in eigenen Testkarten verwendet werden.
 
-Beim nächsten Einrichten der bereits konfigurierten Integration wird der **mit dem neuen Release gelieferte** Dependency-Lock erneut geprüft. Neu aufgenommene Frontend-Abhängigkeiten werden automatisch heruntergeladen und vor den eigenen Karten geladen; von Liquid Glass verwaltete Vendor-Dateien werden auf die neue festgelegte Version aktualisiert. Ein erneuter Einrichtungsdialog oder manuelles Hinzufügen dieser Ressourcen ist nicht nötig. Neue oder geänderte Dateien benötigen Internetzugriff, sofern ihre geprüften Bytes noch nicht im lokalen Download-Cache vorhanden sind. Bereits separat registrierte HACS-Module bleiben bei ihrem bestehenden Ressourcen-Eintrag und werden weiterhin durch HACS aktualisiert.
+- Szenen ändern nur virtuelle Lichter. Die Markierung prüft deren gemeldete Zielzustände.
+- Die Demo-Lüftung simuliert Aus/Auto/Ein, Präsenz, Ausgänge und Countdown. Keine Shelly-Hardware nötig.
+- Die virtuelle Kamera liefert ein Paketbild; sie fragt keine Webcam-Freigabe an. Die lokale Browser-Kamerakarte bleibt für eigene Dashboards verfügbar.
+- Sensoren liefern simulierte aktuelle Werte. Recorder zeichnet sie ab Installation auf, sofern sie nicht ausgeschlossen sind. Historie/Statistiken werden nicht rückdatiert. Einige Graphen brauchen deshalb zunächst Messpunkte.
+- Die native Energiekonfiguration bleibt bestehen. Demo-Energiewerte sind ausdrücklich keine echten Verbrauchsmessungen.
+- Die Favoriten-GUI speichert ihre Demo-Auswahl browserlokal. **Demo zurücksetzen** setzt die virtuellen Gerätewerte zurück; Neustart setzt sie ebenfalls auf den definierten Ausgangszustand.
+- Jede Demo-Karte wird mit `dash6-demo-scope` auf Dummy-Zustände und explizite Dummy-Serviceziele begrenzt. Bereichs-/Geräteziele und ziellose Aktionen sind gesperrt.
 
-Schlägt ein Download oder seine Größen-/Hashprüfung fehl, bleiben die bisherigen installierten Dateien erhalten. Home Assistant meldet die Einrichtung vorübergehend als fehlgeschlagen und kann sie erneut versuchen; nach Behebung der Verbindung oder des Downloadproblems werden die fehlenden Dateien installiert. Bei einem Schreibfehler stellt der Installer die in diesem Aufruf bereits veränderten Dateien wieder her. Die normale Einrichtung verändert keine Geräte, Entitäten oder eigenen Dashboards. Optionale Backend-Integrationen bleiben an ihre bestehende ausdrückliche Auswahl gebunden.
+Die verwaltete Demo-YAML wird bei Updates ersetzt. Eigene Änderungen deshalb in eine Kopie übernehmen. Demo-Entity-IDs nicht umbenennen, solange die mitgelieferte Konfiguration verwendet wird. Eine bereits belegte Demo-Dashboardadresse wird erhalten; ein fremder Entity-ID-Konflikt stoppt die Einrichtung mit einem Hinweis. Bei ausgeschalteter Demo werden keine Dummy-Entities erzeugt.
 
-Dual Smart Thermostat ist eine optionale **Backend-Integration**. Eine bestehende Installation wird nicht überschrieben. Bei erstmaliger Installation erscheint eine Neustart-Mitteilung; danach müssen die eigenen Heizungs-/Sensor-Entitäten konfiguriert werden. Native Thermostat-Karten benötigen diese Integration nicht.
+Beim Entladen/Entfernen verschwinden Demo-Entities und das eigene Demo-Dashboard aus dem laufenden Zustand. Home Assistants Entity-/Geräte-Registry und Recorder verwalten gespeicherte Metadaten/Historie nach den nativen Regeln. Installierte Dateien, Downloadcache und Sicherungen bleiben erhalten. Fremde Geräte und Dashboards werden nicht entfernt. Backend-Themevorgaben werden soweit verfügbar wiederhergestellt.
 
-Das Demo-Dashboard unter `/liquid-glass-demo` ist eine von Liquid Glass verwaltete YAML-Demo mit lokalen simulierten Geräten. Seine Karten steuern keine echten Geräte. Die View **Favoriten** enthält eine vorbereitete Kartenauswahl und eine bedienbare Favoriten-GUI; ihre Einstellungen werden ausschließlich browserlokal für die Demo gespeichert. Ein bereits vorhandenes Dashboard mit dieser Adresse bleibt erhalten; dann lässt die Integration ihre Demo aus und meldet dies im Protokoll. Für eigene Änderungen `liquid-glass/examples/demo-dashboard.yaml` in ein neues Dashboard kopieren. Das Konfigurationsbeispiel `dashboard.yaml` benötigt dagegen eigene Entitäten.
+## Aktualisieren
 
-### Umstieg von der bisherigen Theme-Installation
+1. Update in HACS herunterladen.
+2. Home Assistant neu starten.
+3. Browser/Companion-Seiten vollständig neu laden.
 
-Falls das Repository bereits als **Theme** in HACS eingetragen ist: diesen HACS-Eintrag entfernen und dasselbe Repository als **Integration** hinzufügen. Die YAML-Themes bleiben als manuelle Installationsalternative im Repository. Vorhandene Theme-Namen werden nicht überschrieben. Ältere separat installierte `dash6-cards.js`-/Govee-/Multi-Light-Ressourcen vor Aktivierung entfernen, damit keine Custom Elements doppelt registriert werden; siehe [MIGRATION.md](MIGRATION.md). Die Integration bricht bei einem erkannten fremden `dash6-cards.js`-Eintrag mit einem Hinweis ab.
+Der neue Dependency-Lock wird bei jedem Einrichten der bestehenden Integration geprüft. Neue oder geänderte von Liquid Glass verwaltete Abhängigkeiten werden automatisch installiert. Geöffnete Browser können bereits registrierte Custom Elements nicht austauschen; ein vollständiger Reload ist nötig. Ein Downloadfehler führt zu einer erneut versuchbaren Einrichtung. Es ist kein erneuter Konfigurationsdialog nötig.
 
-Beim Deaktivieren/Entfernen der Liquid-Glass-Integration verschwinden ihre Laufzeit-Ressource und ihre eigene Demo. Installierte Dateien, Download-Cache und Sicherungen bleiben erhalten. Bereits vorhandene HACS-Ressourcen, Geräte und Dashboards werden nicht entfernt. Eigene Dashboards benötigen das Kartenmodul weiter; vor dem Entfernen auf andere Karten umstellen. Bei Theme-Reload ergänzt die Integration fehlende Paket-Themes erneut. Beim Entladen werden die zuvor gewählten Backend-Themes wiederhergestellt, sofern sie noch verfügbar sind und seit der Einrichtung keine andere Vorgabe gewählt wurde.
+## Was Nutzer selbst installieren/konfigurieren müssen
 
-### Prüfstand
+- **HACS** vor der HACS-Installation.
+- **Integrationen und Einrichtung eigener Hardware** für echte Geräte. Die Demo braucht sie nicht. Beispielsweise Shelly/Matter/Meross/Govee/Tado/Apple TV/Android TV/ESPHome/Roborock entsprechend dem verwendeten Gerät.
+- **Dual Smart Thermostat**, falls ausdrücklich ausgewählt: Dateien werden automatisch installiert, aber ein weiterer HA-Neustart und eigene Sensor-/Heizungszuordnung sind erforderlich. Bestehende Installationen werden nicht überschrieben.
+- **Spezielle Shelly-Lüftung**, falls genutzt: das mitgelieferte Skript selbst auf geeigneter Shelly-Hardware einrichten, virtuelle Komponenten und Verdrahtung prüfen. [Anleitung](../support/README.md).
+- **Eigene TV-Eingangsautomationen, ADB/BLE-/ESPHome-Einrichtung** nur für die jeweilige Hardware. Die Demo nutzt virtuelle Medienquellen und benötigt sie nicht.
+- **Ultra Card Connect**, **Browser Mod**, **MQTT/Zigbee2MQTT** nur bei ausdrücklich genutzten Zusatzfunktionen; sie werden nicht durch Liquid Glass installiert. [Genaue Einordnung](DEPENDENCIES.md#selbst-einzurichten).
 
-Die Integrations-Schnittstellen wurden gegen den offiziellen Home-Assistant-Quellstand 2026.9 geprüft. Automatisierte Tests prüfen Einrichtung, erneutes Laden, neue und aktualisierte Release-Abhängigkeiten, HACS-Wiederverwendung, fehlgeschlagene Updates samt erneutem Versuch, Theme-Reload, Ressourcen-Deduplizierung und Dashboard-Kollisionen. Eine Live-Installation auf der produktiven Instanz ist davon getrennt und noch nicht bestätigt.
+## Migration
 
-## Installation mit dem Python-Installer
+Bisherige HACS-Kategorie **Theme** durch **Integration** ersetzen. Ältere eigenständig registrierte `dash6-cards.js`, Vacuum-Dock-/Govee-/Multi-Light-/DASH5-Lichtmodule mit überlappenden Custom-Element-Namen entfernen. Das Hauptmodul darf nur einmal geladen werden. Ein erkannter fremder `dash6-cards.js`-Eintrag stoppt die Einrichtung mit einem Hinweis.
 
-Das Repository herunterladen oder klonen und ein Terminal in diesem Verzeichnis öffnen. Python 3.9 oder neuer wird benötigt. `--config-dir` bezeichnet das tatsächlich erreichbare Home-Assistant-Konfigurationsverzeichnis, nicht eine Webadresse.
+Ab 3.2 wird nur **DASH6 Satin Glass** ausgeliefert. Bestehende separat installierte Theme-Dateien werden nicht entfernt. Views mit einem alten Theme-Namen müssen vom Nutzer auf Satin umgestellt werden. Vorher eigene Konfiguration sichern. [Details](MIGRATION.md).
 
-Zuerst die geplanten Änderungen anzeigen:
+## Manuelle Alternative
 
-```sh
-python3 scripts/install.py --config-dir /pfad/zur/ha-konfiguration
-```
+Den Release-Anhang `liquid_glass.zip` entpacken und den Ordner `custom_components/liquid_glass/` vollständig nach `/config/custom_components/liquid_glass/` kopieren. Home Assistant neu starten und die Integration wie oben hinzufügen. Dieser Weg hat denselben automatischen Installer und dieselbe Demo wie HACS; HACS ist dafür nicht erforderlich.
 
-Anschließend anwenden:
+Für eine reine Frontend-Installation ohne Backend-Demo bleibt `python3 scripts/install.py --config-dir /pfad/zur/config` als Vorschau und mit `--apply` zum Anwenden verfügbar. Dafür das vollständige gebaute Repository verwenden. Der CLI-Installer installiert Dateien und erzeugt Ressourcen-/Theme-Fragmente unter `liquid-glass/`, aktiviert aber keine Integration und legt keine Dummy-Entities an. Für die vollständige Demo ist die Integration erforderlich. Bei YAML-Ressourcen `--existing-resources <datei>` angeben; anschließend die erzeugte `liquid-glass/INSTALLATION.md` befolgen. Python 3.9+ ist nur für diesen manuellen CLI-Weg nötig, Node/npm ausschließlich für Paketentwicklung.
 
-```sh
-python3 scripts/install.py --config-dir /pfad/zur/ha-konfiguration --apply
-```
+## Fehler eingrenzen
 
-Der Installer legt das Paket unter `www/liquid-glass/`, Theme-YAML unter `themes/liquid-glass/` und Fremdmodule unter `www/liquid-glass/vendor/` ab. Zugehörige Chunks und neutrale Profile werden mitkopiert. Er prüft die festgelegten Downloadgrößen und SHA-256-Prüfsummen und erzeugt unter `liquid-glass/` eine Ressourcenliste, Frontend-/Konfigurationsbeispiele und einen Installationsbericht.
-
-**`configuration.yaml` und Home Assistants `.storage` werden nicht automatisch verändert.** Die erzeugten Hinweise anschließend lesen, Themes aktivieren und Ressourcen passend zur eigenen Dashboard-Verwaltung registrieren.
-
-Bei bereits vorhandenen YAML-Ressourcen deren Liste angeben, damit sie berücksichtigt wird:
-
-```sh
-python3 scripts/install.py --config-dir /pfad/zur/ha-konfiguration --existing-resources resources.yaml --apply
-```
-
-UI-Ressourcen werden aus der bestehenden Liste gelesen; deren URLs bleiben aktiv. Für einen bewussten Wechsel von einer HACS-Kopie zur vom Installer festgelegten Version den vorhandenen Eintrag anhand von `resources-all.yaml` **ersetzen**, nicht zusätzlich registrieren. Nach Änderungen an YAML-Ressourcen `lovelace.reload_resources` aufrufen.
-
-Weitere Optionen:
-
-```sh
-# Erst Downloads sammeln, später aus dem Cache installieren:
-python3 scripts/install.py --download-only --cache-dir /pfad/zum/downloadcache
-python3 scripts/install.py --config-dir /pfad/zur/ha-konfiguration --cache-dir /pfad/zum/downloadcache --offline --apply
-
-# Optional: Dual-Smart-Thermostat-Backendintegration:
-python3 scripts/install.py --config-dir /pfad/zur/ha-konfiguration --with-integration dual_smart_thermostat --apply
-
-# Optional: ursprüngliche SVG-Ressource zusätzlich registrieren lassen:
-python3 scripts/install.py --config-dir /pfad/zur/ha-konfiguration --with-svg-refraction --apply
-```
-
-Die optionale Backendintegration ist keine zusätzliche Frontend-Dual-Thermostat-Karte. Sie wird nur benötigt, wenn sie die eigene Climate-Entity bereitstellen soll. Die vollständigen Optionen sind mit `python3 scripts/install.py --help` verfügbar.
-
-## Themes aktivieren
-
-Vor einer eigenen YAML-Änderung die bestehende Konfiguration sichern. Falls Themes noch nicht eingerichtet sind:
-
-```yaml
-frontend:
-  themes: !include_dir_merge_named themes
-```
-
-Existiert bereits `frontend:`, nur `themes:` in diesen Block einfügen. Nach einer erstmals geänderten Frontend-Konfiguration die Konfiguration prüfen und Home Assistant neu starten. Bei bereits aktivierter Theme-Einbindung genügt anschließend **Entwicklerwerkzeuge → Aktionen → `frontend.reload_themes`**.
-
-Im Benutzerprofil **DASH6 Satin Glass** auswählen. Alternativ in der View `theme: DASH6 Satin Glass` setzen. Die ursprünglichen Varianten bleiben auswählbar.
-
-## Ressourcen registrieren
-
-Bei Dashboards im Speicher-/UI-Modus: **Einstellungen → Dashboards → Ressourcen** öffnen, ggf. den erweiterten Modus im Profil aktivieren. Die vom Installer erzeugte Ressourcenliste verwenden und die Einträge als **JavaScript-Modul** ergänzen. YAML-Dashboards können stattdessen die erzeugte Ressourcen-YAML in ihre bestehende Ressourcenverwaltung übernehmen.
-
-Die Paket-Einstiege:
-
-| URL | Zweck |
+| Problem | Maßnahme |
 | --- | --- |
-| `/local/liquid-glass/dash6-cards.js` | Gesamtmodul; erforderlich für DASH6/Satin und dessen Kompatibilitätstypen |
-| `/local/liquid-glass/vacuum-dock-card.js` | Eigenständige Vacuum Dock Card |
-| `/local/liquid-glass/dash5-glass.js` | Nur die optionale ursprüngliche SVG-Erweiterung |
+| Einrichtung scheitert beim Download | GitHub-Erreichbarkeit und HA-Protokoll prüfen; Einrichtung erneut versuchen |
+| „already defined“ | Doppelte/alte Kartenressource entfernen, Browser vollständig neu laden |
+| Custom Element fehlt | Integration eingerichtet? Neustart und Browser-Reload durchgeführt? HA-Protokoll prüfen |
+| Graph leer | Recorder aktiv und Demo nicht ausgeschlossen? Erst neue Messpunkte sammeln lassen |
+| Eigene Geräte fehlen | Geräteintegration und Entity-Zuordnung einrichten; Demo ist eine getrennte Umgebung |
+| Altes Theme sichtbar | Profil-/View-Theme ausdrücklich auf DASH6 Satin Glass setzen |
+| Embedded View doppelt | Genau eine Original-`embedded-view-card.js`-URL behalten, neu laden |
 
-Fremdmodule ebenfalls registrieren, entweder über HACS oder über die vom Installer bereitgestellten Vendor-URLs. Dasselbe Fremdmodul nicht doppelt über beide Wege laden. Chunks und Profile werden vom Hauptmodul nachgeladen; sie sind keine einzelnen Ressourcen-Einträge.
-
-Die mitkopierte `dash5-light-cards-v2.js` ist ein Kompatibilitätseinstieg zum aktuellen Hauptmodul. **Nicht zusätzlich registrieren**, da die Kompatibilitätstypen im Hauptmodul vorhanden sind. Alte DASH6- sowie alte Govee-/v2-Lichtressourcen vor einer Migration gegen ihre tatsächlich verwendeten Elementnamen prüfen und Überschneidungen entfernen. Siehe [MIGRATION.md](MIGRATION.md).
-
-Browser vollständig neu laden. Bei einem Update kann ein neuer Versionsparameter wie `?v=2.3.0-satin` Cacheprobleme vermeiden. Es darf weiterhin nur ein Eintrag pro Modul bestehen.
-
-## HACS und manuelle Installation
-
-### Themes über HACS
-
-1. Dieses Repository über den [HACS-Link](https://my.home-assistant.io/redirect/hacs_repository/?owner=hitcompliance&repository=liquid-glass-home-assistant-theme&category=theme) oder als benutzerdefiniertes Repository der Kategorie **Theme** hinzufügen.
-2. Installieren, Themes aktivieren und neu laden wie oben.
-3. Für das Gesamtpaket die Kartenmodule zusätzlich über den Python-Installer oder manuell installieren.
-
-HACS als Theme-Repository kopiert die Theme-Dateien. Es installiert hierüber nicht automatisch die eigenen JavaScript-Karten, alle Fremdmodule oder das optionale Hintergrundbild. Fremdkarten in HACS separat installieren; [Abhängigkeiten](DEPENDENCIES.md).
-
-### Alles manuell
-
-1. Alle benötigten YAML-Dateien aus `themes/` nach `/config/themes/liquid-glass/` kopieren.
-2. Den Inhalt von `dist/` einschließlich `chunks/`, `profiles/` und Lizenzhinweisen nach `/config/www/liquid-glass/` kopieren.
-3. Benötigte Fremdmodule installieren und Ressourcen registrieren wie oben.
-4. Optional `assets/liquid-glass-living-room.jpg` nach `/config/www/liquid-glass-living-room.jpg` kopieren; URL `/local/liquid-glass-living-room.jpg`.
-5. Themes neu laden, Browser vollständig neu laden und das Theme auswählen.
-
-Beim ersten Anlegen von `www/` kann ein Home-Assistant-Neustart erforderlich sein. Für eine separate Vacuum-Dock-Installation werden deren Modul, das vollständige zugehörige `chunks/`-Verzeichnis und die Lizenzhinweise gemeinsam benötigt. Der Licht-Kompatibilitätseinstieg lädt das Hauptmodul und benötigt daher ebenfalls dessen Chunks/Profile.
-
-## Beispiel-Dashboard
-
-[examples/dashboard.yaml](../examples/dashboard.yaml) enthält die Kartenfamilien, Layoutadapter und Kompatibilitätsbeispiele. Alle `demo_…`-IDs sind Platzhalter. In ein **neues** Dashboard übernehmen, Entitäten ersetzen und zunächst die gewünschten Abschnitte behalten.
-
-- Hauptlichter, Gruppenmitglieder, Sensoren und Helfer auf eigene vorhandene Entities umstellen.
-- Für Thermostate eine geeignete `climate`-Entity verwenden; zwei Sollwerte erscheinen nur bei unterstütztem Modus.
-- Für Medien die eigenen Player/Remotes und passenden Firemote-Modellnamen zuordnen.
-- Für Roborock keine fremden Segmentnummern übernehmen. Das Beispiel lässt die Raumzuordnung bewusst leer.
-- Beim Embedded-Beispiel existiert die Ziel-Subview bereits in derselben Datei; eigener Dashboardpfad ist nicht nötig.
-- Das Kamerabeispiel zeigt die lokale Kamera des Browsers und startet erst auf Klick mit Browserfreigabe.
-
-Das Dashboard-YAML enthält keine Ressourcenliste für UI-Dashboards. Ressourcen separat registrieren.
-
-## Optionale ursprüngliche SVG-Optik
-
-Die bestehende Erweiterung `frontend/dash5-glass.js` bleibt optional. Sie kopiert das Hintergrundbild in eine optische Ebene und verwendet SVG-Verzerrung ohne WebGL. Die native Karte liegt darüber und bleibt bedienbar.
-
-1. Die Datei nach `/config/www/liquid-glass/dash5-glass.js` kopieren, sofern nicht schon vom Installer kopiert.
-2. Als Modulressource registrieren.
-3. Das Hintergrundbild kopieren.
-4. Die ursprüngliche Ansicht **`/dash-5/wohnzimmer`** mit **Liquid Glass (outdated)** oder **Liquid Glass Motion (outdated)** öffnen.
-
-Nur in diesem Geltungsbereich startet die ältere Optik. Der ✦-Button öffnet ihren eigenen Editor; Werte werden browserlokal gespeichert und als JSON exportiert. Der Wrapper `custom:liquid-glass-card` akzeptiert die ursprüngliche innere Karte unter `card` und optische Einstellungen unter `glass`. Details stehen in [CARDS.md](CARDS.md). Diese Ressource ist für Satin nicht erforderlich.
-
-## Probleme eingrenzen
-
-| Symptom | Prüfen |
-| --- | --- |
-| „Custom element doesn't exist“ | Richtiger Ressourceneintrag, Modultyp, vollständiger Reload und benötigte Fremdkarte |
-| Fehlende Module/Profile | `chunks/` und `profiles/` vollständig im selben Paketordner; keine privaten Profilnamen erwarten |
-| „already been defined“ | Doppelte/alte DASH6- oder Lichtressource entfernen, vollständig neu laden |
-| Farbe oder Regler fehlt | Entity-Fähigkeiten und Zuordnung; ohne RGB-/Temperaturunterstützung erscheint kein entsprechender Regler |
-| Nur allgemeines Theme sichtbar | Satin-Theme aktiv und Hauptmodul geladen; harte eigene CSS-Regeln prüfen |
-| Kein Graph | Sensor vorhanden und verfügbar, Graph aktiviert, passende Graph-Abhängigkeit geladen |
-| Kein Kamera-Start | HTTPS, Browserfreigabe und lokale Kamera verfügbar |
-| Abweichende Materialwerte | Browserlokale Theme-Overrides über „Theme-Vorgaben wiederherstellen“ zurücksetzen |
-
-Nach Installation die gewünschte View auf Desktop und Smartphone prüfen: Ein/Aus-Richtung, Reglerfreigabe, Lichtgruppenmodal, Modi/Presets und vorhandene Spezialaktionen. Die Demo simuliert diese Gestaltung; sie steuert keine Geräte.
-
-## Demo-Dashboard mit Design-Prinzipien
-
-Der Installer kopiert `examples/demo-dashboard.yaml` nach `liquid-glass/examples/demo-dashboard.yaml`. Nach Laden des Hauptmoduls und der Abhängigkeiten ein neues Dashboard erstellen und dessen Rohkonfiguration durch diese YAML ersetzen. Die vier Views einschließlich Favoriten-GUI zeigen interaktive Karten mit simulierten lokalen Zuständen; eigene Entitäten sind nicht erforderlich. Gerätebefehle werden von `dash6-demo-card` abgefangen. Das vollständige Beispiel `examples/dashboard.yaml` bleibt für echte eigene Geräte verfügbar.
-
-## Paketentwicklung
-
-Nach Änderungen an Karten: `npm ci && npm run build:cards`. Danach `python3 scripts/build-integration.py` ausführen (Python 3.9+ und Ruby mit YAML/JSON); dadurch werden alle Laufzeitdateien innerhalb des HACS-Komponentenordners aktualisiert. Die aufgelöste `themes.json` hat dieselben Werte wie die Theme-YAML, ohne doppelte YAML-Merge-Schlüssel im Laufzeit-Loader.
-
-Integrationsprüfung in einer separaten Python-3.14-Umgebung mit `homeassistant==2026.9.0`: `python scripts/test-integration.py`. Bestehende Paketprüfungen: `python scripts/test-installer.py`, `ruby tests/check_theme.rb`, `npm run test:package`. Die GitHub-Prüfung validiert zusätzlich die HACS-Integrationsstruktur.
+Die automatisierten Prüfungen verwenden temporäre HA-Konfigurationen und simulierte Geräte. Sie sind kein Nachweis einer Installation auf einer produktiven Nutzerinstanz.

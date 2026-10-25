@@ -36,6 +36,10 @@ async function registerEmbeddedAdapter() {
       await super._renderTarget(...args);
       const rendered = this._activeViewElement;
       if (!rendered) return; // Upstream already displays lookup/visibility errors.
+      // Wait for native hui-view's asynchronous initial layout before adapting
+      // it. A second configuration on its unupgraded placeholder throws.
+      await rendered._initialRenderComplete;
+      if (this._activeViewElement !== rendered) return;
       const view = rendered.viewConfig;
       if (!view) throw new Error('Liquid Glass: Embedded View Card did not expose its view configuration.');
       // Bootstrap the native sections class before awaiting its Liquid Glass

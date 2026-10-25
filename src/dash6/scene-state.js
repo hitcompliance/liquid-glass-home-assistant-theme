@@ -13,6 +13,7 @@ export function sceneMatches(entities,states){
  });
 }
 export function sceneTarget(hass,entity,notify){
+ const demo=hass?.states[entity]?.attributes;if(demo?.liquid_glass_demo===true&&demo.scene_targets)return demo.scene_targets;
  const id=hass?.states[entity]?.attributes?.id;if(!id||!hass.callApi)return null;
  let entry=cache.get(id);if(!entry||Date.now()-entry.time>60000){entry={time:Date.now(),value:entry?.value,callbacks:new Set()};cache.set(id,entry);hass.callApi('GET',`config/scene/config/${encodeURIComponent(id)}`).then(c=>{entry.value=c.entities;for(const fn of entry.callbacks)fn();entry.callbacks.clear();}).catch(()=>{entry.value=null;entry.callbacks.clear();});}
  if(!entry.value)entry.callbacks.add(notify);return entry.value;

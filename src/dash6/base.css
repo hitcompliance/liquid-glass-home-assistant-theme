@@ -353,8 +353,7 @@ button:not([role=radio]):not(.detail-link), [role=button]:not(ha-card):not(.deta
  transform-origin:center; -webkit-tap-highlight-color:transparent;touch-action:manipulation;
 }
 button:not([role=radio]):not(.detail-link):active:not(:disabled),[role=button]:not(.detail-link):active,ha-icon-button:active,ha-button:active,ha-control-button:active {
- scale:var(--dash6-button-press-scale,.94);translate:0 var(--dash6-button-press-depth,2px);box-shadow:var(--dash6-button-pressed-shadow)!important;transition-duration:80ms;
-}
+ scale:var(--dash6-button-press-scale,.94);translate:0 var(--dash6-button-press-depth,2px);box-shadow:var(--dash6-button-pressed-shadow)!important;transition-duration:80ms;border-color:transparent!important;}
 button[aria-pressed=true]:not([role=radio]),button[aria-selected=true]:not([role=radio]){background:var(--dash6-button-active-background)!important}
 button:not(.detail-link):focus-visible,[role=button]:not(.detail-link):focus-visible{outline:2px solid var(--primary-color);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){button,[role=button],ha-icon-button,ha-button,ha-control-button{scale:1!important;translate:0!important;transition:none!important}}
@@ -371,42 +370,51 @@ button:not(.detail-link):focus-visible,[role=button]:not(.detail-link):focus-vis
  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
  scale:1!important;translate:0!important;transform:none!important;transition:none!important;cursor:default!important;
 }
+:host(hui-heading-card.dash6-section-tab) ha-card.type-heading{padding-top:0px!important;height:calc(var(--dash6-section-heading-font-size,18px) + 16px)!important;min-height:calc(var(--dash6-section-heading-font-size,18px) + 16px)!important}
+:host(hui-heading-card.dash6-section-tab) h2{font-size:var(--dash6-section-heading-font-size,18px)!important;line-height:var(--dash6-section-heading-font-size,18px)!important}
 :host(hui-heading-card.dash6-section-tab) .container{padding:0!important;gap:8px!important}
 :host(hui-heading-card.dash6-section-tab) .content{flex:0 1 auto!important;min-width:0!important}
 :host(hui-heading-card.dash6-section-tab) .title,:host(hui-heading-card.dash6-section-tab) p{
  margin:0!important;padding:0!important;line-height:32px!important;font-size:24px!important;
  white-space:normal!important;overflow-wrap:anywhere!important;
  font-family:var(--dash6-section-heading-font-family,-apple-system,BlinkMacSystemFont,sans-serif)!important;
- font-size:var(--dash6-section-heading-font-size,22px)!important;font-weight:var(--dash6-section-heading-font-weight,600)!important;
+ font-size:var(--dash6-section-heading-font-size,18px)!important;font-weight:var(--dash6-section-heading-font-weight,600)!important;
  letter-spacing:var(--dash6-section-heading-letter-spacing,-.02em)!important;line-height:30px!important;
  color:var(--dash6-section-heading-color,var(--primary-text-color))!important;-webkit-text-fill-color:var(--dash6-section-heading-color,var(--primary-text-color))!important;
  text-shadow:var(--dash6-section-heading-shadow,0 1px 2px rgba(0,0,0,.35))!important;
 }
 
 /* Native weather: a framed current-weather header inside a thin forecast surface. */
-:host(hui-weather-forecast-card.dash6-weather-split) ha-card{
- background:var(--dash5-thin-background)!important;border:var(--dash5-thin-border)!important;border-radius:var(--dash5-card-radius,16px)!important;
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) ha-card{
+ background:var(--dash6-satin-lens-background)!important;border:var(--dash5-thin-border)!important;border-radius:var(--dash5-card-radius,16px)!important;
  box-shadow:var(--dash5-thin-shadow)!important;backdrop-filter:var(--dash5-thin-filter)!important;-webkit-backdrop-filter:var(--dash5-thin-filter)!important;
- padding:0!important;overflow:visible!important;
+ padding:0!important;overflow:hidden!important;color:var(--dash6-light-glass-text-color,#000)!important;
 }
-:host(hui-weather-forecast-card.dash6-weather-split) .content{
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content{
  box-sizing:border-box!important;height:var(--dash6-area-header-height,94px)!important;min-height:var(--dash6-area-header-height,94px)!important;
  margin:calc(-1 * var(--dash6-weather-border,1px)) calc(-1 * var(--dash6-weather-border,1px)) 0!important;
- width:calc(100% + 2 * var(--dash6-weather-border,1px))!important;padding:12px 14px!important;display:flex!important;align-items:center!important;gap:12px!important;
- background:var(--dash5-inner-background)!important;border:var(--dash5-inner-border)!important;border-radius:var(--dash5-card-radius,16px)!important;
+ width:calc(100% + 2 * var(--dash6-weather-border,1px))!important;padding:12px 14px!important;display:grid!important;grid-template-columns:44px minmax(0,1fr)!important;align-items:center!important;gap:12px!important;
+ background:linear-gradient(135deg,rgba(255,255,255,var(--dash6-satin-card-gloss,.14)),transparent 48%),rgba(24,24,24,var(--dash6-dark-glass-opacity,.7))!important;color:var(--dash6-dark-glass-text-color,#fff)!important;border:var(--dash5-inner-border)!important;border-radius:var(--dash5-card-radius,16px)!important;
  box-shadow:var(--dash5-inner-shadow)!important;backdrop-filter:var(--dash5-inner-filter)!important;-webkit-backdrop-filter:var(--dash5-inner-filter)!important;
 }
-:host(hui-weather-forecast-card.dash6-weather-split) .content .icon-image{flex:0 0 48px!important;width:48px!important;height:48px!important;margin:0!important}
-:host(hui-weather-forecast-card.dash6-weather-split) .content .info{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;flex:1!important;min-width:0!important;gap:2px!important}
-:host(hui-weather-forecast-card.dash6-weather-split) .content .name-state,:host(hui-weather-forecast-card.dash6-weather-split) .content .temp-attribute{display:block!important;width:auto!important;text-align:left!important;min-width:0!important}
-:host(hui-weather-forecast-card.dash6-weather-split) .content .state{font-size:16px!important;line-height:20px!important;white-space:normal!important}
-:host(hui-weather-forecast-card.dash6-weather-split) .content .temp{font-size:26px!important;line-height:30px!important;font-weight:500!important}
-:host(hui-weather-forecast-card.dash6-weather-split) .content .name,:host(hui-weather-forecast-card.dash6-weather-split) .content .attribute{display:none!important}
-:host(hui-weather-forecast-card.dash6-weather-split) .forecast{display:flex!important;justify-content:space-evenly!important;align-items:flex-start!important;gap:0!important;padding:12px 6px 8px!important;margin:0!important;box-sizing:border-box!important}
-:host(hui-weather-forecast-card.dash6-weather-split) .forecast-item{flex:1 1 0!important;min-width:0!important;width:auto!important;padding:0!important;text-align:center!important;gap:4px!important}
-:host(hui-weather-forecast-card.dash6-weather-split) .forecast-image-icon{width:30px!important;height:30px!important;margin:2px auto!important}
-:host(hui-weather-forecast-card.dash6-weather-split) .forecast-item-label,:host(hui-weather-forecast-card.dash6-weather-split) .forecast .temp{font-size:11px!important;line-height:15px!important}
-@media(max-width:599px){:host(hui-weather-forecast-card.dash6-weather-split) .content{height:var(--dash6-area-header-mobile-height,76px)!important;min-height:var(--dash6-area-header-mobile-height,76px)!important;padding:8px 12px!important}}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content .icon-image{width:44px!important;height:44px!important;margin:0!important;align-self:center!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content .info{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;min-width:0!important;width:100%!important;gap:4px!important;margin:0!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content .name-state,:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content .temp-attribute{display:block!important;width:auto!important;text-align:left!important;min-width:0!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content .state{font-size:14px!important;line-height:18px!important;font-weight:500!important;white-space:normal!important;margin:0!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content .temp{display:flex!important;align-items:baseline!important;gap:4px!important;width:max-content!important;max-width:100%!important;font-size:28px!important;line-height:32px!important;font-weight:600!important;font-variant-numeric:tabular-nums!important;white-space:nowrap!important;margin:0!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content .temp span{position:static!important;display:inline!important;float:none!important;inset:auto!important;transform:none!important;font-size:14px!important;line-height:20px!important;font-weight:500!important;margin:0!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content .name,:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content .attribute{display:none!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .forecast{display:flex!important;justify-content:flex-start!important;align-items:flex-start!important;gap:0!important;overflow-x:auto!important;overflow-y:hidden!important;touch-action:pan-x pan-y;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding:12px 6px!important;margin:0!important;box-sizing:border-box!important;background:transparent!important;--primary-text-color:#fff;--secondary-text-color:#e4eaf1}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .forecast-item{flex:0 0 58px!important;min-width:58px!important;width:58px!important;scroll-snap-align:start;padding:0!important;text-align:center!important;gap:4px!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .forecast-image-icon{width:30px!important;height:30px!important;margin:2px auto!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .forecast-item-label,:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .forecast .temp{font-size:13px!important;line-height:18px!important;font-weight:600!important;font-variant-numeric:tabular-nums!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .forecast,:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .forecast :is(.forecast-item-label,.temp,.templow){color:#fff!important;-webkit-text-fill-color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.95),0 0 8px rgba(0,0,0,.55)!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content :is(.state,.temp){color:var(--dash6-dark-glass-text-color,#fff)!important;-webkit-text-fill-color:var(--dash6-dark-glass-text-color,#fff)!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .forecast .templow{display:none!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .forecast .cloud-back{fill:#b9c4d1!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .forecast .cloud-front{fill:#fff!important}
+:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .forecast svg{filter:drop-shadow(0 1px 2px rgba(0,0,0,.7))}
+@media(max-width:599px){:host(hui-weather-forecast-card.dash6-weather-split.dash6-weather-split) .content{height:var(--dash6-area-header-mobile-height,76px)!important;min-height:var(--dash6-area-header-mobile-height,76px)!important;padding:8px 12px!important}}
 @media(min-width:1000px){:host(hui-weather-forecast-card.dash6-sidebar-weather){margin-top:8px!important}}
 
 /* DASH6 navigation lens: only opted-in Home/Wohnzimmer links. */
@@ -430,8 +438,7 @@ button:not(.detail-link):focus-visible,[role=button]:not(.detail-link):focus-vis
 :host(.dash6-nav-lens[data-nav-active="true"]) ha-icon{color:var(--dash6-nav-lens-icon-color,#8bc5ff)!important}
 :host(.dash6-nav-lens) ha-card:active,
 :host(.dash6-nav-lens[data-nav-active="true"]) ha-card:active{
- scale:calc(1 - .02 * min(1,var(--dash5-elasticity,1)))!important;box-shadow:var(--dash6-nav-lens-pressed-shadow,inset 0 2px 5px rgba(0,0,0,.42),inset 0 -1px 0 rgba(255,255,255,.16))!important;transition-duration:90ms!important;
-}
+ scale:calc(1 - .02 * min(1,var(--dash5-elasticity,1)))!important;box-shadow:var(--dash6-nav-lens-pressed-shadow,inset 0 2px 5px rgba(0,0,0,.42),inset 0 -1px 0 rgba(255,255,255,.16))!important;transition-duration:90ms!important;border-color:transparent!important;}
 :host(.dash6-nav-lens) ha-card:focus-visible{outline:2px solid var(--primary-color)!important;outline-offset:2px!important}
 @media(prefers-reduced-motion:reduce){:host(.dash6-nav-lens) ha-card{transition:none!important;scale:1!important}:host(.dash6-nav-lens) ha-card:active{scale:1!important}}
 

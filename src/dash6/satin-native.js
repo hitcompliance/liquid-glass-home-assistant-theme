@@ -1,7 +1,7 @@
 import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {inDashboardScope} from './scope.js';
 import {LitElement,html,css} from 'lit';
-import {switchVisual,childLocked,vendorLockAllowsSwitch} from './glass-switch.js';
+import {switchVisual,childLocked,vendorLockAllowsSwitch,SWITCH_SCHEMA,configureDeviceLock} from './glass-switch.js';
 import {bindSatinMode,unbindSatinMode} from './satin-surface.js';
 
 // Preserve vendor actions by dispatching their existing `action` event at the
@@ -205,18 +205,33 @@ if(!customElements.get('dash6-satin-native-card'))customElements.define('dash6-s
 // offering a simplified replacement editor for wrapped native cards.
 export class SatinNativeEditor extends HTMLElement{
  constructor(){super();this.attachShadow({mode:'open'});}
- set hass(value){this._hass=value;if(this._editor)this._editor.hass=value;}
+ set hass(value){this._hass=value;if(this._editor)this._editor.hass=value;if(this._lockForm)this._lockForm.hass=value;}
  get hass(){return this._hass;}
  async setConfig(config){
-  this._config=structuredClone(config);const generation=(this._generation||0)+1;this._generation=generation;
+  this._config=structuredClone(config);this._editor=null;this._lockForm=null;const generation=(this._generation||0)+1;this._generation=generation;
   try{
    const helpers=await window.loadCardHelpers();const card=await helpers.createCardElement(config.definition);
    const editor=await card.constructor.getConfigElement?.();if(generation!==this._generation)return;
    if(!editor)throw Error('Diese native Karte stellt keinen grafischen Editor bereit.');
    editor.hass=this._hass;editor.setConfig(config.definition);
-   editor.addEventListener('config-changed',event=>{event.stopPropagation();this._config={...this._config,definition:structuredClone(event.detail.config)};this.dispatchEvent(new CustomEvent('config-changed',{detail:{config:this._config},bubbles:true,composed:true}));});
+   editor.addEventListener('config-changed',event=>{event.stopPropagation();const definition=structuredClone(event.detail.config);if(this._config.type==='custom:dash6-satin-graph-card')for(const key of ['min_height','opacity','hover_opacity'])if(this._config.definition.graph?.[key]!==undefined)definition.graph={...definition.graph,[key]:this._config.definition.graph[key]};if(this._config.type==='custom:dash6-satin-graph-card')for(const key of ['child_lock','child_lock_entity','switch_style'])if(Object.hasOwn(this._config.definition,key))definition[key]=this._config.definition[key];this._config={...this._config,definition:configureDeviceLock(definition)};this.dispatchEvent(new CustomEvent('config-changed',{detail:{config:this._config},bubbles:true,composed:true}));});
    this._editor=editor;this.shadowRoot.replaceChildren(editor);
+
   }catch(error){if(generation===this._generation){const notice=document.createElement('p');notice.setAttribute('role','alert');notice.textContent=error.message;this.shadowRoot.replaceChildren(notice);}}
+  if(generation!==this._generation)return;
+   if(config.type==='custom:dash6-satin-graph-card'){
+    if(/^(switch|input_boolean)\./.test(config.definition.entity||'')){
+     const form=document.createElement('ha-form');this._lockForm=form;form.hass=this._hass;form.schema=SWITCH_SCHEMA;form.computeLabel=field=>field.label;
+     form.data={switch_style:'liquid_glass',child_lock:false,child_lock_entity:'',...this._config.definition};
+     form.addEventListener('value-changed',event=>{event.stopPropagation();const values=event.detail.value;const definition={...this._config.definition};for(const key of ['switch_style','child_lock','child_lock_entity'])definition[key]=values[key]??(key==='child_lock'?false:'');this._config={...this._config,definition:configureDeviceLock(definition)};this._editor?.setConfig(this._config.definition);this.dispatchEvent(new CustomEvent('config-changed',{detail:{config:structuredClone(this._config)},bubbles:true,composed:true}));});
+     this.shadowRoot.prepend(form);
+    }
+    const label=document.createElement('label');label.textContent='Mindesthöhe der Karte mit Hintergrundgraph (px) ';
+    const input=document.createElement('input');input.type='number';input.min='90';input.max='1000';input.step='1';input.value=String(config.definition.graph?.min_height??118);
+    input.addEventListener('change',()=>{const definition=this._config.definition;definition.graph={...definition.graph,min_height:Math.max(90,Math.min(1000,Number(input.value)||118))};this.dispatchEvent(new CustomEvent('config-changed',{detail:{config:structuredClone(this._config)},bubbles:true,composed:true}));});
+    label.append(input);this.shadowRoot.prepend(label);
+    const opacityBox=document.createElement('div');for(const [key,title,fallback]of [['opacity','Graph-Deckkraft',.5],['hover_opacity','Graph-Deckkraft bei Hover',.8]]){const field=document.createElement('label');field.style.display='block';field.textContent=title+' (0–1; leer: Theme) ';const control=document.createElement('input');control.type='number';control.min='0';control.max='1';control.step='.05';control.placeholder=String(fallback);control.value=String(this._config.definition.graph?.[key]??'');control.addEventListener('change',()=>{const definition=this._config.definition;definition.graph={...definition.graph};if(control.value==='')delete definition.graph[key];else definition.graph[key]=Math.max(0,Math.min(1,Number(control.value)));this.dispatchEvent(new CustomEvent('config-changed',{detail:{config:structuredClone(this._config)},bubbles:true,composed:true}));});field.append(control);opacityBox.append(field);}label.after(opacityBox);
+   }
  }
 }
 if(!customElements.get('dash6-satin-native-editor'))customElements.define('dash6-satin-native-editor',SatinNativeEditor);

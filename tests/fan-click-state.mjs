@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {FanClickState} from '../src/dash6/fan-click-state.js';
+let now=0,next=0;const tasks=new Map(),calls=[];
+const timer=(fn,ms)=>{const id=++next;tasks.set(id,{fn,at:now+ms});return id;};
+const advance=to=>{while(true){const task=[...tasks].filter(([,t])=>t.at<=to).sort((a,b)=>a[1].at-b[1].at)[0];if(!task)break;tasks.delete(task[0]);now=task[1].at;task[1].fn();}now=to;};
+const store=new FanClickState({now:()=>now,timer,clear:id=>tasks.delete(id)});
+const entity='fan.example',hass={states:{[entity]:{state:'off'}},callService:(domain,service,data)=>{calls.push({at:now,domain,service,data});return Promise.resolve();}};
+const begin=on=>store.begin({entity,on,powerEntity:'sensor.power',hass,clickedAt:now});
+const first=begin(true);assert.equal(store.visual(entity,{on:false},hass).on,true);
+advance(2999);assert.equal(calls.length,0);advance(3000);assert.equal(calls.length,1);assert.equal(calls[0].at,3000);assert.deepEqual(calls[0].data,{entity_id:'sensor.power'});
+advance(7999);assert.equal(store.visual(entity,{on:false},hass).on,true);advance(8000);assert.equal(store.visual(entity,{on:false},hass).on,false);
+const second=begin(true);hass.states[entity]={state:'on'};assert.equal(store.visual(entity,{on:true},hass).on,true);assert.equal(store.pending.size,0);advance(11000);assert.equal(calls.length,2,'confirmation must not cancel sensor update');
+const third=begin(false);assert.equal(store.visual(entity,{on:true},hass).on,false);advance(11500);const fourth=begin(true);store.finish(entity,third);assert.equal(store.pending.get(entity).seq,fourth,'late error must not clear a newer click');advance(14000);advance(14500);assert.equal(calls.length,4,'every on/off click owns its own 3s update');
+assert.ok(first<second&&second<third&&third<fourth);
+assert.equal(store.visual(entity,{on:true},hass).on,true);assert.equal(store.pending.get(entity).seq,fourth,'matching old baseline must not acknowledge a quick opposite click');
+console.log('PASS: optimistic grace, stale reports, confirmation, eight-second correction, independent 3s updates for on/off and stale-error protection.');

@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {parse} from '/private/tmp/dash6-gauge-patch-tools/node_modules/acorn/dist/acorn.mjs';
+import {configuredGraph,resolveGraphSettings} from '../src/dash6/graph-settings.js';
+const hass={states:{'sensor.power':{attributes:{device_class:'power',unit_of_measurement:'W'}},'sensor.energy':{attributes:{device_class:'energy',unit_of_measurement:'kWh'}}}};
+const make=(row={})=>{const source={series:[{entity:'sensor.power',type:'line',group_by:{duration:'15min'},...row}]};return configuredGraph(source,resolveGraphSettings(source,'sidebar',{getPropertyValue:()=>''}),hass).series[0];};
+const line=make();assert.equal(line.fill_raw,'null');assert.equal(line.group_by.fill,'last');assert.equal(line.group_by.start_with_last,true);assert.equal(line.extend_to,false);
+assert.equal(make({type:'area',fill_raw:'last',extend_to:'end'}).fill_raw,'null');
+for(const row of [{entity:'sensor.energy',unit:'kWh'},{statistics:{type:'mean',period:'hour'}},{type:'column'}])assert.equal(make(row).group_by.fill,'null');
+// Exercise the installed upstream parser and bucket algorithms unchanged.
+const vendor=readFileSync('/Volumes/config/www/community/apexcharts-card/apexcharts-card.js','utf8');
+let owner;function walk(n){if(!n||typeof n!=='object')return;if(n.type==='ClassDeclaration'||n.type==='ClassExpression'){if(n.body.body.some(m=>m.key?.name==='_dataBucketer'))owner=n;}for(const v of Object.values(n))if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')walk(v);}
+walk(parse(vendor,{ecmaVersion:'latest',sourceType:'module'}));assert.ok(owner);
+const names=['_dataBucketer','_transformAndFill','_applyTransform','_sum','_average','_last','_filterNulls'];
+const methods=owner.body.body.filter(n=>names.includes(n.key?.name)).map(n=>vendor.slice(n.start,n.end));
+assert.equal(methods.length,names.length);
+const Native=Function('return class Native {'+methods.join('\n')+'}')();
+export {Native};
+const probe=new Native();probe._config=line;probe._groupByDurationMs=900000;
+assert.deepEqual(probe._transformAndFill('0.0',{},17),[0,0]);
+for(const value of ['unavailable','unknown','',null])assert.deepEqual(probe._transformAndFill(value,{},17),[17,null]);
+const step=900000,start=Date.UTC(2026,0,1),boundaries=Array.from({length:14},(_,i)=>({valueOf:()=>start+i*step}));
+const range={reverseBy:()=>[...boundaries].reverse()};
+const buckets=data=>probe._dataBucketer({data:data.map(([i,v])=>[start+i*step,v])},range);
+const constant=buckets([[0,0]]);assert.ok(constant.length>8);assert.ok(constant.every(b=>probe._last(b.data)===0));
+const constantPositive=buckets([[0,42]]);assert.ok(constantPositive.every(b=>probe._last(b.data)===42));
+const outage=buckets([[0,0],[3,null],[8,25]]);
+for(const i of [4,5,6,7])assert.equal(probe._average(outage.find(b=>b.timestamp===start+i*step).data),null,'explicit outage must persist');
+assert.equal(probe._last(outage.find(b=>b.timestamp===start+9*step).data),25,'recovery resumes valid values');
+const tail=buckets([[0,0],[3,null]]);assert.ok(tail.at(-1).timestamp<start+4*step,'trailing outage is not extended');
+probe._config={...line,group_by:{...line.group_by,fill:'null',start_with_last:false}};
+const before=buckets([[0,0]]);assert.ok(before.length===0||before.some(b=>probe._last(b.data)===null),'old behavior reproduces loss of a constant history');
+console.log('PASS: installed Apex parser/bucketer keeps zero and constant values, explicit outages, recovery and trailing outages; energy, statistics and bars unchanged.');

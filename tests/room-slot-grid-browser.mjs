@@ -43,7 +43,7 @@ window.emit=null;window.hass={states,entities:{},connection:{subscribeMessage:as
 window.slot=document.createElement('dash6-room-slot-card');slot.setConfig({room:'neutral',slot:0,columns:2,mobile_columns:1,mobile_breakpoint:700,edge_alignment:'flush'});slot.hass=hass;document.body.append(slot);
 window.setCount=count=>emit({result:[Array.from({length:count},(_,i)=>({type:'custom:neutral-device',entity:'switch.'+(i?'extra'+i:'known')}))]});window.ready=true;
 </script>`;
-const server=createServer((req,res)=>{if(req.url.startsWith('/local/')){res.setHeader('content-type','application/json');res.end(JSON.stringify(configs));return;}res.setHeader('content-type',req.url.endsWith('.js')?'text/javascript':'text/html');res.end(req.url==='/upstream.js'?upstream:req.url==='/loader.js'?loader:html);});
+const server=createServer((req,res)=>{if(req.url.startsWith('/local/')||req.url.startsWith('/room-loader-configs.json')){res.setHeader('content-type','application/json');res.end(JSON.stringify(configs));return;}res.setHeader('content-type',req.url.endsWith('.js')?'text/javascript':'text/html');res.end(req.url==='/upstream.js'?upstream:req.url==='/loader.js'?loader:html);});
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const results=[];
 try{

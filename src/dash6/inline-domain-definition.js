@@ -17,6 +17,10 @@ export function inlineDomainGridDefinition(config,initial,extra){
   return headings.length?thinShell({...(base||{type:'custom:vertical-stack-in-card'}),cards:headings}):null;
  }
  const flush=config.edge_alignment==='flush';
+ if(['scene','cover'].includes(config.domain)){
+  const grid={type:'custom:layout-card',layout_type:config.domain==='cover'?'custom:dash6-cover-pair-layout':'custom:dash6-scene-flex-layout',layout:{'flex-wrap':'wrap','align-items':'stretch','--dash6-scene-min-width':'150px',gap:'8px',card_margin:'0',margin:'0',padding:'0'},cards:config.domain==='cover'?items.flatMap(card=>card.type==='grid'?card.cards||[]:[card]):items};
+  return thinShell(flush?{type:'custom:dash6-domain-grid',headings,grid,breakpoint}:{...(base||{type:'custom:vertical-stack-in-card'}),cards:[...headings,grid]});
+ }
  const layout=structuredClone(config.grid_layout||{}),narrow=`repeat(${mobile},minmax(0,1fr))`;
  const width=query=>Number(query.match(/max-width\s*:\s*([\d.]+)px/)?.[1])||Infinity;
  const queries={...layout.mediaquery,[`(max-width: ${breakpoint-1}px)`]:{...layout.mediaquery?.[`(max-width: ${breakpoint-1}px)`],'grid-template-columns':narrow}};

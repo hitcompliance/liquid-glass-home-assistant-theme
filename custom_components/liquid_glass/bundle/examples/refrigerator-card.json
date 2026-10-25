@@ -47,13 +47,13 @@
             "border-radius": "16px"
           },
           {
-            "height": "116px"
+            "height": "auto"
           },
           {
-            "min-height": "116px"
+            "min-height": "118px"
           },
           {
-            "max-height": "116px"
+            "max-height": "none"
           }
         ],
         "custom_fields": {
@@ -175,25 +175,31 @@
           ],
           "graph": [
             {
+              "position": "absolute"
+            },
+            {
+              "inset": "0"
+            },
+            {
               "width": "100%"
             },
             {
-              "height": "80px"
+              "height": "100%"
             },
             {
-              "align-self": "end"
+              "min-height": "100px"
             },
             {
-              "margin-top": "0"
+              "z-index": "1"
             },
             {
-              "opacity": "0.6"
-            },
-            {
-              "background": "transparent"
+              "opacity": "1"
             },
             {
               "overflow": "hidden"
+            },
+            {
+              "pointer-events": "auto"
             }
           ],
           "door": [
@@ -249,48 +255,135 @@
         "values": "[[[\n const p=states['sensor.example_refrigerator_power'];\n const e=states['sensor.example_refrigerator_energy'];\n const fridgeTemp=states['number.example_refrigerator_temperature'];\n const freezerTemp=states['number.example_freezer_temperature'];\n const power=p && !['unknown','unavailable'].includes(p.state) ? Math.round(Number(p.state)).toLocaleString('de-DE') + ' ' + (p.attributes.unit_of_measurement || 'W') : '— W';\n const energy=e && !['unknown','unavailable'].includes(e.state) ? Math.round(Number(e.state)).toLocaleString('de-DE') + ' ' + (e.attributes.unit_of_measurement || 'kWh') : '— kWh';\n const temp = x => x && !['unknown','unavailable'].includes(x.state) ? Number(x.state).toLocaleString('de-DE') + '°' : '—';\n return '<div style=\"font-size:16px;font-weight:700;\">'+power+'</div><div style=\"font-size:13px;font-weight:400;\">'+energy+'</div><div style=\"margin-top:6px;font-size:12px;line-height:1.55;color:var(--secondary-text-color);\"><span style=\"display:block\"><ha-icon icon=\"mdi:fridge\" style=\"width:14px;height:14px;vertical-align:-2px;margin-right:4px\"></ha-icon>'+temp(fridgeTemp)+'</span><span style=\"display:block\"><ha-icon icon=\"mdi:snowflake\" style=\"width:14px;height:14px;vertical-align:-2px;margin-right:4px\"></ha-icon>'+temp(freezerTemp)+'</span></div>';\n]]]",
         "graph": {
           "card": {
-            "type": "custom:mini-graph-card",
-            "entities": [
+            "type": "custom:apexcharts-card",
+            "graph_span": "24h",
+            "update_interval": "1min",
+            "header": {
+              "show": false
+            },
+            "series": [
               {
-                "entity": "sensor.example_refrigerator_power"
+                "entity": "sensor.example_refrigerator_power",
+                "type": "area",
+                "stroke_width": 2.8,
+                "color": "#6ec7ff",
+                "group_by": {
+                  "func": "last",
+                  "duration": "15min"
+                },
+                "name": "Leistung",
+                "unit": "W",
+                "yaxis_id": "power",
+                "extend_to": false
               },
               {
-                "entity": "input_number.example_refrigerator_openings_per_hour",
+                "entity": "binary_sensor.example_refrigerator_door",
                 "name": "Türöffnungen/h",
+                "unit": "Öffnungen/h",
+                "type": "column",
                 "color": "#f59e0b",
-                "y_axis": "secondary",
-                "aggregate_func": "max",
-                "show_line": false,
-                "show_points": true,
-                "show_fill": false,
-                "show_state": false
+                "stroke_width": 0,
+                "yaxis_id": "doors",
+                "extend_to": false,
+                "group_by": {
+                  "func": "raw"
+                },
+                "data_generator": "return (// Calendar-hour counts from confirmed off -> on transitions. Request a full\n// extra hour so the first visible partial hour has its complete evidence.\n// The initial history state is a seed, never an opening event.\nasync function fridgeDoorHistory(entity,start,end,hass){\n const hour=3600000,until=Math.min(end.getTime(),Date.now());\n const since=Math.floor(start.getTime()/hour)*hour-hour;\n const rows=await hass.callApi('GET','history/period/'+new Date(since).toISOString()+'?filter_entity_id='+encodeURIComponent(entity.entity_id)+'&end_time='+new Date(until).toISOString()+'&minimal_response&no_attributes');\n const history=rows[0]||[];if(!history.length)return [];\n const bins=new Map();let previous=null;\n for(const row of history){\n  const time=Date.parse(row.last_changed||row.last_updated),key=Math.floor(time/hour)*hour;\n  if(previous==='off'&&row.state==='on')bins.set(key,(bins.get(key)||0)+1);\n  previous=row.state;\n }\n const points=[];\n for(let time=Math.floor(start.getTime()/hour)*hour;time<until;time+=hour){\n  const right=Math.min(time+hour-1,until);\n  // A gap in reported sensor availability makes that hour unknown.\n  const evidence=history.filter(row=>Date.parse(row.last_changed||row.last_updated)<right);\n  const seed=history.filter(row=>Date.parse(row.last_changed||row.last_updated)<=time).at(-1);\n  const last=evidence.at(-1),valid=last&&seed&&['on','off'].includes(last.state)&&['on','off'].includes(seed.state);\n  const gap=history.some(row=>{const t=Date.parse(row.last_changed||row.last_updated);return t>=time&&t<=right&&!['on','off'].includes(row.state);});\n  const value=valid&&!gap?(bins.get(time)||0):null;\n  // One centered column for each calendar hour; current hour is partial.\n  points.push([time+hour/2,value]);\n }\n return points;\n}\n)(entity,start,end,hass);"
               }
             ],
-            "hours_to_show": 24,
-            "line_width": 2,
-            "animate": true,
-            "show": {
-              "name": false,
-              "icon": false,
-              "state": false,
-              "legend": false,
-              "extrema": false,
-              "points": "hover",
-              "labels": "hover"
+            "apex_config": {
+              "chart": {
+                "height": "100%",
+                "sparkline": {
+                  "enabled": true
+                },
+                "toolbar": {
+                  "show": false
+                },
+                "zoom": {
+                  "enabled": false
+                },
+                "events": {
+                  "mouseLeave": "EVAL:function(){const t=document.getElementById('embedded-card-tooltip');if(t)t.style.display='none';}",
+                  "mounted": "EVAL:function(ctx){const end=(Math.floor(Date.now()/3600000)+1)*3600000,start=end-86400000;if(ctx.w.config.xaxis.min!==start||ctx.w.config.xaxis.max!==end)ctx.updateOptions({xaxis:{min:start,max:end}},false,false,false);}",
+                  "updated": "EVAL:function(ctx){const end=(Math.floor(Date.now()/3600000)+1)*3600000,start=end-86400000;if(ctx.w.config.xaxis.min!==start||ctx.w.config.xaxis.max!==end)ctx.updateOptions({xaxis:{min:start,max:end}},false,false,false);}"
+                },
+                "parentHeightOffset": 0,
+                "offsetX": 0,
+                "offsetY": 0,
+                "type": "line"
+              },
+              "stroke": {
+                "curve": "straight"
+              },
+              "markers": {
+                "size": 0,
+                "hover": {
+                  "size": 4
+                }
+              },
+              "grid": {
+                "show": false
+              },
+              "dataLabels": {
+                "enabled": false
+              },
+              "legend": {
+                "show": false
+              },
+              "tooltip": {
+                "shared": true,
+                "intersect": false,
+                "custom": "EVAL:function({series,dataPointIndex,seriesIndex,w}){if(dataPointIndex<0)return '';let root=w.globals.dom.baseEl;let host=root.getRootNode().host;let frame=host;while(host){if(host.localName==='button-card'){frame=host;break;}const next=host.getRootNode().host;if(!next)break;host=next;}const rect=frame.getBoundingClientRect();let tip=document.getElementById('embedded-card-tooltip');if(!tip){tip=document.createElement('div');tip.id='embedded-card-tooltip';tip.style.cssText='position:fixed;z-index:2147483647;pointer-events:none;max-width:300px;padding:10px 12px;border:1px solid rgba(208,234,255,.72);border-radius:16px;background:linear-gradient(145deg,rgba(91,136,185,.45),rgba(18,34,58,.91) 30%,rgba(9,20,39,.92));backdrop-filter:blur(16px) saturate(145%);-webkit-backdrop-filter:blur(16px) saturate(145%);color:#f7fbff;box-shadow:inset 0 1px 0 rgba(255,255,255,.42),inset 0 -1px 0 rgba(12,31,57,.72),0 10px 30px rgba(0,0,0,.48),0 0 20px rgba(88,166,255,.60);font:13px/1.45 sans-serif;box-sizing:border-box';document.body.append(tip);window.addEventListener('scroll',()=>tip.style.display='none',true);}tip.replaceChildren();const title=document.createElement('strong');const ts=w.globals.seriesX[seriesIndex]?.[dataPointIndex];title.textContent=ts?new Date(ts).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'';tip.append(title);series.forEach((v,i)=>{if(w.globals.collapsedSeriesIndices.includes(i))return;const xs=w.globals.seriesX[i]||[];let index=-1;if(i===1){index=xs.findIndex(x=>Math.floor(x/3600000)===Math.floor(ts/3600000));}else for(let n=0;n<xs.length;n++){if(xs[n]<=ts)index=n;else break;}const value=v[index];if(!Number.isFinite(value))return;const row=document.createElement('div');const name=w.globals.seriesNames[i].replace(/Wohnzimmer|IKEA|Power|Leistung|Energie|Bereinigt|Neu|Aktuell/g,'').replace(/\\s+/g,' ').trim();row.textContent=(name||'Wert')+': '+value.toLocaleString('de-DE',{maximumFractionDigits:1})+' '+(root.getRootNode().host?._config?.series?.[i]?.unit||'');tip.append(row)});tip.style.display='block';tip.style.width='260px';const t=tip.getBoundingClientRect();let x,y;if(innerWidth-rect.right>=t.width+16){x=rect.right+8;y=rect.top;}else if(rect.left>=t.width+16){x=rect.left-t.width-8;y=rect.top;}else if(rect.top>=t.height+8){x=Math.max(8,Math.min(rect.left,innerWidth-t.width-8));y=rect.top-t.height-8;}else {x=Math.max(8,Math.min(rect.left,innerWidth-t.width-8));y=rect.bottom+8;}tip.style.left=x+'px';tip.style.top=Math.max(8,Math.min(y,innerHeight-t.height-8))+'px';return '';}"
+              },
+              "xaxis": {
+                "labels": {
+                  "show": false
+                },
+                "axisBorder": {
+                  "show": false
+                },
+                "axisTicks": {
+                  "show": false
+                },
+                "tooltip": {
+                  "enabled": false
+                }
+              },
+              "fill": {
+                "type": "solid",
+                "opacity": 0.8
+              },
+              "plotOptions": {
+                "bar": {
+                  "columnWidth": "75%",
+                  "borderRadius": 1
+                }
+              }
             },
-            "fill": "fade",
-            "points_per_hour": 2,
-            "group_by": "interval",
-            "aggregate_func": "last",
-            "smoothing": false,
-            "hour24": true,
-            "upper_bound": "~100",
-            "lower_bound_secondary": 0,
-            "upper_bound_secondary": "~5",
-            "update_interval": 900,
             "dash6_css": {
-              "style": "ha-card { container-type: inline-size !important; background: transparent !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; height: 80px !important; min-height: 80px !important; max-height: 80px !important; overflow: hidden !important; border-radius: 0 !important; } .graph, .graph__container, .graph__container__svg, svg { display: block !important; width: 100% !important; min-width: 0 !important; height: 80px !important; min-height: 80px !important; max-height: 80px !important; box-sizing: border-box !important; overflow: visible !important; } svg { transform: scaleX(max(1, calc(100cqw / 400px))) !important; transform-origin: center center !important; }",
-              "class": ""
+              "style": "ha-card {\n  container-type: inline-size !important;\n  background: transparent !important;\n  border: none !important;\n  box-shadow: none !important;\n  margin: 0 !important;\n  padding: 0 !important;\n  height: 100% !important;\n  min-height: 100% !important;\n  max-height: 100% !important;\n  overflow: visible !important;\n  border-radius: 0 !important;\n}\n.apexcharts-canvas, .apexcharts-svg, svg {\n  display: block !important;\n  width: 100% !important;\n  min-width: 0 !important;\n  height: 100% !important;\n  min-height: 100% !important;\n  max-height: 100% !important;\n  box-sizing: border-box !important;\n  overflow: visible !important;\n}\n.apexcharts-tooltip {\n  border: var(--dash6-material-9aa1c302) !important;\n  border-radius: 999px !important;\n  background: var(--ha-card-background) !important;\n  box-shadow: var(--ha-card-box-shadow) !important;\n  color: var(--primary-text-color) !important;\n  padding: 2px 4px !important;\n}\n.apexcharts-tooltip-title {\n  padding: 4px 7px !important;\n  margin: 0 !important;\n  background: transparent !important;\n  border: none !important;\n}\n.apexcharts-tooltip-text {\n  padding: 0 7px 4px !important;\n}\nha-card { background:transparent!important; backdrop-filter:none!important; -webkit-backdrop-filter:none!important; box-shadow:none!important; }\n:host{display:block;height:100%;min-height:0!important}\nha-card,#graph,#graph-wrapper,.wrapper{height:100%!important;min-height:0!important;max-height:none!important}\n.apexcharts-canvas,.apexcharts-svg{height:100%!important;min-height:0!important;max-height:none!important}\n.apexcharts-area{fill-opacity:var(--dash6-graph-fill-opacity,.16)!important}\n.apexcharts-line,.apexcharts-area[fill=\"none\"]{stroke-opacity:var(--dash6-graph-line-opacity,.65)!important;filter:drop-shadow(0 0 3px var(--dash6-graph-glow,rgba(110,199,255,.22)))}\n\n.apexcharts-plot-series{opacity:var(--dash6-graph-current-opacity,var(--dash6-graph-opacity,.5))}",
+              "class": "dash6-background-graph"
+            },
+            "yaxis": [
+              {
+                "id": "power",
+                "show": false,
+                "min": 0,
+                "max": "~100"
+              },
+              {
+                "id": "doors",
+                "show": false,
+                "opposite": true,
+                "min": 0,
+                "max": "~5",
+                "decimals": 0
+              }
+            ],
+            "cache": false,
+            "span": {
+              "end": "hour"
             }
           }
         },
@@ -302,6 +395,10 @@
       },
       "hold_action": {
         "action": "more-info"
+      },
+      "_dash6_satin_graph_passthrough": true,
+      "dash6_css": {
+        "style": "\n#graph{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:100px!important;margin:0!important;z-index:1!important;opacity:1!important}#device,#title,#status,#values{position:relative;z-index:2}#device{padding-left:12px!important;padding-top:12px!important}"
       }
     }
   ]

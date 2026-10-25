@@ -3,8 +3,20 @@ import {LitElement,html,css,svg} from 'lit';
 import {bindThemePreferences,unbindThemePreferences} from './material.js';
 
 export const SWITCH_TYPES=[{value:'liquid_glass',label:'Liquid Glass · bewegliche Glaslinse'},{value:'classic',label:'Klassisches Geräteicon'}];
-export const SWITCH_SCHEMA=[{name:'switch_style',label:'Schalterart',selector:{select:{options:SWITCH_TYPES,mode:'dropdown'}}},{name:'child_lock',label:'Bedienung dieser Karte sperren',selector:{boolean:{}}},{name:'child_lock_entity',label:'Kindersicherung-Entity (optional)',selector:{entity:{domain:['switch','input_boolean','binary_sensor']}}}];
-export function childLocked(config,states={}){return config?.child_lock===true||Boolean(config?.child_lock_entity&&states[config.child_lock_entity]?.state!=='off');}
+export const SWITCH_SCHEMA=[{name:'switch_style',label:'Schalterart',selector:{select:{options:SWITCH_TYPES,mode:'dropdown'}}},{name:'child_lock',label:'Kindersicherung immer aktiv',selector:{boolean:{}}},{name:'child_lock_entity',label:'Kindersicherung-Entity (binär; optional)',selector:{entity:{domain:['switch','input_boolean','binary_sensor','sensor']}}}];
+export function childLocked(config,states={}){return config?.child_lock===true||Boolean(config?.child_lock_entity&&!['off','false','0','closed'].includes(String(states[config.child_lock_entity]?.state).toLowerCase()));}
+
+// Keep a metered card's title, input status and measurements intact. Its GUI
+// owns the lock settings; the existing shared control owns denial animation.
+export function configureDeviceLock(config){
+ const c=structuredClone(config),device=c.custom_fields?.device?.card;
+ if(!vendorLockAllowsSwitch(c)||!vendorLockAllowsSwitch(device)||!device||device.entity!==c.entity||!Object.hasOwn(c,'child_lock')&&!Object.hasOwn(c,'child_lock_entity'))return c;
+ const dedicated=device.type==='custom:dash6-glass-switch'||device.type==='custom:button-card'&&device.tap_action?.action==='toggle'&&['none','more-info',undefined].includes(device.hold_action?.action)&&!device.double_tap_action;
+ if(!dedicated)return c;
+ if(device.hold_action?.action==='more-info')c.hold_action??=structuredClone(device.hold_action);
+ c.custom_fields.device.card={type:'custom:dash6-glass-switch',entity:c.entity,icon:device.icon,name:c.name,switch_style:c.switch_style||'liquid_glass',child_lock:c.child_lock===true,child_lock_entity:c.child_lock_entity||''};
+ return c;
+}
 export const vendorLockAllowsSwitch=config=>config?.type!=='custom:button-card'||config.lock===undefined||config.lock?.enabled===false;
 const usable=s=>s&&!['unknown','unavailable'].includes(s.state);
 const numeric=x=>x!==null&&x!==undefined&&Number.isFinite(Number(x));
@@ -23,18 +35,18 @@ export function switchVisual(config,states={},colorForState=colorResolver){
 export function mapDeviceSwitches(config){
  if(!config||typeof config!=='object')return config;
  if(Array.isArray(config))return config.map(mapDeviceSwitches);
- const c=structuredClone(config);
+ const c=configureDeviceLock(config);
  if(!vendorLockAllowsSwitch(c))return c; // Keep a protected parent's whole subtree native.
  const auxiliaryActions=['hold_action','double_tap_action','icon_tap_action','icon_hold_action','icon_double_tap_action','press_action','release_action','icon_press_action','icon_release_action'];
  // A vendor lock owns its complete interaction. Preserve that card whenever
  // the lock is active, templated, or unclear, including keyboard handling.
  const plainToggle=c.tap_action&&Object.keys(c.tap_action).every(key=>key==='action')&&!['confirmation','protect','pin','PIN'].some(key=>Object.hasOwn(c,key));
  const simple=c.type==='custom:button-card'&&plainToggle&&/^(light|switch|fan|input_boolean)\./.test(c.entity||'')&&c.tap_action?.action==='toggle'&&c.show_name===false&&c.show_state===false&&!Object.keys(c.custom_fields||{}).length&&auxiliaryActions.every(key=>!c[key]||c[key].action==='none');
- if(simple)return {type:'custom:dash6-glass-switch',entity:c.entity,icon:c.icon,name:c.name,switch_style:c.switch_style||'liquid_glass',child_lock:c.child_lock||false,child_lock_entity:c.child_lock_entity||'',...(c.dash6_css?{dash6_css:c.dash6_css}:{}),...(c.card_mod?{card_mod:c.card_mod}:{})};
+ if(simple)return {type:'custom:dash6-glass-switch',entity:c.entity,power_entity:c.power_entity,icon:c.icon,name:c.name,switch_style:c.switch_style||'liquid_glass',child_lock:c.child_lock||false,child_lock_entity:c.child_lock_entity||'',...(c.dash6_css?{dash6_css:c.dash6_css}:{}),...(c.card_mod?{card_mod:c.card_mod}:{})};
  const device=c.custom_fields?.device?.card;
  if(c.type==='custom:button-card'&&c.entity?.startsWith('fan.')&&device?.tap_action?.action==='toggle'){
   c.switch_style??='liquid_glass';c.child_lock??=false;c.child_lock_entity??='';
-  Object.assign(device,{switch_style:c.switch_style,child_lock:c.child_lock,child_lock_entity:c.child_lock_entity});
+  Object.assign(device,{power_entity:c.power_entity||c.custom_fields?.graph?.card?.series?.[0]?.entity,switch_style:c.switch_style,child_lock:c.child_lock,child_lock_entity:c.child_lock_entity});
   if(c.switch_style!=='classic'){
    c.styles.grid=c.styles.grid.map(x=>Object.hasOwn(x,'grid-template-columns')?{'grid-template-columns':'112px minmax(0,1fr) auto'}:Object.hasOwn(x,'grid-template-rows')?{'grid-template-rows':'32px 32px minmax(0,1fr)'}:x);
   }

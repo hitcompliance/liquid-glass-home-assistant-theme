@@ -9,6 +9,15 @@ export function inheritSatinSidebarTheme(host,dialog){
  }
  dialog.style.setProperty('--dash6-satin-enabled','1');dialog.setAttribute('data-dash6-satin-card','');return true;
 }
+// Dialog widgets live outside the native HA action tree. Reuse actual anchors
+// for navigation-only stacks, including styled wrappers and user conditions.
+export function sidebarNavigationConfig(config){
+ const unwrap=value=>value?.type==='custom:dash6-render-card'?unwrap(value.definition):value;
+ const item=value=>{const unwrapped=unwrap(value);return unwrapped?.type==='conditional'?{...unwrapped,card:item(unwrapped.card)}:unwrapped;};
+ const root=unwrap(config);if(!['custom:vertical-stack-in-card','custom:dash6-stack-card','vertical-stack'].includes(root?.type)||!Array.isArray(root.cards)||!root.cards.length)return null;
+ const cards=root.cards.map(item),isLink=value=>value?.type==='conditional'?isLink(value.card):value?.tap_action?.action==='navigate'&&typeof value.tap_action.navigation_path==='string';
+ return cards.every(isLink)?{...root,type:'custom:vertical-stack-in-card',cards:globalThis.__dash6Navigation?.last?.(cards)||cards}:null;
+}
 export function overlay(host,hass,html){return (function(){if(this.__sidebarCards)for(const card of this.__sidebarCards)card.hass=hass;
 if(!this.__sidebarBound){
  this.__sidebarBound=true;
@@ -26,16 +35,16 @@ if(!this.__sidebarBound){
   dialog.showModal();
   try{
    const helpers=await window.loadCardHelpers();this.__sidebarCards=[];
-   for(const config of((this._config?.variables?.dash6_sidebar_profiles?await Promise.all(this._config.variables.dash6_sidebar_profiles.map(key=>window.__dash6Cards.loadProfile(key))):this._config?.variables?.sidebar_cards||[]).filter(config=>config.type!=='clock'))){if(config.type==='custom:vertical-stack-in-card'){
+   for(const sidebarConfig of((this._config?.variables?.dash6_sidebar_profiles?await Promise.all(this._config.variables.dash6_sidebar_profiles.map(key=>window.__dash6Cards.loadProfile(key))):this._config?.variables?.sidebar_cards||[]).filter(config=>config.type!=='clock'))){const config=sidebarNavigationConfig(sidebarConfig)||sidebarConfig;if(config.type==='custom:vertical-stack-in-card'){
     const nav=document.createElement('nav');nav.setAttribute('aria-label','Raumnavigation');nav.style.cssText="border:var(--dash5-inner-border);border-radius:16px;padding:6px;background:var(--dash5-inner-background);box-shadow:var(--dash5-inner-shadow);backdrop-filter:var(--dash5-inner-filter);-webkit-backdrop-filter:var(--dash5-inner-filter)";
-    for(const item of config.cards){const link=document.createElement('a');link.href=item.tap_action.navigation_path;link.style.cssText='display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;box-sizing:border-box;color:var(--primary-text-color);text-decoration:none;border-radius:12px;font:14px/1.4 var(--paper-font-body1_-_font-family,sans-serif)';
+    for(let item of config.cards){if(item.type==='conditional'){if(!item.conditions?.every(c=>c.condition==='user'&&c.users?.includes(this._hass?.user?.id)))continue;item=item.card;}if(!item?.tap_action?.navigation_path)continue;const link=document.createElement('a');link.href=item.tap_action.navigation_path;link.style.cssText='display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;box-sizing:border-box;color:var(--primary-text-color);text-decoration:none;border-radius:12px;font:14px/1.4 var(--paper-font-body1_-_font-family,sans-serif)';
       if(location.pathname===item.tap_action.navigation_path){link.style.background='linear-gradient(145deg,rgba(8,22,37,.50),rgba(22,47,65,.32))';link.style.border='1px solid rgba(205,234,255,.22)';link.style.boxShadow='inset 0 2px 6px rgba(2,13,25,.48),inset 0 1px 0 rgba(255,255,255,.10),0 1px 0 rgba(255,255,255,.16)';link.setAttribute('aria-current','page');}
       const icon=document.createElement('ha-icon');icon.setAttribute('icon',item.icon);icon.style.cssText='width:21px;height:21px;color:#8bc5ff;flex:none';link.append(icon,document.createTextNode(item.name));link.addEventListener('click',()=>setTimeout(close,0));link.classList.add('dash6-nav-lens');link.style.background='';link.style.boxShadow='';link.style.border='';link.style.borderRadius='';link.style.backdropFilter='none';nav.append(link);}
     const lensStyle=document.createElement('style');lensStyle.textContent=`
 #embedded-sidebar-modal nav a.dash6-nav-lens{border:var(--dash6-material-5b76c695) !important;border-radius:var(--dash6-nav-lens-radius,12px)!important;background:transparent!important;box-shadow:none!important;scale:1;transition:background 150ms ease,border-color 150ms ease,box-shadow 150ms ease,scale 260ms cubic-bezier(.22,1.25,.36,1)!important}
 @media(hover:hover){#embedded-sidebar-modal nav a.dash6-nav-lens:hover{background:var(--dash6-nav-lens-hover-background,linear-gradient(165deg,rgba(255,255,255,.09),rgba(255,255,255,.025)))!important;border:var(--dash6-nav-lens-hover-border,1px solid rgba(242,245,248,.15))!important;box-shadow:var(--dash6-nav-lens-hover-shadow,inset 0 1px 0 rgba(255,255,255,.10))!important}}
 #embedded-sidebar-modal nav a.dash6-nav-lens[aria-current=page]{background:var(--dash6-nav-lens-active-background,radial-gradient(110% 95% at 12% 0%,rgba(255,255,255,.20),transparent 55%),radial-gradient(70% 110% at 100% 100%,rgba(255,238,214,.10),transparent 65%),linear-gradient(165deg,rgba(98,105,112,.24),rgba(19,23,28,.38) 52%,rgba(48,49,51,.28)))!important;border:var(--dash6-nav-lens-active-border,1px solid rgba(242,245,248,.38))!important;box-shadow:var(--dash6-nav-lens-active-shadow,inset 0 1px 1px rgba(255,255,255,.38),inset 0 -1px 1px rgba(255,255,255,.22),inset 1px 0 2px rgba(255,255,255,.10),inset 0 4px 9px rgba(255,255,255,.05))!important;font-weight:600}
-#embedded-sidebar-modal nav a.dash6-nav-lens:active{scale:calc(1 - .02 * min(1,var(--dash5-elasticity)));box-shadow:var(--dash6-nav-lens-pressed-shadow,inset 0 2px 5px rgba(0,0,0,.42),inset 0 -1px 0 rgba(255,255,255,.16))!important;transition-duration:90ms!important}
+#embedded-sidebar-modal nav a.dash6-nav-lens:active{scale:calc(1 - .02 * min(1,var(--dash5-elasticity)));box-shadow:var(--dash6-nav-lens-pressed-shadow,inset 0 2px 5px rgba(0,0,0,.42),inset 0 -1px 0 rgba(255,255,255,.16))!important;transition-duration:90ms!important;border-color:transparent!important;}
 #embedded-sidebar-modal nav a.dash6-nav-lens:focus-visible{outline:var(--dash6-material-5ca3765c);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){#embedded-sidebar-modal nav a.dash6-nav-lens{transition:none!important;scale:1!important}}
 `;dialog.append(lensStyle);

@@ -7,7 +7,7 @@ const marker='_dash6_satin_graph_passthrough';
 const fieldCSS=`
 /* This stylesheet belongs only to the Satin definition. A theme change rebuilds
    the original definition; the vendor host need not bind an icon adapter. */
-:host #graph{position:absolute!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;height:80px!important;margin:0!important;padding:0!important;z-index:1!important;overflow:hidden!important;pointer-events:auto!important;opacity:1!important;background:transparent!important}
+:host #graph{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;padding:0!important;z-index:1!important;overflow:hidden!important;pointer-events:auto!important;opacity:1!important;background:transparent!important}
 :host #device,:host #icon{padding-left:12px!important;padding-top:12px!important;align-self:start!important;--dash6-satin-switch-track-top:0px;position:relative!important;z-index:2!important}
 :host #values{padding-top:12px!important;position:relative!important;z-index:2!important}
 :host #title,:host #status{position:relative!important;z-index:2!important}
@@ -26,7 +26,7 @@ function powerEntity(config){
 // aggregation and visibility keys must never be spread into an Apex series.
 function miniGraphSeries(entry,index,original,base){
  const row=typeof entry==='string'?{entity:entry}:entry;
- const result={...structuredClone(base),entity:row.entity,color:row.color||base.color,type:'line'};
+ const result={...structuredClone(base),entity:row.entity,color:row.color||base.color,type:row.show_fill===false?'line':'area'};
  if(row.attribute!==undefined)result.attribute=row.attribute;
  if(row.unit!==undefined||original.unit!==undefined)result.unit=row.unit??original.unit;
  else if(index>0)delete result.unit; // A secondary counter does not measure watts.
@@ -42,7 +42,7 @@ function miniGraphSeries(entry,index,original,base){
  return result;
 }
 export function satinGraphDefinition(config){
- const d=structuredClone(config);d[marker]=true;
+ const d=structuredClone(config);d[marker]=true;d._dash6_graph={...config.graph};
  const original=unwrap(config.custom_fields?.graph?.card);if(!original||!powerEntity(config))return d;
  const source=original.series?.[0]||original.entities?.[0],existingHeight=d.styles?.card?.find(x=>x.height)?.height||'118px';
  const pixelHeight=typeof existingHeight==='string'&&existingHeight.match(/^(\d+(?:\.\d+)?)px$/);
@@ -69,14 +69,18 @@ export function satinGraphDefinition(config){
   graph.apex_config.tooltip.custom=graph.apex_config.tooltip.custom.replace("(root.getRootNode().host?._config?.series?.[i]?.unit||'')","(()=>{const chart=root.getRootNode().host;const measurement=chart?._config?.series?.[i];const state=chart?._hass?.states?.[measurement?.entity]||chart?.hass?.states?.[measurement?.entity]||frame?.hass?.states?.[measurement?.entity];return measurement?.unit??state?.attributes?.unit_of_measurement??'';})()");
  }
  else graph.series[0].unit=source?.unit||original.unit||graph.series[0].unit;
+ if(config.entity?.startsWith('fan.')&&original.type==='custom:mini-graph-card'&&series.length===1){
+  graph.cache=false;graph.series[0].data_generator="return hass.callApi('GET','history/period/'+start.toISOString()+'?filter_entity_id='+encodeURIComponent(entity.entity_id)+'&end_time='+end.toISOString()+'&minimal_response&no_attributes').then(rows=>{const data=(rows[0]||[]).map(p=>[Date.parse(p.last_changed||p.last_updated),!['unknown','unavailable',''].includes(p.state)&&Number.isFinite(Number(p.state))?Number(p.state):null]);if(data.length&&data.at(-1)[1]!==null)data.push([end.getTime(),data.at(-1)[1]]);return data;});";delete graph.series[0].group_by;graph.series[0].extend_to=false;
+ }
+ if(graph.series.some(row=>row.type==='line'))graph.apex_config.chart.type='line';
  graph.dash6_css.class=((graph.dash6_css.class||'')+' dash6-background-graph').trim();
  d.custom_fields.graph={...d.custom_fields.graph,card:graph};
  d.styles??={};d.styles.card??=[];d.styles.custom_fields??={};
  // Keep the reference's 118px card (or an explicit existing larger card height).
  const upsert=(list,key,value)=>{const row=list.find(x=>Object.hasOwn(x,key));if(row)row[key]=value;else list.push({[key]:value});};
- for(const key of ['height','min-height','max-height'])upsert(d.styles.card,key,height);
+ for(const key of ['height','min-height','max-height'])upsert(d.styles.card,key,key==='min-height'?(Math.max(100,Number(config.graph?.min_height)||parseFloat(height)||118)+'px'):key==='height'?'auto':'none');
  upsert(d.styles.card,'position','relative');upsert(d.styles.card,'padding','0');upsert(d.styles.card,'overflow','hidden');
- d.styles.custom_fields.graph=[{position:'absolute'},{left:'0'},{right:'0'},{bottom:'0'},{width:'100%'},{height:'80px'},{'z-index':'1'},{background:'transparent'},{overflow:'hidden'},{'pointer-events':'auto'},{opacity:'1'}];
+ d.styles.custom_fields.graph=[{position:'absolute'},{inset:'0'},{width:'100%'},{height:'100%'},{'z-index':'1'},{background:'transparent'},{overflow:'hidden'},{'pointer-events':'auto'},{opacity:'1'}];
  const grid=d.styles.grid||[];
  for(const rule of grid){if(Object.hasOwn(rule,'grid-template-rows'))rule['grid-template-rows']='32px 32px minmax(0,1fr)';if(Object.hasOwn(rule,'grid-template-columns'))rule['grid-template-columns']='112px minmax(0,1fr) minmax(86px,auto)';}
  const skin=d.dash6_css||d.card_mod||{};
@@ -104,6 +108,7 @@ export class SatinGraphCard extends LitElement{
  connectedCallback(){super.connectedCallback();bindSatinMode(this,()=>this.rebuild());this.rebuild();}
  disconnectedCallback(){unbindSatinMode(this);super.disconnectedCallback();const tip=document.getElementById('embedded-card-tooltip');if(tip)tip.style.display='none';}
  updated(){if(this._child)this._child.hass=this.hass;this.rebuild();}
+
  getCardSize(){return this._child?.getCardSize?.()??2;}
  getGridOptions(){return this._config?.definition?.grid_options??this._child?.getGridOptions?.();}
  render(){return this._error?html`<div class="error" role="alert">${this._error}</div>`:html`${this._child}`;}

@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {tvSourceAction,tvSourceNames} from '../src/dash6/tv-source.js';
+const c={tv_entity:'media_player.tv',tv_source_appletv_automation:'automation.apple',tv_source_hdmi_1_automation:'automation.hdmi1',tv_source_hdmi_3_automation:'automation.hdmi3'};
+const states={'media_player.tv':{state:'unavailable',attributes:{source_list:['Netflix','HDMI 2']}},'automation.apple':{state:'on'},'automation.hdmi1':{state:'off'},'automation.hdmi3':{state:'on'}};
+assert.deepEqual(tvSourceNames(states[c.tv_entity],c),['AppleTV','HDMI 1','HDMI 3']);
+for(const [source,id]of [['AppleTV','automation.apple'],['HDMI 1','automation.hdmi1'],['HDMI 3','automation.hdmi3']])assert.deepEqual(tvSourceAction(states,c,source),{domain:'automation',service:'trigger',data:{entity_id:id,skip_condition:true}});
+assert.equal(tvSourceAction(states,c,'HDMI 2'),null);
+for(const state of ['unknown','unavailable'])assert.equal(tvSourceAction({...states,'automation.apple':{state}},c,'AppleTV'),null);
+assert.equal(tvSourceAction({},c,'AppleTV'),null);
+const old={tv_entity:'media_player.tv',tv_sources:'HDMI 1, HDMI 2'};assert.deepEqual(tvSourceNames({attributes:{}},old),['HDMI 1','HDMI 2']);
+assert.deepEqual(tvSourceAction({'media_player.tv':{state:'on',attributes:{source_list:['HDMI 1']}}},old,'HDMI 1'),{domain:'media_player',service:'select_source',data:{entity_id:'media_player.tv',source:'HDMI 1'}});
+console.log('Quellenzuordnung: 3 Automationen, Vorrang vor App-Liste, unerreichbarer TV, ungültige Quellen und bisheriger Steuerweg geprüft.');

@@ -1,0 +1,16 @@
+DASH6 Satin Glass wird jetzt als vollständige Integration mit bedienbaren virtuellen Home-Assistant-Geräten ausgeliefert.
+
+- Nur **DASH6 Satin Glass**; die früheren Themevarianten und Designgalerien sind aus dieser Veröffentlichung entfernt.
+- Aktueller Kartenstand einschließlich Pflanzenkarte, Licht-/Schuhschrankgruppen, Messsteckdosen/Kühlschrank, Drei-Modus-Lüftung, Klima, Medien, Türen, Roboter und der gemeinsamen Editoren. Benötigte Module, Chunks, Profile, Bilder und Lizenzen sind vollständig enthalten.
+- **14 Demo-Views mit 91 automatisch angelegten Dummy-Entities**, Räumen nach dem Vorbild von DASH6, ohne Florin, plus Karten-/Layoutbeispiele und Favoriten-GUI. Die Kamera liefert ein Paketbild. Verläufe entstehen erst ab Installation. Demo-Serviceziele werden ausdrücklich auf Dummy-Entities begrenzt.
+- **Automatisch installiert:** Ultra Card v3.13.0, Button Card v7.0.1, Mushroom v5.2.3, Auto Entities v1.16.1, ApexCharts Card v2.2.3, Mini Graph Card v0.13.0, Card Mod v4.2.1, Layout Card v2.4.7, More Info Card (Commit c0a9c942851c), Vertical Stack In Card v1.1.4, Firemote v4.1.9 und Embedded View Card (Commit 739823b9b6f8). Downloads einschließlich Nebenmodulen und Lizenzen sind mit Größen und SHA-256 festgelegt. Bestehende HACS-Ressourcen werden wiederverwendet.
+- **Optional automatisch:** Dual Smart Thermostat v0.13.2 nur bei ausdrücklicher Auswahl. Anschließend ist ein weiterer Neustart und die Konfiguration eigener Sensor-/Heizungs-/Kühlungs-Entities nötig. Demo und native Thermostatkarten benötigen es nicht.
+- **Selbst einzurichten:** HACS, Home Assistant ab 2026.9 und die Integrationen für eigene echte Geräte. Ultra Card Connect, Browser Mod, MQTT/Zigbee2MQTT, gerätespezifische TV-/ADB-/BLE-Aktionen und Firmware werden nicht automatisch installiert; sie sind nur für entsprechende eigene Zusatzfunktionen nötig. Für die Demo sind sie nicht erforderlich.
+- Die Shelly-Lüftungsquelle und ihre Anleitung werden mitkopiert. Aktivierung, Komponenten und passende Verdrahtung auf echter Hardware bleiben bewusst beim Nutzer. Keine zusätzlichen privaten HA-Skripte für die Demo erforderlich.
+- Eine WebKit-Rückkopplung bei der Slider-Größenmessung wurde behoben.
+
+**Installation:** Repository in HACS als **Integration** herunterladen → HA neu starten → unter Geräte & Dienste **Liquid Glass** hinzufügen → **Liquid Glass Demo** öffnen. Kein manueller Karten-/Entity-Import. Für eine manuelle Installation `liquid_glass.zip` nach `/config/` entpacken, sodass `custom_components/liquid_glass/` entsteht, dann ebenso neu starten und einrichten.
+
+**Update:** HACS-Update herunterladen, HA neu starten, Browser vollständig neu laden. Ältere separat installierte Themes bleiben als eigene Dateien erhalten; betroffene Views/Profile selbst auf Satin umstellen. Alte doppelte DASH6-/Govee-/Multi-Light-Ressourcen vor dem Wechsel entfernen. Die verwaltete Demo wird erneuert; eigene Änderungen vorher in eine Kopie übernehmen.
+
+[Installationsanleitung](https://github.com/hitcompliance/liquid-glass-home-assistant-theme/blob/main/docs/INSTALLATION.md) · [Vollständige Abhängigkeiten](https://github.com/hitcompliance/liquid-glass-home-assistant-theme/blob/main/docs/DEPENDENCIES.md)

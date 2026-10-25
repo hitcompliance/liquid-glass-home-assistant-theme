@@ -1,3 +1,5 @@
+import './menu-glass-live.js';
+import './glass-text-defaults.js';
 import './responsive-background.js';
 import './satin-surface.js';
 import './media-card.js';
@@ -18,12 +20,14 @@ import './area-header.js';
 import './door-card.js';
 import './shoe-cabinet-card.js';
 import './local-camera-card.js';
+import './plant-card.js';
 import './inline-card.js';
 import './profile-card.js';
 import './theme-editor.js';
-console.info('DASH6 Satin 2.4.24: Direkte Karten und gemeinsame Inline-Abfragen.');
+console.info('DASH6 Satin Glass 3.2.0: Karten, Raumlader und isolierte Backend-Demo.');
 
 import './demo-card.js';
+import './demo-scope.js';
 import './inset-actions.js';
 
 import './graph-position.js';
@@ -74,3 +78,12 @@ import "./overview-cover-refinements.js";
 import './favorites-gui.js';
 
 import './dashboard-refinements.js';
+import './global-exclusions-ui.js';
+
+import './fan-power-feedback.js';
+import './fan-click-feedback.js';
+
+import './shoe-scenes-reference.js';
+
+import './area-display-live.js';
+import './graph-card-content.js';

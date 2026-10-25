@@ -65,6 +65,7 @@ try {
         const headingDown = region.getByRole('button', {name: 'Untertitel nach unten verschieben', exact: true});
         await headingDown.focus(); await page.keyboard.press('Space');
         await page.waitForFunction(() => renderFavorites(editor._config,hass).cards[0].cards.find(card=>card.title==='Container').cards[0].name==='B');
+        assert.equal(await page.evaluate(() => editor.shadowRoot.activeElement?.getAttribute('aria-label')), 'Untertitel nach unten verschieben', 'keyboard focus follows the moved card');
         await region.getByRole('button', {name: 'PromotedY nach oben verschieben', exact: true}).click();
         const draft = await page.evaluate(() => JSON.parse(JSON.stringify(changes.at(-1))));
         assert.deepEqual(draft.selected, await page.evaluate(() => initial.selected));

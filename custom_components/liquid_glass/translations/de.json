@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Liquid Glass einrichten",
-        "description": "Themes und alle fehlenden Karten-Abhängigkeiten werden automatisch installiert (Internet erforderlich). Vorhandene HACS-Ressourcen bleiben erhalten. Das Demo-Dashboard verwendet simulierte Geräte. Dual Smart Thermostat benötigt nach der Installation einen weiteren Neustart und eine Geräte-Konfiguration.",
+        "description": "DASH6 Satin Glass und alle fehlenden Karten-Abhängigkeiten werden automatisch installiert (Internet erforderlich). Vorhandene HACS-Ressourcen bleiben erhalten. Die optionale Demo legt eigene virtuelle Entities an; keine echten Geräte werden gesteuert. Dual Smart Thermostat benötigt nach der Installation einen weiteren Neustart und eine Geräte-Konfiguration.",
         "data": {
           "demo_dashboard": "Interaktives Demo-Dashboard anzeigen",
           "dual_smart_thermostat": "Dual Smart Thermostat zusätzlich installieren"

@@ -1,10 +1,10 @@
 # Umstieg und Kompatibilität
 
-## Bestehende Themes behalten
+## Ab 3.2: nur DASH6 Satin Glass
 
-**Liquid Glass (outdated)** und **Liquid Glass Motion (outdated)** bleiben mit ihren bisherigen Materialwerten erhalten. Auch die fünf ursprünglichen DASH6-Varianten erhalten den Zusatz **(outdated)**; die Satin-Variante behält ihren Namen. Bei manuell gesetzten View-/Profil-Themes den passenden neuen Namen auswählen oder auf **DASH6 Satin Glass** umstellen. Private, eingefrorene Vergleichsthemes werden nicht umbenannt. Ein Theme-Update allein ersetzt keine Dashboard-Karten. Für Satin werden **DASH6 Satin Glass** und das aktuelle Gesamtmodul `dash6-cards.js` gemeinsam verwendet. Die ursprünglichen DASH6-Varianten bleiben im aktuellen Modul unterstützt; Satin greift erst bei aktivem `dash6-satin-enabled`.
+Die Veröffentlichung enthält ausschließlich **DASH6 Satin Glass**. Ältere Liquid-Glass-/Modern-Glass-Varianten werden nicht mehr ausgeliefert. Vorhandene separat installierte Theme-Dateien werden nicht gelöscht. Eigene Views/Profile mit alten Theme-Namen ausdrücklich auf Satin umstellen. Für den vollständigen Look das aktuelle Gesamtmodul `dash6-cards.js` zusammen mit Satin verwenden. Bestehende eigene Dashboards werden nicht automatisch umgeschrieben.
 
-Die HACS-Integration setzt bei Einrichtung und nach Updates die gespeicherten Backend-Vorgaben für Hell und Dunkel auf **DASH6 Satin Glass**. Explizite Profil- und View-Auswahlen haben weiterhin Vorrang.
+Die HACS-Demo verwendet ab 3.2 eigene virtuelle Backend-Entities unter `*.liquid_glass_demo_*`. Frühere browserlokale Demo-Werte werden nicht übernommen. Die getrennte `browser-demo-dashboard.yaml` bleibt eine lokale Design-Simulation.
 
 ## Ältere DASH6-Ressource ersetzen
 

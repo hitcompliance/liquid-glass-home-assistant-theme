@@ -1,0 +1,669 @@
+# Eigenständiges, interaktives Demo-Dashboard. Keine eigenen Geräte erforderlich.
+# Das Hauptmodul dist/dash6-cards.js und die im README genannten Ressourcen laden.
+# Jede dash6-demo-card verwendet ausschließlich lokale simulierte Zustände.
+# Im Rohkonfigurationseditor eines NEUEN Dashboards einfügen.
+title: Liquid Glass · Design und Demo
+views:
+  - title: Licht und Material
+    path: material
+    icon: mdi:layers-outline
+    type: sections
+    max_columns: 2
+    theme: DASH6 Satin Glass
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              # Liquid Glass · Design und Demo
+              Bediene die echten Karten mit simulierten Werten. **Keine Geräte werden geschaltet.**
+
+              **Material:** sanft gefrostetes Rauchglas, flache Flächen, gewölbte Kanten und zurückhaltender Glanz. Die Karten bleiben lesbar, auch wenn der Hintergrund sichtbar ist.
+          - type: custom:dash6-demo-card
+            title: Licht · Farbe und Helligkeit
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Stehlampe
+              icon: mdi:floor-lamp
+              controls:
+                mode: combo
+                buttons: group
+                label: icon
+                position: right
+          - type: markdown
+            content: |
+              ### Ein Schalter, ein Hauptzustand
+              **Links ist Ein, rechts ist Aus.** Die eingestellte Lichtfarbe und Helligkeit bestimmen den Lichtschein. Farbe, Farbtemperatur und Helligkeit teilen sich denselben Regler.
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              ## Lichtgruppen · progressive Offenlegung
+              Die Hauptkarte bleibt kompakt. Klicke auf den **Kartenhintergrund**, um die einzelnen Lichter im Modal auszuwählen und gemeinsam oder einzeln zu steuern. Schließen ist per Escape, Außenklick oder Schließen-Taste möglich.
+          - type: custom:dash6-demo-card
+            title: Lichtgruppe · Modal ausprobieren
+            card:
+              type: custom:dash6-lightgroup-card-v2
+              entity: light.demo_gruppe
+              name: Wohnzimmer Ambiente
+              icon: mdi:lightbulb-outline
+              segments:
+                - entity: light.demo_links
+                  name: Links
+                - entity: light.demo_rechts
+                  name: Rechts
+              segment_display:
+                placement: detail
+                style: list
+              controls:
+                mode: combo
+                buttons: group
+                position: right
+          - type: markdown
+            content: |
+              ### Einheitliche Formensprache
+              Auswahlgruppen sind versenkte Rechtecke mit abgerundeten Ecken. Auf der aktiven Auswahl liegt eine bündige Glaslinse. Ein laufender Lichteffekt beleuchtet die Rauchglas-Taste weiß von innen.
+  - title: Bedienung und Bewegung
+    path: bedienung
+    icon: mdi:gesture-tap
+    type: sections
+    max_columns: 2
+    theme: DASH6 Satin Glass
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              # Berühren, bewegen, bestätigen
+              **Hover:** eine leichte elastische Rückmeldung. **Drücken:** kurz quetschen. **Drag:** die Sliderlinse wird größer; die Einstellung wird erst beim Loslassen übernommen.
+
+              Bedienung funktioniert auch ohne Hover. Die Systemeinstellung „Bewegung reduzieren“ hat Vorrang.
+          - type: custom:dash6-demo-card
+            title: Kombislider · Ziehen und Moduswechsel
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Kombislider
+              controls:
+                mode: combo
+                buttons: group
+                label: icon
+          - type: custom:dash6-demo-card
+            title: Dieselbe Lichtkarte · Einzelregler
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Einzelregler
+              controls:
+                mode: separate
+                buttons: group
+          - type: markdown
+            content: |
+              ### Zustandsfarbe statt Dekoration
+              Ein Licht verwendet seine eingestellte Farbe. Ein Schalter ohne Farbfunktion ist im eingeschalteten Zustand **gelb**. Aus bleibt neutral. Die Form und Position zeigen den Zustand zusätzlich zur Farbe.
+      - type: grid
+        cards:
+          - type: custom:dash6-demo-card
+            title: Steckdose · gelber Fallback
+            card:
+              type: custom:dash6-glass-switch
+              entity: switch.demo_steckdose
+              name: Steckdose
+              icon: mdi:power-socket-eu
+          - type: custom:dash6-demo-card
+            title: Ventilator · dasselbe Schalterprinzip
+            card:
+              type: custom:dash6-glass-switch
+              entity: fan.demo_luefter
+              name: Ventilator
+              icon: mdi:fan
+          - type: custom:dash6-demo-card
+            title: Rollo · vertikaler Regler
+            card:
+              type: custom:dash6-cover-card
+              entity: cover.demo_rollo
+              name: Rollo
+          - type: markdown
+            content: |
+              ### Gleiche Materialien, passende Bedienung
+              Vertikale Rollo-Regler behalten ihre Richtung. Reine Aktionstasten bleiben Tasten. Geräteaktionen werden nicht allein wegen der Gestaltung zu Ein-/Ausschaltern.
+  - title: Klima und Prinzipien
+    path: prinzipien
+    icon: mdi:thermostat
+    type: sections
+    max_columns: 2
+    theme: DASH6 Satin Glass
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              # Gestaltung respektiert die Funktion
+              Thermostate behalten ihre native Anzeige und Gauge-Geometrie. Nur Modus-/Preset-Tasten und die Griffe bekommen die Glasmaterialien. Drücke und ziehe die Temperaturgriffe.
+          - type: custom:dash6-demo-card
+            title: Dual-Thermostat · Modi, Presets und Griffe
+            card:
+              type: custom:dash6-thermostat-card
+              entity: climate.demo_thermostat
+              modes:
+                - 'off'
+                - heat
+                - cool
+                - heat_cool
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              ## Design-Prinzipien
+              - **Konsistenz:** gleiche Glasmaterialien, Glanz und Rückmeldungen.
+              - **Hierarchie:** Hauptzustand zuerst, Details bei Bedarf im Modal.
+              - **Zurückhaltung:** Frostung und Reflexe unterstützen die Lesbarkeit.
+              - **Direkte Manipulation:** Linsen folgen Eingaben; Einstellungen werden beim Loslassen übernommen.
+              - **Zugänglichkeit:** sichtbarer Tastaturfokus, Touch-Bedienung und reduzierte Bewegung.
+              - **Funktionserhalt:** native Sicherheits-, Geräte- und Auswahlaktionen bleiben erhalten.
+
+              [Alle elf Entwürfe vergleichen](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/) · [README und Installation](https://github.com/hitcompliance/liquid-glass-home-assistant-theme)
+          - type: markdown
+            content: |
+              ## Vom Demo- zum echten Dashboard
+              Die Demo-Karten fangen Serviceaufrufe ab und ändern nur lokale Beispielwerte. Für echte Geräte verwende die Karten **ohne** `dash6-demo-card`-Hülle und ersetze die Entitäten.
+
+              `examples/dashboard.yaml` zeigt das vollständige Konfigurationsbeispiel mit allen Kartenfamilien. `examples/demo-dashboard.yaml` ist diese bedienbare Einführung.
+
+  # Generated Favorites demo; rebuild with scripts/generate-demo-dashboard.py.
+  - title: Favoriten
+    path: favoriten
+    icon: mdi:star-outline
+    type: sections
+    max_columns: 1
+    theme: DASH6 Satin Glass
+    sections:
+    - type: grid
+      cards:
+      - type: markdown
+        content: |-
+          # Favoriten auswählen
+          Eine vorbereitete Auswahl aus den Demo-Views. Öffne **Favoriten bearbeiten**, um Karten und Unterkarten auszuwählen, zu gruppieren und zu sortieren. Die Änderungen gelten für diese Demo; alle Gerätewerte bleiben simuliert.
+      - type: custom:dash6-favorites-card
+        title: Favoriten
+        dashboard: liquid-glass-demo
+        demo_gui: true
+        grouping: source_view
+        sort: domain_alpha
+        domainOrder: source_view_order
+        headings: true
+        sources:
+        - id: liquid-glass-demo/material:["sections",0,"cards",1]
+          label: Licht · Farbe und Helligkeit
+          card:
+            type: custom:dash6-demo-card
+            title: Licht · Farbe und Helligkeit
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Stehlampe
+              icon: mdi:floor-lamp
+              controls:
+                mode: combo
+                buttons: group
+                label: icon
+                position: right
+          children:
+          - id: liquid-glass-demo/material:["sections",0,"cards",1,"card"]
+            label: Stehlampe
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Stehlampe
+              icon: mdi:floor-lamp
+              controls:
+                mode: combo
+                buttons: group
+                label: icon
+                position: right
+            children: []
+            source:
+              dashboard: liquid-glass-demo
+              view: material
+              title: Licht und Material
+              viewOrder: 0
+            domain: light
+            order: 2
+            path:
+            - card
+            absolutePath:
+            - sections
+            - 0
+            - cards
+            - 1
+            - card
+          source:
+            dashboard: liquid-glass-demo
+            view: material
+            title: Licht und Material
+            viewOrder: 0
+          domain: light
+          order: 1
+          path:
+          - sections
+          - 0
+          - cards
+          - 1
+          absolutePath:
+          - sections
+          - 0
+          - cards
+          - 1
+        - id: liquid-glass-demo/material:["sections",1,"cards",1]
+          label: Lichtgruppe · Modal ausprobieren
+          card:
+            type: custom:dash6-demo-card
+            title: Lichtgruppe · Modal ausprobieren
+            card:
+              type: custom:dash6-lightgroup-card-v2
+              entity: light.demo_gruppe
+              name: Wohnzimmer Ambiente
+              icon: mdi:lightbulb-outline
+              segments:
+              - entity: light.demo_links
+                name: Links
+              - entity: light.demo_rechts
+                name: Rechts
+              segment_display:
+                placement: detail
+                style: list
+              controls:
+                mode: combo
+                buttons: group
+                position: right
+          children:
+          - id: liquid-glass-demo/material:["sections",1,"cards",1,"card"]
+            label: Wohnzimmer Ambiente
+            card:
+              type: custom:dash6-lightgroup-card-v2
+              entity: light.demo_gruppe
+              name: Wohnzimmer Ambiente
+              icon: mdi:lightbulb-outline
+              segments:
+              - entity: light.demo_links
+                name: Links
+              - entity: light.demo_rechts
+                name: Rechts
+              segment_display:
+                placement: detail
+                style: list
+              controls:
+                mode: combo
+                buttons: group
+                position: right
+            children: []
+            source:
+              dashboard: liquid-glass-demo
+              view: material
+              title: Licht und Material
+              viewOrder: 0
+            domain: light
+            order: 6
+            path:
+            - card
+            absolutePath:
+            - sections
+            - 1
+            - cards
+            - 1
+            - card
+          source:
+            dashboard: liquid-glass-demo
+            view: material
+            title: Licht und Material
+            viewOrder: 0
+          domain: light
+          order: 5
+          path:
+          - sections
+          - 1
+          - cards
+          - 1
+          absolutePath:
+          - sections
+          - 1
+          - cards
+          - 1
+        - id: liquid-glass-demo/bedienung:["sections",0,"cards",1]
+          label: Kombislider · Ziehen und Moduswechsel
+          card:
+            type: custom:dash6-demo-card
+            title: Kombislider · Ziehen und Moduswechsel
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Kombislider
+              controls:
+                mode: combo
+                buttons: group
+                label: icon
+          children:
+          - id: liquid-glass-demo/bedienung:["sections",0,"cards",1,"card"]
+            label: Kombislider
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Kombislider
+              controls:
+                mode: combo
+                buttons: group
+                label: icon
+            children: []
+            source:
+              dashboard: liquid-glass-demo
+              view: bedienung
+              title: Bedienung und Bewegung
+              viewOrder: 1
+            domain: light
+            order: 2
+            path:
+            - card
+            absolutePath:
+            - sections
+            - 0
+            - cards
+            - 1
+            - card
+          source:
+            dashboard: liquid-glass-demo
+            view: bedienung
+            title: Bedienung und Bewegung
+            viewOrder: 1
+          domain: light
+          order: 1
+          path:
+          - sections
+          - 0
+          - cards
+          - 1
+          absolutePath:
+          - sections
+          - 0
+          - cards
+          - 1
+        - id: liquid-glass-demo/bedienung:["sections",0,"cards",2]
+          label: Dieselbe Lichtkarte · Einzelregler
+          card:
+            type: custom:dash6-demo-card
+            title: Dieselbe Lichtkarte · Einzelregler
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Einzelregler
+              controls:
+                mode: separate
+                buttons: group
+          children:
+          - id: liquid-glass-demo/bedienung:["sections",0,"cards",2,"card"]
+            label: Einzelregler
+            card:
+              type: custom:dash6-govee-light-card-v2
+              entity: light.demo_lampe
+              name: Einzelregler
+              controls:
+                mode: separate
+                buttons: group
+            children: []
+            source:
+              dashboard: liquid-glass-demo
+              view: bedienung
+              title: Bedienung und Bewegung
+              viewOrder: 1
+            domain: light
+            order: 4
+            path:
+            - card
+            absolutePath:
+            - sections
+            - 0
+            - cards
+            - 2
+            - card
+          source:
+            dashboard: liquid-glass-demo
+            view: bedienung
+            title: Bedienung und Bewegung
+            viewOrder: 1
+          domain: light
+          order: 3
+          path:
+          - sections
+          - 0
+          - cards
+          - 2
+          absolutePath:
+          - sections
+          - 0
+          - cards
+          - 2
+        - id: liquid-glass-demo/bedienung:["sections",1,"cards",0]
+          label: Steckdose · gelber Fallback
+          card:
+            type: custom:dash6-demo-card
+            title: Steckdose · gelber Fallback
+            card:
+              type: custom:dash6-glass-switch
+              entity: switch.demo_steckdose
+              name: Steckdose
+              icon: mdi:power-socket-eu
+          children:
+          - id: liquid-glass-demo/bedienung:["sections",1,"cards",0,"card"]
+            label: Steckdose
+            card:
+              type: custom:dash6-glass-switch
+              entity: switch.demo_steckdose
+              name: Steckdose
+              icon: mdi:power-socket-eu
+            children: []
+            source:
+              dashboard: liquid-glass-demo
+              view: bedienung
+              title: Bedienung und Bewegung
+              viewOrder: 1
+            domain: switch
+            order: 7
+            path:
+            - card
+            absolutePath:
+            - sections
+            - 1
+            - cards
+            - 0
+            - card
+          source:
+            dashboard: liquid-glass-demo
+            view: bedienung
+            title: Bedienung und Bewegung
+            viewOrder: 1
+          domain: switch
+          order: 6
+          path:
+          - sections
+          - 1
+          - cards
+          - 0
+          absolutePath:
+          - sections
+          - 1
+          - cards
+          - 0
+        - id: liquid-glass-demo/bedienung:["sections",1,"cards",1]
+          label: Ventilator · dasselbe Schalterprinzip
+          card:
+            type: custom:dash6-demo-card
+            title: Ventilator · dasselbe Schalterprinzip
+            card:
+              type: custom:dash6-glass-switch
+              entity: fan.demo_luefter
+              name: Ventilator
+              icon: mdi:fan
+          children:
+          - id: liquid-glass-demo/bedienung:["sections",1,"cards",1,"card"]
+            label: Ventilator
+            card:
+              type: custom:dash6-glass-switch
+              entity: fan.demo_luefter
+              name: Ventilator
+              icon: mdi:fan
+            children: []
+            source:
+              dashboard: liquid-glass-demo
+              view: bedienung
+              title: Bedienung und Bewegung
+              viewOrder: 1
+            domain: fan
+            order: 9
+            path:
+            - card
+            absolutePath:
+            - sections
+            - 1
+            - cards
+            - 1
+            - card
+          source:
+            dashboard: liquid-glass-demo
+            view: bedienung
+            title: Bedienung und Bewegung
+            viewOrder: 1
+          domain: fan
+          order: 8
+          path:
+          - sections
+          - 1
+          - cards
+          - 1
+          absolutePath:
+          - sections
+          - 1
+          - cards
+          - 1
+        - id: liquid-glass-demo/bedienung:["sections",1,"cards",2]
+          label: Rollo · vertikaler Regler
+          card:
+            type: custom:dash6-demo-card
+            title: Rollo · vertikaler Regler
+            card:
+              type: custom:dash6-cover-card
+              entity: cover.demo_rollo
+              name: Rollo
+          children:
+          - id: liquid-glass-demo/bedienung:["sections",1,"cards",2,"card"]
+            label: Rollo
+            card:
+              type: custom:dash6-cover-card
+              entity: cover.demo_rollo
+              name: Rollo
+            children: []
+            source:
+              dashboard: liquid-glass-demo
+              view: bedienung
+              title: Bedienung und Bewegung
+              viewOrder: 1
+            domain: cover
+            order: 11
+            path:
+            - card
+            absolutePath:
+            - sections
+            - 1
+            - cards
+            - 2
+            - card
+          source:
+            dashboard: liquid-glass-demo
+            view: bedienung
+            title: Bedienung und Bewegung
+            viewOrder: 1
+          domain: cover
+          order: 10
+          path:
+          - sections
+          - 1
+          - cards
+          - 2
+          absolutePath:
+          - sections
+          - 1
+          - cards
+          - 2
+        - id: liquid-glass-demo/prinzipien:["sections",0,"cards",1]
+          label: Dual-Thermostat · Modi, Presets und Griffe
+          card:
+            type: custom:dash6-demo-card
+            title: Dual-Thermostat · Modi, Presets und Griffe
+            card:
+              type: custom:dash6-thermostat-card
+              entity: climate.demo_thermostat
+              modes:
+              - 'off'
+              - heat
+              - cool
+              - heat_cool
+          children:
+          - id: liquid-glass-demo/prinzipien:["sections",0,"cards",1,"card"]
+            label: climate.demo_thermostat
+            card:
+              type: custom:dash6-thermostat-card
+              entity: climate.demo_thermostat
+              modes:
+              - 'off'
+              - heat
+              - cool
+              - heat_cool
+            children: []
+            source:
+              dashboard: liquid-glass-demo
+              view: prinzipien
+              title: Klima und Prinzipien
+              viewOrder: 2
+            domain: climate
+            order: 2
+            path:
+            - card
+            absolutePath:
+            - sections
+            - 0
+            - cards
+            - 1
+            - card
+          source:
+            dashboard: liquid-glass-demo
+            view: prinzipien
+            title: Klima und Prinzipien
+            viewOrder: 2
+          domain: climate
+          order: 1
+          path:
+          - sections
+          - 0
+          - cards
+          - 1
+          absolutePath:
+          - sections
+          - 0
+          - cards
+          - 1
+        selected:
+        - liquid-glass-demo/material:["sections",0,"cards",1]
+        - liquid-glass-demo/material:["sections",0,"cards",1,"card"]
+        - liquid-glass-demo/material:["sections",1,"cards",1]
+        - liquid-glass-demo/material:["sections",1,"cards",1,"card"]
+        - liquid-glass-demo/bedienung:["sections",0,"cards",1]
+        - liquid-glass-demo/bedienung:["sections",0,"cards",1,"card"]
+        - liquid-glass-demo/bedienung:["sections",0,"cards",2]
+        - liquid-glass-demo/bedienung:["sections",0,"cards",2,"card"]
+        - liquid-glass-demo/bedienung:["sections",1,"cards",0]
+        - liquid-glass-demo/bedienung:["sections",1,"cards",0,"card"]
+        - liquid-glass-demo/bedienung:["sections",1,"cards",1]
+        - liquid-glass-demo/bedienung:["sections",1,"cards",1,"card"]
+        - liquid-glass-demo/bedienung:["sections",1,"cards",2]
+        - liquid-glass-demo/bedienung:["sections",1,"cards",2,"card"]
+        - liquid-glass-demo/prinzipien:["sections",0,"cards",1]
+        - liquid-glass-demo/prinzipien:["sections",0,"cards",1,"card"]

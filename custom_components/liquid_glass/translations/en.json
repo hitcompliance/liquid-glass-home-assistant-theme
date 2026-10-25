@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Set up Liquid Glass",
-        "description": "Automatically installs themes and missing card dependencies (internet required). Existing HACS resources are reused. The demo uses simulated devices. Optional Dual Smart Thermostat requires another restart and device configuration.",
+        "description": "Automatically installs DASH6 Satin Glass and missing card dependencies (internet required). Existing HACS resources are reused. The optional demo creates its own virtual entities and never controls real devices. Optional Dual Smart Thermostat requires another restart and device configuration.",
         "data": {
           "demo_dashboard": "Show interactive demo dashboard",
           "dual_smart_thermostat": "Also install Dual Smart Thermostat"

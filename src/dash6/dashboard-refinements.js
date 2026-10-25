@@ -1,3 +1,4 @@
+import './light-button-group-refinements.js';
 import {scopedCustomElements as customElements} from './scoped-elements.js';
 // Previously live-verified DASH6 refinements, now owned by the published bundle.
 ;(()=>{

@@ -1,9 +1,9 @@
 import {inDashboardScope} from './scope.js';
+import {syncCircularSliderLens} from './circular-slider-lens.js';
 // Presentation only. Thermostats keep their original surface, gauge and dialogs.
 const thermostatKinds=new Set(['dash6-thermostat-card','hui-thermostat-card','mushroom-climate-card']);
 const kinds=new Set([...thermostatKinds,'ha-state-control-climate-temperature','ha-control-circular-slider','ha-control-slider','dash6-cover-slider','mushroom-slider','ha-control-select-menu','ha-outlined-icon-button']);
 const modeKinds=new Set(['hui-climate-hvac-modes-card-feature','ha-state-control-climate-hvac-mode']);
-let nextLens=0;
 export function thermostatAncestor(node){
  for(let current=node;current;current=current.assignedSlot||current.parentNode||current.host)if(thermostatKinds.has(current.localName))return current;
  return null;
@@ -37,7 +37,7 @@ export const satinClimateCSS=`
 }
 :host(dash6-thermostat-card[data-dash6-satin-climate]) .features>.preset-button:active,
 :host(ha-control-select-menu[data-dash6-satin-climate]) .select-anchor:active,
-:host(ha-outlined-icon-button[data-dash6-satin-climate]) button:active{box-shadow:var(--dash6-satin-button-pressed-shadow)!important;scale:.97;translate:0 1px}
+:host(ha-outlined-icon-button[data-dash6-satin-climate]) button:active{box-shadow:var(--dash6-satin-button-pressed-shadow)!important;scale:.97;translate:0 1px;border-color:transparent!important;}
 :host(ha-control-select-menu[data-dash6-satin-climate]) .select-anchor::before{background:none!important;opacity:0!important}
 :host(ha-control-slider[data-dash6-satin-climate]) .slider,:host(dash6-cover-slider[data-dash6-satin-climate]) .slider,:host(mushroom-slider[data-dash6-satin-climate]) .slider{
  border:0!important;border-radius:11px!important;background:var(--dash6-satin-control-background)!important;isolation:isolate;
@@ -63,48 +63,14 @@ export function satinClimateCandidate(host){
 }
 export function isNestedNativeThermostat(host){return host?.localName==='hui-thermostat-card'&&!!thermostatAncestor(host.parentNode||host.getRootNode().host);}
 export function bindSatinClimate(host){
- let defs=null,svg=null,observer=null,pointerKey=null;const originals=new Map();
- const ns='http://www.w3.org/2000/svg';
- function restore(){
-  observer?.disconnect();observer=null;svg?.removeEventListener('pointerdown',pointerDown,true);window.removeEventListener('pointerup',pointerEnd,true);window.removeEventListener('pointercancel',pointerEnd,true);pointerKey=null;
-  for(const [path,values] of originals){for(const [name,value] of Object.entries(values))value===null?path.style.removeProperty(name):path.style.setProperty(name,value[0],value[1]);path.removeAttribute('data-dash6-satin-handle');path.removeAttribute('data-dash6-satin-handle-pressed');}
-  originals.clear();defs?.remove();defs=null;svg=null;
- }
- function pressed(){
-  const active=pointerKey||(svg?.classList.contains('pressed')?host._activeSlider||'value':null);
-  for(const path of originals.keys()){
-   const border=path.classList.contains('target-border')?path:path.parentElement.querySelector('.target-border');
-   const key=['low','high','value'].find(name=>border?.classList.contains(name))||'value';
-   path.toggleAttribute('data-dash6-satin-handle-pressed',!!active&&key===active);
-  }
- }
- function pointerDown(event){
-  const group=event.composedPath().find(node=>node?.localName==='g'&&node.querySelector(':scope>.target-border'));
-  if(!group)return;
-  const border=group.querySelector(':scope>.target-border');pointerKey=['low','high','value'].find(name=>border.classList.contains(name))||'value';pressed();
- }
- function pointerEnd(){pointerKey=null;pressed();}
- function handles(on){
-  if(host.localName!=='ha-control-circular-slider')return;
-  if(!on){restore();return;}
-  const current=host.shadowRoot?.querySelector('svg');if(!current)return;
-  if(svg&&svg!==current)restore();svg=current;
-  if(!defs){
-   defs=document.createElementNS(ns,'defs');defs.id='dash6-satin-handles-'+(++nextLens);
-   const add=(parent,name,values)=>{const node=document.createElementNS(ns,name);for(const [key,value] of Object.entries(values))node.setAttribute(key,value);parent.append(node);return node;};
-   for(const [suffix,stops] of [['body',[['0%','#ffffff','.94'],['24%','#ecf6ff','.69'],['52%','#728b9d','.58'],['82%','#e4f3ff','.83'],['100%','#526d83','.77']]],['edge',[['0%','#ffffff','.95'],['45%','#cddfeb','.55'],['100%','#708da4','.72']]]]){
-    const gradient=add(defs,'linearGradient',{id:defs.id+'-'+suffix,x1:'0',y1:'0',x2:'.4',y2:'1'});for(const [offset,color,opacity] of stops)add(gradient,'stop',{offset,'stop-color':color,'stop-opacity':opacity});
-   }
-   const filter=add(defs,'filter',{id:defs.id+'-gloss',x:'-40%',y:'-40%',width:'180%',height:'180%','color-interpolation-filters':'sRGB'});
-   add(filter,'feOffset',{in:'SourceAlpha',dx:'0',dy:'1',result:'shift'});add(filter,'feGaussianBlur',{in:'shift',stdDeviation:'.5',result:'soft'});add(filter,'feComposite',{in:'SourceAlpha',in2:'soft',operator:'out',result:'rim'});add(filter,'feFlood',{'flood-color':'white','flood-opacity':'.88',result:'white'});add(filter,'feComposite',{in:'white',in2:'rim',operator:'in',result:'highlight'});const merge=add(filter,'feMerge',{});for(const value of ['SourceGraphic','highlight'])add(merge,'feMergeNode',{in:value});svg.prepend(defs);
-   observer=new MutationObserver(pressed);observer.observe(svg,{attributes:true,attributeFilter:['class']});svg.addEventListener('pointerdown',pointerDown,{capture:true,passive:true});window.addEventListener('pointerup',pointerEnd,{capture:true,passive:true});window.addEventListener('pointercancel',pointerEnd,{capture:true,passive:true});
-  }
-  for(const path of svg.querySelectorAll('.target,.target-border'))if(!originals.has(path)){
-   const values={};for(const name of ['stroke','filter'])values[name]=path.style.getPropertyValue(name)?[path.style.getPropertyValue(name),path.style.getPropertyPriority(name)]:null;originals.set(path,values);
-   path.setAttribute('data-dash6-satin-handle','');path.style.setProperty('stroke','url(#'+defs.id+'-'+(path.classList.contains('target-border')?'edge':'body')+')','important');path.style.setProperty('filter','url(#'+defs.id+'-gloss)','important');
-  }
-  pressed();
- }
- const api={update(){const on=inDashboardScope()&&satinClimateCandidate(host)&&getComputedStyle(host).getPropertyValue('--dash6-satin-enabled').trim()==='1';host.toggleAttribute('data-dash6-satin-climate',on);host.toggleAttribute('data-dash6-satin-thermostat-base',on&&thermostatKinds.has(host.localName));handles(on);},dispose(){host.removeAttribute('data-dash6-satin-climate');host.removeAttribute('data-dash6-satin-thermostat-base');restore();}};
+ const api={update(){
+  const on=inDashboardScope()&&satinClimateCandidate(host)&&getComputedStyle(host).getPropertyValue('--dash6-satin-enabled').trim()==='1';
+  host.toggleAttribute('data-dash6-satin-climate',on);
+  host.toggleAttribute('data-dash6-satin-thermostat-base',on&&thermostatKinds.has(host.localName));
+  if(host.localName==='ha-control-circular-slider')syncCircularSliderLens(host,on);
+ },dispose(){
+  host.removeAttribute('data-dash6-satin-climate');host.removeAttribute('data-dash6-satin-thermostat-base');
+  if(host.localName==='ha-control-circular-slider')syncCircularSliderLens(host,false);
+ }};
  api.update();return api;
 }

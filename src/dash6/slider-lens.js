@@ -16,10 +16,22 @@ export class SliderLens extends HTMLElement {
  :host([data-satin][touching]:not([disabled])){z-index:3}
  :host([data-satin][touching]:not([disabled])) .glass{scale:var(--dash6-satin-slider-press-scale,1.30);transition-duration:120ms}
  @media(pointer:coarse){:host([data-satin]){bottom:3px}}
+ /* Circular gauges use this same lens, scene, gloss and motion material. Only
+    its geometry and native value source differ from a straight range. */
+ :host([circular]),:host([circular][data-satin]){left:var(--lens-x);top:var(--lens-y);bottom:auto;width:var(--lens-diameter,24px);height:var(--lens-diameter,24px);transform:translate(-50%,-50%);overflow:visible}
+ :host([circular]) .glass{border-radius:50%;border:1px solid rgba(255,255,255,.68);background:linear-gradient(145deg,rgba(255,255,255,.32),rgba(255,255,255,.08) 52%,rgba(255,255,255,.18));box-shadow:inset 0 1px 2px rgba(255,255,255,.65),inset 0 -2px 3px rgba(0,0,0,.3),0 3px 6px rgba(0,0,0,.32);backdrop-filter:blur(5px) saturate(1.2);-webkit-backdrop-filter:blur(5px) saturate(1.2)}
+ :host([circular]) .gloss{background:radial-gradient(ellipse at 30% 12%,rgba(255,255,255,.68),transparent 54%),linear-gradient(145deg,rgba(255,255,255,.18),transparent 48%);box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+ /* Clear tinted glass for DASH6 gauges; the native arc supplies the tint. */
+ :host([circular][glass-tube]) .glass{border:0;background:radial-gradient(circle at 57% 62%,rgba(4,10,17,.34),transparent 64%);box-shadow:inset 0 -2px 3px #0005,0 2px 3px #0003;backdrop-filter:blur(1px) saturate(1.4);-webkit-backdrop-filter:blur(1px) saturate(1.4)}
+ :host([circular][glass-tube]) .scene{opacity:.38;background-size:100% 100%;background-position:center}
+ :host([circular][glass-tube]) .gloss{background:radial-gradient(ellipse 30% 20% at 29% 17%,rgba(255,255,255,.98) 10%,rgba(255,255,255,.78) 40%,transparent 75%),radial-gradient(ellipse at 38% 29%,rgba(255,255,255,.32),transparent 48%),radial-gradient(ellipse 33% 13% at 65% 87%,rgba(255,255,255,.9),transparent 85%),radial-gradient(ellipse at 58% 57%,rgba(3,9,15,.38),transparent 68%);box-shadow:none}
+ @media(prefers-reduced-transparency:reduce){:host([circular][glass-tube]) .scene{opacity:.9}:host([circular][glass-tube]) .glass{backdrop-filter:none;-webkit-backdrop-filter:none}}
+ @media(hover:hover){:host([circular][hovering]:not([disabled])) .glass{scale:max(1.18,var(--dash6-satin-slider-hover-scale,1.18))}}
+ :host([circular][touching]:not([disabled])) .glass{scale:max(1.34,var(--dash6-satin-slider-press-scale,1.34));transition-duration:120ms}
  @media(prefers-reduced-motion:reduce){.glass{transition:none!important;scale:1!important}}
  </style><div class="glass"><div class="scene"></div><div class="gloss"></div></div>`;}
  connectedCallback(){
-  this.setAttribute('aria-hidden','true');bindThemePreferences(this);
+  this.setAttribute('aria-hidden','true');bindThemePreferences(this);if(this.hasAttribute('circular'))return;
   const input=this.parentElement?.querySelector('input[type=range]');if(!input)return;this.input=input;
   this.update=()=>{
    const p=Math.max(0,Math.min(1,(Number(input.value)-Number(input.min))/(Number(input.max)-Number(input.min)||1)));
@@ -34,11 +46,11 @@ export class SliderLens extends HTMLElement {
   for(const e of ['pointerup','pointercancel','lostpointercapture','blur'])input.addEventListener(e,this.up);
   // Release outside the range and native capture cancellation both restore the lens.
   window.addEventListener('pointerup',this.up,true);window.addEventListener('pointercancel',this.up,true);
-  this.observer=new ResizeObserver(this.update);this.observer.observe(input);
+  this.observer=new ResizeObserver(()=>{if(this._resizeFrame)return;this._resizeFrame=requestAnimationFrame(()=>{this._resizeFrame=null;if(this.isConnected)this.update();});});this.observer.observe(input);
   this.attributesObserver=new MutationObserver(this.update);this.attributesObserver.observe(input,{attributes:true,attributeFilter:['disabled','min','max','style']});this.update();
  }
  disconnectedCallback(){
-  unbindThemePreferences(this);this.observer?.disconnect();this.attributesObserver?.disconnect();this.up?.();this.leave?.();if(!this.input)return;
+  unbindThemePreferences(this);this.observer?.disconnect();if(this._resizeFrame)cancelAnimationFrame(this._resizeFrame);this._resizeFrame=null;this.attributesObserver?.disconnect();this.up?.();this.leave?.();if(!this.input)return;
   this.input.removeEventListener('input',this.update);this.input.removeEventListener('pointerdown',this.down);this.input.removeEventListener('pointerenter',this.enter);this.input.removeEventListener('pointerleave',this.leave);
   for(const e of ['pointerup','pointercancel','lostpointercapture','blur'])this.input.removeEventListener(e,this.up);
   window.removeEventListener('pointerup',this.up,true);window.removeEventListener('pointercancel',this.up,true);this.input=null;

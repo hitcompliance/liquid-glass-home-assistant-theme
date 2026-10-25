@@ -1,0 +1,14 @@
+from homeassistant.components.lock import LockEntity,LockEntityFeature
+from .demo import DemoEntity,setup_platform
+class DemoLock(DemoEntity,LockEntity):
+    _attr_supported_features=LockEntityFeature.OPEN
+    is_locked=property(lambda s:s.data['locked'])
+    async def async_lock(self,**kwargs):
+        self.change(locked=True)
+        self.coordinator.put('binary_sensor','turkontakt',on=False)
+    async def async_unlock(self,**kwargs): self.change(locked=False)
+    async def async_open(self,**kwargs):
+        self.change(locked=False)
+        self.coordinator.put('binary_sensor','turkontakt',on=True)
+async def async_setup_entry(hass,entry,async_add_entities):
+    await setup_platform(hass,entry,async_add_entities,'lock',DemoLock)

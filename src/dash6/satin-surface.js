@@ -4,7 +4,7 @@ import {satinClimateCSS,satinClimateCandidate,bindSatinClimate,thermostatAncesto
 /* Staged Satin material. Discovery is event driven; entity updates do not scan the page. */
 const modes=new Map(), roots=new Map(), cards=new Set(), groups=new Map(),climates=new Map(),themeScopes=new Map();
 let started=false, active=false, queued=false, pruneQueued=false, renderRefreshFrame=0, pointerFrame=0, pointerCard=null, pointerX=0, pointerY=0;
-const structural=new Set(['ultra-card','dash6-ultra-card','dash6-stack-card','dash6-embedded-card','grid-layout','masonry-layout','layout-card','dash6-pill-layout','dash6-inline-pill-layout','hui-heading-card','embedded-view-card','dash6-embedded-view-card','mini-graph-card','hui-vertical-stack-card','hui-horizontal-stack-card','hui-grid-card','auto-entities','dash6-auto-entities']);
+const structural=new Set(['ultra-card','dash6-ultra-card','dash6-stack-card','dash6-embedded-card','grid-layout','masonry-layout','layout-card','dash6-pill-layout','dash6-inline-pill-layout','hui-heading-card','hui-weather-forecast-card','embedded-view-card','dash6-embedded-view-card','mini-graph-card','hui-vertical-stack-card','hui-horizontal-stack-card','hui-grid-card','auto-entities','dash6-auto-entities']);
 const themeScopeKinds=new Set(['hui-view-container','hui-root','ha-panel-lovelace','hui-view','hui-sections-view','hui-masonry-view','hui-panel-view','ultra-card','dash6-ultra-card','embedded-view-card','dash6-embedded-view-card','dash6-embedded-card']);
 const STYLE='dash6-satin-surface-style';
 export const satinSurfaceCSS=`
@@ -60,11 +60,12 @@ function eligible(card){
 function updateCard(card){const on=active&&enabled(card)&&eligible(card);card.toggleAttribute('data-dash6-satin-surface',on);if(on)ensureStyle(card.getRootNode());}
 function addCard(card){if(!cards.has(card))cards.add(card);updateCard(card);}
 function observeThemeScope(host){
+ window.__dash6ThemeSettings?.applyTo(host);
  if(themeScopes.has(host))return;
  // HA applies view-theme variables after inner controls can already be connected.
  // Observe semantic theme hosts, not all element styles: slider drag and pointer
  // gloss must not trigger page-wide refreshes. Only the gate/class signature matters.
- const signature=()=>host.style.getPropertyValue('--dash6-satin-enabled').trim()+'|'+host.className;
+ const signature=()=>host.style.getPropertyValue('--dash6-satin-enabled').trim()+'|'+host.className+'|'+host.style.getPropertyValue('--dash5-thin-background')+'|'+host.style.getPropertyValue('--dash6-satin-lens-background');
  const item={signature:signature(),observer:null};
  item.observer=new MutationObserver(()=>{const next=signature();if(next!==item.signature){item.signature=next;queueRefresh();}});
  item.observer.observe(host,{attributes:true,attributeFilter:['style','class']});themeScopes.set(host,item);
@@ -118,6 +119,7 @@ function prune(){
 }
 export function refreshSatinSurfaces(){
  queued=false;syncScope();prune();
+ for(const host of themeScopes.keys())window.__dash6ThemeSettings?.applyTo(host);
  for(const [host,item] of modes){if(host.isConnected)item.seenConnected=true;updateMode(host,item.onChange);}
  for(const card of cards)updateCard(card);
  for(const controller of groups.values())controller.update();
@@ -156,7 +158,7 @@ function syncScope(){
   leave();document.removeEventListener('pointermove',move);document.removeEventListener('pointerleave',leave);
   for(const card of cards)card.removeAttribute('data-dash6-satin-surface');cards.clear();for(const controller of groups.values())controller.dispose();groups.clear();
   for(const controller of climates.values())controller.dispose();climates.clear();
-  for(const item of themeScopes.values())item.observer.disconnect();themeScopes.clear();
+  for(const [host,item] of themeScopes){item.observer.disconnect();window.__dash6ThemeSettings?.release(host);}themeScopes.clear();
   for(const [root,item] of roots){item.observer.disconnect();root.removeEventListener('slotchange',item.slotchange);item.style?.remove();}roots.clear();
  }
 }

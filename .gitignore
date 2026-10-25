@@ -3,3 +3,12 @@
 __pycache__/
 node_modules/
 frontend/.samasante-svg-build.js
+
+release/
+*.tmp.mjs
+dist-dash7/
+plant-dist/
+src/dash7/
+scripts/stage-*.mjs
+scripts/*dash7*
+scripts/build-plant.mjs

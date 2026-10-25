@@ -7,8 +7,8 @@ import { chromium } from 'playwright';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'demo');
 const manifest = JSON.parse(await readFile(join(root, 'gallery.json'), 'utf8'));
-assert.equal(manifest.pages.length, 11, 'Every independent conversation visualization must be included');
-assert.equal(new Set(manifest.pages.map(item => item.id)).size, 11);
+assert.equal(manifest.pages.length, 1, 'Only the current Satin design is published');
+assert.equal(new Set(manifest.pages.map(item => item.id)).size, 1);
 const sourcePages = (await readdir(join(root, 'source'))).filter(name => name.endsWith('.html')).sort();
 assert.deepEqual(sourcePages, manifest.pages.map(item => item.id + '.html').sort());
 const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript', '.json': 'application/json', '.jpg': 'image/jpeg', '.txt': 'text/plain' };
@@ -116,7 +116,7 @@ try {
   assert.equal(await animated.locator('.stage .switch:visible').first().evaluate(button => getComputedStyle(button.querySelector('.knob-position')).transitionDuration.includes('0s')), false, 'Switch travel uses a real transition');
   await motion.close();
   await page.goto(origin + '/');
-  assert.equal(await page.locator('.gallery-card').count(), 11);
+  assert.equal(await page.locator('.gallery-card').count(), 1);
   await page.screenshot({ path: join(root, 'previews/gallery-desktop.jpg'), fullPage: true, type: 'jpeg', quality: 82 });
   await page.setViewportSize({ width: 390, height: 844 });
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));

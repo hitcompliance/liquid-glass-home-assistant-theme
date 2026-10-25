@@ -16,7 +16,7 @@ const yaml=path=>JSON.parse(execFileSync('ruby',['-ryaml','-rjson','-e','puts JS
 const dashboard=yaml('examples/dashboard.yaml'),themes=Object.assign({},...readdirSync(resolve(root,'themes')).filter(name=>/\.ya?ml$/.test(name)).map(name=>yaml('themes/'+name)));
 const profileIndex=JSON.parse(await readFile(resolve(root,'src/dash6/profile-index.json'),'utf8'));
 const profiles=JSON.parse(await readFile(resolve(root,'src/dash6/profiles.json'),'utf8'));
-const demoDashboard=yaml('examples/demo-dashboard.yaml');
+const demoDashboard=yaml('examples/browser-demo-dashboard.yaml');
 const demoConfigs=[];
 function demoCollect(x){if(!x||typeof x!=='object')return;if(x.type==='custom:dash6-demo-card')demoConfigs.push(x);Object.values(x).forEach(demoCollect);}
 demoCollect(demoDashboard);
@@ -89,7 +89,9 @@ async function fixture(data){
  define('hui-view',class extends Native{get viewConfig(){return this._view;}set viewConfig(value){this._view=value;this.draw();}draw(){if(!this._view||this.shadowRoot.querySelector('dash6-sections-view'))return;const el=document.createElement('dash6-sections-view');el.setConfig?.(this._view);el.hass=this._hass;this.shadowRoot.append(el);}});
  window.helpers={importMoreInfoControl:async()=>{},createCardElement:async config=>{const tag=config.type.startsWith('custom:')?config.type.slice(7):'hui-'+config.type+'-card';factoryCalls.push(tag);if(!customElements.get(tag))throw Error('Unregistered card '+tag);const card=document.createElement(tag);if(typeof card.setConfig!=='function')throw Error('Missing setConfig '+tag);await card.setConfig(config);return card;}};window.loadCardHelpers=async()=>helpers;
  const app=document.createElement('home-assistant');app.hass=hass;document.body.append(app);let cursor=app;for(const tag of ['home-assistant-main','ha-panel-lovelace','hui-root']){const next=document.createElement(tag);cursor.attachShadow({mode:'open'}).append(next);cursor=next;}cursor.lovelace={urlPath:'portable-example',config:dashboard,editMode:false};
- await import('/package/dist/dash6-cards.js');await import('/package/dist/vacuum-dock-card.js');await import('/package/frontend/dash5-glass.js');
+ await import('/package/dist/dash6-cards.js');await import('/package/dist/vacuum-dock-card.js');await import('/package/dist/room-loader.js');
+ for(const name of ['dash6-plant-card','dash6-room-slot-card','dash6-fan-card','dash6-homepod-card','dash6-appletv-card','dash6-home-overview-card','dash6-climate-background','dash6-demo-scope'])if(!customElements.get(name))throw Error('Missing current DASH6 card: '+name);
+ await import('/package/frontend/dash5-glass.js');
  for(const config of examples){const type=config.type.slice(7);await customElements.whenDefined(type);try{const card=await helpers.createCardElement(config);const shell=document.createElement('section');shell.className='example';shell.style.width='380px';shell.dataset.card=type;document.querySelector('#cards').append(shell);shell.append(card);card.hass=hass;await card.updateComplete;mounts.push({type,card,config});}catch(error){mountErrors.push(type+': '+error.message);}}
  for(const[key,definition]of Object.entries(profiles)){const card=await helpers.createCardElement({type:'custom:dash6-profile-card',profile:key});document.querySelector('#profiles').append(card);card.hass=hass;await card.updateComplete;mounts.push({type:'profile:'+key,card,config:definition});}
  window.areaProfile=await helpers.createCardElement({type:'custom:dash6-profile-card',profile:'sample-entities',area:'Kitchen'});document.querySelector('#profiles').append(areaProfile);areaProfile.hass=hass;await areaProfile.updateComplete;

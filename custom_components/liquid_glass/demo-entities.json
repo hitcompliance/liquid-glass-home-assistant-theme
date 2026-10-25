@@ -1,0 +1,639 @@
+[
+  {
+    "entity_id": "binary_sensor.liquid_glass_demo_anwesenheit",
+    "key": "anwesenheit",
+    "domain": "binary_sensor",
+    "room": "Badezimmer",
+    "name": "Demo · Anwesenheit"
+  },
+  {
+    "entity_id": "binary_sensor.liquid_glass_demo_dock_frischwasser_problem",
+    "key": "dock_frischwasser_problem",
+    "domain": "binary_sensor",
+    "room": "Waschkeller",
+    "name": "Demo · Dock frischwasser problem"
+  },
+  {
+    "entity_id": "binary_sensor.liquid_glass_demo_dock_schmutzwasser_problem",
+    "key": "dock_schmutzwasser_problem",
+    "domain": "binary_sensor",
+    "room": "Waschkeller",
+    "name": "Demo · Dock schmutzwasser problem"
+  },
+  {
+    "entity_id": "binary_sensor.liquid_glass_demo_klingel",
+    "key": "klingel",
+    "domain": "binary_sensor",
+    "room": "Flur",
+    "name": "Demo · Klingel"
+  },
+  {
+    "entity_id": "binary_sensor.liquid_glass_demo_kuhlschrank_tur",
+    "key": "kuhlschrank_tur",
+    "domain": "binary_sensor",
+    "room": "Flur",
+    "name": "Demo · Kuhlschrank tur"
+  },
+  {
+    "entity_id": "binary_sensor.liquid_glass_demo_storung",
+    "key": "storung",
+    "domain": "binary_sensor",
+    "room": "Büro",
+    "name": "Demo · Storung"
+  },
+  {
+    "entity_id": "binary_sensor.liquid_glass_demo_turkontakt",
+    "key": "turkontakt",
+    "domain": "binary_sensor",
+    "room": "Flur",
+    "name": "Demo · Turkontakt"
+  },
+  {
+    "entity_id": "binary_sensor.liquid_glass_demo_wasser",
+    "key": "wasser",
+    "domain": "binary_sensor",
+    "room": "Waschkeller",
+    "name": "Demo · Wasser"
+  },
+  {
+    "entity_id": "button.liquid_glass_demo_klingeln",
+    "key": "klingeln",
+    "domain": "button",
+    "room": "Flur",
+    "name": "Demo · Klingeln"
+  },
+  {
+    "entity_id": "button.liquid_glass_demo_turoffner",
+    "key": "turoffner",
+    "domain": "button",
+    "room": "Flur",
+    "name": "Demo · Turoffner"
+  },
+  {
+    "entity_id": "button.liquid_glass_demo_update_verfugbar",
+    "key": "update_verfugbar",
+    "domain": "button",
+    "room": "Wohnzimmer",
+    "name": "Demo · Update verfugbar"
+  },
+  {
+    "entity_id": "button.liquid_glass_demo_zurucksetzen",
+    "key": "zurucksetzen",
+    "domain": "button",
+    "room": "Wohnzimmer",
+    "name": "Demo · Zurucksetzen"
+  },
+  {
+    "entity_id": "camera.liquid_glass_demo_kamera",
+    "key": "kamera",
+    "domain": "camera",
+    "room": "Wohnzimmer",
+    "name": "Demo · Kamera"
+  },
+  {
+    "entity_id": "climate.liquid_glass_demo_dual_thermostat",
+    "key": "dual_thermostat",
+    "domain": "climate",
+    "room": "Schlafzimmer",
+    "name": "Demo · Dual thermostat"
+  },
+  {
+    "entity_id": "climate.liquid_glass_demo_thermostat",
+    "key": "thermostat",
+    "domain": "climate",
+    "room": "Schlafzimmer",
+    "name": "Demo · Thermostat"
+  },
+  {
+    "entity_id": "cover.liquid_glass_demo_rollo",
+    "key": "rollo",
+    "domain": "cover",
+    "room": "Schlafzimmer",
+    "name": "Demo · Rollo"
+  },
+  {
+    "entity_id": "fan.liquid_glass_demo_luftung",
+    "key": "luftung",
+    "domain": "fan",
+    "room": "Badezimmer",
+    "name": "Demo · Luftung"
+  },
+  {
+    "entity_id": "fan.liquid_glass_demo_ventilator",
+    "key": "ventilator",
+    "domain": "fan",
+    "room": "Wohnzimmer",
+    "name": "Demo · Ventilator"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_gruppe",
+    "key": "gruppe",
+    "domain": "light",
+    "room": "Wohnzimmer",
+    "name": "Demo · Gruppe"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_lampe",
+    "key": "lampe",
+    "domain": "light",
+    "room": "Büro",
+    "name": "Demo · Lampe"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_lampe_links",
+    "key": "lampe_links",
+    "domain": "light",
+    "room": "Wohnzimmer",
+    "name": "Demo · Lampe links"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_lampe_rechts",
+    "key": "lampe_rechts",
+    "domain": "light",
+    "room": "Wohnzimmer",
+    "name": "Demo · Lampe rechts"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_links",
+    "key": "links",
+    "domain": "light",
+    "room": "Wohnzimmer",
+    "name": "Demo · Links"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_rechts",
+    "key": "rechts",
+    "domain": "light",
+    "room": "Wohnzimmer",
+    "name": "Demo · Rechts"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_schrank_oben",
+    "key": "schrank_oben",
+    "domain": "light",
+    "room": "Wohnzimmer",
+    "name": "Demo · Schrank oben"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_schrank_unten",
+    "key": "schrank_unten",
+    "domain": "light",
+    "room": "Wohnzimmer",
+    "name": "Demo · Schrank unten"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_schrankgruppe",
+    "key": "schrankgruppe",
+    "domain": "light",
+    "room": "Wohnzimmer",
+    "name": "Demo · Schrankgruppe"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_schuhschrank",
+    "key": "schuhschrank",
+    "domain": "light",
+    "room": "Flur",
+    "name": "Demo · Schuhschrank"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_schuhschrank_links",
+    "key": "schuhschrank_links",
+    "domain": "light",
+    "room": "Flur",
+    "name": "Demo · Schuhschrank links"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_schuhschrank_rechts",
+    "key": "schuhschrank_rechts",
+    "domain": "light",
+    "room": "Flur",
+    "name": "Demo · Schuhschrank rechts"
+  },
+  {
+    "entity_id": "light.liquid_glass_demo_tischlicht",
+    "key": "tischlicht",
+    "domain": "light",
+    "room": "Wohnzimmer",
+    "name": "Demo · Tischlicht"
+  },
+  {
+    "entity_id": "lock.liquid_glass_demo_tur",
+    "key": "tur",
+    "domain": "lock",
+    "room": "Flur",
+    "name": "Demo · Tur"
+  },
+  {
+    "entity_id": "media_player.liquid_glass_demo_apple_tv",
+    "key": "apple_tv",
+    "domain": "media_player",
+    "room": "Wohnzimmer",
+    "name": "Demo · Apple tv"
+  },
+  {
+    "entity_id": "media_player.liquid_glass_demo_fernseher",
+    "key": "fernseher",
+    "domain": "media_player",
+    "room": "Wohnzimmer",
+    "name": "Demo · Fernseher"
+  },
+  {
+    "entity_id": "media_player.liquid_glass_demo_fire_tv",
+    "key": "fire_tv",
+    "domain": "media_player",
+    "room": "Wohnzimmer",
+    "name": "Demo · Fire tv"
+  },
+  {
+    "entity_id": "media_player.liquid_glass_demo_homepod",
+    "key": "homepod",
+    "domain": "media_player",
+    "room": "Wohnzimmer",
+    "name": "Demo · Homepod"
+  },
+  {
+    "entity_id": "number.liquid_glass_demo_luftung_restzeit",
+    "key": "luftung_restzeit",
+    "domain": "number",
+    "room": "Badezimmer",
+    "name": "Demo · Luftung restzeit"
+  },
+  {
+    "entity_id": "remote.liquid_glass_demo_apple_tv",
+    "key": "apple_tv",
+    "domain": "remote",
+    "room": "Wohnzimmer",
+    "name": "Demo · Apple tv"
+  },
+  {
+    "entity_id": "remote.liquid_glass_demo_fernseher",
+    "key": "fernseher",
+    "domain": "remote",
+    "room": "Wohnzimmer",
+    "name": "Demo · Fernseher"
+  },
+  {
+    "entity_id": "remote.liquid_glass_demo_homepod",
+    "key": "homepod",
+    "domain": "remote",
+    "room": "Wohnzimmer",
+    "name": "Demo · Homepod"
+  },
+  {
+    "entity_id": "scene.liquid_glass_demo_bunt",
+    "key": "bunt",
+    "domain": "scene",
+    "room": "Flur",
+    "name": "Demo · Bunt"
+  },
+  {
+    "entity_id": "scene.liquid_glass_demo_entspannen",
+    "key": "entspannen",
+    "domain": "scene",
+    "room": "Wohnzimmer",
+    "name": "Demo · Entspannen"
+  },
+  {
+    "entity_id": "scene.liquid_glass_demo_lesen",
+    "key": "lesen",
+    "domain": "scene",
+    "room": "Wohnzimmer",
+    "name": "Demo · Lesen"
+  },
+  {
+    "entity_id": "scene.liquid_glass_demo_weiss",
+    "key": "weiss",
+    "domain": "scene",
+    "room": "Flur",
+    "name": "Demo · Weiss"
+  },
+  {
+    "entity_id": "select.liquid_glass_demo_dock_entleerungsmodus",
+    "key": "dock_entleerungsmodus",
+    "domain": "select",
+    "room": "Wohnzimmer",
+    "name": "Demo · Dock entleerungsmodus"
+  },
+  {
+    "entity_id": "select.liquid_glass_demo_lichtmodus",
+    "key": "lichtmodus",
+    "domain": "select",
+    "room": "Wohnzimmer",
+    "name": "Demo · Lichtmodus"
+  },
+  {
+    "entity_id": "select.liquid_glass_demo_roboter_reinigung",
+    "key": "roboter_reinigung",
+    "domain": "select",
+    "room": "Wohnzimmer",
+    "name": "Demo · Roboter reinigung"
+  },
+  {
+    "entity_id": "select.liquid_glass_demo_roboter_wischintensitat",
+    "key": "roboter_wischintensitat",
+    "domain": "select",
+    "room": "Wohnzimmer",
+    "name": "Demo · Roboter wischintensitat"
+  },
+  {
+    "entity_id": "select.liquid_glass_demo_roboter_wischroute",
+    "key": "roboter_wischroute",
+    "domain": "select",
+    "room": "Wohnzimmer",
+    "name": "Demo · Roboter wischroute"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_batterie",
+    "key": "batterie",
+    "domain": "sensor",
+    "room": "Büro",
+    "name": "Demo · Batterie"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_dock_trocknungsrestzeit",
+    "key": "dock_trocknungsrestzeit",
+    "domain": "sensor",
+    "room": "Wohnzimmer",
+    "name": "Demo · Dock trocknungsrestzeit"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_klingel_letzte_aktivitat",
+    "key": "klingel_letzte_aktivitat",
+    "domain": "sensor",
+    "room": "Flur",
+    "name": "Demo · Klingel letzte aktivitat"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_kuhlschrank_leistung",
+    "key": "kuhlschrank_leistung",
+    "domain": "sensor",
+    "room": "Küche",
+    "name": "Demo · Kuhlschrank leistung"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_kuhlschrank_temperatur",
+    "key": "kuhlschrank_temperatur",
+    "domain": "sensor",
+    "room": "Flur",
+    "name": "Demo · Kuhlschrank temperatur"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_lampe_energie",
+    "key": "lampe_energie",
+    "domain": "sensor",
+    "room": "Wohnzimmer",
+    "name": "Demo · Lampe energie"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_lampe_leistung",
+    "key": "lampe_leistung",
+    "domain": "sensor",
+    "room": "Wohnzimmer",
+    "name": "Demo · Lampe leistung"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_luftfeuchte",
+    "key": "luftfeuchte",
+    "domain": "sensor",
+    "room": "Waschkeller",
+    "name": "Demo · Luftfeuchte"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_luftung_leistung",
+    "key": "luftung_leistung",
+    "domain": "sensor",
+    "room": "Badezimmer",
+    "name": "Demo · Luftung leistung"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_pflanze_battery",
+    "key": "pflanze_battery",
+    "domain": "sensor",
+    "room": "Küche",
+    "name": "Demo · Pflanze battery"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_pflanze_conductivity",
+    "key": "pflanze_conductivity",
+    "domain": "sensor",
+    "room": "Küche",
+    "name": "Demo · Pflanze conductivity"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_pflanze_illuminance",
+    "key": "pflanze_illuminance",
+    "domain": "sensor",
+    "room": "Küche",
+    "name": "Demo · Pflanze illuminance"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_pflanze_moisture",
+    "key": "pflanze_moisture",
+    "domain": "sensor",
+    "room": "Flur",
+    "name": "Demo · Pflanze moisture"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_pflanze_temperature",
+    "key": "pflanze_temperature",
+    "domain": "sensor",
+    "room": "Flur",
+    "name": "Demo · Pflanze temperature"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_roboter_batterie",
+    "key": "roboter_batterie",
+    "domain": "sensor",
+    "room": "Wohnzimmer",
+    "name": "Demo · Roboter batterie"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_roboter_filter_restzeit",
+    "key": "roboter_filter_restzeit",
+    "domain": "sensor",
+    "room": "Wohnzimmer",
+    "name": "Demo · Roboter filter restzeit"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_roboter_fortschritt",
+    "key": "roboter_fortschritt",
+    "domain": "sensor",
+    "room": "Wohnzimmer",
+    "name": "Demo · Roboter fortschritt"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_roboter_reinigungsdauer",
+    "key": "roboter_reinigungsdauer",
+    "domain": "sensor",
+    "room": "Wohnzimmer",
+    "name": "Demo · Roboter reinigungsdauer"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_schloss_batterie",
+    "key": "schloss_batterie",
+    "domain": "sensor",
+    "room": "Flur",
+    "name": "Demo · Schloss batterie"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_schuhschrank_leistung",
+    "key": "schuhschrank_leistung",
+    "domain": "sensor",
+    "room": "Flur",
+    "name": "Demo · Schuhschrank leistung"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_steckdose_energie",
+    "key": "steckdose_energie",
+    "domain": "sensor",
+    "room": "Wohnzimmer",
+    "name": "Demo · Steckdose energie"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_steckdose_leistung",
+    "key": "steckdose_leistung",
+    "domain": "sensor",
+    "room": "Wohnzimmer",
+    "name": "Demo · Steckdose leistung"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_temperatur",
+    "key": "temperatur",
+    "domain": "sensor",
+    "room": "Flur",
+    "name": "Demo · Temperatur"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_ventilator_leistung",
+    "key": "ventilator_leistung",
+    "domain": "sensor",
+    "room": "Wohnzimmer",
+    "name": "Demo · Ventilator leistung"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_waschmaschine_leistung",
+    "key": "waschmaschine_leistung",
+    "domain": "sensor",
+    "room": "Waschkeller",
+    "name": "Demo · Waschmaschine leistung"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_anwesenheit",
+    "key": "anwesenheit",
+    "domain": "switch",
+    "room": "Badezimmer",
+    "name": "Demo · Anwesenheit"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_dock_entleerung",
+    "key": "dock_entleerung",
+    "domain": "switch",
+    "room": "Wohnzimmer",
+    "name": "Demo · Dock entleerung"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_dock_trocknung",
+    "key": "dock_trocknung",
+    "domain": "switch",
+    "room": "Wohnzimmer",
+    "name": "Demo · Dock trocknung"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_dock_wasche",
+    "key": "dock_wasche",
+    "domain": "switch",
+    "room": "Waschkeller",
+    "name": "Demo · Dock wasche"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_kindersicherung",
+    "key": "kindersicherung",
+    "domain": "switch",
+    "room": "Wohnzimmer",
+    "name": "Demo · Kindersicherung"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_kuhlschrank",
+    "key": "kuhlschrank",
+    "domain": "switch",
+    "room": "Küche",
+    "name": "Demo · Kuhlschrank"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_kuhlschrank_tur_simulation",
+    "key": "kuhlschrank_tur_simulation",
+    "domain": "switch",
+    "room": "Flur",
+    "name": "Demo · Kuhlschrank tur simulation"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_led",
+    "key": "led",
+    "domain": "switch",
+    "room": "Wohnzimmer",
+    "name": "Demo · Led"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_luftung_ausgang",
+    "key": "luftung_ausgang",
+    "domain": "switch",
+    "room": "Badezimmer",
+    "name": "Demo · Luftung ausgang"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_luftung_force",
+    "key": "luftung_force",
+    "domain": "switch",
+    "room": "Badezimmer",
+    "name": "Demo · Luftung force"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_luftung_force_ausgang",
+    "key": "luftung_force_ausgang",
+    "domain": "switch",
+    "room": "Badezimmer",
+    "name": "Demo · Luftung force ausgang"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_schalter",
+    "key": "schalter",
+    "domain": "switch",
+    "room": "Wohnzimmer",
+    "name": "Demo · Schalter"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_steckdose",
+    "key": "steckdose",
+    "domain": "switch",
+    "room": "Wohnzimmer",
+    "name": "Demo · Steckdose"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_waschmaschine",
+    "key": "waschmaschine",
+    "domain": "switch",
+    "room": "Waschkeller",
+    "name": "Demo · Waschmaschine"
+  },
+  {
+    "entity_id": "update.liquid_glass_demo_firmware",
+    "key": "firmware",
+    "domain": "update",
+    "room": "Büro",
+    "name": "Demo · Firmware"
+  },
+  {
+    "entity_id": "vacuum.liquid_glass_demo_roboter",
+    "key": "roboter",
+    "domain": "vacuum",
+    "room": "Wohnzimmer",
+    "name": "Demo · Roboter"
+  },
+  {
+    "entity_id": "weather.liquid_glass_demo_wetter",
+    "key": "wetter",
+    "domain": "weather",
+    "room": "Wohnzimmer",
+    "name": "Demo · Wetter"
+  }
+]

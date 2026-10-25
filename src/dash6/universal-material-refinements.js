@@ -2,7 +2,7 @@ import {inDashboardScope} from './scope.js';
 // One Satin material for every visible dashboard card; layout and graph layers stay clear.
 (() => {
  const marker='data-dash6-unified-glass',clear='data-dash6-clear-shell';
- const structural=new Set(['ultra-card','dash6-ultra-card','dash6-stack-card','dash6-embedded-card','grid-layout','masonry-layout','layout-card','dash6-pill-layout','dash6-inline-pill-layout','hui-heading-card','embedded-view-card','dash6-embedded-view-card','mini-graph-card','hui-vertical-stack-card','hui-horizontal-stack-card','hui-grid-card','auto-entities','dash6-auto-entities']);
+ const structural=new Set(['ultra-card','dash6-ultra-card','dash6-stack-card','dash6-embedded-card','grid-layout','masonry-layout','layout-card','dash6-pill-layout','dash6-inline-pill-layout','hui-heading-card','hui-weather-forecast-card','embedded-view-card','dash6-embedded-view-card','mini-graph-card','hui-vertical-stack-card','hui-horizontal-stack-card','hui-grid-card','auto-entities','dash6-auto-entities']);
  const ancestors=n=>{const a=[];for(let x=n;x;x=x.assignedSlot||x.parentNode||x.host)a.push(x);return a;};
  const gate=n=>inDashboardScope()&&getComputedStyle(n).getPropertyValue('--dash6-satin-enabled').trim()==='1'&&ancestors(n).some(x=>x.localName==='ha-panel-lovelace'||x.hasAttribute?.('data-dash6-satin-preview'));
  const roots=new Map(),surfaces=new Set();let queued=false,current=null,frame=0;

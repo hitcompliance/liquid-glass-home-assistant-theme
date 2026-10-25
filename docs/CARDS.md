@@ -54,7 +54,7 @@ card:
     - sensor.demo_temperature
 ```
 
-Für eine bekannte Kartenliste und spätere dynamische Ergänzungen dient `custom:dash6-domain-card`. [Das README enthält ein vollständiges Rasterbeispiel](../README.md#direkte-yaml-karten-und-dynamische-inhalte).
+Für eine bekannte Kartenliste und spätere dynamische Ergänzungen dient `custom:dash6-domain-card`. [Ein vollständiges Rasterbeispiel steht unten](#gemeinsame-raumabfrage).
 
 | Schlüssel | Bedeutung |
 | --- | --- |
@@ -65,7 +65,7 @@ Für eine bekannte Kartenliste und spätere dynamische Ergänzungen dient `custo
 | `query.canonical` | `true`, wenn die gewählte Ausgabe bereits vollständige Kartenobjekte enthält; JSON-Strings innerhalb der Karten bleiben unverändert |
 | `query.group` | Freier Gruppenname; unterschiedliche Templates derselben Gruppe teilen pro Verbindung eine Subscription |
 | `combine` | `true` führt bekannte und dynamische Karten in einem gemeinsamen Raster zusammen |
-| `columns`, `mobile_columns` | Eine bis vier Desktopspalten und gewünschte Mobilspalten; bei einem kombinierten Raster jeweils mindestens eine |
+| `columns`, `mobile_columns` | Eine bis zehn Desktopspalten und gewünschte Mobilspalten; bei einem kombinierten Raster jeweils mindestens eine |
 | `mobile_breakpoint` | Wechsel zur mobilen Spaltenzahl; Standard `700` |
 | `edge_alignment` | `flush`: bündiges Desktop-Raster mit äußerer Überschrift; Mobilansicht mit 8px Innenabstand |
 | `container`, `card_param` | Bei getrennten Listen: Container für dynamische Karten und Zielfeld; Standard vertikaler Stack und `cards` |
@@ -110,14 +110,18 @@ Die drei Familien verwenden dieselbe Lichtkonfiguration. Die normale Lichtkarte 
 | `main_back.enabled` | Haupt-/Hintergrundlichtauswahl; Standard `false` |
 | `main_back.main_entity`, `.back_entity` | Explizite `light`-/`switch`-Zuordnungen |
 | `main_back.placement` | `detail`, `header` |
-| `scenes` | `scene.*`-IDs oder Objekte mit `entity`, `name`, `icon` |
+| `rows.controls`, `rows.scenes` | Regler-/Szenenzeile; Standard `true` / `false` |
+| `scenes` | `scene.*`-IDs oder Objekte mit `entity`, `name`, `icon`, optional `fill` |
+| `graph.minimum` | Mindestmaximum der Leistungsachse; Standard 100W |
+| `presence_entity` | Optionaler Präsenz-Binärsensor; Anzeige nur bei aktueller Präsenz |
 | `graph.show`, `.source` | Graph aktivieren; Quelle `auto`, `power`, `energy` |
 | `graph.span`, `.interval`, `.update_interval` | Standard `24h`, `15min`, `5min`; Intervalle `5min`, `15min`, `30min`, `1h` |
-| `graph.height` | 64–120px; Standard 80px |
+| `graph.opacity`, `.hover_opacity` | Optionale Deckkraft-Multiplikatoren 0–1 für gezeichnete Kurven/Flächen, Standard 0.5 / 0.8; leer = Theme. In den GUI-Editoren jeder Graph-Kartenfamilie verfügbar. |
+| `graph.min_height` | Mindesthöhe der Karte mit randfüllendem Hintergrundgraph, GUI 90–1000px; Lichtstandard 90px. Legacy `graph.height` wird weiter gelesen. |
 | `switch_style` | `liquid_glass`, `classic` |
 | `child_lock`, `child_lock_entity` | Bedienung sperren, siehe Schalter |
 
-Nur gemeldete Fähigkeiten erscheinen. Im Einzelreglermodus werden RGB und Farbtemperatur nicht gleichzeitig angezeigt. Das aktive `color_mode` entscheidet über die Farbanzeige; alte RGB-Attribute überdecken keinen aktuellen Weiß-/Temperaturmodus. Der Effektpicker zeigt gemeldete Effekte und bietet „Kein Effekt · stoppen“.
+Nur gemeldete Fähigkeiten erscheinen. Im Einzelreglermodus werden RGB und Farbtemperatur nicht gleichzeitig angezeigt. Das aktive `color_mode` entscheidet über die Farbanzeige; alte RGB-Attribute überdecken keinen aktuellen Weiß-/Temperaturmodus. Ausnahme: HS mit null Kelvin und weißlichtähnlichem RGB wird innerhalb der gemeldeten Kelvin-Grenzen ausschließlich für die Anzeige als Farbtemperatur angenähert. Die letzte Temperaturanforderung in derselben Karte bleibt 30 Sekunden stehen, solange keine neuere Anforderung folgt; aktuelle Helligkeit wird übernommen. Diese Erkennung sendet keinen Dienst. Der Effektpicker zeigt gemeldete Effekte und bietet „Kein Effekt · stoppen“.
 
 ```yaml
 type: custom:dash6-lightgroup-card-v2
@@ -173,6 +177,36 @@ Geeignete Ein/Aus-Icon-Aktionen erhalten den Satin-Schalter. Zusatzregler, Hinte
 
 Es gibt keinen separaten `dash6-fan-card`-Typ. Lüfter werden als vorhandene Button-/Mushroom-Karten mit nativen Geschwindigkeits-/Oszillationsfunktionen eingebunden. [Das Beispiel](../examples/dashboard.yaml) zeigt eine Mushroom-Fan-Karte und eine Button-Karte mit Graph.
 
+## Diagramm-Einstellungen
+
+Der Theme-Editor bietet getrennte globale Vorgaben für Hintergrunddiagramme und Seitenleiste/Overlay: `graph_background_*` und `graph_sidebar_*`. Zeitspanne standardmäßig `24h`, getrennte Auflösung für `energy`, `power` und `other`, aktuelle Legendenwerte sowie `diagram`-/`series`-Hover mit Schatten, Elastizität, Wachstum, Deckkraft und CSS-Deklarationen. Serien-Hover unterstützt zusätzlich gemeinsame Zeitmarkierung und Abdunkeln anderer Zeitpunkte. Theme-Export verwendet entsprechende Tokens `dash6-graph-background-*` / `dash6-graph-sidebar-*`. Vorgaben bleiben wie der bisherige Theme-Editor browserbezogen.
+
+Im Bearbeitungsmodus öffnet das mittig über dem Graphen sichtbare Diagrammsymbol den Instanzeditor. Er speichert Ausnahmen im HA-Benutzerspeicher; die Dashboard-Konfiguration wird dafür nicht umgeschrieben. Leer bedeutet erben, false/0 sind ausdrückliche Ausnahmen. „Alle Ausnahmen auf globale Vorgaben zurücksetzen“ speichert `inherit: true`. Dauerhafte Konfigurationsvorgaben können alternativ so angegeben werden:
+
+```yaml
+dash6_graph:
+  span: 24h
+  legend_value: true
+  series_hover:
+    shadow: 4
+    elasticity: 1
+    growth: 20
+    opacity: 1
+    crosshair: true
+    dim: false
+    css: "filter: brightness(1.1);"
+  series:
+    - entity: sensor.example_power
+      name: Beispiel
+      color: "#6ec7ff"
+      type: line
+      resolution: 5min
+```
+
+Pro Reihe sind `entity`, `name`, `color`, `type` und `resolution` optional. Darstellungen: `column`, `stacked`, `line`, `area`, `step`; Auflösungen: `1min`, `5min`, `10min`, `15min`, `30min`, `1h`. Ein Entity-Wechsel entfernt quellgebundene Generatoren/Transformationen und übernimmt die neue native Quelle. Bereits konfigurierte Achsen bleiben bestehen. Energie wird aus nativen Verbrauchsstatistiken summiert; bei solchen Quellen ist 1 Minute effektiv mindestens 5 Minuten. Es wird keine Energie aus Leistung erzeugt. Für den von IKEA-Karten erzeugten Hintergrundgraphen heißt der entsprechende Abschnitt `graph.settings`.
+
+Auslieferungsstand und Live-Abnahme stehen im projektinternen Änderungsjournal. Lokale Tests allein belegen keine installierte Browserfassung.
+
 ## IKEA/Messsteckdose und Hintergrundgraph
 
 `dash6-ikea-card` benötigt ein Licht oder einen Schalter. Optionale Schlüssel: `name`, `icon`, `room`, `power_entity`, `energy_entity`, `led_entity`, `child_lock_entity`, `child_lock`, `switch_style`, `hold_action`. `height` ist standardmäßig 118px. `room` entfernt einen Bereichsnamen aus der Beschriftung.
@@ -193,7 +227,11 @@ graph:
   color: '#6ec7ff'
 ```
 
-Der Graph liegt vollbreit unten; die Referenzhöhe ist 80px. Sein Tooltip erscheint außerhalb der Card. Ohne `power_entity` wird dieser Hintergrundgraph nicht angelegt. `graph.minimum` setzt eine Mindestobergrenze der Skala, keinen Messwert.
+Der Graph füllt als absolute Hintergrundebene die gesamte innere Kartenfläche. Ausnahme für sichtbare Slider/Kombi-Slider oder Szenen-Buttons: Graphende mindestens 8px über dem obersten dieser Elemente, auch bei reinen Szenenzeilen, Schuhschrank-Karten und nach Größen-/Modusänderungen. `graph.min_height` ist in der GUI je Instanz einstellbar; IKEA/Messsteckdose und Lüfter starten mit 118px, abgeleitete Karten erhalten eine größere vorhandene Höhe. Bestehendes IKEA-`height` bleibt als Mindesthöhe lesbar. Die Karte kann mit ihrem Inhalt wachsen. Sein Tooltip erscheint außerhalb der Card. Ohne `power_entity` wird dieser Hintergrundgraph nicht angelegt. `graph.minimum` setzt eine Mindestobergrenze der Skala, keinen Messwert.
+
+Die Theme-Werte `dash6-graph-opacity` (0.5) und `dash6-graph-hover-opacity` (0.8) multiplizieren die bisherige Kurven-/Flächenoptik; Kartenwerte `graph.opacity`/`graph.hover_opacity` haben Vorrang. Bei leerem GUI-Feld wird wieder das Theme genutzt. Nur die SVG-Plotgruppe wird gedämpft, keine Tooltip-Fläche und kein Geräte-/Statuswert. Header-Elemente besitzen 12px Innenabstand links/oben wie die Licht-Referenzkarten; Zusatzwerte bleiben erhalten.
+
+Die Theme-Werte `dash6-graph-fill-opacity` (0.16), `dash6-graph-line-opacity` (0.65) und `dash6-graph-glow` bestimmen die dezente Liquid-Glass-Optik ausschließlich für gezeichnete Kurven. Die externe Tooltip-Ebene bleibt voll lesbar und unverändert bedienbar.
 
 Der Satin-Graph-Adapter übernimmt diese Graph-/Tooltip-Darstellung für passende Button-Cards mit `custom_fields.values` und Leistungsgraph unter `custom_fields.graph.card`. Quellen können Mini Graph Card oder ApexCharts sein; zusätzliche Serien/Einheiten bleiben erhalten. Die vollständige Vendor-Karte gehört unter `definition`. Für eine neue Messsteckdose ist die IKEA-Karte einfacher.
 
@@ -219,7 +257,7 @@ modes:
 
 Die Karte verwendet das native HA-Temperaturinstrument. Zwei Setpoints erscheinen bei entsprechender Unterstützung der Climate-Entity. `modes` wird auf deren `hvac_modes` begrenzt, Presets stammen aus `preset_modes`. Ohne Presets entfällt die rechte Taste. Die sichtbare Karte bleibt 265px hoch, der native Innenbereich 205px.
 
-**Satin ändert ausschließlich untere Modusgruppe, rechte Preset-Taste und Temperaturgriffe.** Griffe bekommen Glasmaterial und wachsen bei Klick/Drag. Außenfläche, Ring, Track, Werte, Low-/High-Beschriftung und Preset-Dialog werden nicht zusätzlich umgestaltet. Zwei Sollwerte brauchen keine weitere Frontend-Dual-Thermostat-Karte; eine optionale Dual-Smart-Thermostat-Backendintegration liefert gegebenenfalls die Climate-Entity.
+Satin verwendet eine gemeinsame äußere Glasfläche mit transparenter nativer Anzeige, versenkten Gauge-Bögen, Modusgruppe, Preset-Menü und unabhängigen elastischen Glasgriffen. Ruhedurchmesser der Griffe 120% der nativen Balkenbreite, Hover 150% der Ruhegröße, Klick/Drag 200%; die native Ziehfläche bleibt eingabeführend. Preset-Zeilen bleiben beim Drücken gleich groß; Außenklick schließt ohne eine darunterliegende Karte zu bedienen. Zwei Sollwerte brauchen keine zusätzliche Frontend-Dual-Thermostat-Karte; die Backendintegration liefert die Climate-Entity.
 
 ## Medien
 
@@ -232,7 +270,11 @@ Die Karte verwendet das native HA-Temperaturinstrument. Zwei Setpoints erscheine
 | `fire_device_type` | Firemote-Modell, z. B. `fire_tv_4_series` |
 | `name` | Kartentitel |
 
-Die Hauptkarte bevorzugt aktives Apple TV und zeigt native Mediensteuerung. Das Modal enthält Geräteauswahl, Fernbedienungen und Transporttasten. Firemote ist die erweiterte Fernbedienung; bei fehlendem Modul gibt es einfache Tasten. Apple-TV-Befehle verwenden die Remote, Fire-TV-Befehle die ADB-Aktion der Integration.
+Die Hauptkarte bevorzugt aktives Apple TV und zeigt native Mediensteuerung. Das Modal enthält Geräteauswahl, Fernbedienungen und Transporttasten. Firemote ist die erweiterte Fernbedienung; bei fehlendem Modul gibt es einfache Tasten. Apple-TV-Befehle verwenden die konfigurierte Remote; Xiaomi-Tasten verwenden explizite ESPHome-Button-Zuordnungen. `tv_entity` liefert TV-Status und Eingänge. Die optionalen `tv_source_appletv_automation`, `tv_source_hdmi_1_automation` und `tv_source_hdmi_3_automation` verbinden die Quellenwahl direkt mit Automationen. Sobald zugeordnet, ersetzen diese Einträge die native App-/Quellenliste. Auswahl startet genau `automation.trigger` mit `skip_condition: true`; deren Verfügbarkeit bestimmt die Bedienbarkeit, auch bei unbekanntem TV-Status. Mit `tv_remote` verwendet Ein/Aus die Remote; bei fehlender/unbekannter/nicht erreichbarer Remote gelten `tv_power_on_button` und `tv_power_off_button` als BLE-Ersatz. Ohne `tv_remote` bleibt Ein/Aus über den Medienplayer erhalten.
+
+TV-/Apple-TV-Karten zeigen ihren konfigurierten `name` unabhängig vom aktiven Mediengerät. Optionales `tv_status_command` liest den TV-Schaltzustand über `androidtv.adb_command` (Shell-Befehl ohne `adb shell`). Leer deaktiviert Zusatzabfragen; bei sichtbarer Karte im Minutenabstand und nach Ein/Aus. Der TV-Schalter bleibt bei erreichbarer `tv_remote` auch mit unbekanntem Medienplayerstatus bedienbar; bestehende BLE-Ersatzwege bleiben erhalten.
+
+`custom:dash6-homepod-card` verwendet `entity: media_player.*` und optional `homepod_remote_entity`; automatisch wird ausschließlich die Remote desselben Registry-Geräts zugeordnet. Ein/Aus verbindet oder trennt die HomePod-Remote, ohne Wiedergabe zu starten. Bei konfiguriertem `tv_entity` nutzt der vorhandene Glasschalter den TV-Steuerweg (optionale `tv_remote` mit `tv_power_on_button`/`tv_power_off_button` als Ersatz) mit sofortiger optimistischer Anzeige und Rückkehr bei neuer abweichender Rückmeldung, Fehler oder 12s ohne Bestätigung. Aufwecken/Ruhezustand bedient weiterhin Apple TV entsprechend dem gewählten Fernbedienungsmodus. Ohne `tv_entity` bleibt die bisherige Apple-TV-Schaltersteuerung erhalten. HomePod zeigt vorhandenes Cover im Hintergrund. Die Apple-TV-/TV-Karte zeichnet das Medienbild in der nativen Ebene `ha-card > div.background` hinter Status und Bedienelementen (zentriert, `cover`, gedämpft, pointertransparent); eine separate Inline-Bildzeile entfällt. Transport, Medienbrowser, Fernbedienung und Lautstärke sind ohne Hover 30%, bei Hover oder sichtbarem Tastaturfokus 80% sichtbar. Lautstärke ist 21px hoch (Griff 19px), ausgeschaltet 50% Deckkraft, ohne sichtbare Beschriftung bei erhaltenem zugänglichem Wert.
 
 Im geöffneten Modal: Pfeile, Enter, Zurück/Entf, `+`/`−`, Leertaste sowie kurzer/langer Druck auf `#`. Außerhalb wird die Tastatur nicht übernommen. Schließen, Escape und Außenklick bleiben verfügbar.
 
@@ -276,7 +318,7 @@ entities:
 
 ## Türen und lokale Kamera
 
-Türkarte: `kind: apartment` braucht `entity: lock.*`; `kind: entrance` braucht einen `button.*`-Türöffner. Optional: `name`, `contact_entity`, `battery_entity`, `contact_battery_entity`, `battery_warning_entity`, `activity_entity`, `ring_entity`.
+Türkarte: `kind: apartment` braucht `entity: lock.*`; `kind: entrance` braucht einen `button.*`-Türöffner. Optional: `name`, `contact_entity`, `battery_entity`, `contact_battery_entity`, `battery_warning_entity`, `activity_entity`, `ring_entity`, zusätzliche `ring_entities` und `cancel_entities` zum Beenden der Klingelanzeige. Optische Aktivität verändert keine Schlosszustände.
 
 ```yaml
 type: custom:dash6-door-card
@@ -343,7 +385,7 @@ Die mitkopierte `dash5-light-cards-v2.js` ist ein Kompatibilitätseinstieg zum a
 
 ## Interaktive Demo-Karte
 
-`custom:dash6-demo-card` enthält eine `card:` mit einer eigenen DASH6-Karte. Sie stellt lokale Beispielzustände bereit und fängt Service-, API- und WebSocket-Zugriffe ab. Die Demo benötigt keine Geräte. `examples/demo-dashboard.yaml` zeigt acht Kartenbeispiele in drei Views mit den Design-Prinzipien. Für echte Geräte die Hülle weglassen und eigene Entitäten verwenden.
+`custom:dash6-demo-card` enthält eine `card:` mit einer eigenen DASH6-Karte. Sie stellt lokale Beispielzustände bereit und fängt Service-, API- und WebSocket-Zugriffe ab. Die Demo benötigt keine Geräte. `examples/demo-dashboard.yaml` enthält vier Views einschließlich Favoriten mit lokaler GUI. Für echte Geräte die Hülle weglassen und eigene Entitäten verwenden.
 
 ### Manuelle Reihenfolge
 
@@ -351,6 +393,69 @@ Im Favoriten-Editor unter **Kartensortierung → Manuell** erscheinen die ausgew
 
 ### Drei-Zustands-Lüfterschalter
 
-`custom:dash6-fan-card` verwendet eine einzelne runde Satin-Linse mit Rastpositionen **Auto → Ein → Aus**. Tippen/Klicken auf eine Rastposition wählt diesen Modus direkt; die Pfeiltasten sowie Home/End wählen einen Modus direkt. Hauptentity aus bedeutet Aus, Hauptentity ein bei ausgeschaltetem `force_switch_entity` bedeutet Auto, beide ein bedeutet Ein. Der Force-Schalter bleibt per YAML und GUI konfigurierbar. Wiederholte Zustandsmeldungen starten keine weitere Bewegungsanimation. Unbekannte oder nicht verfügbare Schaltzustände sperren die Bedienung.
+`custom:dash6-fan-card` verwendet eine runde Satin-Linse mit drei gleichmäßig verteilten Moduszielen. Der bestätigte aktive Modus steht links; alternative Ziele bleiben direkt per Pointer und Tastatur erreichbar. Hauptentity aus bedeutet Aus, Hauptentity ein bei ausgeschaltetem `force_switch_entity` bedeutet Auto, beide ein bedeutet Ein. Force-Schalter per YAML und GUI konfigurieren. Identische Zustandsmeldungen und Initialisierung starten keine Wechselanimation. Unbekannte oder nicht verfügbare Schaltzustände sperren die Bedienung.
 
-Der optionale Wert `timer_entity` verweist auf einen nativen Timer-Helfer und ist auch in der GUI konfigurierbar. Die Ein-Linse zeigt aufgerundete Restminuten, unter60Sekunden die Sekundenzahl mit `s`; pausierte Restzeit bleibt stabil und idle bedeutet0. Die Karte selbst startet oder pausiert den Timer nicht: dafür werden eigene Automationen passend zur Anlage konfiguriert. Hover/Fokus blendet die alternativen kreisförmigen Ziele mit Auto-Icon, Dauer-Vorschau und0 ein. Konfigurierte aber unbekannte Timer zeigen `—`.
+`remaining_time_entity` verweist auf eine schreibbare Zahl in Minuten: Ein setzt 60 und aktiviert Force, Auto/Aus deaktivieren Force und setzen 0. Hauptentity steuert weiterhin Aus/Auto. `running_switch_entity` und `running_force_switch_entity` sind getrennte, nur gelesene physische Ausgangszustände für Rotor/Leuchten und Aktiv-Anzeige. `presence_entity` zeigt nur aktuelle Präsenzdauer. Statusblöcke umbrechen vor der rechten Messwertspalte; Graph ist an allen vier Innenkanten bündig.
+
+Ohne Minuten-Entity bleibt `timer_entity` als Kompatibilität zu vorhandenen nativen HA-Timern unterstützt. Die Karte startet/pausiert diesen Timer nicht; die bestehende Anlage braucht eigene Automationen. Pausiert bleibt die Restzeit stabil, idle bedeutet 0, unbekannt `—`. Diese Alternative ist keine Anweisung, eine bestehende Zahl-/Shelly-Kette parallel mit einer zweiten Timerkette zu betreiben.
+
+## Gemeinsame Raumabfrage
+
+Vollständige Kartendefinitionen können direkt in der View stehen. Die bestehenden Spezialkarten werden mit ihrer normalen Konfiguration verwendet. Für eine native oder fremde Karte mit den gemeinsamen Material- und Bedienungsadaptern steht `dash6-direct-card` zur Verfügung:
+
+```yaml
+type: custom:dash6-direct-card
+card:
+  type: media-control
+  entity: media_player.demo_player
+```
+
+`dash6-domain-card` verbindet früh angezeigte bekannte Karten mit dynamisch ermittelten Karten. Im folgenden Beispiel gehören die Demo-Steckdose und weitere Schalter zu einem gemeinsam gerahmten Raster. Die Überschrift steht außerhalb des Rasters; ab 700px sind zwei Spalten sichtbar, darunter eine.
+
+```yaml
+type: custom:dash6-domain-card
+combine: true
+columns: 2
+mobile_columns: 1
+mobile_breakpoint: 700
+edge_alignment: flush
+cards:
+  - type: custom:vertical-stack-in-card
+    cards:
+      - type: heading
+        heading: Schalter
+      - type: tile
+        entity: switch.demo_socket
+known_entity_ids:
+  - switch.demo_socket
+query:
+  group: example-room
+  index: 0
+  canonical: true
+  template: |
+    {% set ns = namespace(cards=[]) %}
+    {% for id in area_entities('Beispielraum') | sort %}
+      {% if id.startswith('switch.') %}
+        {% set ns.cards = ns.cards + [{'type': 'tile', 'entity': id}] %}
+      {% endif %}
+    {% endfor %}
+    {{ [ns.cards] | to_json }}
+```
+
+Entitäten und Bereichsname sind erfundene Platzhalter. `query.template` liefert hier eine äußere Liste; `index: 0` wählt deren erste Kartenliste. `canonical: true` bedeutet, dass die Ausgabe bereits vollständige Kartenobjekte enthält. Die bekannten Entities werden aus den dynamischen Ergänzungen ausgeschlossen; fehlende und in der Registry ausgeblendete Entities entfallen.
+
+Mehrere Karten mit derselben `query.group` teilen pro Home-Assistant-Verbindung eine Template-Subscription, auch mit unterschiedlichen inline gespeicherten Templates. Der Gruppenname ist frei wählbar; alle Templates und Karten bleiben in der Dashboard-Konfiguration. Ohne Gruppe teilen identische Templates eine Subscription. Unveränderte Listen und reine Zustandsupdates verwenden bestehende Karten weiter. Weitere Optionen und die inline konfigurierbare Layoutsichtbarkeit stehen in [Direkte Inline-Konfiguration](#direkte-inline-konfiguration).
+
+
+### TV power, inputs and Xiaomi remote
+
+`dash6-appletv-card` / `dash6-media-card` accept `tv_entity` (media_player), `tv_sources` (comma/newline-separated names), and `fire_remote_style` (`XM1` or `XM2`). TV state and source selection use `tv_entity`. Optional `tv_remote` routes power through remote.turn_on/turn_off; missing/unknown/unavailable remotes fall back to the explicit `tv_power_on_button` / `tv_power_off_button` entities. Without `tv_remote`, legacy media_player power services remain. The existing glass switch owns TV power, with optimistic animated feedback and reconciliation against fresh TV reports; the duplicate power button is removed. All entries of a non-empty live source_list take precedence; tv_sources is only used when no usable live list exists. An HDMI button in the transport row opens the Liquid Glass source menu. `fire_entity` is an optional legacy playback fallback. Artwork is a centered cover background in the native player layer `ha-card > div.background`, behind status and controls; no separate inline image row is rendered. The remote dialog stacks media and remote on mobile; its keyboard table follows a separated full-width section. Wake/sleep actions are plain until pressed.
+
+Xiaomi commands use `fire_button_power`, `up`, `down`, `left`, `right`, `select`, `back`, `home`, `enter`, `voice`, `volume_up`, `volume_down`, `mi_home`, `movie`, `android_tv`, `netflix`, `prime_video` (prefix every key with `fire_button_`). Values are button entity IDs. Missing bindings never fall back to ADB. All fields are available in the GUI. Apple TV retains `apple_entity`, `apple_remote` and `apple_device_type`; each remote view shows its own keyboard table.
+
+
+## Virtuelle Demo und portabler Raumlader
+
+Die installierte Demo verwendet die regulären Karten mit Backend-Entities unter `*.liquid_glass_demo_*`. `custom:dash6-demo-scope` umschließt jede oberste Demo-Karte und begrenzt Zustände, Registries und Serviceziele auf diesen Namensbereich. Der Wrapper ist für die Demo gedacht; für eigene echte Geräte bewusst entfernen.
+
+`room-loader.js` und `room-loader-configs.json` werden gemeinsam installiert und automatisch geladen. Die enthaltene Definition `room: demo`, `slot: lights` ist ein öffentliches Beispiel mit Dummy-Entities. Private Raumdefinitionen werden nicht exportiert. Eigene Definitionen außerhalb des Paketordners speichern und über `config_source: /local/meine-raumdefinitionen.json` an `dash6-room-slot-card` bzw. `dash6-room-layout-card` übergeben; andernfalls würden Paketupdates eigene Änderungen überschreiben. Für neue Räume ist die native Domain-GUI der einfachere Weg.

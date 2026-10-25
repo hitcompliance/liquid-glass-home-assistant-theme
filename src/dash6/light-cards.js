@@ -1,3 +1,4 @@
+import './presence-feedback.js';
 import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {scopedHass,watchRegistries} from './shared-data.js';
 import {errorIndicator,reportError} from './error-indicator.js';
@@ -80,10 +81,10 @@ export function normalizeConfig(input) {
   if(!controllableID(config.main_back.main_entity))delete config.main_back.main_entity;
   if(!controllableID(config.main_back.back_entity))delete config.main_back.back_entity;
   config.discovery = { enabled: true, include_hidden: false, ...config.discovery };
-  config.graph = { show: true, source: 'auto', span: '24h', interval: '15min', update_interval: '15min', height: 80, minimum: 100, ...config.graph };
+  config.graph = { show: true, source: 'auto', span: '24h', interval: '15min', update_interval: '5min', height: 80, minimum: 100, ...config.graph };
   if (!['auto', 'power', 'energy'].includes(config.graph.source)) config.graph.source = 'auto';
   if (!['5min', '15min', '30min', '1h'].includes(config.graph.interval)) config.graph.interval = '15min';
-  config.graph.height = clamp(config.graph.height, 90, 120);
+  config.graph.min_height = clamp(config.graph.min_height ?? config.graph.height, 100, 1000);
   config.graph.minimum = finite(config.graph.minimum) ? Math.max(1,Number(config.graph.minimum)) : 100;
   return config;
 }
@@ -101,7 +102,7 @@ export function capabilities(state, config = {}) {
   const controls = config.controls || {};
   return {
     brightness: modes.some(m => m !== 'onoff' && m !== 'unknown') && controls.brightness !== false,
-    color_temp: modes.includes('color_temp') && config.show_color_temp !== false && controls.color_temp !== false,
+    color_temp: (modes.includes('color_temp') || modes.includes('hs')) && config.show_color_temp !== false && controls.color_temp !== false,
     color: modes.some(m => colorModes.has(m)) && controls.color !== false,
     white: modes.includes('white') && controls.white_channels !== false,
     effect: Array.isArray(a.effect_list) && a.effect_list.length > 0 && config.show_effects !== false && controls.effects !== false,
@@ -110,7 +111,7 @@ export function capabilities(state, config = {}) {
 export function kelvinBounds(state) {
   const a = state?.attributes || {};
   const min = Number(a.min_color_temp_kelvin), max = Number(a.max_color_temp_kelvin);
-  return min > 0 && max >= min ? [min, max] : null;
+  return min > 0 && max >= min ? [min, max] : a.supported_color_modes?.includes('hs') ? [2500,7000] : null;
 }
 export function kelvinRGB(kelvin) {
   const t = clamp(kelvin, 1000, 40000) / 100;
@@ -118,6 +119,11 @@ export function kelvinRGB(kelvin) {
   const g = t <= 66 ? 99.4708025861 * Math.log(t) - 161.1195681661 : 288.1221695283 * (t - 60) ** -0.0755148492;
   const b = t >= 66 ? 255 : t <= 19 ? 0 : 138.5177312231 * Math.log(t - 10) - 305.0447927307;
   return [r, g, b].map(v => Math.round(clamp(v, 0, 255)));
+}
+export function kelvinHS(kelvin){
+ const [r,g,b]=kelvinRGB(kelvin).map(x=>x/255),max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
+ const h=d===0?0:max===r?((g-b)/d)%6:max===g?(b-r)/d+2:(r-g)/d+4;
+ return [(h*60+360)%360,max===0?0:d/max*100];
 }
 export function hsRGB(h, s) {
   const c = clamp(s, 0, 100) / 100, x = c * (1 - Math.abs(((h / 60) % 2) - 1)), m = 1 - c;
@@ -332,6 +338,7 @@ export class OptimisticStore {
     this.errors.set(id,message);this.errorEvents.set(id,{message,seq});this.emit();
   }
   remember(id,patch,state){
+    // Temperature intent belongs to the card which sent it, not every copy of an entity.
     if(id!=='light.example_26'||!['color_temp','rgb','hs','xy','rgbw','rgbww'].includes(patch.color_mode))return;
     this.intents.set(id,{patch:Object.fromEntries(Object.entries(patch).filter(([key])=>key==='color_mode'||key.includes('color'))),baseline:state,confirmed:false});
   }
@@ -346,6 +353,14 @@ export class OptimisticStore {
   reconcile(id,state) {
     if(!state)return;
     const intent=this.intents.get(id),values=this.entries.get(id);
+    // An HS report releases the pending temperature; the card decides whether
+    // it is white-like and applies its own short-lived presentation fallback.
+    // Never keep
+    // a pending Kelvin/brightness patch over subsequent real device reports.
+    if(values?.get('color_mode')?.value==='color_temp'&&state.attributes?.color_mode==='hs'&&state.attributes?.color_temp_kelvin==null){
+      for(const key of [...values.keys()])if(key==='color_mode'||key.includes('color')||key==='brightness')values.delete(key);
+      if(intent?.patch.color_mode==='color_temp')this.intents.delete(id);
+    }
     if(intent){
       const matched=this.matchesColor(intent,state);
       if(matched){intent.confirmed=true;intent.baseline=state;}
@@ -381,7 +396,9 @@ export async function sendLight(hass,id,data={},service='turn_on',config={}) {
   if(!available(hass.states[id]))throw new Error('Licht ist nicht verfügbar.');
   const patch=commandPatch(hass.states[id],data,service);optimistic.remember(id,patch,hass.states[id]);
   const seq=config.feedback?.optimistic===false?null:optimistic.put(id,patch);
-  try { await dispatchLight(id,()=>{if(childLocked(config,hass.states))throw new Error('Kindersicherung aktiv.');return hass.callService('light',service,{...data,entity_id:id});});if(seq!==null)optimistic.accepted(id,seq,config.feedback?.timeout_ms||60000); }
+  const commandData=finite(data.color_temp_kelvin)&&!hass.states[id].attributes?.supported_color_modes?.includes('color_temp')&&hass.states[id].attributes?.supported_color_modes?.includes('hs')?{...data,hs_color:kelvinHS(data.color_temp_kelvin)}:{...data};
+  if(commandData.hs_color)delete commandData.color_temp_kelvin;
+  try { await dispatchLight(id,()=>{if(childLocked(config,hass.states))throw new Error('Kindersicherung aktiv.');return hass.callService('light',service,{...commandData,entity_id:id});});if(seq!==null)optimistic.accepted(id,seq,config.feedback?.timeout_ms||60000); }
   catch(error){if(seq!==null)optimistic.fail(id,seq,error?.message||String(error));throw error;}
 }
 export async function setTarget(hass,id,service,config={}) {
@@ -454,8 +471,40 @@ function effectiveConfig(config,states,registry){
   }
   return resolved;
 }
-export function warmHue(state){const a=state?.attributes||{},h=Number(a.hs_color?.[0]);return a.color_mode==='hs'&&Array.isArray(a.hs_color)&&h>=29&&h<=49;}
-export function controlKelvin(state){const a=state?.attributes||{};if(a.color_mode==='color_temp'&&Number(a.color_temp_kelvin)>0)return Number(a.color_temp_kelvin);const bounds=kelvinBounds(state);if(!bounds)return null;const rgb=hsRGB(...(a.hs_color||[39,50])),peak=Math.max(...rgb),target=rgb.map(x=>x/peak);let best=bounds[0],distance=Infinity;for(let k=bounds[0];k<=bounds[1];k+=10){const c=kelvinRGB(k),m=Math.max(...c),d=c.reduce((sum,x,i)=>sum+(x/m-target[i])**2,0);if(d<distance){distance=d;best=k;}}return best;}
+const inferredKelvinCache=new WeakMap();
+export function inferredKelvin(state){
+ const a=state?.attributes||{};
+ if(a.color_mode!=='hs'||a.color_temp_kelvin!=null)return null;
+ if(inferredKelvinCache.has(state))return inferredKelvinCache.get(state);
+ const validRGB=rgb=>Array.isArray(rgb)&&rgb.length===3&&rgb.every(x=>Number.isFinite(x)&&x>=0&&x<=255);
+ // Prefer the reported RGB triplet: HS is often rounded by groups/integrations.
+ const rgb=validRGB(a.rgb_color)?a.rgb_color:Array.isArray(a.hs_color)&&a.hs_color.length===2&&a.hs_color.every(Number.isFinite)&&a.hs_color[0]>=0&&a.hs_color[0]<=360&&a.hs_color[1]>=0&&a.hs_color[1]<=100?hsRGB(...a.hs_color):null;
+ const bounds=kelvinBounds(state),peak=rgb&&Math.max(...rgb);
+ if(!bounds||!peak)return null;
+ const min=Math.max(1000,bounds[0]),max=Math.min(40000,bounds[1]);if(min>max)return null;
+ const target=rgb.map(x=>x/peak);let best=min,distance=Infinity;
+ // Invert the Helland Kelvin->RGB approximation by a bounded nearest-curve
+ // search, with brightness normalized out. RMS <= 3.5% tolerates LED rounding.
+ // https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html
+ const compare=k=>{const c=kelvinRGB(k),m=Math.max(...c),d=c.reduce((sum,x,i)=>sum+(x/m-target[i])**2,0);if(d<distance){distance=d;best=k;}};
+ for(let k=min;k<max;k+=10)compare(k);compare(max);
+ const result=Math.sqrt(distance/3)<=.035?Math.round(best):null;
+ inferredKelvinCache.set(state,result);return result;
+}
+export class CardTemperatureFeedback {
+ constructor({now=Date.now}={}){this.now=now;this.request=null;}
+ remember(id,data={},service='turn_on'){
+   this.request=service==='turn_on'&&finite(data.color_temp_kelvin)?{id,kelvin:Number(data.color_temp_kelvin),at:this.now()}:null;
+ }
+ get(id,state){
+   const kelvin=inferredKelvin(state);if(kelvin===null)return state;
+   const request=this.request,bounds=kelvinBounds(state);
+   const held=request?.id===id&&this.now()-request.at<30000&&request.kelvin>=bounds[0]&&request.kelvin<=bounds[1];
+   return {...state,attributes:{...state.attributes,color_mode:'color_temp',color_temp_kelvin:held?request.kelvin:kelvin}};
+ }
+}
+export function warmHue(state){return inferredKelvin(state)!==null;}
+export function controlKelvin(state){const a=state?.attributes||{};return a.color_mode==='color_temp'&&Number(a.color_temp_kelvin)>0?Number(a.color_temp_kelvin):inferredKelvin(state);}
 export function currentColorMode(state,caps,fallback){
   if(warmHue(state)&&caps.color_temp)return 'color_temp';
   const mode=state?.attributes?.color_mode;
@@ -532,7 +581,7 @@ function segmentPicker(segments,states,selected,onToggle,style,columns='auto'){
 }
 const CSS=`
 :host{display:block;min-width:0;color:var(--primary-text-color,#f5f5f5);font-family:var(--paper-font-body1_-_font-family,system-ui,sans-serif);font-size:14px;--lc-accent:var(--primary-color,#78d8c5)}
-*{box-sizing:border-box}button,input,select{font:inherit}button{cursor:pointer;min-height:48px;min-width:48px;padding:8px 12px;border:1px solid var(--divider-color,#555);border-radius:14px;background:var(--secondary-background-color,#333);color:inherit;touch-action:manipulation}button:hover{filter:brightness(1.12)}button:disabled{cursor:default;opacity:.45}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--lc-accent);outline-offset:2px}button[aria-pressed=true]{background:color-mix(in srgb,var(--lc-accent) 22%,var(--card-background-color,#202020));border-color:var(--lc-accent)}ha-icon{--mdc-icon-size:24px;display:inline-flex}h2{font-size:21px;margin:0}h3{font-size:17px;margin:8px 0}p{margin:8px 0;line-height:1.5}.muted{color:var(--secondary-text-color,#bbb)}.error{color:var(--error-color,#ff8787);white-space:normal}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1;min-width:0}.stack{display:grid;gap:8px;min-width:0}.primary{background:var(--lc-accent);color:var(--text-primary-color,#152623);font-weight:650}.full{width:100%}.card{display:block;background:var(--ha-card-background,var(--card-background-color,#202020));border:1px solid var(--divider-color,#555);border-radius:16px;padding:12px;overflow:hidden;container-type:inline-size}.head{display:flex;align-items:center;gap:12px;min-height:52px}.power{border:0;border-radius:50%;width:52px;height:52px;flex:none;padding:0;display:grid;place-items:center;background:var(--lamp);color:var(--lamp-ink);box-shadow:var(--lamp-glow)}.detail-link{background:transparent;border:0;padding:0;text-align:left;flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:8px}.name{display:block;font-size:18px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.status{display:block;font-size:14px;font-weight:400;color:var(--secondary-text-color,#aaa);margin-top:3px}.metrics{font-size:13px;text-align:right}.controls{display:grid;gap:8px;margin-top:8px}.modes{display:flex;gap:8px;flex-wrap:wrap}.modes button{flex:1;padding:8px;font-size:13px}.slider-wrap{min-width:0}.slider-label{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;font-size:13px}.slider{appearance:none;-webkit-appearance:none;display:block;width:100%;height:48px;margin:0;border:0;border-radius:16px;background:var(--track);cursor:ew-resize;touch-action:pan-y}.slider::-webkit-slider-runnable-track{height:48px;border-radius:16px;background:transparent}.slider::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:18px;height:48px;border:3px solid #fff;border-radius:12px;background:#ffffff38;box-shadow:0 0 3px #0009}.slider::-moz-range-track{height:48px;background:transparent}.slider::-moz-range-thumb{width:14px;height:42px;border:3px solid #fff;border-radius:12px;background:#ffffff38}.slider:disabled{opacity:.4}.scenes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr));gap:8px}.scene-active{border-color:var(--lc-accent)}.hint{font-size:13px}.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}input:not([type=range]),select{min-height:48px;font-size:16px;min-width:0;padding:8px;border:1px solid var(--divider-color,#555);border-radius:10px;background:var(--card-background-color,#242424);color:inherit}label.field{display:grid;gap:4px}input[type=checkbox]{width:24px;height:24px;min-height:24px}.check{display:flex;align-items:center;gap:8px;min-height:48px}details{border:1px solid var(--divider-color,#555);border-radius:16px;padding:8px}summary{min-height:48px;cursor:pointer;display:flex;align-items:center;font-weight:650}.editor{display:grid;gap:12px}.member-edit{display:grid;gap:8px;padding:8px;border-bottom:1px solid var(--divider-color,#555)}@media(prefers-reduced-motion:no-preference){button{transition:background .15s ease}}`;
+*{box-sizing:border-box}button,input,select{font:inherit}button{cursor:pointer;min-height:48px;min-width:48px;padding:8px 12px;border:1px solid var(--divider-color,#555);border-radius:14px;background:var(--secondary-background-color,#333);color:inherit;touch-action:manipulation}button:hover{filter:brightness(1.12)}button:disabled{cursor:default;opacity:.45}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--lc-accent);outline-offset:2px}button[aria-pressed=true]{background:color-mix(in srgb,var(--lc-accent) 22%,var(--card-background-color,#202020));border-color:var(--lc-accent)}ha-icon{--mdc-icon-size:24px;display:inline-flex}h2{font-size:21px;margin:0}h3{font-size:17px;margin:8px 0}p{margin:8px 0;line-height:1.5}.muted{color:var(--secondary-text-color,#bbb)}.error{color:var(--error-color,#ff8787);white-space:normal}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1;min-width:0}.stack{display:grid;gap:8px;min-width:0}.primary{background:var(--lc-accent);color:var(--text-primary-color,#152623);font-weight:650}.full{width:100%}.card{display:block;background:var(--ha-card-background,var(--card-background-color,#202020));border:1px solid var(--divider-color,#555);border-radius:16px;padding:12px;overflow:hidden;container-type:inline-size}.head{display:flex;align-items:center;gap:12px;min-height:52px}.power{border:0;border-radius:50%;width:52px;height:52px;flex:none;padding:0;display:grid;place-items:center;background:var(--lamp);color:var(--lamp-ink);box-shadow:var(--lamp-glow)}.detail-link{background:transparent;border:0;padding:0;text-align:left;flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:8px}.name{display:block;font-size:18px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.status{display:block;font-size:14px;font-weight:400;color:var(--secondary-text-color,#aaa);margin-top:3px}.metrics{font-size:13px;text-align:right}.controls{display:grid;gap:8px;margin-top:8px}.modes{display:flex;gap:8px;flex-wrap:wrap}.modes button{flex:1;padding:8px;font-size:13px}.slider-wrap{min-width:0}.slider-label{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;font-size:13px}.slider{appearance:none;-webkit-appearance:none;display:block;width:100%;height:48px;margin:0;border:0;border-radius:16px;background:var(--track);cursor:ew-resize;touch-action:pan-y}.slider::-webkit-slider-runnable-track{height:48px;border-radius:16px;background:transparent}.slider::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:18px;height:48px;border:3px solid #fff;border-radius:12px;background:#ffffff38;box-shadow:0 0 3px #0009}.slider::-moz-range-track{height:48px;background:transparent}.slider::-moz-range-thumb{width:14px;height:42px;border:3px solid #fff;border-radius:12px;background:#ffffff38}.slider:disabled{opacity:.4}.scenes{display:flex;flex-wrap:wrap;gap:8px}.scenes>button{flex:1 1 150px;min-width:min(150px,100%);max-width:min(300px,100%)}.scene-active{border-color:var(--lc-accent)}.hint{font-size:13px}.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}input:not([type=range]),select{min-height:48px;font-size:16px;min-width:0;padding:8px;border:1px solid var(--divider-color,#555);border-radius:10px;background:var(--card-background-color,#242424);color:inherit}label.field{display:grid;gap:4px}input[type=checkbox]{width:24px;height:24px;min-height:24px}.check{display:flex;align-items:center;gap:8px;min-height:48px}details{border:1px solid var(--divider-color,#555);border-radius:16px;padding:8px}summary{min-height:48px;cursor:pointer;display:flex;align-items:center;font-weight:650}.editor{display:grid;gap:12px}.member-edit{display:grid;gap:8px;padding:8px;border-bottom:1px solid var(--divider-color,#555)}@media(prefers-reduced-motion:no-preference){button{transition:background .15s ease}}`;
 const EXTRA_CSS=`
 :host{--lc-glass-speed:var(--lg-motion-duration)}
 .card{background:var(--lg-surface,var(--ha-card-background));border-color:var(--lg-outline);box-shadow:var(--lg-shadow);-webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur)}
@@ -544,7 +593,7 @@ const EXTRA_CSS=`
 @media(prefers-reduced-motion:no-preference){.card,.power,.mode-bar.grouped button{transition:background-color var(--lc-glass-speed) ease,border-color var(--lc-glass-speed) ease,box-shadow var(--lc-glass-speed) ease,transform var(--lc-glass-speed) ease}.mode-bar.grouped button:active,.power:active{transform:scale(.96)}}
 :host(.selected) .card{outline:var(--dash6-material-8b78f10a);outline-offset:2px}
 .card{position:relative;isolation:isolate}.card>*:not(.power-graph){position:relative;z-index:2}
-.power-graph{position:absolute!important;left:0;bottom:0;width:100%;height:80px;z-index:1;opacity:1;pointer-events:auto;overflow:hidden}.power-graph>apexcharts-card{display:block;width:100%;height:100%;min-width:0}
+.power-graph{position:absolute!important;left:0;bottom:0;width:100%;height:100%;top:0;right:0;z-index:1;opacity:1;pointer-events:auto;overflow:hidden}.power-graph>apexcharts-card{display:block;width:100%;height:100%;min-width:0}
 .mode-bar{display:flex;gap:8px;flex-wrap:nowrap;white-space:nowrap;min-width:0}.mode-bar.grouped{gap:0;border:var(--dash6-material-9aa1c302);border-radius:14px;overflow:hidden}.mode-bar.grouped button{border:0;border-radius:0;flex:0 0 48px}.mode-bar.grouped button+button{border-left:1px solid var(--divider-color)}.mode-bar.compact button{padding:0;min-width:44px;min-height:44px;width:44px;height:44px;flex-basis:44px}.mode-bar.icon-only button{flex:0 0 48px}.mode-bar.icon-only.compact button{flex-basis:44px}.mode-bar.text-only button{flex:0 0 auto}
 .controls.main-off .slider{opacity:var(--dash6-slider-off-opacity,.5)!important}
 .controls.layout-left,.controls.layout-right{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;min-width:0}.controls.layout-right{grid-template-columns:minmax(0,1fr) auto}.controls.layout-left .mode-bar{grid-column:1;grid-row:1}.controls.layout-left .slider-wrap,.controls.layout-left .effect-entry{grid-column:2;grid-row:1}.controls.layout-right .slider-wrap,.controls.layout-right .effect-entry{grid-column:1;grid-row:1}.controls.layout-right .mode-bar{grid-column:2;grid-row:1}.controls.layout-bottom .mode-bar{order:2}.controls.layout-bottom .slider-wrap,.controls.layout-bottom .effect-entry{order:1}
@@ -609,7 +658,7 @@ const SATIN_LIGHT_CSS=`
 :host([data-satin]) .card>.effect-trigger::before{content:'';position:absolute;inset:1px;z-index:-1;border-radius:inherit;background:var(--dash6-satin-effect-glow);opacity:0;transition:opacity 220ms ease}
 :host([data-satin]) .card>.effect-trigger[aria-pressed=true]{color:var(--dash6-icon-lens-white);border:var(--dash6-satin-effect-active-border)!important}
 :host([data-satin]) .card>.effect-trigger[aria-pressed=true]::before{opacity:var(--dash6-satin-effect-white-opacity,.65)}
-:host([data-satin]) .card>.effect-trigger:active{scale:.94;translate:0 1px;box-shadow:var(--dash6-satin-button-pressed-shadow)!important;transition-duration:80ms}
+:host([data-satin]) .card>.effect-trigger:active{scale:.94;translate:0 1px;box-shadow:var(--dash6-satin-button-pressed-shadow)!important;transition-duration:80ms;border-color:transparent!important;}
 :host([data-satin]) .slider{height:42px;border-radius:11px!important}
 /* The pressed 22x38 lens grows to 28.6x49.4 inside the card's 12px inset.
    Let it cross the recessed track; the 8px control gap stays clear at each end. */
@@ -623,18 +672,25 @@ const SATIN_LIGHT_CSS=`
 @media(prefers-reduced-motion:reduce){:host([data-satin]) .card>.effect-trigger{scale:1!important;translate:0!important;transition:none!important}}
 `;
 const ADDITIONAL_LIGHT_CSS=`
+.card.has-presence .head{grid-template-columns:88px minmax(0,1fr) 36px auto}
+.card .presence-indicator{grid-column:3;grid-row:1;align-self:start;justify-self:end}
+.card.has-presence .status{white-space:normal;overflow:visible}
+.card.has-presence .detail-link{height:auto!important;overflow:visible!important}
+.card.has-presence .detail-link .grow{overflow:visible!important}
+@container(max-width:370px){.card.has-presence .head{grid-template-columns:88px minmax(0,1fr) 36px}.card.has-presence .light-extras{grid-column:2 / span 2}}
+
 .card .head{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:12px;align-items:start}
 .card .detail-link{min-height:44px;width:100%;align-items:flex-start}
 .card .light-extras{align-self:start;justify-self:end;display:grid;grid-template-columns:repeat(var(--extras-count),minmax(0,1fr));width:140px;height:42px;padding:3px;gap:0;border-radius:10px;background:var(--dash6-satin-control-background);border:var(--dash6-satin-control-border);box-shadow:var(--dash6-satin-control-shadow);backdrop-filter:var(--dash6-satin-control-filter)}
 .card .light-extras button{position:relative;display:grid;place-items:center;min-width:0;min-height:34px;height:34px;padding:0;border:0!important;border-radius:8px;background:transparent!important;box-shadow:none!important;filter:none!important;isolation:isolate;color:var(--secondary-text-color)}
 .card .light-extras button::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:8px;background:var(--dash6-satin-lens-background);border:var(--dash6-satin-lens-border);box-shadow:var(--dash6-satin-lens-shadow);opacity:0;transition:opacity 160ms ease,scale 380ms cubic-bezier(.22,1.5,.36,1)}
 .card .light-extras button[aria-pressed=true]{color:var(--primary-text-color)}.card .light-extras button[aria-pressed=true]::before{opacity:1}
-.card .light-extras button:active::before{scale:.975;box-shadow:var(--dash6-satin-button-pressed-shadow)}
+.card .light-extras button:active::before{scale:.975;box-shadow:var(--dash6-satin-button-pressed-shadow);border-color:transparent!important;}
 .card .scene-recess{margin:0px!important;padding:8px;border-radius:12px;background:var(--dash6-satin-control-background);border:var(--dash6-satin-control-border);box-shadow:var(--dash6-satin-control-shadow)}
 .card .scene-recess button{background:var(--scene-fill,var(--dash6-satin-button-background))!important;border:var(--dash6-satin-button-border)!important;box-shadow:var(--dash6-satin-button-shadow)!important;filter:brightness(.82);border-radius:10px;transition:scale 380ms cubic-bezier(.22,1.5,.36,1),filter 180ms ease,box-shadow 180ms ease}
 .card .scene-recess button[aria-pressed=true]{filter:brightness(1.12);box-shadow:var(--dash6-satin-lens-shadow),0 0 8px rgba(190,223,255,.25)!important}
-.card .scene-recess button:active{scale:.96;translate:0 2px;box-shadow:var(--dash6-satin-button-pressed-shadow)!important}
-.card .power-graph{right:0!important;width:100%!important;height:80px!important;padding:0!important;margin:0!important;bottom:0!important;z-index:1!important}.card .power-graph>*{display:block;width:100%;height:80px}
+.card .scene-recess button:active{scale:.96;translate:0 2px;box-shadow:var(--dash6-satin-button-pressed-shadow)!important;border-color:transparent!important;}
+.card .power-graph{right:0!important;width:100%!important;height:100%!important;top:0!important;padding:0!important;margin:0!important;bottom:0!important;z-index:1!important}.card .power-graph>*{display:block;width:100%;height:100%}
 @media(hover:hover){.card .light-extras button:hover::before{scale:1.035}.card .scene-recess button:hover{filter:brightness(1.12)}}
 @container(max-width:370px){.card .head{grid-template-columns:88px minmax(0,1fr)}.card .light-extras{grid-column:2;grid-row:2}.card .head .detail-link{grid-column:2}.card .head>dash6-glass-switch{grid-row:1 / span 2}}
 @media(pointer:coarse){.card .light-extras{height:50px}.card .light-extras button{height:44px;min-height:44px}}
@@ -654,25 +710,39 @@ const kelvinTrack='var(--dash6-slider-kelvin)';
 const hueTrack='var(--dash6-slider-hue)';
 
 export class Dash5LightCard extends Base {
-  constructor(){super();this.attachShadow({mode:'open'});this._mode=null;this._dragging=false;this._registry=[];this._selection=new Set();this._graphCard=null;this._graphKey=null;this._selectionHandler=null;this._settingsLoaded=false;this._userPatch=undefined;this._settingsPortal=null;this._settingsPortalOverlay=null;this._settingsPortalGear=null;this._settingsPortalResize=null;}
+  constructor(){super();this._temperatureFeedback=new CardTemperatureFeedback();this.attachShadow({mode:'open'});this._mode=null;this._dragging=false;this._registry=[];this._selection=new Set();this._graphCard=null;this._graphKey=null;this._selectionHandler=null;this._settingsLoaded=false;this._userPatch=undefined;this._settingsPortal=null;this._settingsPortalOverlay=null;this._settingsPortalGear=null;this._settingsPortalResize=null;}
   static async getConfigElement(){await import('./light-editor.js');return document.createElement('dash6-light-card-editor-v2');}
   static getStubConfig(hass){return {entity:Object.keys(hass?.states||{}).find(lightID)||'light.example'};}
   getCardSize(){return 4;}
   getGridOptions(){return {columns:12,min_columns:6};}
   setConfig(config){
-    this._baseConfig=normalizeConfig(config);this._config=copy(this._baseConfig);this._storageKey=cardSettingsStorageKey(config,globalThis.location?.pathname||'/',this.localName);this._settingsLoaded=false;this._settingsPromise=null;this._userPatch=undefined;this._mode=null;this._graphKey=null;this.ensureStoredConfig();this.render();
+    clearTimeout(this._temperatureTimer);this._temperatureFeedback.request=null;this._baseConfig=normalizeConfig(config);this._config=copy(this._baseConfig);this._storageKey=cardSettingsStorageKey(config,globalThis.location?.pathname||'/',this.localName);this._settingsLoaded=false;this._settingsPromise=null;this._userPatch=undefined;this._mode=null;this._graphKey=null;this.ensureStoredConfig();this.render();
   }
   set hass(hass){
+    const raw=hass?.states?.[this._config?.entity];
+    if(raw!==this._temperatureRawState){this._temperatureRawState=raw;if(inferredKelvin(raw)!==null)this._actual=null;}
     const previousUser=this._userId;this._hass=hass;this._userId=hass?.user?.id;if(this._registryConnection!==hass?.connection){this._registryConnection=hass?.connection;this._registryLoaded=false;this._registryWatch?.();this._registryWatch=watchRegistries(hass,()=>{this._registryLoaded=false;if(this.isConnected)this.hass=this._hass;});}
     if(previousUser!==undefined&&previousUser!==this._userId){this._settingsLoaded=false;this._settingsPromise=null;this._userPatch=undefined;if(this._baseConfig)this._config=copy(this._baseConfig);}
     for(const id of new Set([...optimistic.entries.keys(),...optimistic.intents.keys()]))optimistic.reconcile(id,hass.states[id]);
     if(this._config){this.ensureStoredConfig();if(!this._registryPending&&!this._registryLoaded){this._registryPending=true;loadEntityRegistry(hass).then(registry=>{this._registry=registry;this._registryLoaded=true;this._registryPending=false;this.render();}).catch(()=>{this._registryPending=false;});}}
-    const c=this._config,ids=c?[c.entity,c.child_lock_entity,c.power_entity,c.energy_entity,c.main_back?.main_entity,c.main_back?.back_entity,...(c.segments||[]).map(x=>x.entity)]:[];
-    const signature=JSON.stringify(ids.map(id=>{const state=stateFor(hass,id);return [id,state?.state,state?.attributes];}));
+    const c=this._config,ids=c?[c.entity,c.presence_entity,c.child_lock_entity,c.power_entity,c.energy_entity,c.main_back?.main_entity,c.main_back?.back_entity,...(c.segments||[]).map(x=>x.entity)]:[];
+    const signature=JSON.stringify(ids.map(id=>{const state=this.stateFor(id);return [id,state?.state,state?.attributes];}));
     if(signature!==this._hassRenderSignature||!this.shadowRoot.querySelector('ha-card.card')){this._hassRenderSignature=signature;this.render();}
     if(this._dialog)this._dialog.hass=hass;if(this._settingsEditor)this._settingsEditor.hass=hass;if(this._graphCard)this._graphCard.hass=hass;
   }
   get hass(){return this._hass;}
+  stateFor(id){
+    const raw=this._hass?.states?.[id],state=stateFor(this._hass,id);
+    // A shared optimistic Kelvin patch must not extend this card's 30s window
+    // or lend its request to a different card while HS feedback stays unchanged.
+    const display=state!==raw&&state?.attributes?.color_mode==='color_temp'&&inferredKelvin(raw)!==null?{...state,attributes:{...raw.attributes}}:state;
+    return this._temperatureFeedback.get(id,display);
+  }
+  rememberTemperatureRequest(data,service){
+    clearTimeout(this._temperatureTimer);this._actual=null;
+    this._temperatureFeedback.remember(this._config.entity,data,service);
+    if(this._temperatureFeedback.request){this._temperatureTimer=setTimeout(()=>{this._temperatureTimer=null;this._actual=null;this.render();},30000);}
+  }
   ensureStoredConfig(){
     if(this._settingsLoaded||!this._baseConfig||!this._storageKey)return this._settingsPromise;
     if(!this._hass)return Promise.resolve();
@@ -687,20 +757,21 @@ export class Dash5LightCard extends Base {
     }).catch(error=>{this._settingsStorageAvailable=false;this._settingsError=error?.message||'Speicher nicht verfügbar';this._settingsLoaded=true;}).finally(()=>{this._settingsPromise=null;});
     return this._settingsPromise;
   }
-  connectedCallback(){bindThemePreferences(this);this._unsubscribe=optimistic.subscribe(()=>{const id=this._config?.entity;const signature=JSON.stringify([stateFor(this._hass,id),optimistic.errorEvents.get(id),optimistic.pending(id)]);if(signature!==this._feedbackSignature){this._feedbackSignature=signature;this.render();}});this.render();}
-  disconnectedCallback(){this.shadowRoot.querySelectorAll('input[type=range]').forEach(input=>input._satinDrag?.cancel());unbindThemePreferences(this);this._unsubscribe?.();this._registryWatch?.();this._registryConnection=null;this._controlsResize?.disconnect();this.removeSettingsPortal();this._dialog?.remove();this._dialog=null;this._effectDialog?.remove();this._effectDialog=null;this._settingsDialog?.remove();this._settingsDialog=null;this._settingsEditor=null;}
+  connectedCallback(){bindThemePreferences(this);this._unsubscribe=optimistic.subscribe(()=>{const id=this._config?.entity;const signature=JSON.stringify([this.stateFor(id),optimistic.errorEvents.get(id),optimistic.pending(id)]);if(signature!==this._feedbackSignature){this._feedbackSignature=signature;this.render();}});this.render();}
+  disconnectedCallback(){clearTimeout(this._temperatureTimer);this.shadowRoot.querySelectorAll('input[type=range]').forEach(input=>input._satinDrag?.cancel());unbindThemePreferences(this);this._unsubscribe?.();this._registryWatch?.();this._registryConnection=null;this._controlsResize?.disconnect();this.removeSettingsPortal();this._dialog?.remove();this._dialog=null;this._effectDialog?.remove();this._effectDialog=null;this._settingsDialog?.remove();this._settingsDialog=null;this._settingsEditor=null;}
   async send(data={},service='turn_on'){
     if(childLocked(this._config,this._hass?.states)){this.shadowRoot.querySelector('dash6-glass-switch')?.reject();return;}
-    this._error=null;
+    this._error=null;this.rememberTemperatureRequest(data,service);
     try{if(this._commandHandler)await this._commandHandler(data,service);else await sendLight(this._hass,this._config.entity,data,service,this._config);
       if(!Object.keys(data).length&&['turn_on','turn_off'].includes(service)){
         const c=this._renderConfig||this._config,ids=[...new Set(['main','back'].flatMap(role=>this.roleTargets(role,c)))].filter(id=>id!==c.entity&&available(this._hass.states[id]));
         const results=await Promise.allSettled(ids.map(id=>setTarget(this._hass,id,service,c)));
         if(results.some(r=>r.status==='rejected'))throw Error('Haupt- oder Backlight konnte nicht vollständig geschaltet werden.');
       }this.render();}
-    catch(e){reportError(this,e);this.render();}
+    catch(e){this.rememberTemperatureRequest({},service);reportError(this,e);this.render();}
   }
   async toggleRole(role){
+    this.rememberTemperatureRequest({},role);
     try{await toggleTargets(this._hass,this.roleTargets(role,this._renderConfig||this._config),this._config);this._error=null;}
     catch(error){reportError(this,error);}this.render();
   }
@@ -724,7 +795,7 @@ export class Dash5LightCard extends Base {
   }
   openEffects(){
     if(this._effectDialog?.isConnected)return;
-    this._effectDialog=showEffectsPicker(this.shadowRoot,()=>stateFor(this._hass,this._config.entity),data=>this.send(data));
+    this._effectDialog=showEffectsPicker(this.shadowRoot,()=>this.stateFor(this._config.entity),data=>this.send(data));
   }
   showConfigGear(){return new URLSearchParams(globalThis.location?.search||'').get('edit')==='1';}
   removeSettingsPortal(){
@@ -768,7 +839,7 @@ export class Dash5LightCard extends Base {
     await import('./light-editor.js');
     if(!this._hass||!this._settingsStorageAvailable){reportError(this,'Karteneinstellungen können nicht gespeichert werden: Home-Assistant-Benutzerspeicher nicht verfügbar.');this.render();return;}
     const dialog=el('dialog',{class:'settings-dialog','aria-label':'Lichtkarte konfigurieren'}),shell=el('div',{class:'settings-shell'}),header=el('header',{class:'settings-header'}),title=el('div',{class:'grow'}),content=el('div',{class:'settings-body'}),footer=el('footer',{class:'settings-footer'}),status=el('span',{class:'settings-status',role:'status','aria-live':'polite'},'Änderungen werden als Entwurf angezeigt. Speichern wirkt nur auf diese Karte in diesem Dashboard.'),editor=document.createElement('dash6-light-card-editor-v2');
-    title.append(el('h2',{},`${displayName(this._config,stateFor(this._hass,this._config.entity))} konfigurieren`),el('span',{class:'muted hint'},'Auch in Auto-Entities und verschachtelten Karten sicher speicherbar.'));
+    title.append(el('h2',{},`${displayName(this._config,this.stateFor(this._config.entity))} konfigurieren`),el('span',{class:'muted hint'},'Auch in Auto-Entities und verschachtelten Karten sicher speicherbar.'));
     let draft=copy(this._config),valid=true,saving=false;
     const close=()=>{dialog.close();dialog.remove();if(this._settingsDialog===dialog){this._settingsDialog=null;this._settingsEditor=null;}this._config=normalizeConfig(this._userPatch?applyConfigPatch(this._baseConfig,this._userPatch):this._baseConfig);this.render();};
     const cancel=button('Abbrechen',close,{'aria-label':'Karteneinstellungen verwerfen'});
@@ -795,23 +866,23 @@ export class Dash5LightCard extends Base {
     this.shadowRoot.append(dialog);dialog.showModal();if(this._settingsPortal)this._settingsPortal.hidden=true;
   }
   makeGraph(card,config){
-    const graphConfigValue=graphConfig(config,this._hass?.states||{});if(!graphConfigValue)return;
-    const graphKey=[config.power_entity,config.energy_entity,config.graph?.source,config.graph?.span,config.graph?.interval,config.graph?.update_interval,config.graph?.height,config.graph?.minimum,config.graph?.color].join('|');
-    if(graphKey!==this._graphKey){this._graphKey=graphKey;this._graphCard=null;this._graphPromise=null;}
-    const layer=el('div',{class:'power-graph','aria-label':'24-Stunden-Leistungsverlauf'});layer.style.height='80px';layer.style.bottom='0';layer.addEventListener('click',event=>event.stopPropagation());card.insertBefore(layer,card.firstChild);
-    if(this._graphCard){this._graphCard.hass=this._hass;layer.append(this._graphCard);return;}
+    const graphConfigValue=graphConfig(config,this._hass?.states||{});if(!graphConfigValue){card.querySelector(':scope > .power-graph')?.remove();this._graphKey=null;this._graphCard=null;this._graphPromise=null;return;}
+    const graphKey=[config.power_entity,config.energy_entity,config.graph?.source,config.graph?.span,config.graph?.interval,config.graph?.update_interval,config.graph?.min_height,config.graph?.minimum,config.graph?.color].join('|');
+    if(graphKey!==this._graphKey){this._graphKey=graphKey;this._graphCard=null;this._graphPromise=null;card.querySelector(':scope > .power-graph')?.replaceChildren();}
+    let layer=card.querySelector(':scope > .power-graph');if(!layer){layer=el('div',{class:'power-graph','aria-label':'24-Stunden-Leistungsverlauf'});layer.style.height='100%';layer.style.bottom='0';layer.addEventListener('click',event=>event.stopPropagation());card.insertBefore(layer,card.firstChild);}
+    if(this._graphCard){this._graphCard.hass=this._hass;if(this._graphCard.parentNode!==layer)layer.append(this._graphCard);return;}
     if(!this._graphPromise){this._graphPromise=typeof window.loadCardHelpers==='function'?window.loadCardHelpers().then(helpers=>{
       if(!helpers?.createCardElement)throw new Error('Kartenhilfe nicht verfügbar');
       return window.__dash6Cards.create(graphConfigValue);
     }).catch(()=>null):Promise.resolve(null);}
-    this._graphPromise.then(graph=>{if(!graph||!this._config||this._graphKey!==graphKey)return;this._graphCard=graph;graph.hass=this._hass;const current=this.shadowRoot.querySelector('.power-graph');if(current?.isConnected)current.append(graph);});
+    const pending=this._graphPromise;pending.then(graph=>{if(!graph||!this._config||this._graphKey!==graphKey||this._graphPromise!==pending)return;this._graphCard=graph;graph.hass=this._hass;const current=this.shadowRoot.querySelector('.power-graph');if(current?.isConnected&&graph.parentNode!==current)current.append(graph);});
   }
   renderModeBar(c,modes,actual,caps){
     if(c.controls.buttons==='group'){
       const bar=this._modeBar||(this._modeBar=document.createElement('dash6-glass-segments'));
       bar.className='mode-bar glass-mode-bar';bar.style.width=c.controls.label==='icon'?'140px':'100%';
       bar.configure({options:modes.map(mode=>({value:mode,label:MODES[mode],icon:({brightness:'mdi:brightness-6',color_temp:'mdi:thermometer',color:'mdi:palette',white:'mdi:lightbulb-outline'})[mode],disabled:!caps[mode]})),value:this._mode,label:'Lichtfunktion auswählen',iconsOnly:c.controls.label==='icon'});
-      bar.onselection=mode=>{this._mode=mode;const controls=bar.parentElement;if(!controls)return;const old=[...controls.children].filter(child=>child!==bar);old.forEach(child=>child.querySelectorAll('input[type=range]').forEach(input=>input._satinDrag?.cancel()));const slider=this.renderSliderForMode(controls,stateFor(this._hass,c.entity),mode);const motion=!matchMedia('(prefers-reduced-motion: reduce)').matches;for(const child of old){if(motion&&child.animate){const rect=child.getBoundingClientRect(),parent=controls.getBoundingClientRect();Object.assign(child.style,{position:'absolute',top:(rect.top-parent.top)+'px',left:(rect.left-parent.left)+'px',width:rect.width+'px',pointerEvents:'none'});child.setAttribute('aria-hidden','true');child.querySelectorAll('input,button').forEach(e=>e.disabled=true);child.animate([{opacity:1},{opacity:0}],{duration:180,easing:'ease-out'}).finished.catch(()=>{}).then(()=>child.remove());}else child.remove();}if(slider){c.controls.position==='bottom'?controls.insertBefore(slider,bar):controls.append(slider);if(motion)slider.animate?.([{opacity:0,transform:'translateY(3px)'},{opacity:1,transform:'translateY(0)'}],{duration:280,easing:'cubic-bezier(.22,.8,.25,1)'});}};
+      bar.onselection=mode=>{this._mode=mode;const controls=bar.parentElement;if(!controls)return;const old=[...controls.children].filter(child=>child!==bar);old.forEach(child=>child.querySelectorAll('input[type=range]').forEach(input=>input._satinDrag?.cancel()));const slider=this.renderSliderForMode(controls,this.stateFor(c.entity),mode);const motion=!matchMedia('(prefers-reduced-motion: reduce)').matches;for(const child of old){if(motion&&child.animate){const rect=child.getBoundingClientRect(),parent=controls.getBoundingClientRect();Object.assign(child.style,{position:'absolute',top:(rect.top-parent.top)+'px',left:(rect.left-parent.left)+'px',width:rect.width+'px',pointerEvents:'none'});child.setAttribute('aria-hidden','true');child.querySelectorAll('input,button').forEach(e=>e.disabled=true);child.animate([{opacity:1},{opacity:0}],{duration:180,easing:'ease-out'}).finished.catch(()=>{}).then(()=>child.remove());}else child.remove();}if(slider){c.controls.position==='bottom'?controls.insertBefore(slider,bar):controls.append(slider);if(motion)slider.animate?.([{opacity:0,transform:'translateY(3px)'},{opacity:1,transform:'translateY(0)'}],{duration:280,easing:'cubic-bezier(.22,.8,.25,1)'});}};
       if(!bar._listener){bar.addEventListener('selection-changed',e=>{e.stopPropagation();bar.onselection(e.detail.value);});bar._listener=true;}
       return bar;
     }
@@ -858,7 +929,7 @@ export class Dash5LightCard extends Base {
     const group=el('div',{class:'toggle-actions','aria-label':'Haupt- und Backlight'});
     for(const[role,label,materialIcon,show]of [['main','Hauptlicht','mdi:ceiling-light',prefs.show_main!==false],['back','Backlight','mdi:led-strip-variant',prefs.show_back!==false]]){
       const ids=this.roleTargets(role,c);if(!show||!ids.length)continue;
-      const on=ids.some(id=>stateFor(this._hass,id)?.state==='on'),toggle=button('',()=>this.toggleRole(role),{'data-role':role,'aria-label':`${label} ${on?'ausschalten':'einschalten'}`,'title':`${label} ${on?'aus':'ein'}`,'aria-pressed':on,disabled:!ids.some(id=>available(this._hass.states[id]))});toggle.append(icon(materialIcon));group.append(toggle);
+      const on=ids.some(id=>this.stateFor(id)?.state==='on'),toggle=button('',()=>this.toggleRole(role),{'data-role':role,'aria-label':`${label} ${on?'ausschalten':'einschalten'}`,'title':`${label} ${on?'aus':'ein'}`,'aria-pressed':on,disabled:!ids.some(id=>available(this._hass.states[id]))});toggle.append(icon(materialIcon));group.append(toggle);
     }
     if(group.childElementCount)target.append(group);
   }
@@ -869,7 +940,7 @@ export class Dash5LightCard extends Base {
       const target=scene.entities||sceneTarget(this._hass,scene.entity,()=>this.isConnected&&this.render());
       const active=sceneMatches(target,this._hass.states);
       const item=button(scene.name||this._hass.states[scene.entity]?.attributes.friendly_name||scene.entity,async()=>{
-        item.disabled=true;try{await this._hass.callService('scene','turn_on',{entity_id:scene.entity});}catch(error){reportError(this,error);}finally{item.disabled=false;}
+        this.rememberTemperatureRequest({},'scene');item.disabled=true;try{await this._hass.callService('scene','turn_on',{entity_id:scene.entity});}catch(error){reportError(this,error);}finally{item.disabled=false;}
       },{'aria-pressed':active,disabled:!available(this._hass.states[scene.entity])});
       if(scene.icon)item.prepend(icon(scene.icon));
       if(typeof scene.fill==='string')item.style.setProperty('--scene-fill',scene.fill);
@@ -887,15 +958,15 @@ export class Dash5LightCard extends Base {
   }
   render(){
     if(!this._config||!this._hass||this._dragging)return;
-    const feedbackID=this._config.entity;this._feedbackSignature=JSON.stringify([stateFor(this._hass,feedbackID),optimistic.errorEvents.get(feedbackID),optimistic.pending(feedbackID)]);
-    const c=effectiveConfig(this._config,this._hass.states,this._registry), state=stateFor(this._hass,c.entity), a=state?.attributes||{}, actual=activeMode(state), effectRunning=state?.state==='on'&&Boolean(a.effect)&&!neutralEffects.has(String(a.effect).toLocaleLowerCase());this._renderConfig=c;
+    const feedbackID=this._config.entity;this._feedbackSignature=JSON.stringify([this.stateFor(feedbackID),optimistic.errorEvents.get(feedbackID),optimistic.pending(feedbackID)]);
+    const c=effectiveConfig(this._config,this._hass.states,this._registry), state=this.stateFor(c.entity), a=state?.attributes||{}, actual=activeMode(state), effectRunning=state?.state==='on'&&Boolean(a.effect)&&!neutralEffects.has(String(a.effect).toLocaleLowerCase());this._renderConfig=c;
     // Keep a currently open dialog alive across HA updates.
     const dialog=this._dialog,focusIndex=[...this.shadowRoot.querySelectorAll('button,input,select')].indexOf(this.shadowRoot.activeElement),oldCard=this.shadowRoot.querySelector('ha-card.card');if(!this.shadowRoot.querySelector('style'))addStyle(this.shadowRoot);
-    const card=el('ha-card',{class:'card'}), head=el('div',{class:'head'}), targets=this._commandTargets?.(), on=targets?.length?targets.every(id=>stateFor(this._hass,id)?.state==='on'):state?.state==='on';
+    let card=el('ha-card',{class:'card'});const head=el('div',{class:'head'}), targets=this._commandTargets?.(), on=targets?.length?targets.every(id=>this.stateFor(id)?.state==='on'):state?.state==='on';
     // Apply the imported common surface before asynchronous discovery can run.
     if(this.hasAttribute('data-satin'))card.setAttribute('data-dash6-satin-surface','');
     const power=oldCard?.querySelector('dash6-glass-switch')||document.createElement('dash6-glass-switch');
-    power.setConfig({...c,name:displayName(c,state),icon:c.icon||'mdi:lightbulb',group:this instanceof Dash5LightgroupCard||c.segments.length>0,member_entities:targets?.length?targets:c.segments.map(s=>s.entity)});power.managed=true;power.visual={...switchVisual({...c,name:displayName(c,state),group:this instanceof Dash5LightgroupCard||c.segments.length>0,member_entities:targets?.length?targets:c.segments.map(s=>s.entity)},optimisticStates(this._hass),lightColor),on};
+    power.setConfig({...c,name:displayName(c,state),icon:c.icon||'mdi:lightbulb',group:this instanceof Dash5LightgroupCard||c.segments.length>0,member_entities:targets?.length?targets:c.segments.map(s=>s.entity)});power.managed=true;power.visual={...switchVisual({...c,name:displayName(c,state),group:this instanceof Dash5LightgroupCard||c.segments.length>0,member_entities:targets?.length?targets:c.segments.map(s=>s.entity)},{...optimisticStates(this._hass),[c.entity]:state},lightColor),on};
     if(!power._dash6Bound){power.addEventListener('toggle-request',e=>{e.stopPropagation();this.send({},e.detail.on?'turn_on':'turn_off')});power._dash6Bound=true;}
     const link=this._backgroundAction!==undefined?el('div',{class:'detail-link'}):button('',()=>this.open(),{class:'detail-link','aria-label':`${displayName(c,state)} Details öffnen`}), text=el('span',{class:'grow'});
     const status=[];
@@ -903,10 +974,11 @@ export class Dash5LightCard extends Base {
     if(!state||state.state==='unavailable')status.push('Nicht verfügbar');
     else if(state.state==='unknown')status.push('Status unbekannt');
     else if(!on)status.push('Aus');
-    else{if(finite(a.brightness))status.push(`${Math.round(a.brightness/2.55)} %`);if(a.color_mode==='color_temp'&&a.color_temp_kelvin>0)status.push(`${Math.round(a.color_temp_kelvin)} K`);else if(effectRunning)status.push('Effekt '+a.effect);else if(actual==='color')status.push('Farbton '+Math.round(a.hs_color?.[0]||0)+'°');else if(!status.length)status.push('Ein');}
+    else{if(finite(a.brightness))status.push(`${Math.round(a.brightness/2.55)} %`);if(controlKelvin(state)!==null)status.push(`${Math.round(controlKelvin(state))} K`);else if(effectRunning)status.push('Effekt '+a.effect);else if(actual==='color')status.push('Farbton '+Math.round(a.hs_color?.[0]||0)+'°');else if(!status.length)status.push('Ein');}
     // Membership counts belong only to the optional group switch, never the status line.
     if(optimistic.pending(c.entity))status.push(optimistic.errors.has(c.entity)?'Noch nicht bestätigt':'Wird übernommen…');
-    const name=el('span',{class:'name'},displayName(c,state));if(this._selectionSummary)name.append(el('strong',{class:'selection-summary'},` (${this._selectionSummary.count} von ${this._selectionSummary.total})`));text.append(name,el('span',{class:'status'},status.join(' · ')));link.append(text);head.append(power,link);let gear=null;if(this.showConfigGear()){gear=button('',()=>this.openSettings(),{class:'settings-trigger','aria-label':'Karteneinstellungen öffnen','title':'Karteneinstellungen'});gear.append(icon('mdi:cog-outline'));head.append(gear);}card.append(head);
+    const presenceStatus=document.createElement('dash6-presence-feedback');presenceStatus.setConfig({presence_entity:c.presence_entity,presence_minutes:c.presence_minutes,prefix:status.join(' · ')});presenceStatus.hass=this._hass;
+    const name=el('span',{class:'name'},displayName(c,state));if(this._selectionSummary)name.append(el('strong',{class:'selection-summary'},` (${this._selectionSummary.count} von ${this._selectionSummary.total})`));const statusLine=el('span',{class:'status'});statusLine.append(presenceStatus);text.append(name,statusLine);link.append(text);head.append(power,link);if(c.presence_entity){card.classList.add('has-presence');const indicator=document.createElement('dash6-presence-feedback');indicator.className='presence-indicator';indicator.setConfig({presence_entity:c.presence_entity,role:'indicator'});indicator.hass=this._hass;head.append(indicator);}let gear=null;if(this.showConfigGear()){gear=button('',()=>this.openSettings(),{class:'settings-trigger','aria-label':'Karteneinstellungen öffnen','title':'Karteneinstellungen'});gear.append(icon('mdi:cog-outline'));head.append(gear);}card.append(head);
     const extras=el('div',{class:'light-extras','data-dash6-own-group':'','aria-label':'Zusätzliche Lichtfunktionen',role:'group'});
     if(capabilities(state,c).effect){
       const trigger=button('',()=>this.openEffects(),{class:'extra-action','aria-label':'Lichteffekt auswählen',title:effectRunning?'Effekt: '+a.effect:'Lichteffekt auswählen','aria-pressed':effectRunning,disabled:!available(state)});
@@ -914,7 +986,7 @@ export class Dash5LightCard extends Base {
     }
     if(c.main_back.enabled!==false)for(const [role,label,glyph] of [['main','Hauptlicht','mdi:ceiling-light'],['back','Backlight','mdi:led-strip-variant']]){
       const ids=this.roleTargets(role,c);if(c.main_back['show_'+role]===false||!ids.length)continue;
-      const on=ids.some(id=>stateFor(this._hass,id)?.state==='on');
+      const on=ids.some(id=>this.stateFor(id)?.state==='on');
       const trigger=button('',()=>this.toggleRole(role),{class:'extra-action','aria-label':label+(on?' ausschalten':' einschalten'),title:label,'aria-pressed':on,disabled:!ids.some(id=>available(this._hass.states[id]))});trigger.append(icon(glyph));extras.append(trigger);
     }
     if(extras.childElementCount){extras.style.setProperty('--extras-count',extras.childElementCount);card.classList.add('has-extras');head.append(extras);}
@@ -924,8 +996,18 @@ export class Dash5LightCard extends Base {
     if(c.rows.controls&&(capabilities(state,c).brightness||capabilities(state,c).color_temp||capabilities(state,c).color||capabilities(state,c).white))this.renderControls(card,state,c);
     if(c.rows.scenes)this.renderSceneRow(card,c);
     const occurrence=optimistic.errorEvents.get(c.entity);if(occurrence&&occurrence!==this._seenError){this._seenError=occurrence;reportError(this,occurrence.message);}head.append(errorIndicator(this));
-    card.addEventListener('click',e=>{if(!e.composedPath().some(n=>n.tagName&&['BUTTON','INPUT','SELECT','DASH6-GLASS-SWITCH'].includes(n.tagName))){if(this._backgroundAction!==undefined)this._backgroundAction?.();else if(this._selectionHandler){e.stopPropagation();this._selectionHandler(c.entity,this._selection);}else this.open();}});
-    if(oldCard)oldCard.replaceWith(card);else this.shadowRoot.insertBefore(card,dialog||null);
+    card.onclick=e=>{if(!e.composedPath().some(n=>n.tagName&&['BUTTON','INPUT','SELECT','DASH6-GLASS-SWITCH'].includes(n.tagName))){if(this._backgroundAction!==undefined)this._backgroundAction?.();else if(this._selectionHandler){e.stopPropagation();this._selectionHandler(c.entity,this._selection);}else this.open();}};
+    // Keep the live graph and its ancestors connected while refreshing controls.
+    // Reparenting even the same chart fires disconnected/connected callbacks and
+    // restarts ApexCharts, defeating its five-minute history refresh interval.
+    if(oldCard?.querySelector(':scope > .power-graph')){
+      const layer=oldCard.querySelector(':scope > .power-graph');
+      for(const attr of [...oldCard.attributes])if(!card.hasAttribute(attr.name))oldCard.removeAttribute(attr.name);
+      for(const attr of [...card.attributes])oldCard.setAttribute(attr.name,attr.value);
+      oldCard.onclick=card.onclick;
+      for(const child of [...oldCard.childNodes])if(child!==layer)child.remove();
+      oldCard.append(...card.childNodes);card=oldCard;
+    }else if(oldCard)oldCard.replaceWith(card);else this.shadowRoot.insertBefore(card,dialog||null);
     this.makeGraph(card,c);this.syncSettingsPortal(gear);
     if(focusIndex>=0&&!dialog)card.querySelectorAll('button,input,select')[focusIndex]?.focus({preventScroll:true});
   }

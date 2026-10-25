@@ -118,7 +118,7 @@ class FavoritesCard extends LitElement {
   setConfig(value) { this._config = favoritesConfig(value);if(value.demo_gui&&!this._demoLoaded){this._demoLoaded=true;try{const saved=JSON.parse(localStorage.getItem(this._demoKey())||'null');if(saved?.demo_gui)this._config=favoritesConfig(saved);}catch{}} this._signature = ''; this._build(); }
   _demoKey(){return 'dash6-demo-favorites:'+this._config.dashboard;}
   _renderHass(){
-    if(!this._config?.demo_gui)return this.hass;
+    if(!this._config?.demo_gui||this._config?.demo_backend)return this.hass;
     this._demoContext??=createDemoContext(this.hass,value=>{for(const card of [this._header,this._body])if(card)card.hass=value;});
     return this._demoContext.hass;
   }
@@ -296,8 +296,14 @@ class FavoritesEditor extends LitElement {
     }
     this._emit({sort, manualCardOrder});
   }
-  _moveCard(siblings, id, direction) {
+  async _moveCard(siblings, id, direction) {
+    const keepFocus = this.shadowRoot?.activeElement?.dataset.orderId === id;
     this._emit({sort: 'manual', manualCardOrder: moveManualCardOrder(siblings, this._config.manualCardOrder, id, direction)});
+    if (keepFocus) {
+      await this.updateComplete;
+      const buttons = [...this.shadowRoot.querySelectorAll('.manual-order button')].filter(button => button.dataset.orderId === id && !button.disabled);
+      (buttons.find(button => button.dataset.orderDirection === String(direction)) || buttons[0])?.focus({preventScroll: true});
+    }
   }
   _manualOrderRows(nodes) {
     return nodes.map((node, index) => {
@@ -307,7 +313,7 @@ class FavoritesEditor extends LitElement {
         const key = child.orderSlot ?? child.id;
         if (!slots.has(key)) slots.set(key, []); slots.get(key).push(child);
       }
-      return html`<div class="order-row"><span>${node.label} <span class="card-type">(${node.card?.type || 'card'})</span></span><button type="button" aria-label=${`${node.label} nach oben verschieben`} ?disabled=${index === 0} @click=${() => this._moveCard(nodes, node.id, -1)}>↑</button><button type="button" aria-label=${`${node.label} nach unten verschieben`} ?disabled=${index === nodes.length - 1} @click=${() => this._moveCard(nodes, node.id, 1)}>↓</button></div>${slots.size ? html`<div class="children">${[...slots.values()].map(children => this._manualOrderRows(children))}</div>` : ''}`;
+      return html`<div class="order-row"><span>${node.label} <span class="card-type">(${node.card?.type || 'card'})</span></span><button type="button" data-order-id=${node.id} data-order-direction="-1" aria-label=${`${node.label} nach oben verschieben`} ?disabled=${index === 0} @click=${() => this._moveCard(nodes, node.id, -1)}>↑</button><button type="button" data-order-id=${node.id} data-order-direction="1" aria-label=${`${node.label} nach unten verschieben`} ?disabled=${index === nodes.length - 1} @click=${() => this._moveCard(nodes, node.id, 1)}>↓</button></div>${slots.size ? html`<div class="children">${[...slots.values()].map(children => this._manualOrderRows(children))}</div>` : ''}`;
     });
   }
   _manualOrderTree(nodes) {

@@ -1,0 +1,5 @@
+import assert from 'node:assert/strict';
+import {chromium,webkit} from 'playwright';
+import {fanFixture} from './fan-mode-fixture.mjs';
+const f=await fanFixture();
+try{for(const engine of [chromium,webkit]){const b=await engine.launch();try{const p=await b.newPage();await p.goto(f.url);await p.waitForFunction(()=>window.ready);await p.evaluate(()=>{sw.hass=state('on','on');});await p.waitForFunction(()=>sw.dataset.phase==='collect');const read=()=>p.evaluate(()=>{const s=getComputedStyle(sw.shadowRoot.querySelector('button[data-arriving] .ghost'));return {image:s.backgroundImage,shadow:s.boxShadow,phase:sw.dataset.phase};});let s=await read();assert.equal(s.image,'none');assert.ok(!s.shadow.includes('inset'));await p.waitForFunction(()=>sw.dataset.phase==='lift');s=await read();assert.match(s.image,/gradient/);assert.deepEqual(await p.evaluate(()=>calls),[]);console.log('PASS '+engine.name()+': matte until lens arrival, gloss begins on pickup, zero device commands.');}finally{await b.close();}}}finally{await f.close();}

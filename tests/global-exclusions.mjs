@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {globalRules,nameExcluded,filterGlobalCards,normalizeNames} from '../src/dash6/global-exclusions.js';
+const rules=globalRules({});
+const names={'button.a':'TADO neu starten','button.b':'Gerät IDENTIFIZIEREN','button.c':'Luftfilter Zurücksetzen','sensor.a':'Raum TEMPERATURE','switch.a':'Adaptive LIGHTING','binary_sensor.a':'Präsenz im Bad','sensor.b':'Luftqualität','sensor.c':'Büro Gesamtleistung'};
+const hass={states:Object.fromEntries(Object.entries(names).map(([id,friendly_name])=>[id,{attributes:{friendly_name}}]))};
+for(const id of Object.keys(names).filter(id=>id!=='sensor.b'))assert.equal(nameExcluded(id,hass,rules),true,id);
+assert.equal(nameExcluded('sensor.b',hass,rules),false);
+assert.equal(nameExcluded('button.a',hass,globalRules({dash6_global_exclusions:{button:[]}})),false,'empty list restores entity');
+assert.deepEqual(normalizeNames([' Reset ','RESET','','  ']),['reset']);
+const extended=globalRules({dash6_global_exclusions:{light:[' Nacht ','NACHT'],custom_domain:[],update:['Firmware']}});
+assert.deepEqual(extended.light,['nacht'],'additional domains survive normalization');
+assert.deepEqual(extended.custom_domain,[],'unknown installed domains and empty lists survive');
+assert.equal(nameExcluded('light.kitchen',{states:{'light.kitchen':{attributes:{friendly_name:'Küche Nachtlicht'}}}},extended),true);
+assert.equal(nameExcluded('sensor.nachtlicht',{},extended),false,'rules stay in their actual domain');
+assert.deepEqual(filterGlobalCards([{type:'vertical-stack',cards:[{type:'heading',heading:'Sensoren'},{type:'tile',entity:'sensor.a'}]},{type:'tile',entity:'sensor.b'},{type:'custom:apexcharts-card',series:[{entity:'sensor.a',type:'line'}]}],hass,rules),[{type:'tile',entity:'sensor.b'},{type:'custom:apexcharts-card',series:[{entity:'sensor.a',type:'line'}]}]);
+console.log('Default and additional domains, mixed case, empty lists, deduplication, empty headings and chart preservation passed.');

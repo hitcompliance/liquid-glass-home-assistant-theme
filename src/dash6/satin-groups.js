@@ -11,7 +11,7 @@ export const satinGroupCSS=`
 [data-dash6-satin-group]>[data-dash6-satin-group-item]{position:relative;z-index:2!important;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:8px!important;scale:1!important;translate:0!important;margin-inline:0!important}
 [data-dash6-satin-group]>[data-dash6-satin-group-item]::before{background:none!important;opacity:0!important}
 [data-dash6-satin-group]>[data-dash6-satin-group-item]:focus-visible{outline:2px solid var(--primary-color)!important;outline-offset:-2px}
-[data-dash6-satin-group]>[data-dash6-satin-group-item]:active{box-shadow:var(--dash6-satin-button-pressed-shadow)!important}
+[data-dash6-satin-group]>[data-dash6-satin-group-item]:active{box-shadow:var(--dash6-satin-button-pressed-shadow)!important;border-color:transparent!important;}
 [data-dash6-satin-group]>.dash6-satin-group-lens{position:absolute!important;z-index:1!important;pointer-events:none!important;box-sizing:border-box!important;margin:0!important;border-radius:8px!important;background:var(--dash6-satin-lens-background)!important;border:var(--dash6-satin-lens-border)!important;box-shadow:var(--dash6-satin-lens-shadow)!important;transition:transform var(--dash6-satin-elastic-duration,420ms) cubic-bezier(.22,1.3,.36,1),width 250ms ease,height 250ms ease,opacity 150ms ease,scale 380ms cubic-bezier(.22,1.5,.36,1);transform-origin:center}
 :host(mushroom-button-group) [data-dash6-satin-group]{width:100%!important}
 :host(mushroom-button-group) [data-dash6-satin-group] ::slotted(*){margin-inline:0!important;--bg-color:transparent;--bg-color-disabled:transparent;--control-border-radius:8px}

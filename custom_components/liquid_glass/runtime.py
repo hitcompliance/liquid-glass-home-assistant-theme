@@ -78,7 +78,7 @@ def install(config_dir, existing, dual=False):
     selected = installer.selected_dependencies(lock, ['dual_smart_thermostat'] if dual else [])
     embedded_resource(existing)
     by_name = {installer.resource_basename(url): url for url in existing}
-    for name in ('dash6-cards.js', 'vacuum-dock-card.js'):
+    for name in ('dash6-cards.js', 'vacuum-dock-card.js', 'room-loader.js'):
         old = by_name.get(name)
         if old and not old.startswith('/local/liquid-glass/'):
             raise installer.InstallError('Remove the old custom resource ' + old + ' before enabling Liquid Glass')
@@ -97,9 +97,11 @@ def install(config_dir, existing, dual=False):
         missing.append(dep)
     files = installer.package_files(ROOT)
     files += installer.dependency_files(missing, config / 'liquid-glass' / 'download-cache', False)
-    for name in ('dash6-cards.js', 'vacuum-dock-card.js'):
+    for name in ('dash6-cards.js', 'vacuum-dock-card.js', 'room-loader.js'):
         old = by_name.get(name)
-        data = next(f.data for f in files if f.path == 'www/liquid-glass/' + name)
+        data = next((f.data for f in files if f.path == 'www/liquid-glass/' + name), None)
+        if data is None:
+            continue
         # Keep an already registered canonical URL so browser ESM loads it once.
         modules.append({'id': name, 'url': old or '/local/liquid-glass/' + name + '?v=' + installer.digest(data)[:12]})
     bootstrap = bootstrap_source(modules)

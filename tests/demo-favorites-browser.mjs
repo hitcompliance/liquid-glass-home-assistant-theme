@@ -7,7 +7,7 @@ import {chromium, webkit} from 'playwright';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const dashboard = JSON.parse(execFileSync('ruby', ['-rjson', '-ryaml', '-e',
-  'puts YAML.load_file(ARGV[0]).to_json', 'examples/demo-dashboard.yaml'], {cwd: root, encoding: 'utf8'}));
+  'puts YAML.load_file(ARGV[0]).to_json', 'examples/browser-demo-dashboard.yaml'], {cwd: root, encoding: 'utf8'}));
 const config = dashboard.views.find(view => view.path === 'favoriten').sections[0].cards[1];
 // Exercise real switch controls with two real, generated hierarchy snapshots.
 config.sources = config.sources.filter(node => node.card.card.type === 'custom:dash6-glass-switch');

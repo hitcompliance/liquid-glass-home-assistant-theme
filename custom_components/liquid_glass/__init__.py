@@ -10,6 +10,8 @@ from homeassistant.const import EVENT_THEMES_UPDATED
 from homeassistant.exceptions import ConfigEntryNotReady
 from .runtime import ROOT, install, load_themes, refresh_embedded_resource, EMBEDDED_FILE
 from .installer import resource_basename, InstallError
+from .demo import DemoCoordinator, PLATFORMS, load_specs
+from homeassistant.helpers import entity_registry as er
 
 DOMAIN = 'liquid_glass'
 DEMO = 'liquid-glass-demo'
@@ -107,7 +109,8 @@ async def async_setup_entry(hass, entry):
                       frontend.DATA_DEFAULT_DARK_THEME: hass.data.get(frontend.DATA_DEFAULT_DARK_THEME)}
     state = {'themes': themes, 'previous': previous, 'default_themes': default_themes,
              'defaults_selected': False, 'unsub': None, 'resource_unsub': None,
-             'active': True, 'bootstrap': None, 'demo': None, 'report': report}
+             'active': True, 'bootstrap': None, 'demo': None, 'report': report,
+             'demo_coordinator': None, 'demo_platforms': False}
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = state
     try:
         publish_themes()
@@ -120,6 +123,20 @@ async def async_setup_entry(hass, entry):
             if DEMO in ll.dashboards or frontend.async_panel_exists(hass, DEMO):
                 _LOGGER.warning('Existing %s dashboard preserved; demo not registered', DEMO)
             else:
+                specs = await hass.async_add_executor_job(load_specs)
+                registry = er.async_get(hass)
+                for spec in specs:
+                    existing_entity = registry.async_get(spec['entity_id'])
+                    if existing_entity and (existing_entity.platform != DOMAIN or existing_entity.unique_id != spec['entity_id']):
+                        raise ValueError('Demo entity ID already belongs to another integration: ' + spec['entity_id'])
+                    if not existing_entity and hass.states.get(spec['entity_id']):
+                        raise ValueError('Demo entity ID is already in use: ' + spec['entity_id'])
+                coordinator = DemoCoordinator(hass, specs)
+                state['demo_coordinator'] = coordinator
+                state['demo_platforms'] = True
+                await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+                coordinator.refresh()
+                coordinator.start()
                 conf = {'mode': 'yaml', 'filename': str(ROOT / 'examples' / 'demo-dashboard.yaml'), 'title': 'Liquid Glass Demo', 'icon': 'mdi:layers-outline', 'show_in_sidebar': True, 'require_admin': False}
                 demo = LovelaceYAML(hass, DEMO, conf)
                 state['demo'] = demo
@@ -141,9 +158,16 @@ async def async_setup_entry(hass, entry):
 
 async def async_unload_entry(hass, entry):
     """Detach runtime objects; preserve installed files and backups for recovery."""
-    state = hass.data.get(DOMAIN, {}).pop(entry.entry_id, None)
+    state = hass.data.get(DOMAIN, {}).get(entry.entry_id)
     if state is None:
         return True
+    if state['demo_platforms']:
+        if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
+            return False
+        state['demo_platforms'] = False
+    if state['demo_coordinator'] is not None:
+        state['demo_coordinator'].stop()
+    hass.data[DOMAIN].pop(entry.entry_id, None)
     state['active'] = False
     if state['resource_unsub'] is not None:
         state['resource_unsub']()

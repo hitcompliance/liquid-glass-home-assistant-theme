@@ -55,7 +55,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true', help='Fail if checked-in output is stale')
     args = parser.parse_args()
-    path = ROOT / 'examples' / 'demo-dashboard.yaml'
+    path = ROOT / 'examples' / 'browser-demo-dashboard.yaml'
     current = path.read_text(encoding='utf-8')
     generated = generate(current)
     if args.check:

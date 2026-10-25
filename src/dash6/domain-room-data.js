@@ -24,20 +24,43 @@ export function watchDomainRoom(hass,listener){
  return ()=>{state.listeners.delete(listener);if(!state.listeners.size){state.generation++;state.stop?.();connection.removeEventListener?.('ready',state.ready);connections.delete(connection);}};
 }
 export function localRoomData(hass){return {entities:Object.entries(hass?.entities||{}).map(([entity_id,value])=>({entity_id,...value})),devices:Object.entries(hass?.devices||{}).map(([id,value])=>({id,...value})),areas:Object.entries(hass?.areas||{}).map(([area_id,value])=>({area_id,...value}))};}
-export function roomDomainEntities(data,hass,area,domain,exclusions=new Set()){
+export function roomDomainEntities(data,hass,area,domain,exclusions=new Set(),filters={}){
  const areaIds=new Set((data?.areas||[]).filter(value=>value.area_id===area||value.id===area||value.name===area).map(value=>value.area_id||value.id));areaIds.add(area);
  const devices=new Map((data?.devices||[]).map(value=>[value.id,value]));
+ const excludedEntities=new Set(filters.exclude_entities||[]),integrations=new Set(filters.exclude_integrations||[]),classes=new Set(filters.exclude_device_classes||[]);
  return (data?.entities||[]).filter(value=>{
   const id=value.entity_id||value.id,live=hass?.entities?.[id];
-  return id?.split('.')[0]===domain&&hass?.states?.[id]&&!value.hidden_by&&!value.disabled_by&&!live?.hidden_by&&!live?.disabled_by&&!exclusions.has(id)&&areaIds.has(value.area_id||devices.get(value.device_id)?.area_id);
+  const platform=value.platform||live?.platform,deviceClass=hass?.states?.[id]?.attributes?.device_class;
+  return !excludedEntities.has(id)&&!integrations.has(platform)&&!classes.has(deviceClass)&&id?.split('.')[0]===domain&&hass?.states?.[id]&&!value.hidden_by&&!value.disabled_by&&!live?.hidden_by&&!live?.disabled_by&&!exclusions.has(id)&&areaIds.has(value.area_id||devices.get(value.device_id)?.area_id);
  }).map(value=>value.entity_id||value.id).sort((a,b)=>(hass.states[a].attributes?.friendly_name||a).localeCompare(hass.states[b].attributes?.friendly_name||b,hass?.language));
 }
 export function roomDomainCards(config,ids,hass,now=Date.now()){
  const substitute=(value,entity)=>typeof value==='string'?value.replaceAll('this.entity_id',entity):Array.isArray(value)?value.map(item=>substitute(item,entity)):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,substitute(item,entity)])):value;
  const cards=ids.map(entity=>({...substitute(config.dynamic_card||{type:'tile'},entity),entity}));
  if(config.domain==='scene'){
-  const latest=cards.reduce((best,card)=>{const time=Date.parse(hass?.states?.[card.entity]?.state)||0;return time>best.time?{entity:card.entity,time}:best;},{entity:'',time:0});
-  for(const card of cards){const skin=card.dash6_css||card.card_mod||{};card.dash6_css={...skin,class:[...new Set([...(skin.class||'').split(/\s+/).filter(Boolean),'dash6-scene-64'])].join(' ')};card.dash6_active=card.entity===latest.entity&&latest.time>now-43200000;}
+  const area=Object.entries(hass?.areas||{}).map(([id,value])=>({id,...value})).find(value=>value.id===config.area||value.area_id===config.area||value.name?.toLocaleLowerCase()===String(config.area||'').toLocaleLowerCase())?.name||config.area||'';
+  const pattern=area?new RegExp(String(area).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'):null;
+  for(const card of cards){const original=card.name||hass?.states?.[card.entity]?.attributes?.friendly_name||card.entity;card.name=(pattern?original.replace(pattern,''):original).replace(/^[\s\-–—:|·]+|[\s\-–—:|·]+$/g,'').replace(/\s+/g,' ').trim()||original;}
+  for(const card of cards){const skin=card.dash6_css||card.card_mod||{};card.dash6_css={...skin,class:[...new Set([...(skin.class||'').split(/\s+/).filter(Boolean),'dash6-scene-64'])].join(' ')};card.tap_action={action:'perform-action',perform_action:'scene.turn_on',target:{entity_id:card.entity}};}
  }
  return cards;
+}
+
+// Legacy room slots can contain both Sensor and Binary Sensor grids. Apply
+// optional per-domain filters after restoring the template's complete cards.
+export function filterRoomCardTree(value,hass,data,filters={}){
+ const registry=new Map((data?.entities||[]).map(row=>[row.entity_id||row.id,row]));
+ const visit=node=>{
+  if(Array.isArray(node))return node.map(visit).filter(item=>item!==null);
+  if(!node||typeof node!=='object')return node;
+  if(node.entity&&node.type){const id=node.entity,filter=filters[id.split('.')[0]];
+   if(filter){const row=registry.get(id)||hass?.entities?.[id]||{},dc=hass?.states?.[id]?.attributes?.device_class;
+    if((filter.exclude_entities||[]).includes(id)||(filter.exclude_integrations||[]).includes(row.platform)||(filter.exclude_device_classes||[]).includes(dc))return null;
+   }
+  }
+  const result=Object.fromEntries(Object.entries(node).map(([key,child])=>[key,visit(child)]));
+  if(Array.isArray(result.cards)&&!result.cards.some(card=>card?.type!=='heading'))return null;
+  return result;
+ };
+ return visit(value);
 }

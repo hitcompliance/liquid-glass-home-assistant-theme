@@ -1,4 +1,29 @@
-# Dependencies and reproducible installation
+# Abhängigkeiten und automatische Installation
+
+## Was automatisch installiert wird
+
+**HACS installiert die gesamte Liquid-Glass-Integration.** Nach Neustart und Hinzufügen unter Geräte & Dienste installiert die Integration selbst das Satin-Theme, alle eigenen Karten und die nachfolgend aufgeführten **zwölf Frontend-Fremdmodule**. Diese müssen Nutzer **nicht zusätzlich selbst in HACS installieren**. Die vollständigen Chunks, Übersetzungen und Lizenzen werden mitgeladen. Bereits registrierte HACS-Module werden wiederverwendet; deren Versionen und Updates verwaltet weiterhin HACS. Die automatische Vendor-Installation erstellt keine zusätzlichen HACS-Einträge.
+
+Die Demo legt außerdem ihre eigenen virtuellen Entities an. Home Assistants native Karten und Plattformen (Klima, Kamera, Wetter usw.) kommen aus Home Assistant; ihre Python-Abhängigkeiten verwaltet HA. Node/npm und externe Hardwareintegrationen sind für die Demo nicht erforderlich.
+
+## Selbst einzurichten
+
+| Bestandteil | Automatisch? | Was der Nutzer tun muss / wann erforderlich |
+| --- | --- | --- |
+| HACS | **Nein** | Vor dem empfohlenen HACS-Weg [selbst installieren](https://www.hacs.xyz/docs/use/download/download/). Die manuelle Installation des Integrations-ZIPs funktioniert ohne HACS. |
+| Home Assistant ab 2026.9 | **Nein** | Eine unterstützte HA-Installation bereitstellen. Recorder für längerfristige Verläufe aktiv lassen und Demo-Entities nicht ausschließen. |
+| Geräteintegrationen (z. B. Shelly, Matter, Meross, Govee, Tado, Apple TV, Android TV/ADB, ESPHome, Roborock) | **Nein** | Für die tatsächlich verwendete Hardware selbst installieren/einrichten und eigene Entities den Karten zuordnen. Für die Demo nicht nötig. |
+| Dual Smart Thermostat v0.13.2 | **Nur bei Auswahl** | Im Liquid-Glass-Dialog optional auswählen: Dateien werden automatisch geprüft/installiert. Danach erneut HA starten und eigene Temperatur-/Heiz-/Kühl-Entities konfigurieren. Vorhandene Installation bleibt erhalten. Normale Climate- und Demo-Karten brauchen es nicht. |
+| Shelly-Lüftungsskript | **Datei ja, Aktivierung nein** | Quelle wird unter `liquid-glass/support/shelly/` mitkopiert. Geeignete Hardware, virtuelle Komponenten, Verdrahtung und Parameter selbst prüfen/einrichten. [Anleitung](../support/README.md). |
+| TV-Eingangsautomationen / ADB / BLE / ESPHome-Firmware | **Nein** | Nur für gerätespezifische Zusatzaktionen selbst einrichten und zuordnen. Native Medienquellen und Demo funktionieren ohne private Automationen. Firemote ist automatisch enthalten, seine echten Remote-/Player-Entities nicht. |
+| Ultra Card Connect | **Nein, optional** | Nur für Ultra-Hub-Anmeldung, Pro-/Cloud-/Sync-Funktionen separat nach Upstream-Anleitung einrichten. Normale Ultra-Layouts benötigen es nicht. |
+| Browser Mod | **Nein, optional** | Nur erforderlich, wenn eigene zusätzlich eingefügte Karten/Aktionen explizit `browser_mod` verwenden. Paketdialoge und Demo benötigen es nicht. |
+| MQTT / Zigbee2MQTT / Gerätefirmware | **Nein** | Nur entsprechend der eigenen Geräte selbst einrichten; keine Abhängigkeit der Demo. |
+| Alte private Govee-Segmentkarte / Tado-Proxy | **Nein** | Keine erforderliche Frontend-Abhängigkeit: das Paket enthält Govee-/Gruppenbedienung und nutzt vorhandene Climate-Entities. Eigene spezielle Backend-/Legacy-Konfiguration bleibt in Nutzerverantwortung. |
+
+Für die enthaltenen Karten sind **keine weiteren manuell nachzuinstallierenden Frontend-Custom-Cards** erforderlich. Fremde Karten, die Nutzer später selbst hinzufügen, können eigene Voraussetzungen mitbringen.
+
+## Festgelegte Versionen und Prüfung
 
 The installer installs every frontend dependency used by the supplied cards and
 layout adapters by default. Versions, official download URLs, byte sizes and
@@ -15,7 +40,7 @@ private dashboard configurations and integration credentials are not included.
 
 ## Installed frontend modules
 
-These are all downloaded by `--apply` or `--download-only`. Files are installed
+Die HACS-Integration lädt fehlende Module automatisch. Der CLI-Installer lädt sie mit `--apply` oder `--download-only`. Files are installed
 under `www/liquid-glass/vendor/<id>/`; only each entrypoint is a dashboard
 resource. Imported chunks remain next to that entrypoint.
 
@@ -116,9 +141,6 @@ segments and use Mushroom/native fallback controls when the older module is
 absent. They require your existing Govee light/segment entities and device
 integration, not that private legacy JavaScript file.
 
-The older SVG refraction frontend is also included when present in the release,
-but added to resources only with `--with-svg-refraction`. Supporting modules are
-copied together. It is separate from the new Satin card surface treatment.
 
 ## Optional backend thermostat integration
 
@@ -273,7 +295,7 @@ python3 scripts/test-installer.py
 Tests use temporary fake packages and a checked download-cache interface. They
 cover complete lazy-file installation, previews, actual CLI arguments, content
 checks, backups, idempotency, rollback, symlink/path rejection, storage-resource
-duplicate detection, YAML includes, opt-in integration extraction and SVG
+duplicate detection, YAML includes, opt-in integration extraction and optional compatibility
 selection. The real locked manifest is also validated, including Ultra editor,
 locale and license files. No test contacts Home Assistant or changes a live
 configuration.

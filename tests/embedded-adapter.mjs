@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 
-const source = await readFile(new URL('../src/dash6/embedded-card.js', import.meta.url), 'utf8');
+const source = await readFile(new URL('../src/dash6/embedded-card.js', import.meta.url), 'utf8').then(text => text.replace(/^import .*scoped-elements.*;\n/m, ''));
 const tags = new Map();
 const pending = new Map();
 const errors = [];
@@ -18,6 +18,9 @@ const context = vm.createContext({
 });
 let configs = 0;
 let renders = 0;
+let finishNative;
+let nativeReady = false;
+const initialRender = new Promise(resolve => {finishNative = () => {nativeReady = true; resolve();};});
 const originalViews = [{path: 'living', type: 'sections'}, {path: 'other', type: 'panel'}];
 class OriginalCard {
   setConfig(value) {configs++; this.config = value;}
@@ -26,9 +29,10 @@ class OriginalCard {
     this.targetArgs = [dashboard, view, external];
     if (view === 'missing') {this._activeViewElement = null; return;}
     this._activeViewElement = {
+      _initialRenderComplete: initialRender,
       index: 0, viewConfig: originalViews[0],
       lovelace: {editMode: true, config: {views: originalViews}},
-      _createLayoutElement(config) {assert.equal(config.type, 'sections'); tags.set('hui-sections-view', class {});},
+      _createLayoutElement(config) {assert.equal(nativeReady,true,'never replace a pending native layout');assert.equal(config.type, 'sections'); tags.set('hui-sections-view', class {});},
     };
   }
   static getStubConfig() {return {type: 'custom:embedded-view-card', view: ''};}
@@ -48,6 +52,9 @@ card.setConfig({view: 'living'});
 card.setConfig({view: 'living'});
 assert.equal(configs, 1, 'identical configuration preserves active view');
 const rendering = card._renderTarget('other-dashboard', 'living', true);
+await new Promise(resolve => setImmediate(resolve));
+assert.equal(tags.has('hui-sections-view'),false,'wait for native initial render');
+finishNative();
 await new Promise(resolve => setImmediate(resolve));
 assert.ok(tags.has('hui-sections-view'), 'bootstrap native class without deadlock');
 context.customElements.define('dash6-sections-view', class {});

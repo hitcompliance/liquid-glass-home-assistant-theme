@@ -11,9 +11,15 @@ const clone=value=>structuredClone(value);
 const flushGridReady=customElements.whenDefined('grid-layout').then(()=>{
  if(customElements.get('dash6-inline-flush-grid-layout'))return;
  const Base=customElements.get('grid-layout'),sheet=new CSSStyleSheet();
- sheet.replaceSync(':host{display:block;min-width:0;height:auto!important}#root{margin:0!important;padding:0!important;gap:8px!important;align-items:stretch;overflow:visible!important}#root>*{min-width:0;margin:0!important}');
+ sheet.replaceSync(':host{display:block;min-width:0;height:auto!important}#root{margin:0!important;padding:0!important;gap:8px!important;align-items:stretch;overflow:visible!important}#root>*{min-width:0;margin:0!important}#root[style*="--dash6-scene-min-width"]>*{flex:1 1 var(--dash6-scene-min-width);min-width:min(var(--dash6-scene-min-width),100%);max-width:100%;box-sizing:border-box}');
  class FlushGrid extends Base{static styles=[Base.styles,sheet];}
  customElements.define('dash6-inline-flush-grid-layout',FlushGrid);
+ const sceneSheet=new CSSStyleSheet();sceneSheet.replaceSync('#root{display:flex!important;flex-wrap:wrap!important}#root>*{flex:1 1 150px!important;min-width:min(150px,100%)!important;max-width:min(300px,100%)!important;box-sizing:border-box}');
+ class SceneFlex extends FlushGrid{static styles=[FlushGrid.styles,sceneSheet];}
+ customElements.define('dash6-scene-flex-layout',SceneFlex);
+ const coverSheet=new CSSStyleSheet();coverSheet.replaceSync('#root{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}');
+ class CoverPairs extends FlushGrid{static styles=[FlushGrid.styles,coverSheet];}
+ customElements.define('dash6-cover-pair-layout',CoverPairs);
 });
 
 class DomainGrid extends HTMLElement{
@@ -87,7 +93,7 @@ class DomainCard extends HTMLElement{
   const context=dashboardContext(this,this._config),registry=resolvedDomainRegistry(context.config,context.dashboardName);
   const result=registryExclusions(registry,context.dashboardName,relatedDomainViews(context.config,context.viewNames));for(const id of this._ownedEntities||[])result.add(id);return result;
  }
- _roomCards(){if(this._config.auto_entities===false)return [];const connection=this._hass.connection?.__dash6ActualConnection||this._hass.connection;return roomDomainCards(this._config,roomDomainEntities(connection?.sendMessagePromise?this._roomData:localRoomData(this._hass),this._hass,this._config.area,this._config.domain,this._exclusions()),this._hass);}
+ _roomCards(){if(this._config.auto_entities===false)return [];const connection=this._hass.connection?.__dash6ActualConnection||this._hass.connection;return roomDomainCards(this._config,roomDomainEntities(connection?.sendMessagePromise?this._roomData:localRoomData(this._hass),this._hass,this._config.area,this._config.domain,this._exclusions(),this._config),this._hass);}
  _result(result,error){
   if(error){this._error(error);return;}
   const query=this._config.query,value=query.index===undefined?result:result?.[query.index];

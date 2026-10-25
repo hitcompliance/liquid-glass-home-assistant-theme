@@ -22,7 +22,7 @@
 .maintenance-dialog .maintenance-tabs button[aria-selected="true"],.maintenance-dialog .maintenance-tabs button[aria-selected="true"]:hover{
  background:var(--dash6-nav-lens-active-background)!important;border:var(--dash6-nav-lens-active-border)!important;box-shadow:var(--dash6-nav-lens-active-shadow)!important;font-weight:600;
 }
-.maintenance-dialog .maintenance-tabs button:active:not(:disabled){box-shadow:var(--dash6-nav-lens-pressed-shadow)!important}
+.maintenance-dialog .maintenance-tabs button:active:not(:disabled){box-shadow:var(--dash6-nav-lens-pressed-shadow)!important;border-color:transparent!important;}
 .maintenance-dialog button:focus-visible{outline:2px solid var(--primary-color);outline-offset:2px}
 .maintenance-body{overflow:auto;padding:20px;min-height:0}
 .maintenance-current{font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;margin:3px 0 15px}
@@ -32,11 +32,11 @@
 .maintenance-note{font-size:13px;color:var(--secondary-text-color);margin:0 0 14px}
 .maintenance-dialog .maintenance-reset,.maintenance-confirm button{min-height:48px;padding:10px 16px;border-radius:12px;background:var(--dash6-button-background)!important;border:var(--dash6-button-border)!important;box-shadow:var(--dash6-button-shadow)!important;font-weight:600}
 .maintenance-dialog .maintenance-reset:hover:not(:disabled),.maintenance-dialog .confirm-yes:hover:not(:disabled){box-shadow:var(--dash6-button-hover-shadow,var(--dash6-button-shadow))!important;filter:brightness(1.1)}
-.maintenance-dialog .maintenance-reset:active:not(:disabled),.maintenance-dialog .confirm-yes:active:not(:disabled){box-shadow:var(--dash6-button-pressed-shadow)!important;filter:brightness(.94)}
+.maintenance-dialog .maintenance-reset:active:not(:disabled),.maintenance-dialog .confirm-yes:active:not(:disabled){box-shadow:var(--dash6-button-pressed-shadow)!important;filter:brightness(.94);border-color:transparent!important;}
 .maintenance-confirm{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px;border-radius:13px;background:var(--dash6-maintenance-chart-background);border:var(--dash6-maintenance-chart-border)}
 .maintenance-confirm span{flex-basis:100%;color:var(--secondary-text-color)}
 .maintenance-dialog .maintenance-close,.maintenance-dialog .confirm-cancel{background:transparent!important;border:1px solid transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 .maintenance-dialog .maintenance-close:hover,.maintenance-dialog .confirm-cancel:hover{border-color:var(--divider-color)!important}
-.maintenance-dialog .maintenance-close:active,.maintenance-dialog .confirm-cancel:active{box-shadow:var(--dash6-nav-lens-pressed-shadow)!important}
+.maintenance-dialog .maintenance-close:active,.maintenance-dialog .confirm-cancel:active{box-shadow:var(--dash6-nav-lens-pressed-shadow)!important;border-color:transparent!important;}
 .maintenance-error{color:var(--error-color,#ff7777);margin-top:10px}
 @media(prefers-reduced-motion:reduce){.maintenance-dialog button{transition:none!important}}

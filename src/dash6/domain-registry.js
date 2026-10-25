@@ -2,7 +2,8 @@
 // compiler; it has no browser, profile-store or Home Assistant write dependency.
 import {inDashboardScope} from './scope.js';
 const entityPattern=/\b([a-z_]+\.[a-z0-9_]+)\b/g;
-const domains=new Set('air_quality alarm_control_panel alert assist_satellite automation binary_sensor button calendar camera climate conversation counter cover date datetime device_tracker event fan geo_location group humidifier image image_processing input_boolean input_button input_datetime input_number input_select input_text light lock lawn_mower media_player notify number person plant proximity remote scene schedule script select sensor siren stt sun switch text time timer todo tts update vacuum valve wake_word water_heater weather zone'.split(' '));
+export const entityDomains='air_quality alarm_control_panel alert assist_satellite automation binary_sensor button calendar camera climate conversation counter cover date datetime device_tracker event fan geo_location group humidifier image image_processing input_boolean input_button input_datetime input_number input_select input_text light lock lawn_mower media_player notify number person plant proximity remote scene schedule script select sensor siren stt sun switch text time timer todo tts update vacuum valve wake_word water_heater weather zone'.split(' ');
+const domains=new Set(entityDomains);
 export function extractEntityReferences(value,output=new Set()){
  if(typeof value==='string'){for(const match of value.matchAll(entityPattern))if(domains.has(match[1].split('.')[0]))output.add(match[1]);}
  else if(Array.isArray(value))for(const item of value)extractEntityReferences(item,output);
@@ -34,6 +35,8 @@ export function buildDomainRegistry(config,dashboardName='default'){
    }
    // Directly configured special cards outside domain wrappers also own all
    // their helpers. Structural/dynamic containers only recurse into real cards.
+   // The sidebar launcher stores read-only chart copies, not device controls.
+   if(value.type==='custom:button-card'&&Array.isArray(value.variables?.sidebar_cards))return;
    const structural=new Set(['custom:auto-entities','custom:dash6-auto-entities','custom:ultra-card','custom:dash6-ultra-card','custom:vertical-stack-in-card','custom:dash6-stack-card','custom:layout-card','custom:mod-card','custom:dash6-inline-layout','custom:dash6-direct-card','custom:dash6-render-card','custom:dash6-fast-block-card','custom:embedded-view-card','custom:dash6-embedded-view-card']);
    if(['custom:auto-entities','custom:dash6-auto-entities'].includes(value.type))return;
    if(value.type?.startsWith('custom:')&&!structural.has(value.type)){
@@ -57,7 +60,7 @@ export function relatedDomainViews(config,names){
  const views=config?.views||[],keys=views.map((view,index)=>String(view.path??view.title??index));links=new Map(keys.map(key=>[key,new Set()]));
  const connect=(a,b)=>{if(links.has(a)&&links.has(b)){links.get(a).add(b);links.get(b).add(a);}};
  views.forEach((view,index)=>{
-  const walk=value=>{if(!value||typeof value!=='object')return;if(['custom:embedded-view-card','custom:dash6-embedded-view-card'].includes(value.type)){const target=String(value.view??'');connect(keys[index],links.has(target)?target:keys[Number(target)]);}for(const [key,item]of Object.entries(value))if(key!=='dash6_registry')Array.isArray(item)?item.forEach(walk):walk(item);};walk(view);
+  const walk=value=>{if(!value||typeof value!=='object'||value.type==='custom:dash6-favorites-card')return;if(['custom:embedded-view-card','custom:dash6-embedded-view-card'].includes(value.type)){const target=String(value.view??'');connect(keys[index],links.has(target)?target:keys[Number(target)]);}for(const [key,item]of Object.entries(value))if(key!=='dash6_registry')Array.isArray(item)?item.forEach(walk):walk(item);};walk(view);
   const base=keys[index].match(/^(.*)-inhalt(?:-\d+)?$/)?.[1];if(base)connect(keys[index],base);
  });
  if(config&&typeof config==='object')viewLinks.set(config,links);

@@ -1,130 +1,47 @@
-# Liquid Glass für Home Assistant
+# DASH6 Satin Glass für Home Assistant
 
-Ein vollständiges Glas-Paket für Home Assistant: dunkle Themes, interaktive Custom-Cards und ein grafischer Materialeditor. **DASH6 Satin Glass** verbindet sanft gefrostetes Rauchglas mit kleinen beleuchteten Schaltern, versenkten Reglern und flachen Glaslinsen. Die ursprünglichen Liquid-Glass-Themes bleiben erhalten.
+Ein vollständiges HACS-Paket mit **DASH6 Satin Glass**, eigenen Custom Cards, grafischen Editoren und einer bedienbaren Demo mit virtuellen Home-Assistant-Geräten. Ab Version 3.2 wird ausschließlich dieses Theme ausgeliefert.
 
-**[Interaktive Demo](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/)** · [Installation](docs/INSTALLATION.md) · [Karten und Einstellungen](docs/CARDS.md) · [Abhängigkeiten](docs/DEPENDENCIES.md) · [Umstieg](docs/MIGRATION.md)
+[Browser-Vorschau](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/) · [Installation](docs/INSTALLATION.md) · [Alle Abhängigkeiten](docs/DEPENDENCIES.md) · [Kartenreferenz](docs/CARDS.md)
 
 [![In HACS hinzufügen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=hitcompliance&repository=liquid-glass-home-assistant-theme&category=integration)
 
-## Was enthalten ist
+## In wenigen Schritten starten
 
-Das Theme bestimmt Farben und Material. Das zusätzliche Kartenmodul liefert Schalter, Regler, Auswahlgruppen, Dialoge und Anpassungen vorhandener Button-/Mushroom-Karten. Für den vollständigen Satin-Look werden **Theme und Kartenmodul gemeinsam** installiert. Die **HACS-Integration** richtet Themes, alle eigenen Karten und fehlende Karten-Abhängigkeiten automatisch ein. Ein Terminal und manuelle Ressourcen-Einträge sind dafür nicht nötig.
+1. Home Assistant **2026.9 oder neuer** und [HACS](https://www.hacs.xyz/docs/use/download/download/) selbst installieren, falls noch nicht vorhanden.
+2. Dieses Repository in HACS als **Integration** hinzufügen und herunterladen.
+3. Home Assistant neu starten. Unter **Einstellungen → Geräte & Dienste → Integration hinzufügen → Liquid Glass** einrichten. **Interaktives Demo-Dashboard** eingeschaltet lassen.
+4. **Liquid Glass Demo** in der Seitenleiste öffnen. Die Einrichtung installiert das Theme, die eigenen Karten und alle fehlenden Frontend-Abhängigkeiten automatisch. Kein npm, kein YAML-Kopieren und kein manuelles Anlegen der Demo-Entities erforderlich.
 
-| Bestandteil | Inhalt |
-| --- | --- |
-| `themes/` | Zwei ursprüngliche Liquid-Glass-Themes und sechs DASH6-Varianten |
-| `dist/dash6-cards.js` | Aktuelles Gesamtmodul mit Satin, Kartenadaptern und Editoren |
-| `dist/chunks/`, `dist/profiles/` | Zugehörige Module und neutrale Beispielprofile; mitkopieren |
-| `dist/dash5-light-cards-v2.js` | Kompatibilitätseinstieg zum aktuellen Hauptmodul; nicht zusätzlich registrieren |
-| `dist/vacuum-dock-card.js` | Eigenständige Staubsauger-/Dock-Karte |
-| `frontend/dash5-glass.js` | Optional erhaltene SVG-Hintergrundbrechung für die ursprüngliche DASH5-Ansicht |
-| `examples/demo-dashboard.yaml` | Interaktives Demo-Dashboard mit isolierten simulierten Werten und Design-Prinzipien; keine Geräte erforderlich |
-| `examples/dashboard.yaml` | Portables Gesamtbeispiel mit erfundenen, auszutauschenden Entitäten |
+Bei der ersten Einrichtung ist Internetzugriff auf GitHub erforderlich. Nach einem Update Home Assistant neu starten und den Browser vollständig neu laden. Bereits separat installierte HACS-Fremdkarten werden wiederverwendet und weiter durch HACS aktualisiert.
 
-## Interaktives Demo-Dashboard
+## Automatisch enthalten
 
-[examples/demo-dashboard.yaml](examples/demo-dashboard.yaml) enthält drei Views: **Licht und Material**, **Bedienung und Bewegung** sowie **Klima und Prinzipien**. Licht, Lichtgruppe, Steckdose, Ventilator-Schalter, Rollo und Dual-Thermostat sind bedienbar. Die `dash6-demo-card`-Hülle stellt lokale Beispielzustände bereit und fängt Geräteaktionen ab. Es werden keine eigenen Geräte benötigt und keine echten Serviceaufrufe gesendet.
+- **Nur DASH6 Satin Glass**, einschließlich Theme-Editor, Hintergrundoptionen und gemeinsamer Glasbedienung.
+- Eigene Karten für Lichter/Gruppen/Schuhschrank, Messsteckdosen/Kühlschrank, Drei-Modus-Lüftung, Thermostate, Rollos, HomePod/Apple TV/TV, Türen/Schlösser, Roboter/Dock, Pflanzen und Kamera sowie Raum-, Domain-, Profil-, Struktur- und Favoritenkarten.
+- Alle JavaScript-Einstiege, nachgeladenen Chunks, neutralen Profile, Bilder und Lizenzen; HACS lädt ein eigenständiges Laufzeitpaket unter `custom_components/liquid_glass/`.
+- **Zwölf automatisch installierte Fremdmodule:** Ultra Card, Button Card, Mushroom, Auto Entities, ApexCharts Card, Mini Graph Card, Card Mod, Layout Card, More Info Card, Vertical Stack In Card, Firemote und Embedded View Card. Die [Abhängigkeitstabelle](docs/DEPENDENCIES.md) nennt Versionen, Zweck und Installationsverhalten.
+- Ein Demo-Dashboard mit Räumen nach dem Vorbild von DASH6, ohne Florin, zusätzlichen Karten-/Layoutansichten und Favoriten-GUI. Die Integration legt dafür **91 virtuelle Entities** in acht eigenen Demo-Bereichen an. Licht, Szenen, Medien, Klima, Lüftung, Tür, Rollo, Roboter und Updates sind bedienbar; Verläufe entstehen ab Installation. Die virtuelle Kamera zeigt ein mitgeliefertes Bild.
+- [Optionale Geräte-Skripte und Anleitung](support/README.md), insbesondere die Shelly-Lüftungsquelle. Sie werden mitkopiert, aber nicht auf Hardware aktiviert.
 
-Die Integration zeigt das interaktive Demo-Dashboard automatisch als **Liquid Glass Demo** in der Seitenleiste. Es benötigt keine Geräte. Beide Beispiel-Dateien liegen zusätzlich unter `liquid-glass/examples/` im Konfigurationsverzeichnis; dort lässt sich eine eigene, editierbare Kopie erstellen.
+Das Demo-Dashboard begrenzt seine Karten zusätzlich auf den Namensbereich `*.liquid_glass_demo_*`. Serviceaufrufe ohne konkrete Dummy-Entity oder mit Bereichs-/Gerätezielen werden blockiert. Die Demo ändert weder echte Geräte noch die native Energiekonfiguration. Die Demo-Favoritenauswahl bleibt im jeweiligen Browser. Die Browser-Vorschau ist eine separate lokale Simulation.
 
-## Themes
+## Vom Nutzer selbst einzurichten
 
-| Name in Home Assistant | Gestaltung |
-| --- | --- |
-| **Liquid Glass** | Ursprüngliches dunkles Glas ohne zusätzliche Bewegungsanimation |
-| **Liquid Glass Motion** | Ursprüngliches Glas mit dezenten Einblendungen und Hover-/Fokusübergängen |
-| **DASH6 Modern Glass** | Ursprüngliche DASH6-Materialvariante |
-| **DASH6 Modern Glass (apple-konform)** | Zurückhaltende DASH6-Variante |
-| **DASH6 Modern Glass (stark elastisch)** | DASH6 mit stärkerer elastischer Rückmeldung |
-| **DASH6 Modern Glass (apple-konform, stark elastisch)** | Kombination der beiden DASH6-Varianten |
-| **DASH6 Modern Glass (Safari SVG-Linsen)** | DASH6-Variante mit SVG-Linsen |
-| **DASH6 Satin Glass** | Sanft gefrostetes, flacheres Rauchglas und kompakte Satin-Bedienelemente |
+**HACS und die Integrationen für echte Geräte werden nicht automatisch installiert.** Für eigene Räume müssen Geräte zunächst in Home Assistant eingerichtet sein, etwa über Shelly, Matter, Meross, Govee, Tado, Apple TV, Android TV/ADB, ESPHome oder Roborock – jeweils nur, soweit die eigene Hardware sie benötigt. Die Karten ersetzen diese Integrationen nicht.
 
-Satin wird durch die aktive Theme-Variable `dash6-satin-enabled: '1'` eingeschaltet. Das öffentliche Gesamtmodul unterstützt beliebige Dashboard-Pfade. Die ältere optionale SVG-Erweiterung hat einen eigenen, engeren Geltungsbereich; siehe [Installation](docs/INSTALLATION.md#optionale-ursprüngliche-svg-optik).
+**Dual Smart Thermostat** ist optional: im Einrichtungsdialog zusätzlich auswählen, danach erneut starten und die eigenen Sensor-/Heizungs-/Kühlungs-Entities konfigurieren. Für normale oder Demo-Thermostate ist es nicht nötig. **Ultra Card Connect**, **Browser Mod**, HACS selbst, MQTT/Zigbee2MQTT sowie Gerätefirmware werden nicht stillschweigend installiert. Was davon für eine konkrete Zusatzfunktion nötig ist, steht ausdrücklich in [DEPENDENCIES.md](docs/DEPENDENCIES.md#selbst-einzurichten).
 
-## Die Satin-Bedienung
+Die besondere Shelly-Lüftung braucht die passende Verdrahtung und virtuelle Shelly-Komponenten; der Nutzer richtet sie anhand der [beigelegten Anleitung](support/README.md) selbst ein. Eigene TV-Eingangsautomationen oder BLE-Fernbedienungen sind ebenfalls gerätespezifisch. Für Demo und normale Karten sind keine zusätzlichen privaten HA-Skripte nötig.
 
-- **Ein links, Aus rechts:** Der kleine Schalter trägt das vorhandene Icon. Kapsel und Icon leuchten in der Farbe der Hauptentität; die Helligkeit ist sichtbar. Ohne einstellbare Lichtfarbe leuchtet Ein gelb. Hover federt leicht, beim Drücken wird die Linse kurz gequetscht und bewegt sich anschließend zur anderen Seite.
-- **Versenkte Slider:** Die rechteckige Glaslinse vergrößert sich bei Klick, Touch und Drag. Während eines Drags bleibt der eingestellte Wert stabil; die neue Einstellung wird beim Loslassen übertragen. Schmale helle Streifen am linken Sliderrand und unteren Kartenrand entfallen.
-- **Gemeinsame Auswahlfläche:** Rechteckige Button-Gruppen mit abgerundeten Ecken liegen in einer versenkten Glasfläche. Die aktive Linse liegt plan zur Oberfläche und federt beim Hover. Bestehende Mehrfachauswahl bleibt Mehrfachauswahl.
-- **Effekt-Taste:** Unterstützte Lichter erhalten oben rechts eine flache Rauchglastaste. Ein laufender Effekt beleuchtet sie von innen weiß; ein Klick drückt sie sichtbar ein. Der Effektpicker bietet auch das Stoppen des Effekts.
-- **Einheitliche Karten:** Dunkle Glasflächen teilen Material, Transparenz und Glanz. Hover-Glanz folgt dem Zeiger. Hintergrundgraphen und strukturelle Layoutcontainer bleiben dort transparent, wo dies zur Karte gehört.
-- **Thermostat und Dual-Thermostat:** Nur die bis zu vier Modustasten unten links, die Preset-Taste unten rechts und die Glaslinsen der Temperaturgriffe werden angepasst. Außenfläche, Werte, Ring, Track und Preset-Dialog behalten ihre ursprüngliche Darstellung. Die DASH6-Thermostatkarte bleibt 265px hoch.
+## Eigene Dashboards
 
-Die Animationen berücksichtigen „Bewegung reduzieren“. Auf Touchgeräten benötigt keine Funktion einen Hover.
+Für eigene Views **DASH6 Satin Glass** wählen und Karten über die native GUI hinzufügen. [examples/dashboard.yaml](examples/dashboard.yaml) ist ein öffentliches Konfigurationsbeispiel mit Platzhalter-Entities; diese müssen auf eigene Geräte umgestellt werden. Die verwaltete Demo kann in ein eigenes Dashboard kopiert werden; vor echter Gerätesteuerung müssen die `dash6-demo-scope`-Wrapper entfernt und Entity-Zuordnungen bewusst ersetzt werden.
 
-## Karten für das ganze Dashboard
+Alte externe DASH6-/Govee-/Multi-Light-Ressourcen mit denselben Custom-Element-Namen vor dem Umstieg entfernen. Das Paket enthält nötige Kompatibilitätsnamen, benötigt aber keine zweite alte Kartenressource. Bereits manuell installierte alte Themes werden nicht gelöscht; das neue Paket installiert und registriert nur Satin. [Migration](docs/MIGRATION.md).
 
-| Familie | Funktionen |
-| --- | --- |
-| Govee-/allgemeine Lichtkarte | Kombi- oder Einzelregler, Farbe, Farbtemperatur, Helligkeit, unterstützte Effekte, Segmente und optionale Leistung/Energie |
-| Lichtgruppe und Schuhschrank | Detailmodal beim Hintergrundklick, auswählbare Mitglieder, gemeinsame Steuerung, Segmentdarstellungen und Szenen |
-| IKEA-/Messsteckdose | Licht/Schalter, Leistung/Energie, optional LED und Kindersicherung, Hintergrundgraph mit externem Tooltip |
-| Ventilator und vorhandene Schalterkarten | Satin-Adapter für geeignete Button-/Mushroom-Karten; native Aktionen und zusätzliche Regler bleiben erhalten |
-| Cover/Rollo | Vertikale Positionssteuerung und Status, maximal 300px Kartenhöhe |
-| Thermostat/Dual-Thermostat | Native ein- oder zweifache Temperaturbedienung, unterstützte Modi und Presets |
-| Medien | Native Mediensteuerung, Apple-TV-/Fire-TV-Auswahl, Fernbedienungsmodal und Tastaturbedienung im Modal |
-| Staubsauger und Dock | Statusanimation, Start/Stop, Individuell-Dialog, Raum-Mehrfachauswahl, Dock-Funktionen und Wartungsdialog |
-| Türen | Schloss oder Türöffner, Kontakt, Batteriewarnung und getrennte Türaktionen |
-| Lokale Gerätekamera | Kamera des aktuellen Browsers mit ausdrücklichem Start, ohne Mikrofon; Stop beim Verlassen/Hintergrundwechsel |
-| Auswahl, Bereich und Struktur | Segmentauswahl, Bereichsheader mit Uhr, Stack, eingebettete Views, Ultra-Card sowie Render-/Profilwrapper |
-| Theme-Editor | Material, Transparenz, Glanz, Elastizität und Bewegungswerte grafisch einstellen, zurücksetzen und exportieren |
-| Vacuum Dock Card | Separat nutzbarer Staubsauger-/Dock-Assistent mit deutscher/englischer Oberfläche |
+## Entwicklung, Prüfung und Lizenzen
 
-„Govee“ schränkt die Lichtkarte nicht auf diesen Hersteller ein: Entscheidend sind die von der `light`-Entity gemeldeten Funktionen. Roborock-Raumaufträge und Medien-Fernbedienungen benötigen die passenden Geräteintegrationen. Alle Kartentypen und gültigen Schlüssel stehen in [CARDS.md](docs/CARDS.md).
+`npm ci && npm run build:cards && python3 scripts/build-integration.py` erzeugt die Veröffentlichung. Auf Home Assistant ist kein Build nötig. Installer-, Integrations-, Dummy-Entity- und Browserprüfungen laufen in isolierten Umgebungen; dabei werden keine produktiven Geräte geschaltet.
 
-## Installation und erstes Dashboard
-
-**Empfohlen: HACS-Integration ab Home Assistant 2026.9.**
-
-1. Oben **In HACS hinzufügen** öffnen, als Kategorie **Integration** hinzufügen und herunterladen.
-2. Home Assistant neu starten.
-3. **Einstellungen → Geräte & Dienste → Integration hinzufügen → Liquid Glass** wählen und bestätigen.
-4. **Liquid Glass Demo** in der Seitenleiste öffnen; für eigene Views **DASH6 Satin Glass** auswählen.
-
-Die Integration lädt fehlende Frontend-Abhängigkeiten in festgelegten Versionen mit Prüfsummen. Bereits registrierte HACS-Module bleiben aktiv und werden weiter durch HACS aktualisiert. Automatisch geladene Vendor-Kopien werden über Liquid Glass verwaltet, nicht als eigene HACS-Repositories. Optional lässt sich Dual Smart Thermostat mitinstallieren; hierfür sind ein weiterer Neustart und eine eigene Thermostat-Konfiguration nötig. [Details und Umstieg](docs/INSTALLATION.md#automatische-installation-mit-hacs).
-
-Der [Python-Installer](docs/INSTALLATION.md#installation-mit-dem-python-installer) bleibt als Alternative für manuelle Installationen erhalten. Für ein eigenes Dashboard:
-
-1. [Theme, Kartenmodul und benötigte Abhängigkeiten installieren](docs/INSTALLATION.md).
-2. **DASH6 Satin Glass** im Profil oder in der View auswählen.
-3. Im Karteneditor eine DASH6-Karte hinzufügen und die eigenen Entitäten auswählen.
-4. [examples/dashboard.yaml](examples/dashboard.yaml) in den Rohkonfigurationseditor eines neuen Dashboards übernehmen und alle `demo_…`-Entitäten ersetzen. Es ist eine Konfiguration, keine Simulation; ohne passende Entitäten fehlen Daten.
-
-Eine einzelne Lichtkarte:
-
-```yaml
-type: custom:dash6-govee-light-card-v2
-entity: light.demo_lampe
-name: Stehlampe
-controls:
-  mode: combo
-  label: icon
-  buttons: group
-  density: compact
-  position: right
-```
-
-Die grafischen Karteneditoren sind der einfachste Einstieg. Lichtkarten innerhalb verschachtelter Dashboards können zusätzliche Einstellungen als Home-Assistant-Benutzerdaten speichern; sie überschreiben nur die jeweilige Karte. Der Theme-Editor speichert Sofortänderungen browserlokal und bietet einen Export für weitere Geräte. [Umstieg und Rücksetzen](docs/MIGRATION.md).
-
-## Bestehende Dashboards weiterverwenden
-
-Die ursprünglichen Themes und Ressourcen können weiterverwendet werden. Das aktuelle Gesamtmodul ersetzt beim Umstieg die ältere DASH6-Ressource: Beide registrieren dieselben `dash6-*`-Elemente und dürfen nicht gleichzeitig geladen werden. Das Gesamtmodul bietet auch die DASH5-v2-Kompatibilität (einschließlich Multi-Light-Aliasnamen); der separate Kompatibilitätseinstieg wird nicht zusätzlich registriert. [MIGRATION.md](docs/MIGRATION.md) erklärt Zuordnung und Rückweg.
-
-Button-/Mushroom-Karten erhalten nur dann einen Satin-Schalter, wenn die vorhandene Icon-Aktion als Ein/Aus-Bedienung erkennbar ist. Gesperrte oder unklare Vendor-Konfigurationen bleiben nativ. Die Adapter erhalten native Aktions-, Bestätigungs- und Sperrwege. Das Paket erstellt keine Geräte und ersetzt keine Geräteintegration.
-
-## Voraussetzungen und Grenzen
-
-Die Karten benötigen unterschiedliche Zusatzmodule. Eine Lichtkarte braucht weniger als ein komplettes Ultra-/Graph-/Medien-Dashboard. [DEPENDENCIES.md](docs/DEPENDENCIES.md) nennt Zuordnung und vom Installer verwendete Versionen. Die HACS-Integration installiert fehlende Frontend-Abhängigkeiten automatisch; eine ältere reine HACS-Theme-Installation tut dies nicht.
-
-Aktuelle Browser mit Custom Elements, Shadow DOM und `<dialog>` werden vorausgesetzt. Chrome/Chromium und Safari/WebKit wurden für Satin-Bedienelemente und Dialoge geprüft. Änderungen an HA-Frontend-Interna und Fremdkarten können Anpassungen nötig machen. Eigene CSS-Regeln und geschlossene Shadow Roots können Styling-Hooks begrenzen; vollständige Umgestaltung sämtlicher Fremdkarten ist nicht pauschal zugesichert.
-
-SVG-Hintergrundbrechung und Satin-Frostung sind getrennte Funktionen. Die ursprüngliche SVG-Optik bricht eine Kopie des Hintergrundbilds, nicht sämtliche Live-Dashboard-Inhalte. Satin verwendet CSS-/SVG-Materialien und die dafür vorgesehenen Kartenadapter.
-
-## Projekt und Lizenzen
-
-Demo, Default-Zuordnungen und Beispiele enthalten neutrale Daten. Für das Dashboard werden eigene Entitäten benötigt; Zugangsdaten und Tokens gehören nicht in die Kartenkonfiguration. Das beigelegte Wohnzimmerbild ist ein für das Projekt erzeugter Hintergrund.
-
-Dieses Projekt ist unabhängig von Apple und Home Assistant. Der Theme-Teil steht unter [MIT](LICENSE); Quell- und Fremdlizenzen der mitgelieferten Karten stehen bei den jeweiligen Modulen und Lizenzhinweisen. Für die ursprüngliche SVG-Optik siehe [THIRD-PARTY-LICENSE.md](frontend/THIRD-PARTY-LICENSE.md).
-
-Weitere Einordnung: [Design-Notizen](docs/DESIGN-NOTES.md) und [ursprüngliche DASH5-Kompatibilität](docs/CARD-COMPATIBILITY.md).
+Aktuelle Browser mit Custom Elements und Shadow DOM werden vorausgesetzt. Chromium und WebKit werden geprüft. Unabhängiges Projekt ohne Verbindung zu Apple oder Home Assistant. [MIT](LICENSE), [Drittanbieter-Lizenzen](THIRD-PARTY-LICENSES.md). Keine privaten Dashboard-Exporte oder Zugangsdaten im Paket.

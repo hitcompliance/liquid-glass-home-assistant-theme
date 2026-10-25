@@ -6,7 +6,7 @@ import {extractCatalog, filterSelectedTree, toggleSelection} from '../src/dash6/
 const root = fileURLToPath(new URL('../', import.meta.url));
 execFileSync('python3', ['scripts/generate-demo-dashboard.py', '--check'], {cwd: root});
 const dashboard = JSON.parse(execFileSync('ruby', ['-rjson', '-ryaml', '-e',
-  'puts YAML.load_file(ARGV[0]).to_json', 'examples/demo-dashboard.yaml'], {cwd: root, encoding: 'utf8'}));
+  'puts YAML.load_file(ARGV[0]).to_json', 'examples/browser-demo-dashboard.yaml'], {cwd: root, encoding: 'utf8'}));
 assert.equal(dashboard.views.length, 4);
 const favoritesView = dashboard.views.find(view => view.path === 'favoriten');
 assert.equal(favoritesView.theme, 'DASH6 Satin Glass');

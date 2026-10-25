@@ -42,6 +42,7 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.hass.data[frontend.DATA_PANELS] = {}
         self.ll = LovelaceData('yaml', {}, ResourceYAMLCollection([]), {})
         self.hass.data[LOVELACE_DATA] = self.ll
+        self.hass.config_entries = SimpleNamespace(async_forward_entry_setups=AsyncMock(), async_unload_platforms=AsyncMock(return_value=True))
         self.entry = SimpleNamespace(entry_id='test', data={'demo_dashboard': True})
         self.payload = b'export const testDependency = true;'
         self.lock = {'schema_version': 1, 'dependencies': [{'id': 'test-card', 'kind': 'frontend', 'version': 'v1.0.0', 'entrypoint': 'test-card.js', 'assets': [{'path': 'test-card.js', 'url': 'https://raw.githubusercontent.com/example/repo/v1.0.0/test-card.js', 'sha256': hashlib.sha256(self.payload).hexdigest(), 'bytes': len(self.payload)}]}]}
@@ -54,7 +55,7 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.calls.append(url)
                 return self.download_payloads.get(url, self.payload)
             return original(deps, cache, offline, download)
-        self.patches = [patch.object(runtime, 'ROOT', self.bundle), patch.object(integration, 'ROOT', self.bundle), patch.object(runtime.installer, 'dependency_files', dependencies)]
+        self.patches = [patch.object(runtime, 'ROOT', self.bundle), patch.object(integration, 'ROOT', self.bundle), patch.object(runtime.installer, 'dependency_files', dependencies), patch.object(self.hass.config_entries, 'async_forward_entry_setups', AsyncMock()), patch.object(self.hass.config_entries, 'async_unload_platforms', AsyncMock(return_value=True)), patch.object(integration.er, 'async_get', return_value=SimpleNamespace(async_get=lambda key: None))]
         for p in self.patches: p.start()
 
     async def asyncTearDown(self):
@@ -70,15 +71,10 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn('DASH6 Satin Glass',self.hass.data[frontend.DATA_THEMES])
         frontend._validate_themes(self.hass.data[frontend.DATA_THEMES])
         loaded = await self.ll.dashboards[integration.DEMO].async_load(False)
-        self.assertEqual(len(loaded['views']),4)
-        favorites = next(view for view in loaded['views'] if view['path'] == 'favoriten')
-        card = favorites['sections'][0]['cards'][1]
-        self.assertEqual(card['type'], 'custom:dash6-favorites-card')
-        self.assertTrue(card['demo_gui'])
-        self.assertEqual(card['dashboard'], integration.DEMO)
-        self.assertTrue(card['sources'])
-        self.assertTrue(card['selected'])
-        self.assertTrue(all(node['card']['type'] == 'custom:dash6-demo-card' for node in card['sources']))
+        self.assertGreaterEqual(len(loaded['views']), 12)
+        self.assertTrue(all(v.get('theme') == 'DASH6 Satin Glass' for v in loaded['views']))
+        self.assertFalse(any('florin' in v.get('path', '').lower() for v in loaded['views']))
+        self.hass.config_entries.async_forward_entry_setups.assert_awaited_once()
         self.assertTrue(frontend.async_panel_exists(self.hass,integration.DEMO))
         self.assertEqual(len(self.hass.data[frontend.DATA_EXTRA_MODULE_URL].urls),1)
         self.assertFalse((self.config/'configuration.yaml').exists())
@@ -152,16 +148,16 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         themes = json.loads(path.read_text())
         themes.pop(integration.DEFAULT_THEME)
         path.write_text(json.dumps(themes))
-        with self.assertRaisesRegex(ConfigEntryNotReady, 'Satin default theme is missing'):
+        with self.assertRaisesRegex(ConfigEntryNotReady, 'Satin default theme is missing|No valid bundled themes found'):
             await integration.async_setup_entry(self.hass, self.entry)
         self.assertEqual(self.calls, [])
         self.assertFalse((self.config / 'www').exists())
         self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_THEME], 'default')
         self.theme_store.async_delay_save.assert_not_called()
 
-    async def test_bundled_non_satin_variants_are_explicitly_outdated(self):
+    async def test_only_satin_is_bundled(self):
         themes = runtime.load_themes()
-        self.assertEqual(len(themes), 8)
+        self.assertEqual(list(themes), ['DASH6 Satin Glass'])
         self.assertTrue(all('Satin' in name or name.endswith(' (outdated)') for name in themes))
         self.assertTrue(all(theme['card-mod-theme'] == name for name, theme in themes.items()))
 
