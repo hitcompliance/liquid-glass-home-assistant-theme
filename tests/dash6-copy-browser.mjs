@@ -12,6 +12,7 @@ try{for(const engine of [chromium,webkit]){
   await page.goto(origin);await page.waitForFunction(()=>window.demoPreview?.ready||window.demoPreview?.errors.length);
   assert.equal(await page.evaluate(()=>demoPreview.ready),true,JSON.stringify(await page.evaluate(()=>demoPreview.errors)));
   assert.equal(await page.evaluate(()=>demoPreview.dashboard.title),'LIQUID-GLASS-DEMO');
+  assert.equal(await page.evaluate(()=>{const rows=Object.values(demoPreview.hass.entities),copy=new Set(rows.filter(e=>e.entity_id.includes('.liquid_glass_demo_copy_')).map(e=>e.area_id));return rows.filter(e=>!e.entity_id.includes('.liquid_glass_demo_copy_')).some(e=>copy.has(e.area_id));}),false,'Gallery and copied devices use distinct area IDs');
   await page.evaluate(()=>demoPreview.showView('wohnzimmer'));
   await page.locator('dash6-ultra-card').waitFor();
   await page.waitForTimeout(5000);

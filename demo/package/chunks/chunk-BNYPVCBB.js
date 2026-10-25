@@ -1,2 +1,0 @@
-/*! Liquid Glass Cards 3.4.0 | MIT; Vacuum Dock/HA animation Apache-2.0; Lit BSD-3-Clause | See licenses/ and THIRD-PARTY-LICENSES.md */
-function n(){if(location.pathname==="/dash6-bkp-2"||location.pathname.startsWith("/dash6-bkp-2/"))return!1;let a=window.__LIQUID_GLASS_DASHBOARD_PATHS__;return!Array.isArray(a)||a.length===0?!0:a.some(t=>typeof t=="string"&&t.startsWith("/")&&(location.pathname===t||location.pathname.startsWith(t.endsWith("/")?t:t+"/")))}export{n as a};

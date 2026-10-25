@@ -3,7 +3,7 @@
   "theme": "DASH6 Satin Glass",
   "entry_view": "home",
   "views": 18,
-  "virtual_entities": 755,
+  "virtual_entities": 725,
   "card_types": [
     "custom:apexcharts-card",
     "custom:auto-entities",
@@ -55,6 +55,6 @@
     "custom:vertical-stack-in-card"
   ],
   "copy_views": 28,
-  "copy_virtual_entities": 657,
+  "copy_virtual_entities": 627,
   "gallery_views": 18
 }

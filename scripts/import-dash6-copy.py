@@ -26,7 +26,7 @@ source['__demo_room_configs']={'buro':json.loads((a.config/'www/dash6-satin/room
 # Drop links and their user conditions with the removed room, at any nesting level.
 def prune(n):
  if isinstance(n,dict):
-  if n.get('navigation_path','').startswith('/dash-6/florin'):return None
+  if n.get('navigation_path','').startswith('/dash-6/florin') or (isinstance(n.get('tap_action'),dict) and n['tap_action'].get('navigation_path','').startswith('/dash-6/florin')):return None
   if isinstance(n.get('target'),dict) and n['target'].get('device_id'):
    ids=n['target']['device_id'];ids=[ids] if isinstance(ids,str) else ids
    domain=str(n.get('service',n.get('perform_action',''))).split('.')[0]
@@ -34,7 +34,8 @@ def prune(n):
    n['target']={'entity_id':targets}
   out={k:prune(v) for k,v in n.items() if k not in ('users','user_id','device_id')}
   if n.get('condition')=='user':return None
-  if n.get('type')=='conditional' and not out.get('conditions'):return out.get('card')
+  if n.get('type')=='conditional' and (not out.get('conditions') or not out.get('card')):return out.get('card')
+  if n.get('type') in ('custom:dash6-direct-card','custom:dash6-render-card') and not out.get('card',out.get('definition')):return None
   return out
  if isinstance(n,list):return [v for x in n if (v:=prune(x)) is not None]
  return n
@@ -51,7 +52,7 @@ room_names={'Wohnzimmer','Küche','Schlafzimmer','Flur','Badezimmer','Büro','Wa
 supported=set(domains.split('|'))
 for eid,row in er.items():
  room=ar.get(row.get('area_id') or dr.get(row.get('device_id'),{}).get('area_id'))
- if room in room_names and eid.split('.')[0] in supported and not row.get('hidden_by') and not row.get('disabled_by') and row.get('platform')!='liquid_glass':ids.append(eid)
+ if room in room_names and eid.split('.')[0] in supported-{'automation','input_boolean','input_number','input_select'} and not row.get('hidden_by') and not row.get('disabled_by') and row.get('platform')!='liquid_glass':ids.append(eid)
 # Group members also receive dummy identities; no real ID may leak through attributes.
 for eid in list(ids):
  members=states.get(eid,{}).get('attributes',{}).get('entity_id',[])
@@ -64,13 +65,15 @@ for eid in ids:
  domain,old=eid.split('.',1);domain={'input_boolean':'switch','automation':'switch','input_number':'number','input_select':'select','sun':'sensor'}.get(domain,domain)
  counts[domain]=counts.get(domain,0)+1;key='copy_'+domain+'_'+str(counts[domain]).zfill(3);mapped=f'{domain}.liquid_glass_demo_{key}';mapping[eid]=mapped
  reg=er.get(eid,{});dev=dr.get(reg.get('device_id'),{});room=ar.get(reg.get('area_id') or dev.get('area_id'))
- if room not in area_map:room=next((v for k,v in rooms.items() if k in old),'Wohnzimmer')
+ removed_room=bool(room and 'florin' in room.lower())
+ if removed_room:room='Nebenraum'
+ elif room not in area_map:room=next((v for k,v in rooms.items() if k in old),'Wohnzimmer')
  device_key=reg.get('device_id') or eid
  if device_key not in device_map:device_map[device_key]='copy_device_'+str(len(device_map)+1).zfill(3)
  attrs=states.get(eid,{}).get('attributes',{}); safe={k:attrs[k] for k in ('device_class','unit_of_measurement','state_class','options','entity_id','min','max','step') if k in attrs}
  name=attrs.get('friendly_name',old.replace('_',' ').capitalize())
  name=re.sub(r'(?i)johns?|bj[oö]rns?|florin|fabi|[a-f0-9]{10,}|\d{8,}','Demo',name)
- spec={'entity_id':mapped,'domain':domain,'key':key,'room':room,'area':area_map[room],'device':device_map[device_key],'name':'Demo · '+name,'attributes':safe,'hidden':bool(reg.get('hidden_by') or reg.get('disabled_by')),'no_dashboard':any(x in ('no-dboard','no_dboard') for x in reg.get('labels',[])+dev.get('labels',[]))}
+ spec={'entity_id':mapped,'domain':domain,'key':key,'room':room,'area':area_map.get(room,'LIQUID GLASS DEMO · '+room),'device':device_map[device_key],'name':'Demo · '+name,'attributes':safe,'hidden':bool(removed_room or reg.get('hidden_by') or reg.get('disabled_by')),'no_dashboard':any(x in ('no-dboard','no_dboard') for x in reg.get('labels',[])+dev.get('labels',[]))}
  if domain=='sensor':
   dc=attrs.get('device_class');unit=attrs.get('unit_of_measurement') or {'energy':'kWh','power':'W','temperature':'°C','humidity':'%','battery':'%'}.get(dc);numeric=unit is not None or dc in ('power','energy','temperature','battery','humidity')
   spec['initial']={'value': {'temperature':22.1,'humidity':45,'battery':86,'energy':0,'power':24,'illuminance':18000}.get(dc,20 if numeric else 'Bereit'), 'unit':unit,'device_class':dc if dc!='timestamp' else None,'state_class':attrs.get('state_class') if numeric else None}

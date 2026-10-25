@@ -53,9 +53,9 @@ function initial(spec){
  if(domain==='event'){state=stamp();a.event_type='press';a.event_types=['press'];}
  return {entity_id:spec.entity_id,state,attributes:a,last_changed:stamp(),last_updated:stamp(),last_reported:stamp(),context:{id:'demo',parent_id:null,user_id:null}};
 }
-const entities=Object.fromEntries(specs.map(s=>[s.entity_id,{entity_id:s.entity_id,device_id:'demo-'+(s.device||s.room),area_id:'demo-'+s.room,platform:'liquid_glass',config_entry_id:'demo',hidden_by:s.hidden?'user':null,disabled_by:null}]));
-const devices=Object.fromEntries(specs.map(s=>['demo-'+(s.device||s.room),{id:'demo-'+(s.device||s.room),area_id:'demo-'+s.room,identifiers:[['liquid_glass','demo_'+s.room]],manufacturer:'Liquid Glass',model:'Virtual device'}]));
-const areas=Object.fromEntries(specs.map(s=>['demo-'+s.room,{area_id:'demo-'+s.room,name:s.area||'DASH6 Demo · '+s.room}]));
+const entities=Object.fromEntries(specs.map(s=>[s.entity_id,{entity_id:s.entity_id,device_id:'demo-'+(s.device||s.room),area_id:'demo-'+(s.area||'DASH6 Demo · '+s.room),platform:'liquid_glass',config_entry_id:'demo',hidden_by:s.hidden?'user':null,disabled_by:null}]));
+const devices=Object.fromEntries(specs.map(s=>['demo-'+(s.device||s.room),{id:'demo-'+(s.device||s.room),area_id:'demo-'+(s.area||'DASH6 Demo · '+s.room),identifiers:[['liquid_glass','demo_'+s.room]],manufacturer:'Liquid Glass',model:'Virtual device'}]));
+const areas=Object.fromEntries(specs.map(s=>['demo-'+(s.area||'DASH6 Demo · '+s.room),{area_id:'demo-'+(s.area||'DASH6 Demo · '+s.room),name:s.area||'DASH6 Demo · '+s.room}]));
 function synchronize(){
  set('binary_sensor','turkontakt',value('switch','turkontakt_simulation')?.state||'off');
  const warning=value('switch','schloss_batteriewarnung_simulation')?.state==='on';set('binary_sensor','schloss_batteriewarnung',warning?'on':'off');set('sensor','turkontakt_batterie',warning?15:86);set('sensor','schloss_batterie',warning?15:86);
