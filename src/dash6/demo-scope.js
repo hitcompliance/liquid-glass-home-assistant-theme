@@ -1,6 +1,7 @@
 import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {loadDemoRuntime} from './demo-runtime.js';
 import './demo-detail.js';
+import './demo-context.js';
 
 const own=id=>typeof id==='string'&&/^[a-z_]+\.liquid_glass_demo_[a-z0-9_]+$/.test(id);
 const subset=table=>Object.fromEntries(Object.entries(table||{}).filter(([id])=>own(id)));

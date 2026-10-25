@@ -228,6 +228,7 @@ function synchronize(){
   setState(id,state,attributes={}){if(!own(id))throw Error('Unbekanntes Demo-Ziel');states=structuredClone(states);put(id,state,attributes);publish();},
   hass(base={}){
    const h={...base,states:{...states},entities,devices,areas,floors:{},labels:{},services,connection,callWS,callService,callApi,
+    sendWS:callWS,callApiRaw:async(method,path)=>new Response(JSON.stringify(await callApi(method,path)),{headers:{'Content-Type':'application/json'}}),
     user:{...base.user,id:'public-demo',name:'Demo',is_admin:!!base.demo_browser},
     config:{...base.config,components:[...new Set([...(base.config?.components||[]),...Object.keys(services)])],unit_system:base.config?.unit_system||{temperature:'°C',length:'km',mass:'kg',pressure:'hPa'},time_zone:base.config?.time_zone||'Europe/Berlin',version:base.config?.version||'2026.10.3'},
     formatEntityName:s=>s.attributes?.friendly_name||s.entity_id,formatEntityId:id=>states[id]?.attributes.friendly_name||id,
