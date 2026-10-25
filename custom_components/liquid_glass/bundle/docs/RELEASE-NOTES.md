@@ -2,9 +2,9 @@ Die öffentliche Vorschau lädt ihre Einstiegsdateien mit Versionskennung und ih
 
 Beide **Türkarten** sind vollständig im Einstieg und im Flur-Domain-Block enthalten: Wohnungstür/Schloss und Haustür/Türöffner, mit Kontakt, Batterie, Batteriewarnung, Aktivität, Klingel- und Cancel-Rückmeldung. Neue Dummy-Schalter erlauben alle Zustandsbeispiele. Insgesamt 98 virtuelle Entities und 18 Haupt-GUI-Editoren.
 
-**3.3.2 ergänzt die tatsächliche DASH6-Domain-Struktur:** native Heading-Reiter und eine gemeinsame helle Glashülle um mehrere dunkle Entity-Karten. Direkt im Demo-Einstieg, in den Raum-Views und in der neuen View **Domain-Blöcke & Aufbau**. README, Kartenleitfaden und AGENTS.md erklären das Muster und die Domain-GUI; `examples/domain-blocks.yaml` wird mitinstalliert. Die aktuellen Theme-Defaults bleiben unverändert.
+**3.3.3 ergänzt die tatsächliche DASH6-Domain-Struktur:** native Heading-Reiter und eine gemeinsame helle Glashülle um mehrere dunkle Entity-Karten. Direkt im Demo-Einstieg, in den Raum-Views und in der neuen View **Domain-Blöcke & Aufbau**. README, Kartenleitfaden und AGENTS.md erklären das Muster und die Domain-GUI; `examples/domain-blocks.yaml` wird mitinstalliert. Die aktuellen Theme-Defaults bleiben unverändert.
 
-DASH6 Satin Glass 3.3.2 enthält die vollständige installierbare Geräte-Demo und denselben interaktiven Kartenkatalog in der öffentlichen Browser-Vorschau.
+DASH6 Satin Glass 3.3.3 enthält die vollständige installierbare Geräte-Demo und denselben interaktiven Kartenkatalog in der öffentlichen Browser-Vorschau.
 
 - Ausschließlich **DASH6 Satin Glass**, jetzt mit den am 25.10.2026 an der aktiven Oberfläche abgeglichenen **64 CSS-Vorgaben und 76 GUI-Werten** als Paket-Defaults: helles Glas 20 % / 8 px, dunkles Glas 70 % / 16 px sowie aktuelle Farben, Text, Bewegung und Graphen.
 - **18 Demo-Views, 98 automatisch angelegte virtuelle Entities und sieben Demo-Bereiche**, ohne Florin. Schuhschrank mit direkt aktivierbaren Szenen, Apple TV/Fernseher und Staubsauger sind sofort in **Alle Karten & Details** sichtbar. Raum-, Layout-, Originalkarten- und Klimaansichten ergänzen den Einstieg.

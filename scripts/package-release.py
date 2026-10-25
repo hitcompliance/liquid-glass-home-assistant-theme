@@ -13,6 +13,7 @@ args=parser.parse_args()
 component=ROOT/'custom_components/liquid_glass'
 manifest=json.loads((component/'manifest.json').read_text())
 themes=json.loads((component/'bundle/themes.json').read_text())
+assert json.loads((component/'bundle/dist/manifest.json').read_text())['version']==manifest['version'],'Rebuild cards for this release version'
 assert list(themes)==['DASH6 Satin Glass'],'Only Satin may be published'
 assert (component/'installer.py').read_bytes()==(ROOT/'scripts/install.py').read_bytes(),'Rebuild the integration first'
 assert (component/'bundle/dependencies.lock.json').read_bytes()==(ROOT/'dependencies.lock.json').read_bytes(),'Stale dependency lock'

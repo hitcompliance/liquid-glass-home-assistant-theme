@@ -1,3 +1,8 @@
+# 3.3.3 · Reproduzierbare Paketinstallation
+
+- Lit bleibt wie im getesteten Kartenstand auf 3.3.1 festgelegt; Paketversion und Bibliotheksversion werden getrennt aktualisiert. Saubere npm-Installation mit dem festgelegten Lockfile geprüft.
+- Vollständiger Stand mit Domain-Blöcken, beiden Türkarten, 18 Views, 98 Entities, aktuellen Defaults und versionierter öffentlicher Vorschau.
+
 # 3.3.2 · Aktualisierte Vorschau zuverlässig laden
 
 - Versionskennungen an den öffentlichen Einstiegsdateien und frische Demo-Konfiguration verhindern veraltete Karten nach einem Pages-Update.
