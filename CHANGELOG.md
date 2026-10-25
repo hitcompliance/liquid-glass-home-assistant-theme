@@ -1,4 +1,4 @@
-# 3.2.0 · DASH6 Satin Glass als vollständige Integration
+# 3.2.1 · DASH6 Satin Glass als vollständige Integration
 
 - Veröffentlichung auf das Theme DASH6 Satin Glass und die aktuelle Satin-Browservorschau begrenzt.
 - Aktuellen lokalen DASH6-Kartenstand samt sämtlichen Chunks, Profilen, Pflanzen-/Medien-/Lüftungsmodulen und Lizenzen aufgenommen.

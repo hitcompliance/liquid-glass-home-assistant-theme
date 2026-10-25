@@ -4,7 +4,7 @@ import {scopedCustomElements as customElements} from './scoped-elements.js';
 (()=>{
  const clone=x=>structuredClone(x),queries=new Map();
  const definitions=new Map();
- const defaultSource=new URL('./room-loader-configs.json?v=3.2.0',import.meta.url).href;
+ const defaultSource=new URL('./room-loader-configs.json?v=3.2.1',import.meta.url).href;
  const configs=(source=defaultSource)=>{if(!definitions.has(source))definitions.set(source,fetch(source).then(r=>{if(!r.ok)throw Error('Raumlader-Konfiguration: '+r.status);return r.json()}));return definitions.get(source);};
  const scan=(r,fn)=>{for(const e of r.children||[]){fn(e);scan(e,fn);if(e.shadowRoot)scan(e.shadowRoot,fn)}};
  function watch(room,hass,fn,source=defaultSource){const key=source+'|'+room;let q=queries.get(key);if(!q){q={listeners:new Set(),connection:hass.connection,active:true,subscriptions:0};queries.set(key,q);q.ready=configs(source).then(async all=>{q.definition=all[room];if(!q.definition)throw Error('Unbekannter Raum '+room);if(!q.active)return;q.subscriptions++;const unsub=await q.connection.subscribeMessage(e=>{if(!q.active)return;if(e.error){q.error=e.error;for(const f of q.listeners)f(null,q.error);return;}try{q.result=typeof e.result==='string'?JSON.parse(e.result):e.result;for(const f of q.listeners)f(q.result);}catch(error){q.error=error;for(const f of q.listeners)f(null,error);}},{type:'render_template',template:q.definition.template});if(q.active)q.unsubscribe=unsub;else unsub();}).catch(e=>{q.error=e;for(const f of q.listeners)f(null,e)});}
