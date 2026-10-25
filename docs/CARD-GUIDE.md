@@ -77,7 +77,7 @@ Installiert wird ausschließlich **DASH6 Satin Glass** mit dem am 25.10.2026 fri
 
 ## Sicherheit und Grenzen der Demos
 
-Die vollständige HA-Demo legt 98 virtuelle Entities in acht eigenen Bereichen an. Alle Aktionen bleiben auf `*.liquid_glass_demo_*` begrenzt. Demo-Segmentnummern gehören nur zum virtuellen Roboter. Keine realen Geräte, Automationen oder die native Energiekonfiguration werden übernommen.
+Die vollständige HA-Demo legt 98 virtuelle Entities in sieben eigenen Bereichen an. Alle Aktionen bleiben auf `*.liquid_glass_demo_*` begrenzt. Demo-Segmentnummern gehören nur zum virtuellen Roboter. Keine realen Geräte, Automationen oder die native Energiekonfiguration werden übernommen.
 
 Die Browser-Demo erzeugt ausdrücklich simulierte Historie zur Darstellung von Graphen. In HA entsteht echte Demo-Recorder-Historie erst ab Installation; sie wird nicht rückdatiert. Live-Kamera, eigene Hardwareintegrationen, TV-/ADB-/BLE-Einrichtung und die spezielle Shelly-Hardwarekonfiguration gehören zu den ausdrücklich selbst einzurichtenden Funktionen: [Abhängigkeiten](DEPENDENCIES.md).
 

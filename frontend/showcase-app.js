@@ -2,7 +2,7 @@ import {createCardElement} from './native.js';
 const prefix='liquid_glass_demo_',own=id=>typeof id==='string'&&/^[a-z_]+\.liquid_glass_demo_[a-z0-9_]+$/.test(id);
 const status=document.querySelector('#runtime-status');
 const stamp=()=>new Date().toISOString();
-const json=async path=>{const r=await fetch(path);if(!r.ok)throw Error(path+': '+r.status);return r.json();};
+const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+': '+r.status);return r.json();};
 const [dashboard,specs,themeTable,modules,sharedDefaults,roomConfigs]=await Promise.all(['dashboard','entities','themes','modules','theme-defaults','room-loader-configs'].map(name=>json('package/'+name+'.json')));
 for(const [key,value]of Object.entries(themeTable['DASH6 Satin Glass']))if(typeof value==='string'&&!key.startsWith('card-mod-'))document.documentElement.style.setProperty('--'+key,value);
 document.documentElement.style.setProperty('--lovelace-background',"url('package/assets/liquid-glass-living-room.jpg')");

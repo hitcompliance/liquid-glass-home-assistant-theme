@@ -1,3 +1,8 @@
+# 3.3.2 · Aktualisierte Vorschau zuverlässig laden
+
+- Versionskennungen an den öffentlichen Einstiegsdateien und frische Demo-Konfiguration verhindern veraltete Karten nach einem Pages-Update.
+- Dokumentation auf die tatsächlich angelegten sieben Demo-Bereiche korrigiert; 18 Views, 98 Entities, Domain-Blöcke und beide Türkarten bleiben vollständig enthalten.
+
 # 3.3.1 · Domain-Blöcke wie in DASH6
 
 - Nativer Heading-Reiter und gemeinsame helle Glashülle um mehrere dunkle Entity-Karten im Einstieg und den Raum-Views verwendet.

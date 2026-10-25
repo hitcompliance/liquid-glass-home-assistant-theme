@@ -3,7 +3,7 @@ import {createServer} from 'node:http';
 import {readFile,mkdir} from 'node:fs/promises';
 import {resolve,extname} from 'node:path';
 import {chromium,webkit} from 'playwright';
-const root=resolve('demo'),missing=[];
+const root=resolve('demo'),missing=[],version=JSON.parse(await readFile(resolve('package.json'),'utf8')).version;
 const server=createServer(async(req,res)=>{try{const url=new URL(req.url,'http://localhost'),path=resolve(root,'.'+(url.pathname==='/'?'/index.html':url.pathname));if(!path.startsWith(root+'/'))throw Error('path');const data=await readFile(path);res.setHeader('content-type',({'.js':'text/javascript','.json':'application/json','.html':'text/html','.css':'text/css','.jpg':'image/jpeg','.png':'image/png','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream');res.end(data);}catch(error){missing.push(req.url);res.writeHead(404);res.end(error.message);}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const origin='http://127.0.0.1:'+server.address().port;
@@ -14,6 +14,7 @@ try{for(const engine of [chromium,webkit]){
   await page.goto(origin);await page.waitForFunction(()=>window.demoPreview?.ready||window.demoPreview?.errors?.length,{},{timeout:45000});
   console.log(engine.name()+' boot:',await page.evaluate(()=>({ready:demoPreview.ready,errors:demoPreview.errors,cards:document.querySelector('#runtime-status').textContent})),errors);
   assert.equal(await page.evaluate(()=>demoPreview.ready),true);
+  assert.equal(await page.locator('meta[name="liquid-glass-version"]').getAttribute('content'),version);
   const shell=type=>page.locator('[data-card-type="custom:dash6-'+type+'"]');
   for(const kind of ['shoe-cabinet-card','appletv-card','vacuum-card'])assert.equal(await shell(kind).count(),1,kind+' visible on the first view');
   const domain=shell('domain-card');

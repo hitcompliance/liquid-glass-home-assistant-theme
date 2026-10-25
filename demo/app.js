@@ -1,8 +1,8 @@
-import {createCardElement} from './native.js';
+import {createCardElement} from './native.js?v=3.3.2';
 const prefix='liquid_glass_demo_',own=id=>typeof id==='string'&&/^[a-z_]+\.liquid_glass_demo_[a-z0-9_]+$/.test(id);
 const status=document.querySelector('#runtime-status');
 const stamp=()=>new Date().toISOString();
-const json=async path=>{const r=await fetch(path);if(!r.ok)throw Error(path+': '+r.status);return r.json();};
+const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+': '+r.status);return r.json();};
 const [dashboard,specs,themeTable,modules,sharedDefaults,roomConfigs]=await Promise.all(['dashboard','entities','themes','modules','theme-defaults','room-loader-configs'].map(name=>json('package/'+name+'.json')));
 for(const [key,value]of Object.entries(themeTable['DASH6 Satin Glass']))if(typeof value==='string'&&!key.startsWith('card-mod-'))document.documentElement.style.setProperty('--'+key,value);
 document.documentElement.style.setProperty('--lovelace-background',"url('package/assets/liquid-glass-living-room.jpg')");
@@ -99,7 +99,7 @@ let hass={states,entities,devices,areas,demo_browser:true,user:{id:'public-demo'
 window.demoPreview={dashboard,hass,ready:false,errors:[]};reset();
 try{
  for(const url of modules)await import(new URL(url,location.href));
- await import('./package/dash6-cards.js');await import('./package/vacuum-dock-card.js');await import('./package/room-loader.js');
+ await import('./package/dash6-cards.js?v=3.3.2');await import('./package/vacuum-dock-card.js?v=3.3.2');await import('./package/room-loader.js?v=3.3.2');
  const preview=document.querySelector('#preview'),app=document.createElement('home-assistant');app.hass=hass;preview.append(app);let node=app;
  for(const tag of ['home-assistant-main','ha-panel-lovelace','hui-root']){const child=document.createElement(tag);node.attachShadow({mode:'open'}).append(child);node=child;}
  const root=node;root.lovelace={config:dashboard,urlPath:'liquid-glass-demo',mode:'storage',editMode:false,saveConfig:async next=>{root.lovelace.config=next;}};

@@ -14,6 +14,7 @@ parser.add_argument('--cache-dir',type=Path)
 parser.add_argument('--download',action='store_true')
 args=parser.parse_args()
 demo=ROOT/'demo';package=demo/'package'
+version=json.loads((ROOT/'package.json').read_text())['version']
 lock=json.loads((ROOT/'dependencies.lock.json').read_text())
 assets=[];modules=[]
 for dep in lock['dependencies']:
@@ -41,5 +42,13 @@ themes=subprocess.check_output(['ruby','-ryaml','-rjson','-e','puts YAML.load_fi
 (package/'modules.json').write_text(json.dumps(modules,indent=2)+'\n')
 for source,target in [('showcase-app.js','app.js'),('showcase-native.js','native.js'),('showcase.css','showcase.css'),('showcase.html','index.html')]:
     shutil.copy2(ROOT/'frontend'/source,demo/target)
+# Entry modules keep stable names, so version their URLs across Pages deployments.
+index=(demo/'index.html').read_text().replace('src="app.js"',f'src="app.js?v={version}"').replace('href="showcase.css"',f'href="showcase.css?v={version}"')
+index=index.replace('</head>',f'<meta name="liquid-glass-version" content="{version}"></head>')
+(demo/'index.html').write_text(index)
+app=(demo/'app.js').read_text().replace("'./native.js'",f"'./native.js?v={version}'")
+for module in ['dash6-cards.js','vacuum-dock-card.js','room-loader.js']:
+    app=app.replace("'./package/"+module+"'", "'./package/"+module+f"?v={version}'")
+(demo/'app.js').write_text(app)
 shutil.copy2(ROOT/'README.md',demo/'README.md')
 print(f'Public demo: {len(assets)} verified vendor files, {len(modules)} modules; real cards, detail dialogs and GUI editors')
