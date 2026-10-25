@@ -1,7 +1,8 @@
-# DASH6 Satin Glass 3.5.5
+# DASH6 Satin Glass 3.5.6
 
 Die vollständige DASH6-Kopie und Karten-/GUI-Galerie funktionieren jetzt standardmäßig ohne angelegte Home-Assistant-Dummy-Entities. Die installierte Demo und GitHub-Pages-Vorschau verwenden dieselbe isolierte Browser-Simulation mit lokalen Zuständen, Reglern, Szenen, Türen, Medien, Staubsauger, Countdown und Beispielverläufen. Mehr-Informationen-Dialoge bleiben ebenfalls lokal; es werden keine Geräteservices oder Recorder-Schreibzugriffe ausgelöst.
 
+- Layout-Adapter greifen ausschließlich bei äußerer `type: panel`-View mit `cards[0].type: custom:dash6-ultra-card`, unabhängig vom Dashboardnamen. Neue `data-liquid-glass-*`-Markierungen und nur lokal abgebildete Theme-Layoutvariablen erhalten das native Energie-Raster. Die kopierte Demo hält dieselbe äußere Struktur; Ultra Card und ihr Originaleditor isolieren ihre Beispieldaten direkt.
 - Die Dashboard-Defaults schließen zusätzlich `demo` in Tasten (`button`), Kontakte & Zustände (`binary_sensor`) und Sensoren (`sensor`) aus. Die kopierte Konfiguration enthält diese Einträge ebenfalls. Die native Ausschluss-GUI steht auch in Demo, Galerie und Hue-Demo bereit; frei bearbeitbare und ausdrücklich leere Listen bleiben möglich.
 - Demo, Galerie und Hue-Demo sind native Storage-Dashboards mit vollständiger Dashboard-/View-/Karten-GUI. Vorhandene YAML-Installationen werden beim Update erstmals in Storage angelegt; eigene Storage-Bearbeitungen bleiben bei Updates und Entladen erhalten. Unveränderte generierte Hue-Views folgen weiterhin Registry-Änderungen. Die Demo-Hülle delegiert die Karten-GUI an den Originaleditor.
 - Die kopierte Startseite zeigt genau die sieben ursprünglichen Räume mit ihren normalen Namen und den tatsächlichen Raum-View-Links. Galerie-Beispiele bleiben getrennt; lokale Bereichszuordnungen und Pill-Daten bleiben erhalten.

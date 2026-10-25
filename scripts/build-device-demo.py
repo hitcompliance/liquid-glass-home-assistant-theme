@@ -331,6 +331,11 @@ def build():
     # package_files() installs these portable room backdrops on each instance.
     backgrounds=json.loads((ROOT/'support/demo-view-backgrounds.json').read_text())
     for copied_view in copy['views']:
+        first=(copied_view.get('cards') or [{}])[0]
+        if copied_view.get('type')=='panel' and first.get('type')=='custom:dash6-demo-scope' and first.get('card',{}).get('type')=='custom:dash6-ultra-card':
+            # Keep the authored outer Panel → Ultra structure. Ultra isolates
+            # its entire tree, including its native editor, before passing hass.
+            copied_view['cards'][0]={**first['card'],'liquid_glass_demo_mode':'browser'}
         if copied_view.get('path') in backgrounds:
             copied_view['background']=deepcopy(backgrounds[copied_view['path']])
     (ROOT/'examples/demo-dashboard.yaml').write_text(json.dumps(copy,ensure_ascii=False,indent=2)+'\n')
@@ -343,6 +348,7 @@ def build():
         def entity_mode(node):
             if isinstance(node,dict):
                 if node.get('type')=='custom:dash6-demo-scope':node['mode']='entities'
+                if node.get('liquid_glass_demo_mode'):node['liquid_glass_demo_mode']='entities'
                 for value in node.values():entity_mode(value)
             elif isinstance(node,list):
                 for value in node:entity_mode(value)

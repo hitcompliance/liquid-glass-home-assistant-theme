@@ -15,6 +15,10 @@ abort 'Wrong card-mod identity' unless satin['card-mod-theme'] == expected.first
   abort "Missing Satin material #{key}" unless satin.key?(key)
 end
 abort 'Satin gate missing' unless satin['dash6-satin-enabled'].to_s == '1'
+%w[ha-view-sections-column-gap ha-view-sections-row-gap ha-section-grid-row-gap ha-view-sections-column-min-width ha-section-grid-column-gap].each do |key|
+  abort "Global native layout override #{key}" if satin.key?(key)
+  abort "Missing scoped layout value #{key}" unless satin.key?('dash6-layout-' + key)
+end
 abort 'Missing wallpaper' unless File.file?(File.join(root, 'assets', 'liquid-glass-living-room.jpg'))
 abort 'Invalid HACS manifest' unless JSON.parse(File.read(File.join(root, 'hacs.json')))['name']
 

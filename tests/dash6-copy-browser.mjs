@@ -46,6 +46,24 @@ try{for(const engine of [chromium,webkit]){
   await page.evaluate(()=>demoPreview.showView('wohnzimmer'));
   await page.locator('dash6-ultra-card').waitFor();
   await page.waitForTimeout(5000);
+  assert.equal(await page.evaluate(()=>demoPreview.dashboard.views.find(v=>v.path==='wohnzimmer').cards[0].type),'custom:dash6-ultra-card','Original Panel → Ultra structure');
+  assert.ok(await page.locator('[data-liquid-glass-sections-layout]').count()>0,'Room sections use the structurally scoped layout');
+  await page.evaluate(async()=>{
+   const card=document.querySelector('home-assistant').shadowRoot.querySelector('home-assistant-main').shadowRoot.querySelector('ha-panel-lovelace').shadowRoot.querySelector('hui-root').shadowRoot.querySelector('hui-view-container').shadowRoot.querySelector('dash6-ultra-card');
+   const editor=await card.constructor.getConfigElement();editor.id='direct-ultra-editor';
+   editor.hass={...demoPreview.hass,__liquidGlassDemoRuntime:undefined,states:{'light.private':{entity_id:'light.private',state:'on',attributes:{}}}};
+   editor.setConfig(demoPreview.dashboard.views.find(v=>v.path==='wohnzimmer').cards[0]);document.body.append(editor);
+  });
+  await page.locator('#direct-ultra-editor ultra-card-editor').waitFor();
+  assert.equal(await page.evaluate(()=>!!document.querySelector('#direct-ultra-editor').hass.states['light.private']),false,'Direct Ultra GUI has no host entity access');
+  assert.equal(await page.evaluate(()=>{
+   const editor=document.querySelector('#direct-ultra-editor');let saved;
+   editor.addEventListener('config-changed',event=>saved=event.detail.config,{once:true});
+   const config=structuredClone(editor._config.card);delete config.liquid_glass_demo_mode;
+   editor._editor.dispatchEvent(new CustomEvent('config-changed',{bubbles:true,composed:true,detail:{config}}));
+   return saved?.type==='custom:dash6-ultra-card'&&saved.liquid_glass_demo_mode==='browser';
+  }),true,'Original Ultra editor changes retain the local simulation mode');
+  await page.evaluate(()=>document.querySelector('#direct-ultra-editor').remove());
   console.log(engine.name(),'wohnzimmer',await page.locator('#runtime-status').innerText(),'errors',errors,'missing',missing.slice(-6));
   await mkdir('../output/Dash6-Copy-3.4',{recursive:true});await page.screenshot({path:'../output/Dash6-Copy-3.4/'+engine.name()+'-wohnzimmer.png'});
   await page.evaluate(()=>demoPreview.showView('flur-inhalt'));

@@ -128,7 +128,7 @@ for i,v in enumerate(result['views']):
  v['theme']='DASH6 Satin Glass';v.setdefault('path','buro-zusatz')
  # The scope changes only the HA context; the original card and its options remain inside.
  for container in [v,*v.get('sections',[])]:
-  if 'cards' in container:container['cards']=[{'type':'custom:dash6-demo-scope','card':c,**({'grid_options':c['grid_options']} if 'grid_options' in c else {})} for c in container['cards']]
+  if 'cards' in container:container['cards']=[{**c,'liquid_glass_demo_mode':'browser'} if container is v and v.get('type')=='panel' and c.get('type')=='custom:dash6-ultra-card' else {'type':'custom:dash6-demo-scope','card':c,**({'grid_options':c['grid_options']} if 'grid_options' in c else {})} for c in container['cards']]
 for spec in specs:spec['attributes']=transform(spec['attributes'])
 by_id={spec['entity_id']:spec for spec in specs}
 def link_controls(n):

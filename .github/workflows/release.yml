@@ -35,6 +35,8 @@ jobs:
       - run: python scripts/test-demo.py
       - run: python scripts/test-hue-dashboard.py
       - run: python scripts/test-theme-store.py
+      - run: node tests/layout-scope-browser.mjs
+      - run: node tests/demo-card-context.mjs
       - run: node tests/ultra-native.mjs
       - run: node tests/demo-runtime.mjs
       - run: node tests/auto-entities-context.mjs

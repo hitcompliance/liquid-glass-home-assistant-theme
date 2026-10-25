@@ -21,7 +21,7 @@ try {
  const page=await browser.newPage({viewport:{width:900,height:1000}});
  await page.goto('about:blank');
  await page.evaluate(()=>{
-  document.body.style.cssText='margin:0;--dash6-satin-enabled:1';
+  document.body.style.cssText='margin:0;--dash6-satin-enabled:1';window.layoutView=document.createElement('hui-view');layoutView._config={type:'panel',cards:[{type:'custom:dash6-ultra-card'}]};document.body.append(layoutView);
   customElements.define('hui-sections-view',class extends HTMLElement {
    static styles=[];
    constructor(){super();this.attachShadow({mode:'open'});this.updates=0;}
@@ -75,13 +75,13 @@ try {
   window.views=['hui-sections-view','dash6-sections-view'].map(name=>{
    const host=document.createElement(name);
    const config={type:'sections',max_columns:10,dense_section_placement:Boolean(options.dense),sections:spans.map((column_span,index)=>({type:'grid',column_span,row_span:options.rowSpans?.[index]||1,dynamic:options.hiddenIndex===index,empty:options.hiddenIndex===index}))};
-   window.savedConfig=JSON.stringify(config);host.setConfig(config);document.body.append(host);return host;
+   window.savedConfig=JSON.stringify(config);host.setConfig(config);layoutView.append(host);return host;
   });
  },{spans,options});
  const settle=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const state=()=>page.evaluate(()=>views.map(host=>({name:host.localName,unchanged:JSON.stringify(host._config)===savedConfig,sections:[...host.shadowRoot.querySelectorAll('.content>.section')].map(section=>({
   display:getComputedStyle(section).display,span:getComputedStyle(section).getPropertyValue('--dash6-section-effective-span').trim(),configured:section.style.getPropertyValue('--dash6-section-span'),
-  row:section.dataset.dash6SectionRow,column:section.dataset.dash6SectionColumn,position:section.dataset.dash6SectionPosition,expanded:section.hasAttribute('data-dash6-section-expandable'),rect:section.getBoundingClientRect().toJSON()
+  row:section.dataset.liquidGlassSectionRow,column:section.dataset.liquidGlassSectionColumn,position:section.dataset.liquidGlassSectionPosition,expanded:section.hasAttribute('data-liquid-glass-section-expandable'),rect:section.getBoundingClientRect().toJSON()
  }))})));
  const verifyPair=async(spans,width,expected)=>{
   await page.setViewportSize({width,height:1000});await create(spans);await settle();
@@ -190,7 +190,7 @@ try {
   let mutations=0;const observers=views.map(host=>{const observer=new MutationObserver(records=>mutations+=records.length);observer.observe(host.shadowRoot,{subtree:true,attributes:true,childList:true});return observer;});
   await new Promise(resolve=>setTimeout(resolve,100));observers.forEach(o=>o.disconnect());return mutations;
  }),0,'No idle mutation loop');
- await page.evaluate(()=>views.forEach(host=>{host.remove();document.body.append(host);}));await settle();
+ await page.evaluate(()=>views.forEach(host=>{host.remove();layoutView.append(host);}));await settle();
  await page.setViewportSize({width:700,height:1000});await settle();
  for(const view of await state())assert.deepEqual(view.sections.map(s=>Number(s.span)),[5,5,5,5]);
  console.log('PASS: native/custom Sections at390/699/700/899/900/1200,4+4/6+4/5+5/10, hidden predecessors,visibility/resize/reconnect,dense/rowspan,no idle loop/config mutation.');

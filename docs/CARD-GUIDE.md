@@ -84,3 +84,7 @@ DASH6-Kopie und Galerie simulieren ihre Geräte standardmäßig vollständig im 
 Öffentliche und installierte Browser-Demo verwenden dieselbe Simulation einschließlich Beispielverläufen. Sie prüfen keine echte Gerätewirkung, Automationen oder Messhistorie. Der optionale Altmodus `entities` benötigt für Verläufe neue Recorder-Messpunkte. Live-Kamera, eigene Hardwareintegrationen, TV-/ADB-/BLE-Einrichtung und die spezielle Shelly-Hardwarekonfiguration gehören zu den ausdrücklich selbst einzurichtenden Funktionen: [Abhängigkeiten](DEPENDENCIES.md).
 
 Für Agenten: [Strukturen und verbindliche Muster](../AGENTS.md). Vollständige Optionsreferenz: [CARDS.md](CARDS.md).
+
+### Eigene Dashboards mit Liquid-Glass-Layout
+
+Die gemeinsamen Sections-/Mobil-Layouts werden anhand der aktuellen äußeren View freigegeben, unabhängig vom Dashboardnamen: `type: panel` und als erste Karte `cards[0].type: custom:dash6-ultra-card`. Verschachtelte Treffer, spätere Karten oder das Satin-Theme allein aktivieren diese Layout-Eingriffe nicht. Andere native Views, insbesondere Energie, behalten ihr eigenes Raster. Theme-Layoutwerte unter `dash6-layout-ha-*` gelten nur innerhalb dieser Struktur.

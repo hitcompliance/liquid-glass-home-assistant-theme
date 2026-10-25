@@ -8,7 +8,7 @@ try {
  const page=await browser.newPage({viewport:{width:700,height:900}});
  await page.goto('about:blank');
  await page.evaluate(()=>{
-  document.body.style.cssText='margin:0;--dash6-satin-enabled:1';
+  document.body.style.cssText='margin:0;--dash6-satin-enabled:1';window.layoutView=document.createElement('hui-view');layoutView._config={type:'panel',cards:[{type:'custom:dash6-ultra-card'}]};document.body.append(layoutView);
   class Grid extends HTMLElement {
    static styles=[];
    constructor(){super();this.attachShadow({mode:'open'});this.shadowRoot.innerHTML='<style>:host{display:block}#root{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#root>div{height:48px;min-width:0}.controls{display:grid;grid-template-columns:repeat(3,1fr)}</style><div id="root"><div>A<div class="controls"><button>Up</button><button>Stop</button><button>Down</button></div></div><div style="grid-column:2">B</div></div>';}
@@ -32,7 +32,7 @@ try {
  await page.addScriptTag({content:bundle.outputFiles[0].text});
  await page.waitForFunction(()=>customElements.get('dash6-inline-pill-layout')&&customElements.get('dash6-ultra-card'));
  await page.evaluate(()=>{
-  window.cards=['hui-grid-card','grid-layout','dash6-ultra-card','hui-sections-view','hui-masonry-view','masonry-layout','dash6-inline-pill-layout'].map(name=>{const card=document.createElement(name);document.body.append(card);card.updated();return card;});
+  window.cards=['hui-grid-card','grid-layout','dash6-ultra-card','hui-sections-view','hui-masonry-view','masonry-layout','dash6-inline-pill-layout'].map(name=>{const card=document.createElement(name);layoutView.append(card);card.updated();return card;});
  });
  const measure=()=>page.evaluate(()=>cards.map(card=>{
   const root=card.shadowRoot.querySelector('#root,.card-row,.content,#columns'),parts=[...root.children],rect=parts.map(part=>part.getBoundingClientRect().toJSON());

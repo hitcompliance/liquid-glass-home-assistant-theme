@@ -370,12 +370,12 @@ DASH6 Satin Glass:
   ha-card-border-style: solid
   ha-card-border: var(--dash6-satin-card-border)
   ha-card-box-shadow: var(--dash6-satin-card-shadow)
-  ha-view-sections-column-gap: 8px
-  ha-view-sections-row-gap: 8px
-  ha-section-grid-row-gap: 8px
+  dash6-layout-ha-view-sections-column-gap: 8px
+  dash6-layout-ha-view-sections-row-gap: 8px
+  dash6-layout-ha-section-grid-row-gap: 8px
   stack-card-gap: var(--dash5-card-row-gap, 8px)
   vertical-stack-card-gap: var(--dash5-card-row-gap, 8px)
-  ha-view-sections-column-min-width: 320px
+  dash6-layout-ha-view-sections-column-min-width: 320px
   paper-slider-knob-color: rgb(106, 116, 211)
   paper-slider-knob-start-color: rgb(106, 116, 211)
   paper-slider-pin-color: rgb(106, 116, 211)
@@ -796,7 +796,7 @@ DASH6 Satin Glass:
   dash6-material-d9410b32: rgba(120,216,197,.10)
   dash6-material-8b8046f5: rgba(120,216,197,.08)
   dash6-material-8711f9b0: '2px solid #78d8c5'
-  ha-section-grid-column-gap: 8px
+  dash6-layout-ha-section-grid-column-gap: 8px
   horizontal-stack-card-gap: 8px
   grid-card-gap: 8px
   dash6-entity-gap: 8px

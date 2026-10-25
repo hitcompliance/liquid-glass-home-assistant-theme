@@ -40,6 +40,8 @@ Die originalen Hintergrundvorgaben der übernommenen Raum-Views stehen in `suppo
 
 `custom_components/liquid_glass/hue_dashboard.py` erzeugt die optionale **LIQUID-GLASS-HUE-DEMO** ausschließlich aus den lokalen Registries. Sie steuert echte lokale Entities; den Dummy-Scope dort nicht verwenden. Kein Build darf ein festes privates Geräteverzeichnis als Hue-Quelle übernehmen. Ultra Card, Domain-Hüllen, Heading-Reiter und die Theme-Vorgaben bleiben maßgeblich.
 
+Die Layout-Adapter dürfen ausschließlich bei der äußersten aktuellen View mit `type: panel` und erster Karte `cards[0].type: custom:dash6-ultra-card` greifen, unabhängig von Dashboardname oder URL. Das Satin-Theme allein oder ein verschachtelter Treffer reichen nicht. Native Energie-Views behalten ihr eigenes Raster. Layoutmarkierungen heißen `data-liquid-glass-*`; Theme-Layoutwerte unter `dash6-layout-ha-*` werden nur innerhalb dieser Struktur auf HA-Variablen abgebildet. Die Demo-Ultra-Card verwendet `liquid_glass_demo_mode: browser`, um ihren vollständigen Kartenbaum und Originaleditor direkt zu isolieren.
+
 ## Verbindlicher Aufbau der Domain-Blöcke
 
 Die Raum-Views und die Demo-View **Domain-Blöcke & Aufbau** (`/liquid-glass-gallery/domain-bloecke`) sind die Gestaltungsreferenz. Verwende `custom:dash6-domain-card` mit `heading`, `cards`, `combine: true`, eindeutiger `block_id`, passender `area` und `domain`. Das kopierbare Beispiel steht in [examples/domain-blocks.yaml](examples/domain-blocks.yaml).

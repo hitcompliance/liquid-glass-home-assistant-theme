@@ -61,6 +61,8 @@ cards:
 
 Zwischen den Karten liegen **8px**. Native Headings stehen am Beginn der gemeinsamen Hülle, nicht als separater Grid-Titel darüber. Hülle und Reiter folgen ausschließlich **hellem Glas** (Paketdefault 20 %/8 px), die einzelnen Gerätekarten **dunklem Glas** (70 %/16 px). Transparente Layout-Wrapper erzeugen keine weitere Glasfläche. Die **Domain-GUI** bearbeitet Überschrift, Raster, feste/automatische Karten und deren jeweilige Originaleditoren. Theme-Regler und Domain-GUI haben unterschiedliche Aufgaben.
 
+Die gemeinsamen Layout-Adapter greifen ausschließlich bei einer äußeren View mit `type: panel` und `cards[0].type: custom:dash6-ultra-card`, auch in selbst benannten Dashboards. Andere native Views wie Energie behalten ihr eigenes Raster. Die Demo hält dieselbe Struktur und isoliert ihre Ultra Card samt Editor direkt.
+
 Die Standard-Ausschlusslisten in den nativen Dashboard-Einstellungen enthalten zusätzlich **`demo`** für **Tasten (`button`)**, **Kontakte & Zustände (`binary_sensor`)** und **Sensoren (`sensor`)**. Vorhandene eigene Listen und ausdrücklich leere Listen bleiben erhalten; die Einträge sind über die GUI bearbeitbar.
 
 ## Karten, Zusatzansichten und GUI
