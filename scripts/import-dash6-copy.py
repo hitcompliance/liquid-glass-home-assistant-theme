@@ -21,6 +21,16 @@ def materialize(n):
  if isinstance(n,list):return [materialize(v) for v in n]
  return n
 source['views']=[v for v in source['views'] if v.get('path') not in ('florin','florin-inhalt')]
+# Resolve uploaded room backdrops before anonymizing private image identifiers.
+backgrounds=json.loads((ROOT/'support/demo-view-backgrounds.json').read_text())
+for view in source['views']:
+ path=view.get('path');background=view.get('background',{});image=background.get('image')
+ if path in backgrounds:
+  if isinstance(image,dict) and image.get('media_content_id','').startswith('media-source://image_upload/'):
+   upload=image['media_content_id'].rsplit('/',1)[-1]
+   destination=ROOT/'assets/backgrounds'/Path(backgrounds[path]['image']).name
+   destination.write_bytes((a.config/'image'/upload/'original').read_bytes())
+  view['background']=deepcopy(backgrounds[path])
 source=materialize(source)
 source['__demo_room_configs']={'buro':json.loads((a.config/'www/dash6-satin/room-loader-configs.json').read_text())['buro']}
 # Drop links and their user conditions with the removed room, at any nesting level.

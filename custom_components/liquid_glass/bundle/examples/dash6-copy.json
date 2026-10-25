@@ -253,22 +253,7 @@
         "size": "cover",
         "repeat": "no-repeat",
         "attachment": "fixed",
-        "image": {
-          "media_content_id": "media-source://image_upload/public-demo",
-          "media_content_type": "image/png",
-          "metadata": {
-            "title": "home-meadow.png",
-            "thumbnail": "/api/image/serve/public-demo/256x256",
-            "media_class": "image",
-            "navigateIds": [
-              {},
-              {
-                "media_content_type": "app",
-                "media_content_id": "media-source://image_upload"
-              }
-            ]
-          }
-        }
+        "image": "/local/liquid-glass/assets/backgrounds/home.png"
       },
       "cards": []
     },
@@ -2122,22 +2107,7 @@
         "size": "cover",
         "repeat": "no-repeat",
         "attachment": "fixed",
-        "image": {
-          "media_content_id": "media-source://image_upload/public-demo",
-          "media_content_type": "image/png",
-          "metadata": {
-            "title": "ChatGPT-Bild 29. Sept. 2026, 18_29_06.png",
-            "thumbnail": "/api/image/serve/public-demo/256x256",
-            "media_class": "image",
-            "navigateIds": [
-              {},
-              {
-                "media_content_type": "app",
-                "media_content_id": "media-source://image_upload"
-              }
-            ]
-          }
-        }
+        "image": "/local/liquid-glass/assets/backgrounds/wohnzimmer.png"
       },
       "theme": "DASH6 Satin Glass",
       "subview": false

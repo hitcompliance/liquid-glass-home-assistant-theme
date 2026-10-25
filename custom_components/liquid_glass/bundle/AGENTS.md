@@ -36,6 +36,8 @@ Auf der HA-Installation liegen die Karten unter `/config/www/liquid-glass/`, die
 
 Die Kopie liegt in `examples/dash6-copy.json`, ihre lokalen Beispielzustände in `support/dash6-copy-entities.json`, anonymisierte Raumlader in `support/demo-room-configs.json`. Profile verwenden eingebettete `definition`, damit keine privaten Profildateien nachgeladen werden. Der Importer `scripts/import-dash6-copy.py` ist nur ein bewusster Maintainer-Schritt mit privaten Eingaben außerhalb des Release-Pakets. Normale Builds benötigen diese Eingaben nicht.
 
+Die originalen Hintergrundvorgaben der übernommenen Raum-Views stehen in `support/demo-view-backgrounds.json`. Der Demo-Build übernimmt sie in die installierten Dashboards; der Installer kopiert die zugehörigen Dateien aus `assets/backgrounds/` nach `/config/www/liquid-glass/assets/backgrounds/`. Keine privaten HA-Upload-IDs als portable Hintergrundquelle verwenden.
+
 `custom_components/liquid_glass/hue_dashboard.py` erzeugt die optionale **LIQUID-GLASS-HUE-DEMO** ausschließlich aus den lokalen Registries. Sie steuert echte lokale Entities; den Dummy-Scope dort nicht verwenden. Kein Build darf ein festes privates Geräteverzeichnis als Hue-Quelle übernehmen. Ultra Card, Domain-Hüllen, Heading-Reiter und die Theme-Vorgaben bleiben maßgeblich.
 
 ## Verbindlicher Aufbau der Domain-Blöcke

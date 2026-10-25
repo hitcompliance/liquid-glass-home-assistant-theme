@@ -306,6 +306,11 @@ def build():
     (ROOT/'examples/gallery-dashboard.yaml').write_text(text,encoding='utf-8') # JSON is valid YAML; no runtime YAML generator needed.
     (ROOT/'custom_components/liquid_glass/demo-entities.json').write_text(json.dumps(specs,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     copy=json.loads((ROOT/'examples/dash6-copy.json').read_text())
+    # package_files() installs these portable room backdrops on each instance.
+    backgrounds=json.loads((ROOT/'support/demo-view-backgrounds.json').read_text())
+    for copied_view in copy['views']:
+        if copied_view.get('path') in backgrounds:
+            copied_view['background']=deepcopy(backgrounds[copied_view['path']])
     (ROOT/'examples/demo-dashboard.yaml').write_text(json.dumps(copy,ensure_ascii=False,indent=2)+'\n')
     copied=json.loads((ROOT/'support/dash6-copy-entities.json').read_text())
     (ROOT/'custom_components/liquid_glass/demo-entities.json').write_text(json.dumps(specs+copied,ensure_ascii=False,indent=2)+'\n')

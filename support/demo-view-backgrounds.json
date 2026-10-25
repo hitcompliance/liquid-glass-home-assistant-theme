@@ -1,0 +1,66 @@
+{
+  "home": {
+    "opacity": 100,
+    "alignment": "center",
+    "size": "cover",
+    "repeat": "no-repeat",
+    "attachment": "fixed",
+    "image": "/local/liquid-glass/assets/backgrounds/home.png"
+  },
+  "wohnzimmer": {
+    "opacity": 100,
+    "alignment": "center",
+    "size": "cover",
+    "repeat": "no-repeat",
+    "attachment": "fixed",
+    "image": "/local/liquid-glass/assets/backgrounds/wohnzimmer.png"
+  },
+  "kuche": {
+    "opacity": 100,
+    "alignment": "center",
+    "size": "cover",
+    "repeat": "no-repeat",
+    "attachment": "fixed",
+    "image": "/local/liquid-glass/assets/backgrounds/kuche.webp"
+  },
+  "schlafzimmer": {
+    "opacity": 100,
+    "alignment": "center",
+    "size": "cover",
+    "repeat": "no-repeat",
+    "attachment": "fixed",
+    "image": "/local/liquid-glass/assets/backgrounds/schlafzimmer.webp"
+  },
+  "flur": {
+    "opacity": 100,
+    "alignment": "center",
+    "size": "cover",
+    "repeat": "no-repeat",
+    "attachment": "fixed",
+    "image": "/local/liquid-glass/assets/backgrounds/flur.webp"
+  },
+  "badezimmer": {
+    "opacity": 100,
+    "alignment": "center",
+    "size": "cover",
+    "repeat": "no-repeat",
+    "attachment": "fixed",
+    "image": "/local/liquid-glass/assets/backgrounds/badezimmer.webp"
+  },
+  "buro": {
+    "opacity": 100,
+    "alignment": "center",
+    "size": "cover",
+    "repeat": "no-repeat",
+    "attachment": "fixed",
+    "image": "/local/liquid-glass/assets/backgrounds/buro.webp"
+  },
+  "raum-waschkeller": {
+    "opacity": 100,
+    "alignment": "center",
+    "size": "cover",
+    "repeat": "no-repeat",
+    "attachment": "fixed",
+    "image": "/local/liquid-glass/assets/backgrounds/waschkeller.webp"
+  }
+}

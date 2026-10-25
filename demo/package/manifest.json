@@ -200,10 +200,10 @@
       "sha256": "c1c11f62c2c099320f1708d3581feddde858212d52068982c509797fb3227996"
     },
     "demo-runtime-data.json": {
-      "sha256": "a503dc6cf189c43a826eff2552c176316c624d5de5a65f7274d0942259e0839a"
+      "sha256": "9e45f5e6dd480f1f98096ceeb039ea0a7457cd355bffcbe5a14bccfa6c18748b"
     },
     "demo-runtime-data.json.gz": {
-      "sha256": "28b5de0b74c68c7e862f59103eb1d0832acb116d322f49e57a31d42b2955f504"
+      "sha256": "0a0fc481575214dd2e419540347c3929b67294f2471ce677b6236a93cc0e3526"
     },
     "demo-runtime.js": {
       "sha256": "39be5aa2f92b108d70cf66ae3a38113c785796188cdbfb361a48df24e8b38bba"
