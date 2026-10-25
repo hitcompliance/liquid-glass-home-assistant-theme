@@ -11,6 +11,6 @@ class DemoScene(DemoEntity,Scene):
     async def async_activate(self,**kwargs):
         for eid,target in self.extra_state_attributes['scene_targets'].items():
             if light:=self.coordinator.entities.get(eid):
-                light.change(on=True,**{k:v for k,v in target.items() if k!='state'})
+                light.change(on=target.get('state')!='off',**{k:v for k,v in target.items() if k!='state'})
 async def async_setup_entry(hass,entry,async_add_entities):
     await setup_platform(hass,entry,async_add_entities,'scene',DemoScene)

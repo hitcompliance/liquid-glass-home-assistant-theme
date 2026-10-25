@@ -1,4 +1,4 @@
-# 3.4.1 · DASH6-Kopie und lokale Hue-Demo
+# 3.4.2 · DASH6-Kopie und lokale Hue-Demo
 
 - LIQUID-GLASS-DEMO übernimmt 28 tatsächliche DASH6-Views und ihre Kartentypen, Ultra-Layouts, Domain-Hüllen, Seitenleisten und Detailansichten. Florin und seine Inhalts-View samt Links entfernt; 627 Dummy-Entities statt Originalgeräten. Anonymisierte Profile, Büro-Raumlader und Raumhintergründe enthalten.
 - Separate Karten-/GUI-Galerie mit 18 Views und 98 weiteren Dummy-Entities. Alle Karten, Türen, Schuhschrank-Szenen, TV/Apple TV, Staubsauger und grafischen Editoren bleiben direkt erreichbar.

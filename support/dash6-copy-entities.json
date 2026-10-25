@@ -4255,60 +4255,6 @@
           353,
           70
         ]
-      },
-      "light.liquid_glass_demo_copy_light_002": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          353,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_003": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          353,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_004": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          353,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_005": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          353,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_006": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          353,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_007": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          353,
-          70
-        ]
       }
     }
   },
@@ -4329,60 +4275,6 @@
     "no_dashboard": false,
     "scene_targets": {
       "light.liquid_glass_demo_copy_light_001": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          152,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_002": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          152,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_003": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          152,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_004": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          152,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_005": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          152,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_006": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          152,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_007": {
         "state": "on",
         "brightness": 220,
         "color_mode": "hs",
@@ -4417,60 +4309,6 @@
           185,
           70
         ]
-      },
-      "light.liquid_glass_demo_copy_light_002": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          185,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_003": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          185,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_004": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          185,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_005": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          185,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_006": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          185,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_007": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          185,
-          70
-        ]
       }
     }
   },
@@ -4491,60 +4329,6 @@
     "no_dashboard": false,
     "scene_targets": {
       "light.liquid_glass_demo_copy_light_001": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          331,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_002": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          331,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_003": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          331,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_004": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          331,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_005": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          331,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_006": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          331,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_007": {
         "state": "on",
         "brightness": 220,
         "color_mode": "hs",
@@ -4595,7 +4379,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          331,
+          16,
           70
         ]
       },
@@ -4604,16 +4388,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          331,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_026": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          331,
+          61,
           70
         ]
       },
@@ -4622,7 +4397,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          331,
+          106,
           70
         ]
       },
@@ -4631,7 +4406,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          331,
+          151,
           70
         ]
       },
@@ -4640,7 +4415,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          331,
+          196,
           70
         ]
       },
@@ -4649,7 +4424,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          331,
+          241,
           70
         ]
       },
@@ -4658,7 +4433,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          331,
+          286,
           70
         ]
       },
@@ -4676,7 +4451,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          331,
+          16,
           70
         ]
       },
@@ -4685,7 +4460,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          331,
+          61,
           70
         ]
       }
@@ -4740,7 +4515,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          91,
           70
         ]
       },
@@ -4749,7 +4524,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          136,
           70
         ]
       },
@@ -4758,7 +4533,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          181,
           70
         ]
       },
@@ -4767,34 +4542,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_057": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          46,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_058": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          46,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_059": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          46,
+          226,
           70
         ]
       },
@@ -4803,16 +4551,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_061": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          46,
+          271,
           70
         ]
       },
@@ -4821,7 +4560,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          316,
           70
         ]
       },
@@ -4830,7 +4569,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          1,
           70
         ]
       },
@@ -4848,7 +4587,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          91,
           70
         ]
       },
@@ -4857,7 +4596,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          136,
           70
         ]
       },
@@ -4866,7 +4605,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          181,
           70
         ]
       },
@@ -4875,7 +4614,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          226,
           70
         ]
       },
@@ -4884,7 +4623,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          271,
           70
         ]
       },
@@ -4893,7 +4632,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          316,
           70
         ]
       },
@@ -4902,7 +4641,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          1,
           70
         ]
       },
@@ -4920,7 +4659,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          91,
           70
         ]
       },
@@ -4929,7 +4668,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          136,
           70
         ]
       },
@@ -4938,7 +4677,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          181,
           70
         ]
       },
@@ -4947,7 +4686,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          226,
           70
         ]
       },
@@ -4956,7 +4695,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          46,
+          271,
           70
         ]
       }
@@ -4992,7 +4731,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          124,
+          169,
           70
         ]
       },
@@ -5001,7 +4740,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          124,
+          214,
           70
         ]
       },
@@ -5010,7 +4749,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          124,
+          259,
           70
         ]
       },
@@ -5019,7 +4758,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          124,
+          304,
           70
         ]
       },
@@ -5028,7 +4767,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          124,
+          349,
           70
         ]
       },
@@ -5037,7 +4776,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          124,
+          34,
           70
         ]
       },
@@ -5046,7 +4785,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          124,
+          79,
           70
         ]
       },
@@ -5064,7 +4803,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          124,
+          169,
           70
         ]
       },
@@ -5073,7 +4812,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          124,
+          214,
           70
         ]
       }
@@ -5117,70 +4856,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          274,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_048": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          274,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_049": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          274,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_050": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          274,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_051": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          274,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_052": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          274,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_053": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          274,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_054": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          274,
+          319,
           70
         ]
       }
@@ -5215,8 +4891,8 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          310,
-          70
+          0,
+          0
         ]
       },
       "light.liquid_glass_demo_copy_light_046": {
@@ -5224,71 +4900,8 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          310,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_048": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          310,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_049": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          310,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_050": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          310,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_051": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          310,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_052": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          310,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_053": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          310,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_054": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          310,
-          70
+          0,
+          0
         ]
       }
     }
@@ -5330,7 +4943,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          341,
           70
         ]
       },
@@ -5339,7 +4952,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          26,
           70
         ]
       },
@@ -5348,7 +4961,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          71,
           70
         ]
       },
@@ -5357,34 +4970,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_057": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          296,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_058": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          296,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_059": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          296,
+          116,
           70
         ]
       },
@@ -5393,16 +4979,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_061": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          296,
+          161,
           70
         ]
       },
@@ -5411,7 +4988,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          206,
           70
         ]
       },
@@ -5420,7 +4997,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          251,
           70
         ]
       },
@@ -5438,7 +5015,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          341,
           70
         ]
       },
@@ -5447,7 +5024,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          26,
           70
         ]
       },
@@ -5456,7 +5033,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          71,
           70
         ]
       },
@@ -5465,7 +5042,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          116,
           70
         ]
       },
@@ -5474,7 +5051,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          161,
           70
         ]
       },
@@ -5483,7 +5060,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          206,
           70
         ]
       },
@@ -5492,7 +5069,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          251,
           70
         ]
       },
@@ -5510,7 +5087,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          341,
           70
         ]
       },
@@ -5519,7 +5096,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          26,
           70
         ]
       },
@@ -5528,7 +5105,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          71,
           70
         ]
       },
@@ -5537,7 +5114,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          116,
           70
         ]
       },
@@ -5546,7 +5123,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          296,
+          161,
           70
         ]
       }
@@ -5589,7 +5166,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          75,
           70
         ]
       },
@@ -5598,7 +5175,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          120,
           70
         ]
       },
@@ -5607,7 +5184,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          165,
           70
         ]
       },
@@ -5616,34 +5193,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_057": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          30,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_058": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          30,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_059": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          30,
+          210,
           70
         ]
       },
@@ -5652,16 +5202,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_061": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          30,
+          255,
           70
         ]
       },
@@ -5670,7 +5211,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          300,
           70
         ]
       },
@@ -5679,7 +5220,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          345,
           70
         ]
       },
@@ -5697,7 +5238,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          75,
           70
         ]
       },
@@ -5706,7 +5247,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          120,
           70
         ]
       },
@@ -5715,7 +5256,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          165,
           70
         ]
       },
@@ -5724,7 +5265,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          210,
           70
         ]
       },
@@ -5733,7 +5274,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          255,
           70
         ]
       },
@@ -5742,7 +5283,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          300,
           70
         ]
       },
@@ -5751,7 +5292,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          345,
           70
         ]
       },
@@ -5769,7 +5310,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          75,
           70
         ]
       },
@@ -5778,7 +5319,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          120,
           70
         ]
       },
@@ -5787,7 +5328,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          165,
           70
         ]
       },
@@ -5796,7 +5337,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          210,
           70
         ]
       },
@@ -5805,7 +5346,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          30,
+          255,
           70
         ]
       }
@@ -5848,7 +5389,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          289,
           70
         ]
       },
@@ -5857,7 +5398,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          334,
           70
         ]
       },
@@ -5866,7 +5407,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          19,
           70
         ]
       },
@@ -5875,34 +5416,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_057": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          244,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_058": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          244,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_059": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          244,
+          64,
           70
         ]
       },
@@ -5911,16 +5425,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_061": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          244,
+          109,
           70
         ]
       },
@@ -5929,7 +5434,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          154,
           70
         ]
       },
@@ -5938,7 +5443,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          199,
           70
         ]
       },
@@ -5956,7 +5461,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          289,
           70
         ]
       },
@@ -5965,7 +5470,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          334,
           70
         ]
       },
@@ -5974,7 +5479,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          19,
           70
         ]
       },
@@ -5983,7 +5488,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          64,
           70
         ]
       },
@@ -5992,7 +5497,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          109,
           70
         ]
       },
@@ -6001,7 +5506,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          154,
           70
         ]
       },
@@ -6010,7 +5515,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          199,
           70
         ]
       },
@@ -6028,7 +5533,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          289,
           70
         ]
       },
@@ -6037,7 +5542,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          334,
           70
         ]
       },
@@ -6046,7 +5551,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          19,
           70
         ]
       },
@@ -6055,7 +5560,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          64,
           70
         ]
       },
@@ -6064,7 +5569,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          244,
+          109,
           70
         ]
       }
@@ -6107,7 +5612,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          296,
           70
         ]
       },
@@ -6116,7 +5621,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          341,
           70
         ]
       },
@@ -6125,7 +5630,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          26,
           70
         ]
       },
@@ -6134,34 +5639,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_057": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          251,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_058": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          251,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_059": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          251,
+          71,
           70
         ]
       },
@@ -6170,16 +5648,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
-          70
-        ]
-      },
-      "light.liquid_glass_demo_copy_light_061": {
-        "state": "on",
-        "brightness": 220,
-        "color_mode": "hs",
-        "hs_color": [
-          251,
+          116,
           70
         ]
       },
@@ -6188,7 +5657,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          161,
           70
         ]
       },
@@ -6197,7 +5666,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          206,
           70
         ]
       },
@@ -6215,7 +5684,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          296,
           70
         ]
       },
@@ -6224,7 +5693,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          341,
           70
         ]
       },
@@ -6233,7 +5702,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          26,
           70
         ]
       },
@@ -6242,7 +5711,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          71,
           70
         ]
       },
@@ -6251,7 +5720,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          116,
           70
         ]
       },
@@ -6260,7 +5729,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          161,
           70
         ]
       },
@@ -6269,7 +5738,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          206,
           70
         ]
       },
@@ -6287,7 +5756,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          296,
           70
         ]
       },
@@ -6296,7 +5765,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          341,
           70
         ]
       },
@@ -6305,7 +5774,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          26,
           70
         ]
       },
@@ -6314,7 +5783,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          71,
           70
         ]
       },
@@ -6323,7 +5792,7 @@
         "brightness": 220,
         "color_mode": "hs",
         "hs_color": [
-          251,
+          116,
           70
         ]
       }

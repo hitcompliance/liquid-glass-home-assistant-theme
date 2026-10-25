@@ -69,7 +69,8 @@ class DemoTests(unittest.IsolatedAsyncioTestCase):
         devices=dr.async_get(self.hass);areas=ar.async_get(self.hass)
         for spec in self.coordinator.specs:
             row=er.async_get(self.hass).async_get(spec['entity_id']);device=devices.async_get(row.device_id)
-            self.assertEqual(areas.async_get_area(device.area_id).name,spec.get('area','DASH6 Demo · '+spec['room']))
+            expected=spec.get('area','DASH6 Demo · '+spec['room'])
+            self.assertEqual(areas.async_get_area(device.area_id).name if device.area_id else None,expected)
         dashboard=json.loads((ROOT/'examples/demo-dashboard.yaml').read_text())
         self.assertTrue(all(v.get('theme')=='DASH6 Satin Glass' for v in dashboard['views']))
         self.assertFalse(any('florin' in v.get('path','').lower() for v in dashboard['views']))
@@ -89,6 +90,17 @@ class DemoTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(targets)
         await self.get('light','schuhschrank_links').async_turn_off()
         self.assertEqual(self.state('light','schuhschrank_links').state,'off')
+
+    async def test_copied_white_scene_uses_only_white_virtual_light_targets(self):
+        scenes=[s for s in self.coordinator.specs if s['domain']=='scene' and s['key'].startswith('copy_') and any(w in s['name'].lower() for w in ('weiss','weiß'))]
+        self.assertTrue(scenes)
+        for spec in scenes:
+            await self.get('scene',spec['key']).async_activate()
+            for eid,target in spec['scene_targets'].items():
+                self.assertTrue(eid.startswith('light.liquid_glass_demo_'))
+                state=self.hass.states.get(eid)
+                self.assertEqual(state.state,target['state'])
+                self.assertEqual(tuple(state.attributes['hs_color']),(0,0))
 
     async def test_fan_countdown_presence_and_energy(self):
         await self.get('switch','anwesenheit').async_turn_on()

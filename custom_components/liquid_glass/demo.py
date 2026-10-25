@@ -54,7 +54,9 @@ class DemoCoordinator:
         for spec in self.specs:
             row=registry.async_get(spec['entity_id'])
             if not row or row.platform!='liquid_glass':continue
-            area=areas.async_get_or_create(spec.get('area','DASH6 Demo · '+spec['room']))
+            area_name=spec.get('area','DASH6 Demo · '+spec['room'])
+            if area_name is None:continue
+            area=areas.async_get_or_create(area_name)
             if spec.get('no_dashboard'):
                 labels=lr.async_get(self.hass)
                 label=next((v for v in labels.labels.values() if v.name=='LIQUID GLASS DEMO · no-dboard'),None) or labels.async_create('LIQUID GLASS DEMO · no-dboard')

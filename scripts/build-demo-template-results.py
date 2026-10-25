@@ -11,7 +11,9 @@ async def main():
     from homeassistant.helpers import label_registry as lr
     areas=ar.async_get(test.hass);entities=er.async_get(test.hass);devices=dr.async_get(test.hass)
     for spec in test.coordinator.specs:
-        area=areas.async_get_or_create(spec.get('area','DASH6 Demo · '+spec['room']))
+        name=spec.get('area','DASH6 Demo · '+spec['room'])
+        if name is None:continue
+        area=areas.async_get_or_create(name)
         row=entities.async_get(spec['entity_id'])
         if row:entities.async_update_entity(row.entity_id,area_id=area.id)
         dev=devices.async_get(row.device_id) if row and row.device_id else None

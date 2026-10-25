@@ -1,3 +1,7 @@
+# 3.4.2 · Globale Demo-Szenen
+
+- Raumlose Szenen bleiben in der kopierten Zuhause-Ansicht verfügbar. Weiß-Szenen erhalten weiße Dummy-Ziele, bunte Szenen verschiedene Farbtöne; Ausschalten respektiert den virtuellen Zielzustand.
+
 # 3.4.1 · Getrennte Demo-Bereiche und bereinigte Navigation
 
 - Browser-Vorschau trennt die Entities der DASH6-Kopie von der Galerie. Entfernte Raumlinks entfallen vollständig; nur tatsächlich verwendete Automations-/Helper-Referenzen werden als virtuelle Schalter/Zahlen übernommen.

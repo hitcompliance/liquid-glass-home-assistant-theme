@@ -52,7 +52,7 @@ room_names={'Wohnzimmer','Küche','Schlafzimmer','Flur','Badezimmer','Büro','Wa
 supported=set(domains.split('|'))
 for eid,row in er.items():
  room=ar.get(row.get('area_id') or dr.get(row.get('device_id'),{}).get('area_id'))
- if room in room_names and eid.split('.')[0] in supported-{'automation','input_boolean','input_number','input_select'} and not row.get('hidden_by') and not row.get('disabled_by') and row.get('platform')!='liquid_glass':ids.append(eid)
+ if (room in room_names or (room is None and eid.startswith('scene.'))) and eid.split('.')[0] in supported-{'automation','input_boolean','input_number','input_select'} and not row.get('hidden_by') and not row.get('disabled_by') and row.get('platform')!='liquid_glass':ids.append(eid)
 # Group members also receive dummy identities; no real ID may leak through attributes.
 for eid in list(ids):
  members=states.get(eid,{}).get('attributes',{}).get('entity_id',[])
@@ -65,15 +65,17 @@ for eid in ids:
  domain,old=eid.split('.',1);domain={'input_boolean':'switch','automation':'switch','input_number':'number','input_select':'select','sun':'sensor'}.get(domain,domain)
  counts[domain]=counts.get(domain,0)+1;key='copy_'+domain+'_'+str(counts[domain]).zfill(3);mapped=f'{domain}.liquid_glass_demo_{key}';mapping[eid]=mapped
  reg=er.get(eid,{});dev=dr.get(reg.get('device_id'),{});room=ar.get(reg.get('area_id') or dev.get('area_id'))
+ global_scene=domain=='scene' and room is None
  removed_room=bool(room and 'florin' in room.lower())
- if removed_room:room='Nebenraum'
+ if global_scene:room='Zuhause'
+ elif removed_room:room='Nebenraum'
  elif room not in area_map:room=next((v for k,v in rooms.items() if k in old),'Wohnzimmer')
  device_key=reg.get('device_id') or eid
  if device_key not in device_map:device_map[device_key]='copy_device_'+str(len(device_map)+1).zfill(3)
  attrs=states.get(eid,{}).get('attributes',{}); safe={k:attrs[k] for k in ('device_class','unit_of_measurement','state_class','options','entity_id','min','max','step') if k in attrs}
  name=attrs.get('friendly_name',old.replace('_',' ').capitalize())
  name=re.sub(r'(?i)johns?|bj[oö]rns?|florin|fabi|[a-f0-9]{10,}|\d{8,}','Demo',name)
- spec={'entity_id':mapped,'domain':domain,'key':key,'room':room,'area':area_map.get(room,'LIQUID GLASS DEMO · '+room),'device':device_map[device_key],'name':'Demo · '+name,'attributes':safe,'hidden':bool(removed_room or reg.get('hidden_by') or reg.get('disabled_by')),'no_dashboard':any(x in ('no-dboard','no_dboard') for x in reg.get('labels',[])+dev.get('labels',[]))}
+ spec={'entity_id':mapped,'domain':domain,'key':key,'room':room,'area':None if global_scene else area_map.get(room,'LIQUID GLASS DEMO · '+room),'device':device_map[device_key],'name':'Demo · '+name,'attributes':safe,'hidden':bool(removed_room or reg.get('hidden_by') or reg.get('disabled_by')),'no_dashboard':any(x in ('no-dboard','no_dboard') for x in reg.get('labels',[])+dev.get('labels',[]))}
  if domain=='sensor':
   dc=attrs.get('device_class');unit=attrs.get('unit_of_measurement') or {'energy':'kWh','power':'W','temperature':'°C','humidity':'%','battery':'%'}.get(dc);numeric=unit is not None or dc in ('power','energy','temperature','battery','humidity')
   spec['initial']={'value': {'temperature':22.1,'humidity':45,'battery':86,'energy':0,'power':24,'illuminance':18000}.get(dc,20 if numeric else 'Bereit'), 'unit':unit,'device_class':dc if dc!='timestamp' else None,'state_class':attrs.get('state_class') if numeric else None}
@@ -135,9 +137,11 @@ link_controls(result)
 lights=[s for s in specs if s['domain']=='light']
 for spec in specs:
  if spec['domain']=='scene':
-  candidates=[s for s in lights if s['room']==spec['room']]
+  candidates=[s for s in lights if not s.get('hidden') and (spec['area'] is None or s['room']==spec['room'])]
   hue=int(hashlib.sha256(spec['entity_id'].encode()).hexdigest()[:4],16)%360
-  spec['scene_targets']={s['entity_id']:{'state':'on','brightness':220,'color_mode':'hs','hs_color':[hue,70]} for s in candidates}
+  white=any(word in spec['name'].lower() for word in ('weiss','weiß','white'))
+  off=any(word in spec['name'].lower() for word in ('alles aus','all off'))
+  spec['scene_targets']={s['entity_id']:{'state':'off' if off else 'on','brightness':220,'color_mode':'hs','hs_color':[0,0] if white else [(hue+index*45)%360,70]} for index,s in enumerate(candidates)}
 # Room backgrounds are assets, not private runtime prerequisites.
 for path in (a.config/'www/dash6/backgrounds').glob('*.webp'):
  if path.stem in rooms:
