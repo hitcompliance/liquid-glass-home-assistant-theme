@@ -40,5 +40,14 @@ class DiscoveryTests(unittest.TestCase):
         self.assertIn('custom:dash6-ultra-card',text);self.assertIn('custom:dash6-shoe-cabinet-card',text);self.assertIn('custom:dash6-appletv-card',text);self.assertIn('custom:dash6-vacuum-card',text);self.assertIn('custom:dash6-door-card',text)
         for v in data['views']:
             for container in (v,*v.get('sections',[])):
-                for c in container.get('cards',[]):self.assertEqual(c['type'],'custom:dash6-demo-scope')
+                for c in container.get('cards',[]):
+                    if c['type']=='custom:dash6-ultra-card':
+                        self.assertIs(container,v)
+                        self.assertEqual(v['type'],'panel')
+                        self.assertEqual(c.get('liquid_glass_demo_mode'),'browser')
+                    else:self.assertEqual(c['type'],'custom:dash6-demo-scope')
+        legacy=json.loads((root/'examples/demo-dashboard-entities.yaml').read_text())
+        for view in legacy['views']:
+            for c in view.get('cards',[]):
+                if c['type']=='custom:dash6-ultra-card':self.assertEqual(c['liquid_glass_demo_mode'],'entities')
 if __name__=='__main__':unittest.main()

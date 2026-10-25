@@ -90,3 +90,5 @@ Die automatisierten Prüfungen verwenden temporäre HA-Konfigurationen und simul
 Das Paket enthält die abgeglichenen 64 CSS- und 76 GUI-Vorgaben aus dem aktuellen Satin-Stand. Helles Glas startet bei 20 %/8 px, dunkles bei 70 %/16 px. Gemeinsam gespeicherte Nutzer-Defaults werden über Updates erhalten. Die eigene Administrator-Schnittstelle übernimmt „Alles für Alle speichern“ samt Sicherung; eine private Config-Editor-Integration ist dafür nicht nötig.
 
 `/config/liquid-glass/AGENTS.md`, README, Kartenleitfaden, weitere Dokumentation und `support/card-catalog.json` werden mitinstalliert. Die [Agenten-Anleitung](../AGENTS.md) erklärt Struktur, Demo-Einstieg und das verbindliche Theme.
+
+Die kopierten Raum-Panels haben unmittelbar `custom:dash6-ultra-card` als erste Karte. `liquid_glass_demo_mode: browser` isoliert dort den vollständigen Kartenbaum und den Originaleditor; der optionale Altmodus setzt `entities`. Sonstige Demo-Karten verwenden weiterhin `dash6-demo-scope`. Vor bewusster Umstellung einer Kopie auf echte Geräte sowohl diese Wrapper als auch `liquid_glass_demo_mode` entfernen und alle Entity-Zuordnungen ersetzen.

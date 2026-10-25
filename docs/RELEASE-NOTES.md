@@ -1,4 +1,4 @@
-# DASH6 Satin Glass 3.5.6
+# DASH6 Satin Glass 3.5.7
 
 Die vollständige DASH6-Kopie und Karten-/GUI-Galerie funktionieren jetzt standardmäßig ohne angelegte Home-Assistant-Dummy-Entities. Die installierte Demo und GitHub-Pages-Vorschau verwenden dieselbe isolierte Browser-Simulation mit lokalen Zuständen, Reglern, Szenen, Türen, Medien, Staubsauger, Countdown und Beispielverläufen. Mehr-Informationen-Dialoge bleiben ebenfalls lokal; es werden keine Geräteservices oder Recorder-Schreibzugriffe ausgelöst.
 
