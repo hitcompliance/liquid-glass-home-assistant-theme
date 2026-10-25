@@ -26,7 +26,7 @@ window.empty=document.createElement('dash6-domain-card');empty.setConfig({...sen
 const server=createServer((req,res)=>{res.setHeader('content-type',req.url==='/loader.js'?'text/javascript':'text/html');res.end(req.url==='/loader.js'?loader:html);});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 try{for(const [name,engine]of Object.entries({chromium,webkit})){
  const browser=await engine.launch({headless:true});try{
-  const page=await browser.newPage({viewport:{width:1000,height:900}}),errors=[];page.on('pageerror',error=>errors.push(error.message));await page.goto('http://127.0.0.1:'+server.address().port);await page.waitForFunction(()=>ready&&light._fixed&&sensor._fixed);
+  const page=await browser.newPage({viewport:{width:1000,height:900}}),errors=[];page.on('pageerror',error=>errors.push(error.message));await page.goto('http://127.0.0.1:'+server.address().port);await page.waitForFunction(()=>window.ready&&light._fixed&&sensor._fixed);
   assert.deepEqual(await page.evaluate(()=>reads.sort()),['config/area_registry/list','config/device_registry/list','config/entity_registry/list'],'all three blocks reuse registry snapshots');
   assert.deepEqual(await page.evaluate(()=>sensor._extraDefs.map(card=>card.entity)),['sensor.extra','sensor.visible'],'helper, hidden and foreign room excluded');
   assert.equal(await page.evaluate(()=>empty.empty),true,'empty block hides in normal mode');
