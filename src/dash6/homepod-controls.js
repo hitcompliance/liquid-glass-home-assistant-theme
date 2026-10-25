@@ -1,10 +1,11 @@
 import {scopedCustomElements as customElements} from './scoped-elements.js';
 import {inDashboardScope} from './scope.js';
+import MEDIA_VOLUME_CSS from './media-volume.css';
 // Keep the native HomePod card and its artwork; add transport and a glass volume row.
 (() => {
 
  const track='linear-gradient(to right,rgba(255,255,255,0),rgba(255,255,255,1))';
- const sheet=new CSSStyleSheet();sheet.replaceSync(`
+ const sheet=new CSSStyleSheet();sheet.replaceSync(MEDIA_VOLUME_CSS+`
  :host([data-dash6-homepod]){display:block;min-width:0}
  :host([data-dash6-homepod]) ha-card{border-radius:16px!important;overflow:hidden!important}
  :host([data-dash6-homepod]) ha-card[data-pod-no-cover]{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important}
@@ -35,15 +36,18 @@ import {inDashboardScope} from './scope.js';
   const sync=function(){
    const id=this._config?.entity,hass=this.hass||this._hass,root=this.shadowRoot;
    if(!root)return;
-   if(!inScope()||getComputedStyle(this).getPropertyValue('--dash6-satin-enabled').trim()!=='1'||!(this._config?.homepod===true||this._satinMediaHeader||/homepod/i.test(id+' '+(hass?.states[id]?.attributes.friendly_name||'')))){this._podCancel?.();const old=root.querySelector('ha-card');if(old?.hasAttribute('data-pod-no-cover')){old.removeAttribute('data-pod-no-cover');old.style.removeProperty('background');}root.querySelector('.dash6-pod-transport')?.remove();root.querySelector('.dash6-pod-volume')?.remove();this.removeAttribute('data-dash6-homepod');return;}
+   if(!inScope()||getComputedStyle(this).getPropertyValue('--dash6-satin-enabled').trim()!=='1'||!id?.startsWith('media_player.')){this._podCancel?.();const old=root.querySelector('ha-card');if(old?.hasAttribute('data-pod-no-cover')){old.removeAttribute('data-pod-no-cover');old.style.removeProperty('background');}root.querySelector('.dash6-pod-transport')?.remove();root.querySelector('.dash6-pod-volume')?.remove();this.removeAttribute('data-dash6-homepod');this.removeAttribute('data-dash6-media-volume');return;}
    const card=root.querySelector('ha-card'),state=hass?.states[id];if(!card||!state)return;
-   this.setAttribute('data-dash6-homepod','');
+   const enhanced=this._config?.homepod===true||!!this._satinMediaHeader||/homepod/i.test(id+' '+(state.attributes.friendly_name||''));
+   this.toggleAttribute('data-dash6-homepod',enhanced);
+   this.setAttribute('data-dash6-media-volume','');
    if(!root.adoptedStyleSheets.includes(sheet))root.adoptedStyleSheets=[...root.adoptedStyleSheets,sheet];
    const hasCover=!!state.attributes.entity_picture;
-   card.toggleAttribute('data-pod-no-cover',!hasCover);
-   if(!hasCover){card.style.setProperty('background','transparent','important');card.removeAttribute('data-dash6-satin-surface');}else card.style.removeProperty('background');
+   if(enhanced){card.toggleAttribute('data-pod-no-cover',!hasCover);
+   if(!hasCover){card.style.setProperty('background','transparent','important');card.removeAttribute('data-dash6-satin-surface');}else card.style.removeProperty('background');}
    let transport=root.querySelector('.dash6-pod-transport');
-   if(!transport){
+   if(!enhanced){transport?.remove();transport=null;}
+   if(enhanced&&!transport){
     transport=document.createElement('div');transport.className='dash6-pod-transport';transport.setAttribute('role','group');transport.setAttribute('aria-label','HomePod Wiedergabe');
     for(const [action,label,glyph]of [['media_previous_track','Zurück','mdi:skip-previous'],['media_play_pause','Wiedergabe','mdi:play'],['media_next_track','Vor','mdi:skip-next']]){
      const b=document.createElement('button');b.type='button';b.dataset.action=action;b.setAttribute('aria-label',label);b.title=label;const icon=document.createElement('ha-icon');icon.setAttribute('icon',glyph);b.append(icon);b.onclick=event=>{event.stopPropagation();this._podService(action);};transport.append(b);
@@ -51,8 +55,8 @@ import {inDashboardScope} from './scope.js';
     card.append(transport);
    }
    const unavailable=['unknown','unavailable'].includes(state.state),off=['off','standby'].includes(state.state),playing=state.state==='playing';
-   for(const b of transport.children)b.disabled=unavailable||off&&b.dataset.action!=='media_play_pause';
-   const play=transport.querySelector('[data-action="media_play_pause"]');play.setAttribute('aria-label',playing?'Pause':'Wiedergabe');play.title=playing?'Pause':'Wiedergabe';play.firstChild.setAttribute('icon',playing?'mdi:pause':'mdi:play');
+   if(transport){for(const b of transport.children)b.disabled=unavailable||off&&b.dataset.action!=='media_play_pause';
+   const play=transport.querySelector('[data-action="media_play_pause"]');play.setAttribute('aria-label',playing?'Pause':'Wiedergabe');play.title=playing?'Pause':'Wiedergabe';play.firstChild.setAttribute('icon',playing?'mdi:pause':'mdi:play');}
    let volume=root.querySelector('.dash6-pod-volume');
    if(!volume){
     volume=document.createElement('section');volume.className='dash6-pod-volume';volume.setAttribute('aria-label','HomePod Lautstärke');

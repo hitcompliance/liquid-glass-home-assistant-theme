@@ -491,3 +491,12 @@ button:not(.detail-link):focus-visible,[role=button]:not(.detail-link):focus-vis
  border:var(--dash6-satin-control-border)!important;
  background-image:var(--dash6-satin-slider-gloss),var(--track)!important;
 }
+
+/* A native volume row is redundant while the bottom glass slider is present.
+   Playback progress, mute buttons and the shared glass slider remain untouched. */
+:host([data-dash6-media-volume]) [data-dash6-native-volume],
+:host([data-dash6-media-volume]) label:has(input[data-volume]),
+:host([data-dash6-media-volume]) .volume-slider,
+:host([data-dash6-media-volume]) .volume-level {
+  display: none !important;
+}

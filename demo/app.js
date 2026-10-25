@@ -1,4 +1,4 @@
-import {createCardElement} from './native.js?v=3.3.3';
+import {createCardElement} from './native.js?v=3.3.4';
 const prefix='liquid_glass_demo_',own=id=>typeof id==='string'&&/^[a-z_]+\.liquid_glass_demo_[a-z0-9_]+$/.test(id);
 const status=document.querySelector('#runtime-status');
 const stamp=()=>new Date().toISOString();
@@ -99,7 +99,7 @@ let hass={states,entities,devices,areas,demo_browser:true,user:{id:'public-demo'
 window.demoPreview={dashboard,hass,ready:false,errors:[]};reset();
 try{
  for(const url of modules)await import(new URL(url,location.href));
- await import('./package/dash6-cards.js?v=3.3.3');await import('./package/vacuum-dock-card.js?v=3.3.3');await import('./package/room-loader.js?v=3.3.3');
+ await import('./package/dash6-cards.js?v=3.3.4');await import('./package/vacuum-dock-card.js?v=3.3.4');await import('./package/room-loader.js?v=3.3.4');
  const preview=document.querySelector('#preview'),app=document.createElement('home-assistant');app.hass=hass;preview.append(app);let node=app;
  for(const tag of ['home-assistant-main','ha-panel-lovelace','hui-root']){const child=document.createElement(tag);node.attachShadow({mode:'open'}).append(child);node=child;}
  const root=node;root.lovelace={config:dashboard,urlPath:'liquid-glass-demo',mode:'storage',editMode:false,saveConfig:async next=>{root.lovelace.config=next;}};

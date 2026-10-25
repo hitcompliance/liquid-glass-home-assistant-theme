@@ -10,6 +10,7 @@ class HomePodCard extends HTMLElement {
   }
   static getStubConfig(){return {type:'custom:dash6-homepod-card',entity:''};}
   constructor(){super();this.attachShadow({mode:'open'});}
+  connectedCallback(){requestAnimationFrame(()=>{if(this.isConnected)this._card?._syncSatinTransport?.();});}
   setConfig(config){
     if(!config.entity?.startsWith('media_player.'))throw new Error('Eine HomePod-Media-Entity ist erforderlich.');
     this._config=structuredClone(config);

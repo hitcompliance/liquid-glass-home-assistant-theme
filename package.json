@@ -15,7 +15,8 @@
     "test:integration": "python3 scripts/test-integration.py",
     "test:demo-entities": "python3 scripts/test-demo.py",
     "build:demo": "python3 scripts/build-public-demo.py",
-    "test:theme-store": "python3 scripts/test-theme-store.py"
+    "test:theme-store": "python3 scripts/test-theme-store.py",
+    "test:media-volume": "node tests/media-volume-browser.mjs"
   },
   "dependencies": {
     "@samasante/liquid-glass": "0.1.1",
@@ -27,6 +28,6 @@
     "esbuild": "0.25.12",
     "playwright": "^1.61.1"
   },
-  "version": "3.3.3",
+  "version": "3.3.4",
   "description": "Satin Liquid Glass theme, complete custom-card bundle and interactive design gallery for Home Assistant"
 }

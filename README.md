@@ -76,6 +76,8 @@ Zwischen den Karten liegen **8px**. Native Headings stehen am Beginn der gemeins
 
 **GUI konfigurieren** öffnet automatisch den echten Editor jeder Karte, die einen bereitstellt – aktuell **18 Editoren im Haupt-Showcase**. „In Demo übernehmen“ ändert nur diese Vorschau. Eigene Karten werden mit denselben Editor-Klassen in Home Assistants normaler Karten-GUI konfiguriert. Weitere Details, darunter Kamera, Kompatibilitätsnamen und die genaue Abgrenzung freier Editoren: [Karten- und GUI-Leitfaden](docs/CARD-GUIDE.md).
 
+**Medien-Lautstärke:** HomePod-, normale Media-Player- und kombinierte TV-/Apple-TV-Karten verwenden genau einen Glasregler unten. Der zusätzliche native Regler und seine sichtbare „Lautstärke“-Beschriftung entfallen. Der untere Regler bleibt auch beim ersten Laden und beim Playerwechsel erhalten; Wiedergabefortschritt und barrierefreier Reglername bleiben verfügbar.
+
 ## Aktuell verwendeter Satin-Stand als Paket-Default
 
 Das Paket installiert die am **25.10.2026 frisch an der aktiven Oberfläche abgeglichenen Einstellungen**: **64 CSS-Vorgaben und 76 GUI-Werte**. Darin enthalten sind helles Glas mit **20 % / 8 px**, dunkles Glas mit **70 % / 16 px**, die aktuellen Farb-/Textvorgaben, Schalter-/Sliderbewegungen und Grapheneinstellungen. Native Theme-YAML und grafische Regler verwenden denselben versionierten Stand. **Theme-Vorgaben wiederherstellen** kehrt zu diesen Paketvorgaben zurück.

@@ -1,8 +1,10 @@
+import {build} from 'esbuild';
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {chromium,webkit} from 'playwright';
-const server=createServer(async(req,res)=>{try{res.setHeader('Content-Type',req.url.endsWith('.js')?'text/javascript':'text/html');res.end(req.url==='/'?'<!doctype html><body></body>':await readFile(new URL('..'+req.url,import.meta.url)));}catch{res.writeHead(404).end();}});
+const compiled=await build({entryPoints:['src/dash6/homepod-controls.js'],bundle:true,format:'esm',write:false,loader:{'.css':'text'}});
+const server=createServer(async(req,res)=>{try{res.setHeader('Content-Type',req.url.endsWith('.js')?'text/javascript':'text/html');res.end(req.url==='/'?'<!doctype html><body></body>':req.url==='/src/dash6/homepod-controls.js'?compiled.outputFiles[0].text:await readFile(new URL('..'+req.url,import.meta.url)));}catch{res.writeHead(404).end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 try{for(const engine of [chromium,webkit]){const browser=await engine.launch({headless:true});try{const page=await browser.newPage();await page.goto('http://127.0.0.1:'+server.address().port);const result=await page.evaluate(async()=>{
  class Native extends HTMLElement{constructor(){super();this.attachShadow({mode:'open'}).innerHTML='<ha-card><div class="controls"><div class="start"></div></div></ha-card>';this.style.setProperty('--dash6-satin-enabled','1');}updated(){}}

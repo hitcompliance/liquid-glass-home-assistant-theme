@@ -44,6 +44,8 @@ Die Raum-Views und die Demo-View **Domain-Blöcke & Aufbau** (`/liquid-glass-dem
 - Die Domain-GUI verwaltet Überschrift, Raster, feste Karten, automatische Ergänzung und Ausschlüsse. Die jeweiligen Geräteeditoren bearbeiten die inneren Karten.
 - In den festen Dummy-Beispielen ist `auto_entities: false`. Produktive dynamische Blöcke aus den tatsächlichen Bereichs-/Domain-Zuordnungen ergänzen; globale Namensausschlüsse getrennt im Dashboard belassen. Keine privaten Raumlader/Profile als neue Voraussetzung für produktive Raum-Views.
 
+Medien-Muster: genau ein Lautstärkeregler als gemeinsame Glaszeile unter dem Player; keinen zusätzlichen nativen Lautstärkeregler und kein sichtbares Lautstärke-Label einführen. `media-volume.css` wird von den Medienkarten und dem Theme verwendet. Wiedergabefortschritt und vorhandene Geräteaktionen erhalten.
+
 ## Verbindliche Entwicklungsmuster
 
 1. Bestehende gemeinsame Materialien und Renderer erweitern. Keine zusätzliche Themevariante und keine zweite Nachbildung einer bereits enthaltenen Karte anlegen.

@@ -1,3 +1,9 @@
+# 3.3.4 · Ein Lautstärkeregler je Medienkarte
+
+- Zusätzlichen nativen Lautstärkeregler und Label bei HomePod-, normalen Media-Player- und kombinierten TV-/Apple-TV-Karten ausgeblendet. Gemeinsamer unterer Glasregler bleibt erhalten.
+- Initialen HomePod-Aufbau und Browser-Demo an den Karten-Lebenszyklus angepasst; identische Regel in Karten, Theme und Demos.
+- Gezielte Chromium-/WebKit-Prüfung für Initialaufbau, Playerwechsel, Lautstärkeaufruf, Wiedergabefortschritt, Theme-Abgrenzung und 390px.
+
 # 3.3.3 · Reproduzierbare Paketinstallation
 
 - Lit bleibt wie im getesteten Kartenstand auf 3.3.1 festgelegt; Paketversion und Bibliotheksversion werden getrennt aktualisiert. Saubere npm-Installation mit dem festgelegten Lockfile geprüft.

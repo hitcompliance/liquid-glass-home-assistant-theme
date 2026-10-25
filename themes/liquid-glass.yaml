@@ -773,7 +773,16 @@ DASH6 Satin Glass:
   dash6-active-shadow: var(--dash5-inner-shadow),0 0 0 1px rgba(174,222,255,.92),0
     0 24px rgba(28,130,255,.48)
   card-mod-theme: DASH6 Satin Glass
-  card-mod-card: ''
+  card-mod-card: |
+    /* A native volume row is redundant while the bottom glass slider is present.
+       Playback progress, mute buttons and the shared glass slider remain untouched. */
+    :host([data-dash6-media-volume]) [data-dash6-native-volume],
+    :host([data-dash6-media-volume]) label:has(input[data-volume]),
+    :host([data-dash6-media-volume]) .volume-slider,
+    :host([data-dash6-media-volume]) .volume-level {
+      display: none !important;
+    }
+
   card-mod-more-info: ''
   card-mod-dialog: ''
   dash6-material-fd5e2c4e: "'+(w.globals.colors?.[i]||w.config.colors?.[i]||'var(--primary-color)')"

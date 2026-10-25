@@ -54,6 +54,8 @@ Zwischen den Karten liegen **8px**. Native Headings stehen am Beginn der gemeins
 
 Die Tasten unter den Beispielen sind Wegweiser zu den **echten** Kartendialogen. Der Showcase-Wrapper ersetzt deren Implementierung nicht. Die Kartenhintergründe bleiben dort direkt bedienbar, wo die jeweilige Karte diesen Einstieg besitzt.
 
+Medienkarten zeigen im Satin-Theme ausschließlich den unteren Glas-Lautstärkeregler. Native doppelte Lautstärkeregler samt Label sind ausgeblendet; dies gilt auch für die kombinierten TV-/Apple-TV-Karten und ihre Player. Wiedergabefortschritt, Transport, Quellen und Ein/Aus behalten ihre Funktion. Außerhalb des Satin-Themes bleibt die native Lautstärkesteuerung erhalten.
+
 ## Struktur, Raum- und Theme-Werkzeuge
 
 | Werkzeug | Demo und Konfigurationsweg |
