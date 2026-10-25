@@ -1,6 +1,7 @@
+import {inDASH6ContentScope} from './scope.js';
 // Shared content rules for the active DASH6 cards. Graphs and device bindings
 // remain owned by their original renderers.
-const active=()=>location.pathname==='/dash-6'||location.pathname.startsWith('/dash-6/');
+const active=inDASH6ContentScope;
 const energy=/^(?:—|[-+\d.,\s]+)\s*[kMGT]?Wh$/i;
 const power=/^(?:—|[-+\d.,\s]+)\s*[kMGT]?W$/i;
 const sheets=new WeakMap();

@@ -1,7 +1,8 @@
+import {inDASH6ContentScope} from './scope.js';
 const controllers=new WeakMap();
 const write=(node,key,value)=>{if(node.style.getPropertyValue(key)!==value)node.style.setProperty(key,value);};
 // This material is exclusive to DASH6; other dashboards keep their existing lens.
-const glassGaugeScope=()=>location.pathname==='/dash-6'||location.pathname.startsWith('/dash-6/');
+const glassGaugeScope=inDASH6ContentScope;
 const glassGaugeCSS=`
  :host([data-dash6-satin-climate]) svg .background{opacity:0!important}
  :host([data-dash6-satin-climate]) svg .arc-clear,:host([data-dash6-satin-climate]) svg .arc-colored,:host([data-dash6-satin-climate]) svg .arc-active{opacity:0!important}

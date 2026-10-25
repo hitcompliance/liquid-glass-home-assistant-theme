@@ -1,3 +1,7 @@
+# 3.4.3 · Darstellungsregeln in allen Demos
+
+- Die neuen Demo-Pfade übernehmen auch die bestehenden DASH6-Regeln für Graph-Kopfzeilen, ausgeblendete Energiezähler, Präsenzsymbole und Thermostat-Glasringe. Andere Dashboards und eingefrorene Referenzen bleiben außerhalb dieses Bereichs.
+
 # 3.4.2 · Globale Demo-Szenen
 
 - Raumlose Szenen bleiben in der kopierten Zuhause-Ansicht verfügbar. Weiß-Szenen erhalten weiße Dummy-Ziele, bunte Szenen verschiedene Farbtöne; Ausschalten respektiert den virtuellen Zielzustand.

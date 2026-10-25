@@ -25,6 +25,7 @@ jobs:
       - run: python scripts/build-public-demo.py
       - run: node tests/media-volume-browser.mjs
       - run: node tests/dash6-copy-browser.mjs
+      - run: node tests/demo-content-scope-browser.mjs
       - run: node tests/public-showcase-browser.mjs
       - run: node tests/theme-save-actions-browser.mjs
       - run: ruby tests/check_theme.rb
