@@ -451,10 +451,9 @@ DASH6 Satin Glass:
   lg-accent: "#8bc5ff"
   lg-icon-glow: none
   lg-graph-glow: none
-  dash5-thin-background: radial-gradient(110% 48% at 13% 0%,rgba(255,255,255,.095),transparent
-    64%),linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)),linear-gradient(145deg,rgba(8,15,24,.286667),rgba(9,17,25,.206667))
+  dash5-thin-background: var(--dash6-satin-lens-background)
   dash5-thin-border: 1px solid rgba(236,247,255,.42)
-  dash5-thin-filter: blur(3px) saturate(1.18)
+  dash5-thin-filter: blur(8px) saturate(1.18)
   dash5-thin-shadow: inset 0 1px 0 rgba(255,255,255,.52),inset 1px 0 0 rgba(255,255,255,.18),inset
     0 -1px 0 rgba(4,13,25,.20),0 3px 5px rgba(0,0,0,.14),0 9px 22px rgba(0,0,0,.15)
   dash5-inner-background: var(--dash6-satin-card-background)
@@ -471,7 +470,7 @@ DASH6 Satin Glass:
     45%,rgba(8,18,28,.16))
   dash5-icon-background-color: rgba(32,45,58,.5)
   dash5-icon-border: 1px solid rgba(242,249,255,.5)
-  dash5-icon-filter: blur(6px) saturate(1.25)
+  dash5-icon-filter: blur(8px) saturate(1.25)
   dash5-icon-shadow: inset 0 1px 0 rgba(255,255,255,.62),inset 0 -1px 0 rgba(7,17,28,.24),0
     3px 9px rgba(0,0,0,.22)
   dash5-heading-color: "#ffffff"
@@ -799,7 +798,7 @@ DASH6 Satin Glass:
   dash6-segment-border: var(--dash6-satin-control-border)
   dash6-segment-shadow: var(--dash6-satin-control-shadow)
   dash6-segment-filter: blur(8px) saturate(1.15)
-  dash6-segment-selected: var(--dash6-satin-lens-background)
+  dash6-segment-selected: rgba(255,255,255,0.2)
   dash6-segment-selected-border: var(--dash6-satin-lens-border)
   dash6-segment-selected-shadow: var(--dash6-satin-lens-shadow)
   dash6-segment-duration: 280ms
@@ -815,24 +814,24 @@ DASH6 Satin Glass:
   dash6-button-background: var(--dash6-satin-button-background)
   dash6-button-border: var(--dash6-satin-button-border)
   dash6-button-shadow: var(--dash6-satin-button-shadow)
-  dash6-button-filter: blur(var(--dash6-button-blur)) saturate(1.25)
+  dash6-button-filter: blur(16px) saturate(1.25)
   dash6-button-active-background: radial-gradient(ellipse at 35% 0%,rgba(255,255,255,.25),transparent
     56%),linear-gradient(155deg,rgba(43,83,118,.78),rgba(15,33,57,.76))
-  dash6-button-opacity: ".66"
-  dash6-button-blur: 8px
+  dash6-button-opacity: '0.66'
+  dash6-button-blur: 16px
   dash6-button-elevation: 5px
   dash6-button-radius: var(--dash6-satin-button-radius)
   dash6-button-duration: 320ms
-  dash6-button-press-scale: ".94"
+  dash6-button-press-scale: '0.94'
   dash6-button-press-depth: 2px
   dash6-button-pressed-shadow: var(--dash6-satin-button-pressed-shadow)
   ha-control-button-background-color: rgba(27,35,48,.72)
   ha-control-button-border-radius: 18px
   mdc-filled-button-container-color: rgba(27,35,48,.72)
   dash6-knob-radius: 14px
-  dash6-knob-touch-scale: '1.10'
+  dash6-knob-touch-scale: '1.1'
   dash6-knob-duration: 280ms
-  dash6-knob-background: var(--dash6-satin-lens-background)
+  dash6-knob-background: rgba(255,255,255,0.2)
   dash6-knob-border: var(--dash6-satin-lens-border)
   dash6-knob-shadow: var(--dash6-satin-lens-shadow)
   dash6-knob-gloss: var(--dash6-satin-lens-gloss)
@@ -844,8 +843,8 @@ DASH6 Satin Glass:
   dash6-switch-track-background: var(--dash6-satin-switch-track-background)
   dash6-switch-track-shadow: var(--dash6-satin-switch-track-shadow)
   dash6-switch-lens-border: var(--dash6-satin-switch-lens-border)
-  dash6-switch-lens-background: var(--dash6-satin-switch-lens-background)
-  dash6-switch-lens-filter: blur(3px) saturate(1.35) contrast(1.12)
+  dash6-switch-lens-background: rgba(255,255,255,0.2)
+  dash6-switch-lens-filter: var(--dash6-satin-switch-lens-filter)
   dash6-switch-lens-shadow: var(--dash6-satin-switch-lens-shadow)
   dash6-switch-lock-background: rgba(24,30,40,.82)
   dash6-switch-mixed-color: "#c4d3df"
@@ -853,14 +852,14 @@ DASH6 Satin Glass:
   dash6-switch-line-opacity: 50%
   dash6-switch-beam-opacity: 34%
   dash6-switch-reject-opacity: 36%
-  dash6-switch-gloss: ".8"
+  dash6-switch-gloss: '0.8'
   dash6-switch-duration: 620ms
   dash6-satin-enabled: '1'
   dash6-media-player-padding-top: 0px
   dash6-satin-version: 2026.10.04-mockup-1
-  dash6-satin-card-opacity: ".70"
-  dash6-satin-card-gloss: ".14"
-  dash6-satin-hover-gloss: ".20"
+  dash6-satin-card-opacity: '0.7'
+  dash6-satin-card-gloss: '0.14'
+  dash6-satin-hover-gloss: '0.2'
   dash6-satin-gloss-duration: 180ms
   dash6-satin-card-background: linear-gradient(135deg,rgba(255,255,255,var(--dash6-satin-card-gloss,.14)),transparent
     48%,rgba(255,255,255,.025)),rgba(24,28,34,var(--dash6-satin-card-opacity,.70))
@@ -868,15 +867,14 @@ DASH6 Satin Glass:
   dash6-satin-card-bottom-edge: rgba(255,255,255,.045)
   dash6-satin-card-shadow: inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 2px rgba(0,0,0,.12),0
     8px 24px rgba(0,0,0,.18)
-  dash6-satin-card-filter: blur(var(--dash6-satin-frost,8px)) saturate(1.08)
-  dash6-satin-frost: 8px
-  dash6-satin-control-background: linear-gradient(180deg,rgba(0,0,0,.13),rgba(0,0,0,.045)),rgba(17,21,27,.38)
+  dash6-satin-card-filter: blur(16px) saturate(1.08)
+  dash6-satin-frost: 16px
+  dash6-satin-control-background: linear-gradient(180deg,rgba(0,0,0,0.13),rgba(0,0,0,0.045)),rgba(17,21,27,0.38)
   dash6-satin-control-border: 1px solid rgba(255,255,255,.10)
   dash6-satin-control-shadow: inset 0 3px 7px rgba(0,0,0,.50),inset 1px 0 2px rgba(0,0,0,.16),inset
     0 -1px 2px rgba(0,0,0,.12)
   dash6-satin-slider-gloss: linear-gradient(180deg,rgba(0,0,0,.15),transparent 45%,rgba(0,0,0,.055))
-  dash6-satin-lens-background: linear-gradient(145deg,rgba(255,255,255,.22),rgba(207,222,234,.07)
-    54%,rgba(255,255,255,.12))
+  dash6-satin-lens-background: rgba(255,255,255,0.2)
   dash6-satin-lens-border: 1px solid rgba(255,255,255,.36)
   dash6-satin-lens-shadow: inset 0 1px 2px rgba(255,255,255,.35),inset 0 -1px 2px
     rgba(0,0,0,.16),0 1px 3px rgba(0,0,0,.20)
@@ -885,17 +883,16 @@ DASH6 Satin Glass:
   dash6-satin-lens-hover-scale: '1.035'
   dash6-satin-lens-press-scale: '1.10'
   dash6-satin-slider-hover-scale: '1.045'
-  dash6-satin-slider-press-scale: '1.30'
+  dash6-satin-slider-press-scale: '1.1'
   dash6-satin-segment-hover-scale: '1.035'
-  dash6-satin-switch-track-background: radial-gradient(ellipse at 35% 0%,rgba(255,255,255,.13),transparent
-    65%),linear-gradient(180deg,rgba(69,76,85,.52),rgba(22,27,35,.63))
+  dash6-satin-switch-track-background: radial-gradient(ellipse at 35% 0%,rgba(255,255,255,0.13),transparent
+    65%),linear-gradient(180deg,rgba(69,76,85,0.52),rgba(22,27,35,0.63))
   dash6-satin-switch-track-border: 1px solid rgba(238,244,250,.19)
   dash6-satin-switch-track-shadow: inset 0 1px 1px rgba(255,255,255,.20),inset 0 -2px
     4px rgba(0,0,0,.20),0 2px 5px rgba(0,0,0,.22)
   dash6-satin-switch-track-gloss: radial-gradient(ellipse at 30% 0%,rgba(255,255,255,.15),transparent
     75%)
-  dash6-satin-switch-lens-background: linear-gradient(145deg,rgba(239,246,252,.30),rgba(199,216,230,.10)
-    55%,rgba(235,246,255,.18))
+  dash6-satin-switch-lens-background: rgba(255,255,255,0.2)
   dash6-satin-switch-lens-border: 1px solid rgba(247,251,255,.45)
   dash6-satin-switch-lens-shadow: inset 0 1px 2px rgba(255,255,255,.46),inset 0 -1px
     2px rgba(0,0,0,.10),0 2px 5px rgba(0,0,0,.24)
@@ -903,7 +900,7 @@ DASH6 Satin Glass:
     68%)
   dash6-satin-switch-hover-scale: '1.07'
   dash6-satin-switch-duration: 620ms
-  dash6-satin-button-background: linear-gradient(140deg,rgba(255,255,255,.07),rgba(255,255,255,.025)),rgba(26,29,36,.54)
+  dash6-satin-button-background: linear-gradient(140deg,rgba(255,255,255,0.07),rgba(255,255,255,0.025)),rgba(26,29,36,0.54)
   dash6-satin-button-border: 1px solid rgba(236,243,250,.20)
   dash6-satin-button-shadow: inset 0 1px 1px rgba(255,255,255,.16),inset 0 -1px 2px
     rgba(0,0,0,.12)
@@ -913,8 +910,8 @@ DASH6 Satin Glass:
   dash6-satin-effect-white-opacity: ".65"
   dash5-recess: var(--dash6-satin-control-shadow)
   lg-surface: var(--dash6-satin-card-background)
-  dash6-satin-control-filter: blur(5px) saturate(1.04)
-  dash6-satin-lens-filter: blur(3px) saturate(1.12)
+  dash6-satin-control-filter: blur(16px) saturate(1.04)
+  dash6-satin-lens-filter: blur(8px) saturate(1.12)
   dash6-satin-elastic-duration: 420ms
   dash6-satin-effect-glow: radial-gradient(ellipse at 50% 50%,rgba(255,255,255,.50),rgba(255,255,255,.086)
     65%,transparent)
@@ -924,3 +921,26 @@ DASH6 Satin Glass:
   dash6-satin-circular-lens: rgba(235,244,252,.70)
   dash6-tab-edge: rgba(236,247,255,.42)
   dash6-tab-edge-width: 1px
+  dash6-light-glass-opacity: '0.2'
+  dash6-icon-lens-background: rgba(255,255,255,0.2)
+  dash6-dark-glass-opacity: '0.7'
+  dash6-light-glass-tint-mode: custom
+  dash6-dark-glass-tint-mode: theme
+  dash6-light-glass-tint: "#ffffff"
+  dash6-dark-glass-tint: "#181c22"
+  dash6-light-glass-text-mode: custom
+  dash6-light-glass-text: "#000000"
+  dash6-light-glass-text-color: "#000000"
+  dash6-dark-glass-text-mode: theme
+  dash6-dark-glass-text: "#ffffff"
+  dash6-dark-glass-text-color: var(--dash6-material-theme-primary-text-color)
+  dash6-light-glass-blur: 8px
+  dash6-satin-switch-lens-filter: blur(8px) saturate(1.35) contrast(1.12)
+  dash6-dark-glass-blur: 16px
+  dash6-background-image-variant: original
+  dash6-maintenance-opacity: '0.64'
+  dash6-maintenance-blur: 20px
+  dash6-nav-lens-radius: 12px
+  dash6-graph-sidebar-energy-resolution: 15min
+  dash6-graph-sidebar-power-resolution: 15min
+  dash6-graph-sidebar-other-resolution: 15min

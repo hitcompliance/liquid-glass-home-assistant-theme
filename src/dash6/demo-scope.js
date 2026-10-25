@@ -15,8 +15,13 @@ export function demoHass(hass){
   return hass.callService(domain,service,data,target);
  };
  const callWS=async message=>{
+  if(message.type==='frontend/get_user_data')return {value:JSON.parse(localStorage.getItem('dash6-demo-data:'+message.key)||'null')};
+  if(message.type==='frontend/set_user_data'){localStorage.setItem('dash6-demo-data:'+message.key,JSON.stringify(message.value));return {};}
+  if(message.type==='media_player/browse_media'&&own(message.entity_id))return hass.callWS(message);
+  if(message.type==='liquid_glass/theme_defaults'&&hass.demo_browser)return hass.callWS(message);
   if(message.type==='get_states')return Object.values(subset(hass.states));
   if(/config\/(entity|device|area)_registry\/list$/.test(message.type))return filterRegistry(message.type,await hass.callWS(message));
+  if(message.type==='lovelace/dashboards/list')return [{id:'liquid-glass-demo',url_path:'liquid-glass-demo',title:'Liquid Glass Demo',mode:'yaml',show_in_sidebar:true,require_admin:false}];
   if(message.type==='lovelace/config'&&message.url_path==='liquid-glass-demo')return hass.callWS(message);
   if(message.type?.startsWith('history/')){
    const ids=message.entity_ids||message.filter_entity_id||[];
@@ -34,7 +39,7 @@ export function demoHass(hass){
    if(message.type==='render_template'&&String(message.template).includes('liquid_glass_demo_'))return hass.connection.subscribeMessage(callback,message);
    return Promise.resolve(()=>{});
   }};
- return {...hass,states:subset(hass.states),entities,devices,areas:Object.fromEntries(Object.entries(hass.areas||{}).filter(([id])=>areaIds.has(id))),callService,callWS,connection,
+ return {...hass,user:{...hass.user,is_admin:!!hass.demo_browser},states:subset(hass.states),entities,devices,areas:Object.fromEntries(Object.entries(hass.areas||{}).filter(([id])=>areaIds.has(id))),callService,callWS,connection,
   callApi:async(method,path)=>{
    if(method==='GET'&&path.startsWith('history/period/')&&decodeURIComponent(path).includes('filter_entity_id=')){
     const ids=new URLSearchParams(path.split('?')[1]).get('filter_entity_id')?.split(',')||[];

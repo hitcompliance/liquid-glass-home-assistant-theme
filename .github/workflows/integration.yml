@@ -2,7 +2,7 @@ name: HACS integration validation
 on:
   push:
     branches: [main]
-    paths: ['custom_components/**', 'scripts/**', 'src/**', 'tests/**', 'package.json', 'package-lock.json', 'hacs.json', '.github/workflows/integration.yml']
+    paths: ['custom_components/**', 'scripts/**', 'src/**', 'tests/**', 'package.json', 'package-lock.json', 'hacs.json', 'demo/**', 'frontend/**', 'themes/**', 'support/**', 'dependencies.lock.json', '.github/workflows/integration.yml']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -21,7 +21,9 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.14'
-      - run: python -m pip install homeassistant==2026.9.0
+      - run: python -m pip install homeassistant==2026.9.0 PyTurboJPEG==1.8.3 av==17.0.1 numpy==2.3.2
+      - run: python scripts/test-theme-store.py
+      - run: python scripts/test-demo.py
       - run: python scripts/test-integration.py
       - run: python scripts/test-installer.py
 
@@ -40,6 +42,10 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium webkit
       - run: npm run build:cards
+      - run: python scripts/build-integration.py
+      - run: python scripts/build-public-demo.py
+      - run: node tests/public-showcase-browser.mjs
+      - run: node tests/theme-save-actions-browser.mjs
       - run: node tests/demo-favorites.mjs
       - run: node tests/demo-favorites-browser.mjs
       - run: node tests/theme-classes-browser.mjs
@@ -72,6 +78,8 @@ jobs:
       - run: node tests/fan-mode-refinements.mjs
       - run: node tests/fan-mode-switch-browser.mjs
       - run: node tests/fan-card-browser.mjs
+      - run: node tests/fan-shelly-countdown-browser.mjs
+      - run: node tests/fan-power-feedback-browser.mjs
       - run: node tests/shoe-scene-background-browser.mjs
       - run: node tests/responsive-layouts-browser.mjs
       - run: node tests/favorites-masonry-browser.mjs

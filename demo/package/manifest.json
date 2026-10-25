@@ -1,0 +1,233 @@
+{
+  "version": "3.3.0",
+  "modules": [
+    "dash6-cards.js",
+    "vacuum-dock-card.js",
+    "room-loader.js",
+    "dash5-light-cards-v2.js"
+  ],
+  "files": {
+    "THIRD-PARTY-LICENSES.md": {
+      "sha256": "23d66bc7997a6361c2b33520b0aae0e03a9b822e7709e3be66297beb9eb773ba"
+    },
+    "background-source-map.json": {
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "background-source-map.json.gz": {
+      "sha256": "ade9160c02662012bfb70dcfccc8622477a74dcde5f4cfac20e3992eb0ad4119"
+    },
+    "backgrounds/living-room.jpg": {
+      "sha256": "f07f2a33942f1319ac3f9101bf2e1e559fce2cca045678e3b1d9845d3c578d33"
+    },
+    "chunks/chunk-25JRF476.js": {
+      "sha256": "b8b799692af4aa6886a5916e27cb6ed6fbe442fe7fccfb8e50bafc6ae2a7dfc6"
+    },
+    "chunks/chunk-25JRF476.js.gz": {
+      "sha256": "b700243e90d40beb3280e77f25bf8571cb9eac301ae87aafa371642582859e1b"
+    },
+    "chunks/chunk-C7O4KFQ3.js": {
+      "sha256": "a0e84a4c020fa458db39216f6b37ae62dc31460fa25850d6cbee95b21169f5c4"
+    },
+    "chunks/chunk-C7O4KFQ3.js.gz": {
+      "sha256": "e6cfdbacf26b6d78d53d1aaa2f04c37d06382f84f2ed076c4c35052d168684af"
+    },
+    "chunks/chunk-DGHZDFDK.js": {
+      "sha256": "27c3377ff0b1f8d6c63eba91d687a243e2bad107a38b357ed434edd80a71cba2"
+    },
+    "chunks/chunk-DGHZDFDK.js.gz": {
+      "sha256": "d7529cac59a630f6a26024a700386ad82065521cf670b0215cf482f529632855"
+    },
+    "chunks/chunk-FJTV5RFQ.js": {
+      "sha256": "948237199b6fc3d99ca03f7ea8be168b9a7fce7b129057c54bb473a4477892c6"
+    },
+    "chunks/chunk-FJTV5RFQ.js.gz": {
+      "sha256": "a64f59a0abd11275c91412faf82fe9ef0feea2245410314715e03ff1fd43fdf8"
+    },
+    "chunks/chunk-GHQNCK5C.js": {
+      "sha256": "35a60d4fe4892f8145eefd94df15e8457384387c02a6c8b0b1746c6d2e07a8f8"
+    },
+    "chunks/chunk-GHQNCK5C.js.gz": {
+      "sha256": "2e293cc8b75327d0efc14fe3502072eeccf79b32c40cba6e8f0be1e49d01cedd"
+    },
+    "chunks/chunk-H2TTHPAH.js": {
+      "sha256": "5a2fd0f32ddd28da267d17e6606f81bb4869d34fa4360ef7aef66278b8b910da"
+    },
+    "chunks/chunk-H2TTHPAH.js.gz": {
+      "sha256": "4f57be8638c7bfa73b54403e19e652b6ca6ecb91c304e5345400f212cbd42e77"
+    },
+    "chunks/chunk-HYCHFZ4J.js": {
+      "sha256": "5ddbca862f0627aadc7ac3bb59b1a294e8f0e68d52cb86bd18a2ee914125397b"
+    },
+    "chunks/chunk-HYCHFZ4J.js.gz": {
+      "sha256": "63cad6f1a59455d3c0d02fae500c11f2961175cc3578478b2669d45530fe847d"
+    },
+    "chunks/chunk-L3YEY56W.js": {
+      "sha256": "c58e5a3d4fd79d3828b2d60bebebda2c68824089bdc136655ac53643c3003dcb"
+    },
+    "chunks/chunk-L3YEY56W.js.gz": {
+      "sha256": "8e5e327b5d9aacbcb9096d9b4facf43fec75b5c74e4a3b27e5d6ee0e89cbe950"
+    },
+    "chunks/chunk-NJVQTKW5.js": {
+      "sha256": "421838b1b2e689569804436f03a6385efe973b8f2f20d1170d4576a166b8f977"
+    },
+    "chunks/chunk-NJVQTKW5.js.gz": {
+      "sha256": "df916b8216d3b0804ea3006b48a80f66321fae1bc35780b04fed19875e4f2627"
+    },
+    "chunks/chunk-PDRMF7NA.js": {
+      "sha256": "f4cd42ae49851d82298fbefbf463a24f3587bca29b799b21f08135b8981830e3"
+    },
+    "chunks/chunk-PDRMF7NA.js.gz": {
+      "sha256": "802a054ef0a0e5241ade8a74e2b3c1a44ce0b94679c1e77028e4650aecd20454"
+    },
+    "chunks/chunk-PSR2DMDN.js": {
+      "sha256": "e5d31c076e5a9c0696e3e4950a9bcdad702dc7bfa64d7d73a50db4ea9288de84"
+    },
+    "chunks/chunk-PSR2DMDN.js.gz": {
+      "sha256": "86058ff09c1cd33dd5a8a7bb7abbc0d8ba0bb40a2a26a38dda44ca854df3d2af"
+    },
+    "chunks/chunk-QVAZJTBD.js": {
+      "sha256": "41217aa2815ad0e4fef2b74a554b86a7214466dbce3db582030c88f0c5382e2e"
+    },
+    "chunks/chunk-QVAZJTBD.js.gz": {
+      "sha256": "5af95e398e7c600a4832f023ec335e4269b869915dd1d1d767bf8aa75886f54e"
+    },
+    "chunks/chunk-RU5RDEKK.js": {
+      "sha256": "631d99caedab80d344c1003e936eaca066ec361aa1ae4c6781e574cce24f518d"
+    },
+    "chunks/chunk-RU5RDEKK.js.gz": {
+      "sha256": "de13f7b1d02d64eb9c0873ba33c4c69edcd3ebba84e15df94414543ce9393d9a"
+    },
+    "chunks/chunk-WGNSFX6A.js": {
+      "sha256": "f1fb9259258ccd7328d6d0ca29b684e95a35501243cc57d4e77ff1142b8d8509"
+    },
+    "chunks/chunk-WGNSFX6A.js.gz": {
+      "sha256": "f7fcaca884e297b1a437284e7cc127a020f5c5bd27af3e2e9ab0215492c86c97"
+    },
+    "chunks/chunk-YDQYGLGL.js": {
+      "sha256": "f7894eb6cae48f9a89de51fe74b093418ddc71109ef3784b99b1e3bbbe2f0310"
+    },
+    "chunks/chunk-YDQYGLGL.js.gz": {
+      "sha256": "c9139839cb460be48a5c3fc5343920eda23c649b304c89c884f33d1810aafd6b"
+    },
+    "chunks/chunk-YO5FGFPX.js": {
+      "sha256": "effe9bd5f0713c30ff5864595ccf75117d71d460f3fbf67c2c59ab6e1cc8b2f0"
+    },
+    "chunks/chunk-YO5FGFPX.js.gz": {
+      "sha256": "8e4564a8f7ac8b076c4ea3403a913c4aeb46a45244b28206bfbd507986491716"
+    },
+    "chunks/domain-editor-PNFYA7QA.js": {
+      "sha256": "4859c131709a178aef5dafd084851056a6e6b3204007f615829b96d49384f300"
+    },
+    "chunks/domain-editor-PNFYA7QA.js.gz": {
+      "sha256": "f02176cde24427fcb086136c1fff350cccdc33955bd40cc107ae2858801a79ef"
+    },
+    "chunks/graph-editor-OYL5I4QY.js": {
+      "sha256": "45fe8dee0f3b444d68917585ff1484f67316edd91c62842503a7e3a1d45c5a7c"
+    },
+    "chunks/graph-editor-OYL5I4QY.js.gz": {
+      "sha256": "3f4e1a9973685db5dbdae0fccf9accac2e313830f2145732439a3997409c41df"
+    },
+    "chunks/ikea-editor-ZSJS4PBV.js": {
+      "sha256": "371de93f011ca2f702c9d2caefaf2b01cdd723be7ec2beb6b98a2e34d13b6961"
+    },
+    "chunks/ikea-editor-ZSJS4PBV.js.gz": {
+      "sha256": "a4afec7a47f806aa73f176e9dd3fa48b390ce46fe5d54d1167573a76dd7d3476"
+    },
+    "chunks/inline-editor-FIUSAL2V.js": {
+      "sha256": "72edfb1bde7861002411fc5b610b84848708f0f6b86811a44bb3fbc4355d4e68"
+    },
+    "chunks/inline-editor-FIUSAL2V.js.gz": {
+      "sha256": "fc5df89170db1b6bdb859930241fe3befdcb57ae932a0fd74e316b4757e50a7b"
+    },
+    "chunks/light-editor-2NOF6CAR.js": {
+      "sha256": "96dfeaaa8ff642b4160021a1ad3e780741ae3b1f4d31998668ecad8a40b64461"
+    },
+    "chunks/light-editor-2NOF6CAR.js.gz": {
+      "sha256": "07d54ed57d3bc8070725bacfeb72584e792d1a4e95cb3c91bf0e0f0b9251022e"
+    },
+    "chunks/media-editor-D5SLQWBO.js": {
+      "sha256": "4350c627f81b92104d261252b45bccfc4607b443bba0e72a956550358634bcb9"
+    },
+    "chunks/media-editor-D5SLQWBO.js.gz": {
+      "sha256": "030906dd87a2c2877f1e1deabe7c430b98ed3d71d810be8abecdfe8928723c0b"
+    },
+    "chunks/profile-editor-EZJDUDY5.js": {
+      "sha256": "65e9ed9ebf7123ac0d460269618ef20bddd5b5f70f7869b31dda45aea5fbc974"
+    },
+    "chunks/profile-editor-EZJDUDY5.js.gz": {
+      "sha256": "ad52b530df908e6f25ea45add7d3f7e1a24363ab163e32eb1647726c9b626a3b"
+    },
+    "chunks/remote-hooks-5GFF2JSF.js": {
+      "sha256": "c927b0f9fd59c074b06bb3b4cde51ae1ab25115c548862154161e872688558ce"
+    },
+    "chunks/remote-hooks-5GFF2JSF.js.gz": {
+      "sha256": "a93ce8caba16eecf44b5576f840054dc9296ed8a9a6e64cdc331836895862d77"
+    },
+    "chunks/satin-native-27HQ3QYD.js": {
+      "sha256": "0987ac1d4565f0af9624325840da4d8631a382685f03082a27b9bd11ac7369ed"
+    },
+    "chunks/satin-native-27HQ3QYD.js.gz": {
+      "sha256": "bfcb3024d4c7e5a369ec48c541c02ff42d07034cbcd01d3fd91904d0b05dadcb"
+    },
+    "chunks/vacuum-editor-JQKKNTHB.js": {
+      "sha256": "5e1f14c8c178c066472013513eb5334509b6935dac6788df5d1367cb6234d471"
+    },
+    "chunks/vacuum-editor-JQKKNTHB.js.gz": {
+      "sha256": "c443ab69f187cef7ae1855104878c878488de5758363f6866ac9eb15e3d4b07c"
+    },
+    "dash5-light-cards-v2.js": {
+      "sha256": "5d1993e66a69463cf206109d2c965764dda66c09a332786cac5514e5845fa019"
+    },
+    "dash5-light-cards-v2.js.gz": {
+      "sha256": "69d74236b81463a91dc596a2aef0e9b529bfd156fb461d016b457e3588f5d247"
+    },
+    "dash6-cards.js": {
+      "sha256": "cab1525bf46dc785b2b0668f4d764b2f6cc06fabddb8c67ce9a4e515a025da8c"
+    },
+    "dash6-cards.js.gz": {
+      "sha256": "e40b82e6ac68e21bb9edb3444c75acaf8bed2344894dfc6fa59e4b7eda61057b"
+    },
+    "licenses/LIT-LICENSE": {
+      "sha256": "45d31799d0db956cc3eb5469346abbd9b7025babc5ff29fab10d7095da992ef1"
+    },
+    "licenses/ROBOROCK-LICENSE": {
+      "sha256": "c97b4f0ec6bce48f967364a749ee0f3e02206456343d8b4c52626b10ebeddb38"
+    },
+    "licenses/VACUUM-DOCK-LICENSE": {
+      "sha256": "2e1faa05bb91574fa388220185f57b3607701714053971f704a3b32bceb9851b"
+    },
+    "licenses/VACUUM-DOCK-NOTICE": {
+      "sha256": "d598d23278d8cd14a104858929c19a73b998a010eefc85935a34513a870afdd1"
+    },
+    "profiles/samples-819e265881b1.json": {
+      "sha256": "819e265881b1fa364699a978cb7f0610fa9371b69bd98367fe1d9962f36d9c69"
+    },
+    "profiles/samples-819e265881b1.json.gz": {
+      "sha256": "a310ab70ea0c56613d1326387d65f9f88487ca382a7fd6ea594c0092c83e2ce4"
+    },
+    "room-loader-configs.json": {
+      "sha256": "cc22baa351da4f348a7702e1c6d1d5b700c25c89d18ed3b515c331024944476d"
+    },
+    "room-loader-configs.json.gz": {
+      "sha256": "e58b464b905da2aa4d03815d8d7bdc5e458c6ecfd80279d16843f6aad5d1f2fb"
+    },
+    "room-loader.js": {
+      "sha256": "abb8779256aed93148db42cc7e9202e865aca579eb3936c04d326f15faf94be6"
+    },
+    "room-loader.js.gz": {
+      "sha256": "4af891636527ce1ab32a814aab27110c7b770aa191bce25982a4d0037421000f"
+    },
+    "theme-defaults.json": {
+      "sha256": "5757f6180b5f07a4462cb7e4c131de29bcf4af109939f3e75868a76a952b0724"
+    },
+    "theme-defaults.json.gz": {
+      "sha256": "a8b183c3325b003fd496327b18e674f591c34b6a6ec2ec1c149ba79491fbbf8b"
+    },
+    "vacuum-dock-card.js": {
+      "sha256": "95aaf9b5ad09d006fbef2f7d367adb7627fe7a5cae8f7475ae5a1f2c7a2cc748"
+    },
+    "vacuum-dock-card.js.gz": {
+      "sha256": "d6cd417589659deeeb05120febe93a37547fdaf3d530aa788540c8b62264a367"
+    }
+  }
+}

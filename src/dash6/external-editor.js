@@ -13,4 +13,4 @@ class InlineEditor extends ExternalEditor{
  static properties={...ExternalEditor.properties,config:{attribute:false}};
  updated(changed){super.updated(changed);if(changed.has('config')&&this.config&&JSON.stringify(this.config)!==JSON.stringify(this._config))this.setConfig(this.config);}
 }
-customElements.define('dash6-inline-editor',InlineEditor);
+customElements.define('dash6-nested-card-editor',InlineEditor);

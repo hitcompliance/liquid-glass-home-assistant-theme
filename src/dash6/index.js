@@ -24,10 +24,11 @@ import './plant-card.js';
 import './inline-card.js';
 import './profile-card.js';
 import './theme-editor.js';
-console.info('DASH6 Satin Glass 3.2.1: Karten, Raumlader und isolierte Backend-Demo.');
+console.info('DASH6 Satin Glass 3.3.0: Karten, Raumlader und isolierte Backend-Demo.');
 
 import './demo-card.js';
 import './demo-scope.js';
+import './showcase-card.js';
 import './inset-actions.js';
 
 import './graph-position.js';

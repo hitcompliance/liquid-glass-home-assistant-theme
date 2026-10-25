@@ -1,0 +1,450 @@
+[
+  {
+    "title": "Schuhschrank · Szenen & Segmente",
+    "type": "custom:dash6-shoe-cabinet-card",
+    "card": {
+      "type": "custom:dash6-shoe-cabinet-card",
+      "entity": "light.liquid_glass_demo_schuhschrank",
+      "name": "Schuhschrank",
+      "segments": [
+        {
+          "entity": "light.liquid_glass_demo_schuhschrank_links",
+          "name": "Links"
+        },
+        {
+          "entity": "light.liquid_glass_demo_schuhschrank_rechts",
+          "name": "Rechts"
+        }
+      ],
+      "scenes": [
+        {
+          "entity": "scene.liquid_glass_demo_bunt",
+          "name": "Bunt",
+          "icon": "mdi:palette"
+        },
+        {
+          "entity": "scene.liquid_glass_demo_weiss",
+          "name": "Weiß",
+          "icon": "mdi:white-balance-sunny"
+        }
+      ],
+      "power_entity": "sensor.liquid_glass_demo_schuhschrank_leistung",
+      "graph": {
+        "show": true,
+        "height": 100
+      }
+    }
+  },
+  {
+    "title": "Fernseher / Apple TV · Player & Fernbedienungen",
+    "type": "custom:dash6-appletv-card",
+    "card": {
+      "type": "custom:dash6-appletv-card",
+      "name": "Fernseher & Apple TV",
+      "apple_entity": "media_player.liquid_glass_demo_apple_tv",
+      "apple_remote": "remote.liquid_glass_demo_apple_tv",
+      "fire_entity": "media_player.liquid_glass_demo_fire_tv",
+      "tv_entity": "media_player.liquid_glass_demo_fernseher",
+      "tv_remote": "remote.liquid_glass_demo_fernseher",
+      "tv_sources": "AppleTV, HDMI 1, HDMI 3"
+    }
+  },
+  {
+    "title": "Staubsauger · Reinigung, Dock & Verschleißteile",
+    "type": "custom:dash6-vacuum-card",
+    "card": {
+      "type": "custom:dash6-vacuum-card",
+      "entity": "vacuum.liquid_glass_demo_roboter",
+      "defaults": {
+        "mode": "vac_and_mop",
+        "intensity": "moderate",
+        "route": "standard",
+        "fan": "balanced",
+        "repeat": 1
+      },
+      "entities": {
+        "battery": "sensor.liquid_glass_demo_roboter_batterie",
+        "progress": "sensor.liquid_glass_demo_roboter_fortschritt",
+        "mode": "select.liquid_glass_demo_roboter_reinigung",
+        "intensity": "select.liquid_glass_demo_roboter_wischintensitat",
+        "route": "select.liquid_glass_demo_roboter_wischroute",
+        "emptyMode": "select.liquid_glass_demo_dock_entleerungsmodus",
+        "drying": "switch.liquid_glass_demo_dock_trocknung",
+        "washing": "switch.liquid_glass_demo_dock_wasche",
+        "emptying": "switch.liquid_glass_demo_dock_entleerung",
+        "dryTime": "sensor.liquid_glass_demo_dock_trocknungsrestzeit",
+        "cleanWater": "binary_sensor.liquid_glass_demo_dock_frischwasser_problem",
+        "dirtyWater": "binary_sensor.liquid_glass_demo_dock_schmutzwasser_problem"
+      },
+      "stats": {
+        "default": [
+          {
+            "entity": "sensor.liquid_glass_demo_roboter_filter_restzeit",
+            "title": "Filter",
+            "unit": "h",
+            "scale": 1
+          },
+          {
+            "entity": "sensor.liquid_glass_demo_roboter_burste_restzeit",
+            "title": "Bürste",
+            "unit": "h",
+            "scale": 1
+          }
+        ],
+        "cleaning": [
+          {
+            "entity": "sensor.liquid_glass_demo_roboter_reinigungsdauer",
+            "title": "Dauer",
+            "unit": "min",
+            "scale": 0
+          }
+        ]
+      },
+      "areas": [
+        {
+          "roborock_area_id": 16,
+          "name": "Demo Wohnzimmer"
+        },
+        {
+          "roborock_area_id": 17,
+          "name": "Demo Küche"
+        }
+      ],
+      "reset_buttons": {
+        "Filter": "button.liquid_glass_demo_roboter_filter_zurucksetzen",
+        "Bürste": "button.liquid_glass_demo_roboter_burste_zurucksetzen"
+      }
+    }
+  },
+  {
+    "title": "Lichtgruppe · Einzellichter im Detail",
+    "type": "custom:dash6-lightgroup-card-v2",
+    "card": {
+      "type": "custom:dash6-lightgroup-card-v2",
+      "entity": "light.liquid_glass_demo_gruppe",
+      "name": "Ambiente",
+      "segments": [
+        {
+          "entity": "light.liquid_glass_demo_links",
+          "name": "Links"
+        },
+        {
+          "entity": "light.liquid_glass_demo_rechts",
+          "name": "Rechts"
+        }
+      ],
+      "power_entity": "sensor.liquid_glass_demo_lampe_leistung",
+      "graph": {
+        "show": true,
+        "height": 100
+      },
+      "discovery": {
+        "enabled": false
+      }
+    }
+  },
+  {
+    "title": "Licht · Farbe, Temperatur & Effekte",
+    "type": "custom:dash6-govee-light-card-v2",
+    "card": {
+      "type": "custom:dash6-govee-light-card-v2",
+      "entity": "light.liquid_glass_demo_lampe",
+      "name": "Farbe, Temperatur & Effekte",
+      "controls": {
+        "mode": "combo",
+        "buttons": "group"
+      },
+      "power_entity": "sensor.liquid_glass_demo_lampe_leistung",
+      "graph": {
+        "show": true,
+        "height": 100
+      },
+      "discovery": {
+        "enabled": false
+      }
+    }
+  },
+  {
+    "title": "Messsteckdose · Sperre, LED & Verlauf",
+    "type": "custom:dash6-ikea-card",
+    "card": {
+      "type": "custom:dash6-ikea-card",
+      "entity": "switch.liquid_glass_demo_steckdose",
+      "power_entity": "sensor.liquid_glass_demo_steckdose_leistung",
+      "child_lock_entity": "switch.liquid_glass_demo_kindersicherung",
+      "led_entity": "switch.liquid_glass_demo_led",
+      "name": "Messsteckdose"
+    }
+  },
+  {
+    "title": "Lüftung · Aus / Auto / Ein",
+    "type": "custom:dash6-fan-card",
+    "card": {
+      "type": "custom:dash6-fan-card",
+      "entity": "fan.liquid_glass_demo_luftung",
+      "name": "Lüftung · Aus / Auto / Ein",
+      "force_switch_entity": "switch.liquid_glass_demo_luftung_force",
+      "remaining_time_entity": "number.liquid_glass_demo_luftung_restzeit",
+      "running_switch_entity": "switch.liquid_glass_demo_luftung_ausgang",
+      "running_force_switch_entity": "switch.liquid_glass_demo_luftung_force_ausgang",
+      "presence_entity": "binary_sensor.liquid_glass_demo_anwesenheit",
+      "power_entity": "sensor.liquid_glass_demo_luftung_leistung"
+    }
+  },
+  {
+    "title": "Thermostat · Sollwerte & Presets",
+    "type": "custom:dash6-thermostat-card",
+    "card": {
+      "type": "custom:dash6-thermostat-card",
+      "entity": "climate.liquid_glass_demo_dual_thermostat",
+      "modes": [
+        "off",
+        "heat",
+        "cool",
+        "heat_cool"
+      ]
+    }
+  },
+  {
+    "title": "HomePod · Verbindung & Wiedergabe",
+    "type": "custom:dash6-homepod-card",
+    "card": {
+      "type": "custom:dash6-homepod-card",
+      "entity": "media_player.liquid_glass_demo_homepod",
+      "homepod_remote_entity": "remote.liquid_glass_demo_homepod",
+      "name": "Demo Lautsprecher"
+    }
+  },
+  {
+    "title": "Pflanzen · Zielbereiche & Historie",
+    "type": "custom:dash6-plant-card",
+    "card": {
+      "type": "custom:dash6-plant-card",
+      "name": "Demo Pflanze",
+      "entities": {
+        "temperature": "sensor.liquid_glass_demo_pflanze_temperature",
+        "moisture": "sensor.liquid_glass_demo_pflanze_moisture",
+        "illuminance": "sensor.liquid_glass_demo_pflanze_illuminance",
+        "conductivity": "sensor.liquid_glass_demo_pflanze_conductivity",
+        "battery": "sensor.liquid_glass_demo_pflanze_battery"
+      },
+      "stale_hours": 6,
+      "substrate": "coco_or_soilless"
+    }
+  },
+  {
+    "title": "Rollo · Position & Richtung",
+    "type": "custom:dash6-cover-card",
+    "card": {
+      "type": "custom:dash6-cover-card",
+      "entity": "cover.liquid_glass_demo_rollo",
+      "name": "Rollo"
+    }
+  },
+  {
+    "title": "Türschloss · Kontakt & Aktionen",
+    "type": "custom:dash6-door-card",
+    "card": {
+      "type": "custom:dash6-door-card",
+      "kind": "apartment",
+      "entity": "lock.liquid_glass_demo_tur",
+      "name": "Virtuelles Schloss",
+      "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
+      "battery_entity": "sensor.liquid_glass_demo_schloss_batterie"
+    }
+  },
+  {
+    "title": "Auswahlgruppe · animierte Linse",
+    "type": "custom:dash6-segmented-control-card",
+    "card": {
+      "type": "custom:dash6-segmented-control-card",
+      "name": "Lichtmodus",
+      "entity": "select.liquid_glass_demo_lichtmodus",
+      "options": [
+        {
+          "value": "Lesen",
+          "label": "Lesen",
+          "icon": "mdi:book-open-variant"
+        },
+        {
+          "value": "Entspannen",
+          "label": "Entspannen",
+          "icon": "mdi:sofa"
+        }
+      ]
+    }
+  },
+  {
+    "title": "Eigenständige Vacuum Dock Card",
+    "type": "custom:vacuum-dock-card",
+    "card": {
+      "type": "custom:vacuum-dock-card",
+      "entity": "vacuum.liquid_glass_demo_roboter",
+      "name": "Eigenständige Vacuum Dock Card",
+      "language": "auto",
+      "entities": {
+        "battery": "sensor.liquid_glass_demo_roboter_batterie",
+        "progress": "sensor.liquid_glass_demo_roboter_fortschritt",
+        "cleaning_mode": "select.liquid_glass_demo_roboter_reinigung",
+        "mop_intensity": "select.liquid_glass_demo_roboter_wischintensitat",
+        "mop_route": "select.liquid_glass_demo_roboter_wischroute",
+        "mop_drying": "switch.liquid_glass_demo_dock_trocknung",
+        "mop_washing": "switch.liquid_glass_demo_dock_wasche",
+        "dust_emptying": "switch.liquid_glass_demo_dock_entleerung",
+        "drying_remaining": "sensor.liquid_glass_demo_dock_trocknungsrestzeit",
+        "clean_water": "binary_sensor.liquid_glass_demo_dock_frischwasser_problem",
+        "dirty_water": "binary_sensor.liquid_glass_demo_dock_schmutzwasser_problem",
+        "emptying_mode": "select.liquid_glass_demo_dock_entleerungsmodus"
+      },
+      "stats": {
+        "default": [
+          {
+            "entity": "sensor.liquid_glass_demo_roboter_filter_restzeit",
+            "title": "Filter",
+            "unit": "h",
+            "scale": 1
+          }
+        ],
+        "cleaning": []
+      },
+      "areas": [
+        {
+          "roborock_area_id": 16,
+          "name": "Demo Wohnzimmer"
+        },
+        {
+          "roborock_area_id": 17,
+          "name": "Demo Küche"
+        }
+      ],
+      "defaults": {
+        "mode": "vac_and_mop",
+        "intensity": "moderate",
+        "route": "standard",
+        "fan": "balanced",
+        "repeat": 1
+      }
+    }
+  },
+  {
+    "title": "Theme-GUI · aktuelle Paketvorgaben",
+    "type": "custom:dash6-theme-editor-card",
+    "card": {
+      "type": "custom:dash6-theme-editor-card",
+      "title": "Glas & Hintergrund",
+      "expanded": false
+    }
+  },
+  {
+    "title": "Domain-GUI · dynamische Bereichskarten",
+    "type": "custom:dash6-domain-card",
+    "card": {
+      "type": "custom:dash6-domain-card",
+      "title": "Dynamische Demo-Sensoren",
+      "domain": "sensor",
+      "area": "DASH6 Demo · Büro"
+    }
+  },
+  {
+    "title": "Raumlader · kombinierte Spalten",
+    "type": "custom:dash6-room-slot-card",
+    "card": {
+      "type": "custom:dash6-room-slot-card",
+      "room": "demo",
+      "slot": "lights",
+      "columns": 2
+    }
+  },
+  {
+    "title": "Favoriten · Auswahl, Gruppierung & Reihenfolge",
+    "type": "custom:dash6-favorites-card",
+    "card": {
+      "type": "custom:dash6-favorites-card",
+      "title": "Favoriten ausprobieren",
+      "dashboard": "liquid-glass-demo",
+      "demo_gui": true,
+      "demo_backend": true,
+      "sources": [
+        {
+          "id": "demo-0",
+          "card": {
+            "type": "custom:dash6-lightgroup-card-v2",
+            "entity": "light.liquid_glass_demo_gruppe",
+            "name": "Ambiente",
+            "segments": [
+              {
+                "entity": "light.liquid_glass_demo_links",
+                "name": "Links"
+              },
+              {
+                "entity": "light.liquid_glass_demo_rechts",
+                "name": "Rechts"
+              }
+            ],
+            "power_entity": "sensor.liquid_glass_demo_lampe_leistung",
+            "graph": {
+              "show": true,
+              "height": 100
+            },
+            "discovery": {
+              "enabled": false
+            }
+          },
+          "label": "Ambiente",
+          "source": {
+            "dashboard": "liquid-glass-demo",
+            "view": "home",
+            "title": "Demo",
+            "viewOrder": 0
+          },
+          "children": []
+        },
+        {
+          "id": "demo-1",
+          "card": {
+            "type": "custom:dash6-thermostat-card",
+            "entity": "climate.liquid_glass_demo_dual_thermostat",
+            "modes": [
+              "off",
+              "heat",
+              "cool",
+              "heat_cool"
+            ]
+          },
+          "label": "custom:dash6-thermostat-card",
+          "source": {
+            "dashboard": "liquid-glass-demo",
+            "view": "home",
+            "title": "Demo",
+            "viewOrder": 0
+          },
+          "children": []
+        },
+        {
+          "id": "demo-2",
+          "card": {
+            "type": "custom:dash6-door-card",
+            "kind": "apartment",
+            "entity": "lock.liquid_glass_demo_tur",
+            "name": "Virtuelles Schloss",
+            "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
+            "battery_entity": "sensor.liquid_glass_demo_schloss_batterie"
+          },
+          "label": "Virtuelles Schloss",
+          "source": {
+            "dashboard": "liquid-glass-demo",
+            "view": "home",
+            "title": "Demo",
+            "viewOrder": 0
+          },
+          "children": []
+        }
+      ],
+      "selected": [
+        "demo-0",
+        "demo-1",
+        "demo-2"
+      ]
+    }
+  }
+]

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build the public, backend-driven demo. Never reads private HA exports."""
 import json
+from copy import deepcopy
 from pathlib import Path
 import re
 import subprocess
@@ -29,6 +30,7 @@ def build():
     source = re.sub(r'\bevent\.demo_', 'binary_sensor.demo_', source)
     source = source.replace('demo_', PREFIX)
     dashboard = json.loads(source)
+    library = deepcopy(dashboard)
     # Legacy SVG has its own obsolete theme and is outside the Satin release.
     dashboard['views'] = [v for v in dashboard['views'] if v.get('path') not in ('svg', 'svg-beispiel', 'kompatibilitat')]
     def clean(value):
@@ -66,7 +68,7 @@ def build():
             {'type':'custom:mushroom-chips-card','chips':[{'type':'entity','entity':e('sensor','batterie'),'icon':'mdi:battery'},{'type':'entity','entity':e('binary_sensor','anwesenheit'),'icon':'mdi:motion-sensor'},{'type':'entity','entity':e('update','firmware'),'icon':'mdi:update'},{'type':'entity','entity':e('sensor','steckdose_leistung'),'icon':'mdi:flash'}]},
             card('lightgroup-card-v2', entity=e('light','gruppe'), name='Ambiente', segments=[{'entity':e('light','links'),'name':'Links'},{'entity':e('light','rechts'),'name':'Rechts'}], power_entity=e('sensor','lampe_leistung'), graph={'show':True,'height':100}),
             card('appletv-card', name='Fernseher & Apple TV', apple_entity=e('media_player','apple_tv'), apple_remote=e('remote','apple_tv'), fire_entity=e('media_player','fire_tv'), tv_entity=e('media_player','fernseher'), tv_remote=e('remote','fernseher'), tv_sources='AppleTV, HDMI 1, HDMI 3'),
-            card('homepod-card', entity=e('media_player','homepod'), remote_entity=e('remote','homepod'), name='Demo Lautsprecher'),
+            card('homepod-card', entity=e('media_player','homepod'), homepod_remote_entity=e('remote','homepod'), name='Demo Lautsprecher'),
             card('ikea-card', entity=e('switch','steckdose'), power_entity=e('sensor','steckdose_leistung'), child_lock_entity=e('switch','kindersicherung'), led_entity=e('switch','led'), name='Messsteckdose'),
         ]),
         view('Küche','kuche','countertop',[
@@ -110,6 +112,23 @@ def build():
             {'type':'entities','entities':[e('sensor','steckdose_energie'),e('sensor','lampe_energie')]},
         ]),
     ]
+    dashboard['views'].append(view('Originale & Struktur','originale','puzzle-outline',[
+        {'type':'custom:vertical-stack-in-card','cards':[{'type':'heading','heading':'Originaler Kartenstack'},{'type':'tile','entity':e('switch','steckdose')}]},
+        {'type':'custom:auto-entities','card':{'type':'entities','title':'Original Auto Entities'},'filter':{'include':[{'entity_id':'sensor.liquid_glass_demo_*'}]}},
+        {'type':'custom:layout-card','layout_type':'custom:grid-layout','layout':{'grid-template-columns':'repeat(2,minmax(0,1fr))','grid-gap':'8px'},'cards':[{'type':'tile','entity':e('light','links')},{'type':'tile','entity':e('light','rechts')}]},
+        card('direct-card',card={'type':'entities','title':'Native Karte im direkten Adapter','entities':[e('sensor','temperatur'),e('sensor','luftfeuchte')]}),
+        {'type':'custom:mod-card','card':{'type':'entities','title':'Card Mod · native Karte','entities':[e('sensor','batterie')]}},
+        {'type':'custom:embedded-view-card','mode':'static','view':'eingebettet','ha_card':True},
+        {'type':'custom:more-info-card','entity':e('cover','rollo')},
+        {'type':'custom:apexcharts-card','header':{'show':True,'title':'Original ApexCharts'},'graph_span':'24h','series':[{'entity':e('sensor','steckdose_leistung')}]},
+        {'type':'custom:mushroom-template-card','entity':e('switch','steckdose'),'primary':'Original Mushroom Template','secondary':'{{ states("sensor.liquid_glass_demo_steckdose_leistung") }} W','icon':'mdi:power-socket-eu','tap_action':{'action':'toggle'}},
+    ]))
+    dashboard['views'].append(view('Heizung & Klima','heizung-klima','thermostat',[
+        card('climate-background',view_path='heizung-klima',opacity=.85),
+        {'type':'markdown','content':'# Heizung & Klima\nDie dekorative Klima-Hintergrundanimation gehört ebenfalls zum Paket. Sie liest keine Geräte und löst keine Aktionen aus; reduzierte Bewegung wird beachtet.'},
+        card('thermostat-card',entity=e('climate','thermostat'),modes=['off','heat','cool','heat_cool']),
+        card('thermostat-card',entity=e('climate','dual_thermostat'),modes=['off','heat','cool','heat_cool']),
+    ]))
     dashboard['title']='DASH6 Satin Glass Demo'
     dashboard['views']=rooms+dashboard['views']
     # Keep all demo discovery queries inside its own entity namespace.
@@ -130,10 +149,60 @@ def build():
     dashboard['views'].append(view('Favoriten','favoriten','star-outline',[
         card('favorites-card',title='Favoriten ausprobieren',dashboard='liquid-glass-demo',demo_gui=True,demo_backend=True,sources=sources,selected=[n['id'] for n in sources]),
         {'type':'markdown','content':'Mit dem Zahnrad Karten und Reihenfolge ändern. Die Auswahl wird nur in diesem Browser gespeichert. Gerätebefehle bleiben auf die virtuellen Demo-Entities begrenzt.'}]))
-    # Scope every root card, so dynamic cards cannot send actions to real devices.
+    # One visible entry view demonstrates the important cards and their actual
+    # detail dialogs. Additional room/library views remain available below it.
+    candidates={}
+    def collect(node):
+        if isinstance(node,dict):
+            if str(node.get('type','')).startswith('custom:'): candidates.setdefault(node['type'],deepcopy(node))
+            for child in node.values():collect(child)
+        elif isinstance(node,list):
+            for child in node:collect(child)
+    collect(dashboard);collect(library)
+    inventory=[
+        ('Schuhschrank · Szenen & Segmente','custom:dash6-shoe-cabinet-card'),
+        ('Fernseher / Apple TV · Player & Fernbedienungen','custom:dash6-appletv-card'),
+        ('Staubsauger · Reinigung, Dock & Verschleißteile','custom:dash6-vacuum-card'),
+        ('Lichtgruppe · Einzellichter im Detail','custom:dash6-lightgroup-card-v2'),
+        ('Licht · Farbe, Temperatur & Effekte','custom:dash6-govee-light-card-v2'),
+        ('Messsteckdose · Sperre, LED & Verlauf','custom:dash6-ikea-card'),
+        ('Lüftung · Aus / Auto / Ein','custom:dash6-fan-card'),
+        ('Thermostat · Sollwerte & Presets','custom:dash6-thermostat-card'),
+        ('HomePod · Verbindung & Wiedergabe','custom:dash6-homepod-card'),
+        ('Pflanzen · Zielbereiche & Historie','custom:dash6-plant-card'),
+        ('Rollo · Position & Richtung','custom:dash6-cover-card'),
+        ('Türschloss · Kontakt & Aktionen','custom:dash6-door-card'),
+        ('Auswahlgruppe · animierte Linse','custom:dash6-segmented-control-card'),
+        ('Eigenständige Vacuum Dock Card','custom:vacuum-dock-card'),
+        ('Theme-GUI · aktuelle Paketvorgaben','custom:dash6-theme-editor-card'),
+        ('Domain-GUI · dynamische Bereichskarten','custom:dash6-domain-card'),
+        ('Raumlader · kombinierte Spalten','custom:dash6-room-slot-card'),
+        ('Favoriten · Auswahl, Gruppierung & Reihenfolge','custom:dash6-favorites-card'),
+    ]
+    samples=[];catalog=[]
+    for title,kind in inventory:
+        if kind not in candidates:raise ValueError('Demo is missing '+kind)
+        config=deepcopy(candidates[kind])
+        if 'vacuum' in kind:
+            config['areas']=[{'roborock_area_id':16,'name':'Demo Wohnzimmer'},{'roborock_area_id':17,'name':'Demo Küche'}]
+            if kind=='custom:dash6-vacuum-card':
+                config['reset_buttons']={'Filter':e('button','roboter_filter_zurucksetzen')}
+                config['stats']['default'].append({'entity':e('sensor','roboter_burste_restzeit'),'title':'Bürste','unit':'h','scale':1})
+                config['reset_buttons']['Bürste']=e('button','roboter_burste_zurucksetzen')
+        samples.append(card('showcase-card',title=title,card=config))
+        catalog.append({'title':title,'type':kind,'card':config})
+    intro={'type':'markdown','content':'# Alle Karten, Details & GUI\nSchuhschrank-Szenen, TV/Apple TV und Staubsauger stehen direkt hier. **Kartenhintergründe** und die beschrifteten Detailknöpfe öffnen die echten Zusatzansichten. **GUI konfigurieren** öffnet den zugehörigen echten Karteneditor. Sämtliche Geräte und Aktionen sind simuliert. Die folgenden Raum-Views zeigen weitere Layouts und Muster.'}
+    dashboard['views'].insert(0,view('Alle Karten & Details','demo','view-gallery',[intro,*samples]))
     for v in dashboard['views']:
         for section in v.get('sections',[]):
-            section['cards']=[{'type':'custom:dash6-demo-scope','card':c,**({'grid_options':c['grid_options']} if 'grid_options' in c else {})} for c in section.get('cards',[])]
+            wrapped=[]
+            for c in section.get('cards',[]):
+                sample=c
+                if c.get('type','').startswith('custom:') and c['type']!='custom:dash6-showcase-card':
+                    sample=card('showcase-card',title=c.get('name',c.get('title',c['type'].replace('custom:dash6-',''))),card=c)
+                wrapped.append({'type':'custom:dash6-demo-scope','card':sample,**({'grid_options':c['grid_options']} if 'grid_options' in c else {})})
+            section['cards']=wrapped
+    (ROOT/'support/card-catalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     text=json.dumps(dashboard,ensure_ascii=False,indent=2)+'\n'
     ids=sorted(set(re.findall(r'\b([a-z_]+\.'+PREFIX+r'[a-z0-9_]+)\b',text)))
     specs=[]
@@ -146,6 +215,16 @@ def build():
               'Waschkeller' if any(x in key for x in ('wasch','wasser','luftfeuchte')) else
               'Büro' if key in ('lampe','batterie','storung','firmware','temperatur') else 'Wohnzimmer')
         specs.append({'entity_id':eid,'key':key,'domain':domain,'room':room,'name':'Demo · '+key.replace('_',' ').capitalize()})
+    types=set()
+    def collect_types(node):
+        if isinstance(node,dict):
+            if str(node.get('type','')).startswith('custom:'):types.add(node['type'])
+            for child in node.values():collect_types(child)
+        elif isinstance(node,list):
+            for child in node:collect_types(child)
+    collect_types(dashboard)
+    inventory={'schema_version':1,'theme':'DASH6 Satin Glass','entry_view':'demo','views':len(dashboard['views']),'virtual_entities':len(specs),'card_types':sorted(types)}
+    (ROOT/'support/demo-inventory.json').write_text(json.dumps(inventory,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     (ROOT/'examples/demo-dashboard.yaml').write_text(text,encoding='utf-8') # JSON is valid YAML; no runtime YAML generator needed.
     (ROOT/'custom_components/liquid_glass/demo-entities.json').write_text(json.dumps(specs,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print(f'Built backend demo: {len(dashboard["views"])} views, {len(specs)} isolated entities')

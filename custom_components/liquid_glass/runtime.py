@@ -68,8 +68,10 @@ def refresh_embedded_resource(config_dir, existing, modules):
     report.update(resource_changed=True, frontend_modules=updated, bootstrap=bootstrap_url(source))
     return report
 
-def load_themes():
-    return json.loads((ROOT / 'themes.json').read_text(encoding='utf-8'))
+def load_themes(config_dir=None):
+    from .theme_store import read_stored,resolved_themes
+    themes=json.loads((ROOT / 'themes.json').read_text(encoding='utf-8'))
+    return resolved_themes(themes,read_stored(config_dir)) if config_dir else themes
 
 def install(config_dir, existing, dual=False):
     """Verify all downloads first; preserve existing HACS frontend modules."""
@@ -96,6 +98,8 @@ def install(config_dir, existing, dual=False):
             continue
         missing.append(dep)
     files = installer.package_files(ROOT)
+    from .theme_store import preserve_user_defaults
+    files = preserve_user_defaults(config,files,load_themes())
     files += installer.dependency_files(missing, config / 'liquid-glass' / 'download-cache', False)
     for name in ('dash6-cards.js', 'vacuum-dock-card.js', 'room-loader.js'):
         old = by_name.get(name)

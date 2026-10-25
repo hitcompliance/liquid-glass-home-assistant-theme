@@ -63,6 +63,20 @@
     "name": "Demo · Klingeln"
   },
   {
+    "entity_id": "button.liquid_glass_demo_roboter_burste_zurucksetzen",
+    "key": "roboter_burste_zurucksetzen",
+    "domain": "button",
+    "room": "Wohnzimmer",
+    "name": "Demo · Roboter burste zurucksetzen"
+  },
+  {
+    "entity_id": "button.liquid_glass_demo_roboter_filter_zurucksetzen",
+    "key": "roboter_filter_zurucksetzen",
+    "domain": "button",
+    "room": "Wohnzimmer",
+    "name": "Demo · Roboter filter zurucksetzen"
+  },
+  {
     "entity_id": "button.liquid_glass_demo_turoffner",
     "key": "turoffner",
     "domain": "button",
@@ -446,6 +460,13 @@
     "domain": "sensor",
     "room": "Wohnzimmer",
     "name": "Demo · Roboter batterie"
+  },
+  {
+    "entity_id": "sensor.liquid_glass_demo_roboter_burste_restzeit",
+    "key": "roboter_burste_restzeit",
+    "domain": "sensor",
+    "room": "Wohnzimmer",
+    "name": "Demo · Roboter burste restzeit"
   },
   {
     "entity_id": "sensor.liquid_glass_demo_roboter_filter_restzeit",

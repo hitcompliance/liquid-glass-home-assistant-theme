@@ -16,9 +16,9 @@ Vorhandene passende HACS-Module werden über ihre bestehenden URLs wiederverwend
 
 ## Demo und virtuelle Entities
 
-Die aktivierte Demo erzeugt **91 virtuelle Entities** unter `*.liquid_glass_demo_*`, mit eigenen Geräten und acht Bereichen `DASH6 Demo · <Raum>`. Dazu gehören Licht, Sensor/Binärsensor, Schalter, Lüfter, Rollo, Klima, Medienplayer, Remote, Roboter, Schloss, Tasten, Auswahl, Zahl, Szenen, Update, Wetter und Kamera. Es werden keine echten Geräte integriert oder angesprochen.
+Die aktivierte Demo erzeugt **94 virtuelle Entities** unter `*.liquid_glass_demo_*`, mit eigenen Geräten und acht Bereichen `DASH6 Demo · <Raum>`. Dazu gehören Licht, Sensor/Binärsensor, Schalter, Lüfter, Rollo, Klima, Medienplayer, Remote, Roboter, Schloss, Tasten, Auswahl, Zahl, Szenen, Update, Wetter und Kamera. Es werden keine echten Geräte integriert oder angesprochen.
 
-Das Dashboard `/liquid-glass-demo` zeigt Zuhause, Wohnzimmer, Küche, Schlafzimmer, Flur, Badezimmer, Büro, Waschkeller, Energie sowie zusätzliche Karten-/Layoutansichten und Favoriten. Florin und private Gerätekennungen sind ausgeschlossen. Die Dummy-Entities können auch in den Entwicklerwerkzeugen oder in eigenen Testkarten verwendet werden.
+Das Dashboard `/liquid-glass-demo` startet mit **Alle Karten & Details** (`/liquid-glass-demo/demo`). Dort sind Schuhschrank-Szenen, TV/Apple TV, Staubsauger samt Detaildialogen und 17 echte GUI-Editoren direkt erreichbar. Insgesamt 17 Views zeigen Zuhause, Wohnzimmer, Küche, Schlafzimmer, Flur, Badezimmer, Büro, Waschkeller, Energie sowie zusätzliche Karten-/Layoutansichten und Favoriten. Florin und private Gerätekennungen sind ausgeschlossen. Der [Karten- und GUI-Leitfaden](CARD-GUIDE.md) beschreibt alle Zusatzansichten und Konfigurationswege. Die Dummy-Entities können auch in den Entwicklerwerkzeugen oder in eigenen Testkarten verwendet werden.
 
 - Szenen ändern nur virtuelle Lichter. Die Markierung prüft deren gemeldete Zielzustände.
 - Die Demo-Lüftung simuliert Aus/Auto/Ein, Präsenz, Ausgänge und Countdown. Keine Shelly-Hardware nötig.
@@ -74,3 +74,9 @@ Für eine reine Frontend-Installation ohne Backend-Demo bleibt `python3 scripts/
 | Embedded View doppelt | Genau eine Original-`embedded-view-card.js`-URL behalten, neu laden |
 
 Die automatisierten Prüfungen verwenden temporäre HA-Konfigurationen und simulierte Geräte. Sie sind kein Nachweis einer Installation auf einer produktiven Nutzerinstanz.
+
+## Mitgelieferte Defaults und Agenten-Anleitung
+
+Das Paket enthält die abgeglichenen 64 CSS- und 76 GUI-Vorgaben aus dem aktuellen Satin-Stand. Helles Glas startet bei 20 %/8 px, dunkles bei 70 %/16 px. Gemeinsam gespeicherte Nutzer-Defaults werden über Updates erhalten. Die eigene Administrator-Schnittstelle übernimmt „Alles für Alle speichern“ samt Sicherung; eine private Config-Editor-Integration ist dafür nicht nötig.
+
+`/config/liquid-glass/AGENTS.md`, README, Kartenleitfaden, weitere Dokumentation und `support/card-catalog.json` werden mitinstalliert. Die [Agenten-Anleitung](../AGENTS.md) erklärt Struktur, Demo-Einstieg und das verbindliche Theme.

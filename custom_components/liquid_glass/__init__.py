@@ -84,7 +84,7 @@ async def async_setup_entry(hass, entry):
     www = Path(hass.config.path('www'))
     had_www = await hass.async_add_executor_job(www.is_dir)
     try:
-        themes = await hass.async_add_executor_job(load_themes)
+        themes = await hass.async_add_executor_job(load_themes, hass.config.config_dir)
         themes = frontend._validate_themes(themes)
         if not themes:
             raise ValueError('No valid bundled themes found')
@@ -113,6 +113,8 @@ async def async_setup_entry(hass, entry):
              'demo_coordinator': None, 'demo_platforms': False}
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = state
     try:
+        from .theme_store import register_websocket
+        register_websocket(hass)
         publish_themes()
         state['unsub'] = hass.bus.async_listen(EVENT_THEMES_UPDATED, publish_themes)
         hass.bus.async_fire(EVENT_THEMES_UPDATED)

@@ -12,9 +12,9 @@ component = root / 'custom_components' / 'liquid_glass'
 bundle = component / 'bundle'
 shutil.rmtree(bundle, ignore_errors=True)
 bundle.mkdir(parents=True)
-for name in ('dist', 'themes', 'examples', 'assets', 'licenses', 'support'):
+for name in ('dist', 'themes', 'examples', 'assets', 'licenses', 'support', 'docs'):
     shutil.copytree(root / name, bundle / name)
-for name in ('dependencies.lock.json', 'LICENSE', 'THIRD-PARTY-LICENSES.md'):
+for name in ('dependencies.lock.json', 'LICENSE', 'THIRD-PARTY-LICENSES.md', 'AGENTS.md', 'README.md'):
     shutil.copy2(root / name, bundle / name)
 # Resolve YAML merge keys at build time; runtime receives unambiguous JSON.
 resolved = subprocess.run(['ruby', '-rjson', '-ryaml', '-e', 'puts (YAML.respond_to?(:unsafe_load_file) ? YAML.unsafe_load_file(ARGV[0]) : YAML.load_file(ARGV[0])).to_json', str(root / 'themes' / 'liquid-glass.yaml')], capture_output=True, text=True, check=True)
@@ -27,4 +27,4 @@ strings['config']['step']['user'].update(title='Set up Liquid Glass', descriptio
 strings['config']['abort']['already_configured'] = 'Liquid Glass is already configured.'
 (component / 'strings.json').write_text(json.dumps(strings, indent=2) + '\n')
 (component / 'translations/en.json').write_text(json.dumps(strings, indent=2) + '\n')
-print('Built self-contained HACS integration 3.2.1')
+print('Built self-contained HACS integration 3.3.0')

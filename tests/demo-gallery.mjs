@@ -115,7 +115,7 @@ try {
   await wait(180); assert.notEqual(await animatedSwitch.getAttribute('aria-checked'), animatedBefore, 'Animated switch changes side/state after squeeze');
   assert.equal(await animated.locator('.stage .switch:visible').first().evaluate(button => getComputedStyle(button.querySelector('.knob-position')).transitionDuration.includes('0s')), false, 'Switch travel uses a real transition');
   await motion.close();
-  await page.goto(origin + '/');
+  await page.goto(origin + '/design.html');
   assert.equal(await page.locator('.gallery-card').count(), 1);
   await page.screenshot({ path: join(root, 'previews/gallery-desktop.jpg'), fullPage: true, type: 'jpeg', quality: 82 });
   await page.setViewportSize({ width: 390, height: 844 });

@@ -1,35 +1,37 @@
 import {chromium,webkit} from 'playwright';
-import {readFileSync,existsSync} from 'node:fs';
+import {readFileSync,existsSync,mkdirSync} from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-const output=path.resolve('../output/Theme-Speicherbuttons-20261021'),live='/Volumes/config/www/dash6-satin';
+const output=path.resolve('../output/Theme-Speicherbuttons-20261021'),live=path.resolve('dist');
+mkdirSync(output,{recursive:true});
 for(const engine of [chromium,webkit]){
  const browser=await engine.launch();try{
   const page=await browser.newPage({viewport:{width:1280,height:900}}),errors=[],cache=new Map();
   let shared={version:1,themes:{'DASH6 Satin Glass':{revision:'r1',values:{'dash6-light-glass-opacity':'0.22',_controls:{light_glass_opacity:22}}}}};
-  page.on('pageerror',e=>errors.push(e.message));
+  page.on('console',m=>{if(m.type()==='error')console.log('BROWSER',m.text())});
+  page.on('pageerror',e=>{errors.push(e.message);console.log(e.stack);});
   await page.route('http://theme.test/**',async route=>{
    const url=new URL(route.request().url()),rel=url.pathname.replace('/local/dash6-satin/','');
    if(url.pathname==='/local/dash6-satin/theme-defaults.json')return route.fulfill({json:shared});
    if(url.pathname.startsWith('/local/dash6-satin/')){
-    const staged=path.join(output,'staged',rel),file=existsSync(staged)?staged:path.join(live,rel);
+    const file=path.join(live,rel);
     if(existsSync(file)){if(!cache.has(file))cache.set(file,readFileSync(file));return route.fulfill({body:cache.get(file),contentType:file.endsWith('.js')?'application/javascript':'application/json'});}
    }
-   return route.fulfill({contentType:'text/html',body:'<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><body style="background:#273040;color:white;--dash6-satin-enabled:1;--secondary-text-color:#ccc"></body>'});
+   return route.fulfill({contentType:'text/html',body:'<!doctype html><meta name="dash6-assets-root" content="/local/dash6-satin"><meta name="viewport" content="width=device-width,initial-scale=1"><body style="background:#273040;color:white;--dash6-satin-enabled:1;--secondary-text-color:#ccc"></body>'});
   });
   async function init(){
    await page.goto('http://theme.test/dash-6/home');
    await page.evaluate(()=>{window.loadCardHelpers=async()=>({createCardElement:()=>document.createElement('div')});customElements.define('hui-view-container',class extends HTMLElement{});});
    await page.addScriptTag({url:'http://theme.test/local/dash6-satin/dash6-cards.js',type:'module'});
-   await page.waitForFunction(()=>customElements.get('dash6-theme-editor-card')?.prototype._glassPreviewLive);
+   await page.waitForFunction(()=>customElements.get('dash6-theme-editor-card')?.themeSaveActionsVersion===1);
    await page.evaluate(async initial=>{
     const store=new Map([['themes/dash6-satin-glass.yaml','DASH6 Satin Glass:\n  dash6-light-glass-opacity: "0.22"\nOther Theme:\n  untouched: yes\n'],['themes/liquid-glass.yaml','DASH6 Satin Glass:\n  dash6-dark-glass-opacity: "0.70"\n'],['www/dash6-satin/theme-defaults.json',JSON.stringify(initial)]]);
-    window.testFiles=store;window.testWrites=[];window.reloads=0;window.failNextSave=false;
-    const hass={user:{id:'test',is_admin:true},states:{},config:{time_zone:'Europe/Berlin'},callWS:async m=>{
-     if(m.type!=='config_editor/ws')return [];
-     if(m.action==='load')return {msg:'Loaded: '+m.file,data:store.get(m.file)};
-     if(window.failNextSave&&m.file==='themes/liquid-glass.yaml'){window.failNextSave=false;throw Error('simulated save failure');}
-     store.set(m.file,m.data);testWrites.push(m.file);return {msg:'Saved: '+m.file};
+    window.testFiles=store;window.testShared=structuredClone(initial);window.testWrites=[];window.reloads=0;window.failNextSave=false;
+    const hass={user:{id:'test',is_admin:true},states:{},config:{time_zone:'Europe/Berlin',components:['liquid_glass']},callWS:async m=>{
+     if(m.type!=='liquid_glass/theme_defaults')throw Error('Unexpected API '+m.type);
+     if(window.failNextSave){window.failNextSave=false;throw Error('simulated save failure');}
+     if(m.values){window.testShared={version:1,themes:{'DASH6 Satin Glass':{revision:'saved',values:m.values}}};testWrites.push('liquid-glass/theme-defaults.json');}
+     return {shared:window.testShared,backup:'backups/test',changed:[]};
     },callService:async(d,s)=>{if(d!=='frontend'||s!=='reload_themes')throw Error('Physical action forbidden');window.reloads++;}};
     const host=document.createElement('hui-view-container');host.style.setProperty('--dash6-satin-enabled','1');document.body.append(host);
     window.editor=document.createElement('dash6-theme-editor-card');editor.hass=hass;editor.setConfig({expanded:true});host.append(editor);await editor.updateComplete;
@@ -55,10 +57,10 @@ for(const engine of [chromium,webkit]){
   assert.equal(await page.evaluate(()=>testFiles.get('themes/dash6-satin-glass.yaml').includes('0.22')),true);
   await page.getByRole('button',{name:'Alles für Alle speichern',exact:true}).click();
   await page.waitForFunction(()=>editor._defaultStatus?.startsWith('Als Theme-Default'));
-  const published=await page.evaluate(()=>JSON.parse(testFiles.get('www/dash6-satin/theme-defaults.json')));
+  const published=await page.evaluate(()=>testShared);
   assert.equal(published.themes['DASH6 Satin Glass'].values['dash6-light-glass-opacity'],'0.37');
   assert.equal(published.themes['DASH6 Satin Glass'].values['dash6-switch-track-border'],'7px solid red');
-  assert.ok(await page.evaluate(()=>testWrites.some(x=>x.startsWith('backups/Theme-Defaults/'))));
+  assert.deepEqual(await page.evaluate(()=>testWrites),['liquid-glass/theme-defaults.json']);
   shared={version:1,themes:{'DASH6 Satin Glass':{revision:'r2',values:{'dash6-light-glass-opacity':'0.22',_controls:{light_glass_opacity:22}}}}};
   await init();await page.waitForFunction(()=>window.__dash6ThemeSettings.readPreferences()['dash6-light-glass-opacity']==='0.22');
   await page.getByRole('button',{name:'Alles speichern',exact:true}).click();
@@ -69,6 +71,6 @@ for(const engine of [chromium,webkit]){
   await page.getByRole('button',{name:'Alles für Alle speichern',exact:true}).scrollIntoViewIfNeeded();
   assert.equal(await page.getByRole('button',{name:'Alles für Alle speichern',exact:true}).evaluate(e=>e.getBoundingClientRect().right<=innerWidth),true);
   await page.screenshot({path:path.join(output,'Test-'+engine.name()+'-390.png')});
-  assert.deepEqual(errors,[]);console.log('PASS '+engine.name()+': footer buttons, all groups/materials, browser persistence, new shared revision, admin permissions, backups, failed-save rollback, reset, 390px.');
+  assert.deepEqual(errors,[]);console.log('PASS '+engine.name()+': footer buttons, all groups/materials, browser persistence, new shared revision, admin controls, integration API, failed-save feedback, reset, 390px.');
  }finally{await browser.close();}
 }

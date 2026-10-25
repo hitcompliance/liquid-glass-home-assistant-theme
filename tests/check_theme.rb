@@ -18,4 +18,12 @@ abort 'Satin gate missing' unless satin['dash6-satin-enabled'].to_s == '1'
 abort 'Missing wallpaper' unless File.file?(File.join(root, 'assets', 'liquid-glass-living-room.jpg'))
 abort 'Invalid HACS manifest' unless JSON.parse(File.read(File.join(root, 'hacs.json')))['name']
 
+Dir.glob(File.join(root, 'examples', '*.yaml')).each do |file|
+  dashboard = YAML.load_file(file)
+  next unless dashboard.is_a?(Hash) && dashboard['views'].is_a?(Array)
+  dashboard['views'].each do |view|
+    abort "Obsolete example theme in #{file}" if view['theme'] && view['theme'] != 'DASH6 Satin Glass'
+  end
+end
+
 puts 'Theme structure, motion, card geometry, and HACS packaging: OK'

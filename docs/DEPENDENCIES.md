@@ -6,6 +6,8 @@
 
 Die Demo legt außerdem ihre eigenen virtuellen Entities an. Home Assistants native Karten und Plattformen (Klima, Kamera, Wetter usw.) kommen aus Home Assistant; ihre Python-Abhängigkeiten verwaltet HA. Node/npm und externe Hardwareintegrationen sind für die Demo nicht erforderlich.
 
+Die gemeinsame Theme-Speicherung gehört zur Liquid-Glass-Integration selbst. Es wird **keine private Config-Editor-Erweiterung** vorausgesetzt. Die öffentliche Demo enthält alle zwölf geprüften Frontend-Module einschließlich ihrer Nebenmodule und Lizenzen.
+
 ## Selbst einzurichten
 
 | Bestandteil | Automatisch? | Was der Nutzer tun muss / wann erforderlich |
@@ -70,8 +72,7 @@ More Info Card has no tagged GitHub release, so its complete Git commit and
 checksum are pinned. Modules whose releases do not attach built files are
 retrieved from the exact release commit, never from `main` or `master`.
 Upstream license files and release license notices are installed alongside the
-modules. Third-party binaries are downloaded from their authors; they are not
-rehosted in this repository.
+modules. Die Integration lädt Drittanbieterdateien von ihren offiziellen Quellen. Für die vollständige öffentliche Browser-Demo liegen zusätzlich dieselben anhand des Locks geprüften Bytes mit ihren Lizenzen unter `demo/package/vendor/`; so sind dort auch alle echten Karten und Editoren verfügbar.
 
 Normal Ultra layouts work without Ultra Card Connect. Connect is separately
 optional for Hub authentication, Pro unlock, synchronization and related cloud

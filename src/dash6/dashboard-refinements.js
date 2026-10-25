@@ -122,7 +122,7 @@ window.__dash6Navigation={last:navigationCards};
     }
 
     _onView() {
-      return location.pathname.replace(/\/+$/, '').split('/').pop() === VIEW_PATH;
+      return location.pathname.replace(/\/+$/, '').split('/').pop() === VIEW_PATH || (document.documentElement.hasAttribute('data-dash6-satin-preview') && new URLSearchParams(location.search).get('view') === VIEW_PATH);
     }
 
     _findView() {
@@ -131,6 +131,7 @@ window.__dash6Navigation={last:navigationCards};
       while (node) {
         if (node.localName === 'hui-sections-view' && node.shadowRoot) return node;
         if (node.localName === 'hui-view' && node.shadowRoot) fallback ||= node;
+        if (node.localName === 'hui-view-container' && node.shadowRoot && document.documentElement.hasAttribute('data-dash6-satin-preview')) fallback ||= node;
         node = node.parentNode || node.getRootNode?.().host;
       }
       return fallback;

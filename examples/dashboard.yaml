@@ -1,7 +1,6 @@
 # Gesamtbeispiel: alle demo_* Entity-IDs durch eigene vorhandene Entities ersetzen.
 # Ressourcen außerhalb dieser Datei registrieren: Hauptmodul, Vacuum Dock, Fremdkarten.
 # Keine Geräte/Entities werden durch dieses Dashboard angelegt.
-# Die SVG-Subview am Ende benötigt zusätzlich die optionale Legacy-SVG-Ressource.
 title: Liquid Glass Beispiel
 views:
   - title: Licht und Schalter
@@ -429,26 +428,3 @@ views:
             name: Eingebettetes Licht
             discovery:
               enabled: false
-
-  # Optional: nur öffnen, wenn frontend/dash5-glass.js zusätzlich geladen ist.
-  # Die ursprüngliche automatische SVG-Optik startet ausschließlich unter
-  # /dash-5/wohnzimmer mit einem ursprünglichen Liquid-Glass-Theme.
-  - title: Ursprünglicher SVG-Wrapper
-    path: svg-beispiel
-    subview: true
-    theme: Liquid Glass (outdated)
-    cards:
-      - type: custom:liquid-glass-card
-        card:
-          type: entities
-          entities:
-            - sensor.demo_temperatur
-        glass:
-          enabled: true
-          optics:
-            strength: 0.24
-            curvature: 0.12
-            frost: 3
-          tint: rgba(25,42,65,0.30)
-          outline: rgba(235,247,255,0.35)
-          radius: 16px

@@ -55,7 +55,7 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
                 self.calls.append(url)
                 return self.download_payloads.get(url, self.payload)
             return original(deps, cache, offline, download)
-        self.patches = [patch.object(runtime, 'ROOT', self.bundle), patch.object(integration, 'ROOT', self.bundle), patch.object(runtime.installer, 'dependency_files', dependencies), patch.object(self.hass.config_entries, 'async_forward_entry_setups', AsyncMock()), patch.object(self.hass.config_entries, 'async_unload_platforms', AsyncMock(return_value=True)), patch.object(integration.er, 'async_get', return_value=SimpleNamespace(async_get=lambda key: None))]
+        self.patches = [patch.object(runtime, 'ROOT', self.bundle), patch.object(integration, 'ROOT', self.bundle), patch.object(runtime.installer, 'dependency_files', dependencies), patch.object(self.hass.config_entries, 'async_forward_entry_setups', AsyncMock()), patch.object(self.hass.config_entries, 'async_unload_platforms', AsyncMock(return_value=True)), patch('custom_components.liquid_glass.theme_store.register_websocket', return_value=None), patch.object(integration.er, 'async_get', return_value=SimpleNamespace(async_get=lambda key: None))]
         for p in self.patches: p.start()
 
     async def asyncTearDown(self):

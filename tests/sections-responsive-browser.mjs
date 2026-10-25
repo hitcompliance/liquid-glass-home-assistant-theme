@@ -15,7 +15,7 @@ for(const p of backfill)if(p.expanded)assert.equal(p.position,2);
 const bundle=await build({entryPoints:['src/dash6/layouts.js'],bundle:true,write:false,format:'iife',loader:{'.css':'text'},logLevel:'silent'});
 // Real RenderCard and RoomSlot implementations expose adapter/shadow boundaries
 // that simple direct-child fixtures cannot represent.
-const adapters=await build({stdin:{contents:"import './src/dash6/profile-card.js';import './src/dash6/room-loader.js';",resolveDir:process.cwd()},bundle:true,write:false,format:'iife',loader:{'.css':'text'},logLevel:'silent'});
+const adapters=await build({stdin:{contents:"import './src/dash6/profile-card.js';import './src/dash6/room-loader.js';",resolveDir:process.cwd()},bundle:true,write:false,format:'iife',define:{'import.meta.url':JSON.stringify('http://room-loader.test/room-loader.js')},loader:{'.css':'text'},logLevel:'silent'});
 const browser=await (process.env.DASH6_TEST_BROWSER==='webkit'?webkit:chromium).launch({headless:true});
 try {
  const page=await browser.newPage({viewport:{width:900,height:1000}});

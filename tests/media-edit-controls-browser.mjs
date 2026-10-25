@@ -87,17 +87,18 @@ try {
         await page.mouse.move(0, 0);
         await page.waitForFunction(() => getComputedStyle(fixture.media.shadowRoot.querySelector('.footer')).opacity === '0.3');
         assert.equal(await footer.evaluate(button => getComputedStyle(button.parentElement).visibility), 'visible');
-        assert.equal(await page.evaluate(() => getComputedStyle(fixture.media._native.shadowRoot.querySelector('.controls')).visibility), 'hidden');
+        assert.equal(await page.evaluate(() => getComputedStyle(fixture.media._native.shadowRoot.querySelector('.controls')).visibility), 'visible');
         await footer.hover();
-        await page.waitForFunction(() => getComputedStyle(fixture.media.shadowRoot.querySelector('.footer')).opacity === '1');
-        assert.equal(await footerOpacity(), '1');
+        await page.waitForFunction(() => getComputedStyle(fixture.media.shadowRoot.querySelector('.footer')).opacity === '0.8');
+        assert.equal(await footerOpacity(), '0.8');
+        await page.keyboard.press('Tab');
         await footer.focus();
         await page.mouse.move(0, 0);
-        assert.equal(await footerOpacity(), '1');
+        assert.equal(await footerOpacity(), '0.8');
         await page.keyboard.press('Enter');
         await page.getByRole('dialog', {name: 'Fernseher und Apple TV'}).waitFor();
         await page.getByRole('button', {name: 'Schließen', exact: true}).click();
-        await page.evaluate(() => document.activeElement?.blur());
+        await page.mouse.click(1, 1);
         for (const [apple, fire] of [['playing', 'off'], ['off', 'playing'], ['off', 'off']]) {
           await page.evaluate(async ({apple, fire}) => {
             const states = {...fixture.hass.states,

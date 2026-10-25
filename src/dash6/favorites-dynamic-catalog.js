@@ -7,7 +7,7 @@ const clone = value => structuredClone(value);
 const result = (status, card = null, error = null, count = 0) => ({status, card, error, count});
 const meaningful = value => value != null && value !== false && (Array.isArray(value) ? value.length > 0 : typeof value === 'object' ? Object.keys(value).length > 0 : true);
 const isHidden = (id, hass) => !!(hass?.entities?.[id]?.hidden_by || hass?.entities?.[id]?.disabled_by || hass?.entities?.[id]?.hidden);
-export const ROOM_SLOT_CONFIG_URL = '/local/dash6-satin/room-loader-configs.json?v=20261012-7';
+export const ROOM_SLOT_CONFIG_URL = (globalThis.document?.querySelector?.('meta[name="dash6-assets-root"]')?.content||'/local/liquid-glass')+'/room-loader-configs.json';
 const roomDefinitions = new Map();
 
 function roomConfigs(url) {

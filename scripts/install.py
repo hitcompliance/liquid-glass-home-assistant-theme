@@ -241,14 +241,15 @@ def package_files(root: Path) -> list[File]:
             files.append(File("www/liquid-glass-living-room.jpg", backdrop.read_bytes(), "original theme backdrop"))
     for example in sorted((root / "examples").glob("*.yaml")):
         files.append(File("liquid-glass/examples/" + example.name, example.read_bytes(), "example dashboard"))
-    support = root / "support"
-    if support.is_symlink():
-        raise InstallError("Package support directory is a symlink")
-    for source in sorted(support.rglob("*")):
-        if source.is_symlink():
-            raise InstallError("Package support files contain a symlink")
-        if source.is_file():
-            files.append(File("liquid-glass/support/" + source.relative_to(support).as_posix(), source.read_bytes(), "optional device scripts and documentation"))
+    for folder in ('support','docs'):
+        base=root/folder
+        if base.is_symlink():raise InstallError('Package documentation directory is a symlink')
+        for source in sorted(base.rglob('*')):
+            if source.is_symlink():raise InstallError('Package documentation contains a symlink')
+            if source.is_file():files.append(File('liquid-glass/'+folder+'/'+source.relative_to(base).as_posix(),source.read_bytes(),'documentation and optional device scripts'))
+    for name in ('AGENTS.md','README.md'):
+        source=root/name
+        if source.is_file():files.append(File('liquid-glass/'+name,source.read_bytes(),'package instructions'))
     return files
 
 

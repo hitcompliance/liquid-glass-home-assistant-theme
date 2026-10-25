@@ -93,7 +93,7 @@ def main() -> None:
         (DEMO / "pages" / f"{slug}.html").write_text(page, encoding="utf-8")
         manifest.append({"id": slug, "title": title, "description": description, "count": count, "tags": tags, "page": f"pages/{slug}.html", "preview": f"previews/{slug}.jpg", "source": f"source/{slug}.html", "sourceSha256": hashlib.sha256(fragment.encode()).hexdigest()})
     (DEMO / "gallery.json").write_text(json.dumps({"pages": manifest, "sourceCount": len(manifest), "workspaceDuplicates": ["mockups/dash6-satin-system/interactive.html", "mockups/dash6-satin-system/index.html"], "image": {"path": "assets/living-room.jpg", "origin": "Project-generated public image"}}, ensure_ascii=False, indent=2) + "\n")
-    (DEMO / "index.html").write_text(gallery_document(manifest), encoding="utf-8")
+    (DEMO / "design.html").write_text(gallery_document(manifest), encoding="utf-8")
     (DEMO / "README.md").write_text((ROOT / "README.md").read_text(), encoding="utf-8")
     (DEMO / ".nojekyll").touch()
     print(json.dumps({"pages": len(manifest), "bytes": sum(p.stat().st_size for p in DEMO.rglob('*') if p.is_file()), "directory": str(DEMO)}, ensure_ascii=False))

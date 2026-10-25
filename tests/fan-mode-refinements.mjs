@@ -4,7 +4,7 @@ import {fanFixture} from './fan-mode-fixture.mjs';
 const fixture=await fanFixture();
 try{for(const engine of [chromium,webkit]){
  const browser=await engine.launch();try{
- const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(fixture.url);await page.waitForFunction(()=>window.ready);
+ const page=await browser.newPage({reducedMotion:'reduce'});const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(fixture.url);await page.waitForFunction(()=>window.ready);
  assert.deepEqual(await page.evaluate(()=>calls),[],'initial state never sends services');
  for(const [a,f,expected]of [['on','off','auto'],['on','on','on'],['off','off','off'],['off','on','off'],['off','unknown','off'],['off','unavailable','off'],['on','unknown',null],['unavailable','on',null]]){
   await page.evaluate(([a,f])=>stamp(a,f),[a,f]);assert.equal(await page.evaluate(()=>sw._mode),expected,a+'/'+f);

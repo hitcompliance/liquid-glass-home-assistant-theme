@@ -1,0 +1,14 @@
+[
+  "package/vendor/ultra-card/ultra-card.js",
+  "package/vendor/button-card/button-card.js",
+  "package/vendor/mushroom/mushroom.js",
+  "package/vendor/auto-entities/auto-entities.js",
+  "package/vendor/apexcharts-card/apexcharts-card.js",
+  "package/vendor/mini-graph-card/mini-graph-card-bundle.js",
+  "package/vendor/card-mod/card-mod.js",
+  "package/vendor/layout-card/layout-card.js",
+  "package/vendor/more-info-card/more-info-card.js",
+  "package/vendor/vertical-stack-in-card/vertical-stack-in-card.js",
+  "package/vendor/firemote/HA-Firemote.js",
+  "package/vendor/embedded-view-card/embedded-view-card.js"
+]

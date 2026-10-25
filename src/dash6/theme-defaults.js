@@ -1,6 +1,6 @@
 import {html} from 'lit';
 import {graphSettingsVariables} from './graph-settings.js';
-const FILE='www/dash6-satin/theme-defaults.json',URL='/local/dash6-satin/theme-defaults.json';
+const FILE='www/dash6-satin/theme-defaults.json',URL=(document.querySelector('meta[name="dash6-assets-root"]')?.content||'/local/liquid-glass')+'/theme-defaults.json';
 const THEME='DASH6 Satin Glass',FILES=['themes/dash6-satin-glass.yaml','themes/liquid-glass.yaml'];
 const LOCAL_SAVE_KEY='dash6-satin-theme-saved-v1';
 let published={version:1,themes:{}},revision='',loading=false,activeHost=null;
@@ -38,7 +38,7 @@ export function saveThemeLocally(editor){
  }catch(error){editor._saveStatus='Nicht gespeichert: '+(error.message||String(error));}
  editor.requestUpdate();
 }
-export async function saveThemeDefaults(editor){
+async function saveLegacyThemeDefaults(editor){
  const hass=editor.hass;if(!hass?.user?.is_admin)throw Error('Nur Administratoren dürfen Theme-Defaults speichern.');
  const api=window.__dash6ThemeSettings;if(!api?.readPreferences||!api?.replacePreferences)throw Error('Theme-Speicher nicht bereit.');
  editor._defaultStatus='Theme-Defaults werden gesichert und gespeichert …';editor._defaultSaving=true;editor.requestUpdate();
@@ -64,6 +64,19 @@ export async function saveThemeDefaults(editor){
   if(changes.length)try{await hass.callService('frontend','reload_themes');}catch{failures.push('Themes neu laden');}
   editor._defaultStatus='Nicht gespeichert: '+(error.message||String(error))+(failures.length?' Wiederherstellung bitte prüfen: '+failures.join(', '):'');
  }finally{editor._defaultSaving=false;editor.requestUpdate();}
+}
+export async function saveThemeDefaults(editor){
+ if(editor.hass?.config?.components?.includes('config_editor')&&!editor.hass?.config?.components?.includes('liquid_glass'))return saveLegacyThemeDefaults(editor);
+ if(editor._defaultSaving)return;
+ editor._defaultSaving=true;editor._defaultStatus='Theme-Vorgaben werden gespeichert …';editor.requestUpdate();
+ try{
+  if(!editor.hass?.user?.is_admin)throw Error('Administratorrechte erforderlich.');
+  const result=await editor.hass.callWS({type:'liquid_glass/theme_defaults',values:allThemeValues(editor,window.__dash6ThemeSettings)});
+  if(!result?.shared?.themes?.[THEME])throw Error('Die Liquid Glass Integration muss eingerichtet sein.');
+  published=result.shared;revision='';applyPublished(true);
+  editor._defaultStatus='Als Theme-Default für alle Benutzer gespeichert.'+(result.backup?' Sicherung: '+result.backup:'');
+ }catch(error){editor._defaultStatus='Nicht gespeichert: '+(error.message||String(error));}
+ finally{editor._defaultSaving=false;editor.requestUpdate();}
 }
 export function themeDefaultButton(editor){return html`<div class="actions">${editor.hass?.user?.is_admin?html`<button ?disabled=${editor._defaultSaving} @click=${()=>saveThemeDefaults(editor)}>Als Theme-Default für alle speichern</button>`:''}</div><p role="status">${editor._defaultStatus||'Gespeicherte Theme-Defaults gelten für alle Benutzer dieses Themes. Änderungen hier sind zunächst eine Vorschau.'}</p>`;}
 export function themeSaveActions(editor){return html`<div class="actions" aria-label="Alle Theme-Einstellungen speichern"><button ?disabled=${editor._defaultSaving} @click=${()=>saveThemeLocally(editor)}>Alles speichern</button>${editor.hass?.user?.is_admin?html`<button ?disabled=${editor._defaultSaving} @click=${()=>{editor._saveStatus='';return saveThemeDefaults(editor);}}>Alles für Alle speichern</button>`:''}</div><p role="status" aria-live="polite">${editor._defaultStatus||editor._saveStatus||'Alles speichern: dieser Browser. Alles für Alle speichern: gemeinsame Vorgaben für alle Benutzer dieses Themes.'}</p>`;}
