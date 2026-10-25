@@ -1,10 +1,10 @@
 // Dashboard-wide name rules. Empty lists intentionally override the defaults.
 export const exclusionDefaults={
  update:[],
- button:['identify','identifizieren','tado','zurücksetzen','reset'],
- sensor:['thread capabilities','thread status','spannung','voltage','stromstärke','current','temperatur','temperature','energie','energy','gesamtleistung','gesamtenergie','volt'],
+ button:['demo','identify','identifizieren','tado','zurücksetzen','reset'],
+ sensor:['demo','thread capabilities','thread status','spannung','voltage','stromstärke','current','temperatur','temperature','energie','energy','gesamtleistung','gesamtenergie','volt'],
  switch:['adaptive lighting'],
- binary_sensor:['anwesenheit','präsenz','presence','belegung']
+ binary_sensor:['demo','anwesenheit','präsenz','presence','belegung']
 };
 export const exclusionLabels={update:'Updates',button:'Taster',sensor:'Sensoren',switch:'Schalter',binary_sensor:'Kontakte und Zustände',light:'Beleuchtung',climate:'Klima',cover:'Verdunklungen',fan:'Ventilatoren',media_player:'Medien',vacuum:'Staubsauger',remote:'Fernbedienungen',water_heater:'Warmwasser',scene:'Szenen',camera:'Kameras',lock:'Schlösser',siren:'Sirenen',automation:'Automationen',script:'Skripte',person:'Personen',device_tracker:'Geräte-Tracker',weather:'Wetter',calendar:'Kalender',number:'Zahlen',select:'Auswahllisten',text:'Texte',event:'Ereignisse',humidifier:'Luftbefeuchter',lawn_mower:'Rasenmäher',valve:'Ventile',alarm_control_panel:'Alarmanlagen',plant:'Pflanzen',todo:'To-do-Listen'};
 export function normalizeNames(values){return [...new Set((Array.isArray(values)?values:String(values||'').split('\n')).map(v=>String(v).trim().toLowerCase()).filter(Boolean))];}

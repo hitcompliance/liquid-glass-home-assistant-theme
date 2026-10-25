@@ -5,7 +5,8 @@ export function availableExclusionDomains(hass,draft){
  return [...new Set([...entityDomains,...Object.keys(hass?.states||{}).map(id=>id.split('.')[0])])].filter(domain=>/^[a-z_]+$/.test(domain)&&!Object.hasOwn(draft,domain)).sort();
 }
 
-const active=()=>location.pathname==='/dash-6'||location.pathname.startsWith('/dash-6/');
+const supportedDashboards=new Set(['dash-6','liquid-glass-demo','liquid-glass-gallery','liquid-glass-hue-demo']);
+const active=()=>supportedDashboards.has(location.pathname.split('/').filter(Boolean)[0]);
 const context=element=>{const own=dashboardContext(element);if(own.config)return own;let found=own;visit(document,node=>{if(node.localName==='hui-root'){const candidate=dashboardContext(node);if(candidate.dashboardName==='dash-6'&&candidate.config)found=candidate;}});return found;};
 const rulesFor=element=>globalRules(context(element).config);
 function visit(root,callback){for(const child of root.children||[]){callback(child);visit(child,callback);if(child.shadowRoot)visit(child.shadowRoot,callback);}}
@@ -84,7 +85,7 @@ customElements.whenDefined('dialog-lovelace-dashboard-detail').then(()=>{
  proto.updated=function(...args){
   updated?.apply(this,args);
   const host=this.shadowRoot?.querySelector('ha-dialog'),existing=host?.querySelector('dash6-global-exclusions-editor');
-  if(this._params?.urlPath!=='dash-6'||!this._open||this._currTab==='tab-background'){existing?.remove();return;}
+  if(!supportedDashboards.has(this._params?.urlPath)||!this._open||this._currTab==='tab-background'){existing?.remove();return;}
   if(host&&!existing&&this._params.lovelaceConfig){const editor=document.createElement('dash6-global-exclusions-editor');editor.configure(this);host.append(editor);}
  };
 });

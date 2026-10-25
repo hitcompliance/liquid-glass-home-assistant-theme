@@ -22910,7 +22910,8 @@
       "zurücksetzen",
       "reset",
       "ble-mi-remote",
-      "firetvremote"
+      "firetvremote",
+      "demo"
     ],
     "sensor": [
       "thread capabilities",
@@ -22928,7 +22929,8 @@
       "volt",
       "batterie",
       "battery",
-      "ourhome"
+      "ourhome",
+      "demo"
     ],
     "switch": [
       "adaptive lighting"
@@ -22955,7 +22957,8 @@
       "overpower",
       "overvoltage",
       "overcurrent",
-      "neustart erforderlich"
+      "neustart erforderlich",
+      "demo"
     ],
     "climate": [
       "tado"

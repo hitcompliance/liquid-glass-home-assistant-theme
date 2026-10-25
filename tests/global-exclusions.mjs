@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import {globalRules,nameExcluded,filterGlobalCards,normalizeNames} from '../src/dash6/global-exclusions.js';
 const rules=globalRules({});
+for(const domain of ['button','binary_sensor','sensor']){
+ assert.ok(rules[domain].includes('demo'));
+ assert.equal(nameExcluded(domain+'.example',{states:{[domain+'.example']:{attributes:{friendly_name:'Meine DEMO Entity'}}}},rules),true);
+}
 const names={'button.a':'TADO neu starten','button.b':'Gerät IDENTIFIZIEREN','button.c':'Luftfilter Zurücksetzen','sensor.a':'Raum TEMPERATURE','switch.a':'Adaptive LIGHTING','binary_sensor.a':'Präsenz im Bad','sensor.b':'Luftqualität','sensor.c':'Büro Gesamtleistung'};
 const hass={states:Object.fromEntries(Object.entries(names).map(([id,friendly_name])=>[id,{attributes:{friendly_name}}]))};
 for(const id of Object.keys(names).filter(id=>id!=='sensor.b'))assert.equal(nameExcluded(id,hass,rules),true,id);

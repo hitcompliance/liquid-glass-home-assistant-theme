@@ -61,6 +61,8 @@ cards:
 
 Zwischen den Karten liegen **8px**. Native Headings stehen am Beginn der gemeinsamen Hülle, nicht als separater Grid-Titel darüber. Hülle und Reiter folgen ausschließlich **hellem Glas** (Paketdefault 20 %/8 px), die einzelnen Gerätekarten **dunklem Glas** (70 %/16 px). Transparente Layout-Wrapper erzeugen keine weitere Glasfläche. Die **Domain-GUI** bearbeitet Überschrift, Raster, feste/automatische Karten und deren jeweilige Originaleditoren. Theme-Regler und Domain-GUI haben unterschiedliche Aufgaben.
 
+Die Standard-Ausschlusslisten in den nativen Dashboard-Einstellungen enthalten zusätzlich **`demo`** für **Tasten (`button`)**, **Kontakte & Zustände (`binary_sensor`)** und **Sensoren (`sensor`)**. Vorhandene eigene Listen und ausdrücklich leere Listen bleiben erhalten; die Einträge sind über die GUI bearbeitbar.
+
 ## Karten, Zusatzansichten und GUI
 
 **In der DASH6-Kopie stehen die Karten in ihren ursprünglichen Räumen; die Galerie zeigt Schuhschrank, TV/Apple TV und Staubsauger zusätzlich direkt im Einstieg.** Die Wegweiser unter den Karten öffnen deren echte Zusatzansichten. Bei Lichtgruppen und TV öffnet auch der Kartenhintergrund den jeweiligen Dialog.
