@@ -23,6 +23,7 @@ jobs:
       - run: npm run build:cards
       - run: python scripts/build-integration.py
       - run: python scripts/build-public-demo.py
+      - run: node tests/demo-scope-browser.mjs
       - run: node tests/media-volume-browser.mjs
       - run: node tests/dash6-copy-browser.mjs
       - run: node tests/demo-content-scope-browser.mjs
@@ -39,7 +40,6 @@ jobs:
       - run: node tests/auto-entities-context.mjs
       - run: node tests/global-exclusions.mjs
       - run: node tests/global-exclusions-browser.mjs
-      - run: node tests/demo-scope-browser.mjs
       - run: node tests/package-smoke.mjs
       - run: python scripts/package-release.py
       - uses: actions/upload-artifact@v4

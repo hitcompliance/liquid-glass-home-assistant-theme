@@ -5,7 +5,7 @@ import {build} from 'esbuild';
 import {chromium,webkit} from 'playwright';
 const result=await build({stdin:{contents:`import {demoHass} from './src/dash6/demo-scope.js';import{sceneMatches,sceneTarget}from'./src/dash6/scene-state.js';window.demoHass=demoHass;window.sceneMatches=sceneMatches;window.sceneTarget=sceneTarget;`,resolveDir:process.cwd()},bundle:true,format:'esm',write:false});
 const runtimeData=await readFile('support/demo-runtime-data.json','utf8');
-const server=createServer((req,res)=>{if(req.url==='/demo-runtime-data.json'){res.setHeader('content-type','application/json');res.end(runtimeData);return;}res.setHeader('content-type',req.url==='/test.js'?'text/javascript':'text/html');res.end(req.url==='/test.js'?result.outputFiles[0].text:'<!doctype html><script>document.addEventListener("context-request",e=>{e.stopImmediatePropagation();e.callback({real:true},()=>{});},true)</script><script type="module" src="/test.js"></script>');});
+const server=createServer((req,res)=>{const pathname=new URL(req.url,'http://localhost').pathname;if(pathname==='/demo-runtime-data.json'){res.setHeader('content-type','application/json');res.end(runtimeData);return;}res.setHeader('content-type',pathname==='/test.js'?'text/javascript':'text/html');res.end(pathname==='/test.js'?result.outputFiles[0].text:'<!doctype html><script>document.addEventListener("context-request",e=>{e.stopImmediatePropagation();e.callback({real:true},()=>{});},true)</script><script type="module" src="/test.js"></script>');});
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 try{
  for(const engine of [chromium,webkit]){
@@ -37,6 +37,7 @@ try{
     const calls=[],id='light.liquid_glass_demo_links',h={states:{'light.real':{state:'on'}},entities:{},user:{is_admin:true},callService:(...a)=>calls.push(a),callWS:(...a)=>calls.push(a),callApi:(...a)=>calls.push(a),connection:{}};
     const wrapper=document.createElement('dash6-demo-scope');wrapper.setConfig({card:{type:'test-child'}});wrapper.hass=h;document.body.append(wrapper);
     for(let i=0;i<100&&!wrapper.firstElementChild?.value?.states[id];i++)await new Promise(r=>setTimeout(r,20));
+    if(!wrapper.firstElementChild)throw Error(wrapper.textContent||'Demo child did not initialize');
     const context=wrapper.firstElementChild.value;await context.callService('light','turn_off',{entity_id:id});
     const updated=wrapper.firstElementChild.value.states[id].state;
     let leaked=0;const listener=()=>leaked++;document.addEventListener('hass-more-info',listener);
