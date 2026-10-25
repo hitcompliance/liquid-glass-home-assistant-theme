@@ -1,5 +1,5 @@
-import {createCardElement} from './native.js?v=3.5.4';
-import {createDemoRuntime} from './package/demo-runtime.js?v=3.5.4';
+import {createCardElement} from './native.js?v=3.5.5';
+import {createDemoRuntime} from './package/demo-runtime.js?v=3.5.5';
 const status=document.querySelector('#runtime-status');
 const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+': '+r.status);return r.json();};
 const isCopy=new URLSearchParams(location.search).get('dashboard')!=='gallery';
@@ -17,7 +17,7 @@ runtime.subscribe(publish);
 const reset=()=>runtime.reset();
 try{
  for(const url of modules)await import(new URL(url,location.href));
- await import('./package/dash6-cards.js?v=3.5.4');await import('./package/vacuum-dock-card.js?v=3.5.4');await import('./package/room-loader.js?v=3.5.4');
+ await import('./package/dash6-cards.js?v=3.5.5');await import('./package/vacuum-dock-card.js?v=3.5.5');await import('./package/room-loader.js?v=3.5.5');
  const originalFetch=window.fetch.bind(window);window.fetch=(url,options)=>originalFetch(typeof url==='string'&&url.startsWith('/local/liquid-glass/')?'package/'+url.slice('/local/liquid-glass/'.length):url,options);
  const preview=document.querySelector('#preview'),app=document.createElement('home-assistant');app.hass=hass;preview.append(app);let node=app;
  for(const tag of ['home-assistant-main','ha-panel-lovelace','hui-root']){const child=document.createElement(tag);node.attachShadow({mode:'open'}).append(child);node=child;}
@@ -33,6 +33,17 @@ try{
   if(update){const url=new URL(location.href);url.searchParams.set('view',v.path);history.replaceState(null,'',url);}
  }
  for(const v of dashboard.views){if(v.subview)continue;const b=document.createElement('button');b.textContent=v.title;b.dataset.view=v.path;b.onclick=()=>showView(v.path);document.querySelector('#view-tabs').append(b);}
+ // HA handles this native event in an installation. The standalone preview
+ // supplies only its navigation handler, scoped to the selected demo dashboard.
+ app.addEventListener('hass-action',event=>{
+  const action=event.detail?.config?.[event.detail.action+'_action'];
+  if(action?.action!=='navigate')return;
+  const prefix='/'+root.lovelace.urlPath+'/';
+  if(!action.navigation_path?.startsWith(prefix))return;
+  const path=action.navigation_path.slice(prefix.length);
+  if(!dashboard.views.some(v=>v.path===path))return;
+  event.stopPropagation();showView(path);
+ });
  document.querySelector('#reset-demo').onclick=()=>{reset();showView(currentView);};
  window.addEventListener('location-changed',()=>{const path=location.pathname.split('/').filter(Boolean).at(-1);if(dashboard.views.some(v=>v.path===path))showView(path);});
  window.addEventListener('popstate',()=>showView(new URLSearchParams(location.search).get('view')||'demo',false));

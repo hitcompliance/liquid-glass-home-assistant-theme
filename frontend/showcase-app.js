@@ -33,6 +33,17 @@ try{
   if(update){const url=new URL(location.href);url.searchParams.set('view',v.path);history.replaceState(null,'',url);}
  }
  for(const v of dashboard.views){if(v.subview)continue;const b=document.createElement('button');b.textContent=v.title;b.dataset.view=v.path;b.onclick=()=>showView(v.path);document.querySelector('#view-tabs').append(b);}
+ // HA handles this native event in an installation. The standalone preview
+ // supplies only its navigation handler, scoped to the selected demo dashboard.
+ app.addEventListener('hass-action',event=>{
+  const action=event.detail?.config?.[event.detail.action+'_action'];
+  if(action?.action!=='navigate')return;
+  const prefix='/'+root.lovelace.urlPath+'/';
+  if(!action.navigation_path?.startsWith(prefix))return;
+  const path=action.navigation_path.slice(prefix.length);
+  if(!dashboard.views.some(v=>v.path===path))return;
+  event.stopPropagation();showView(path);
+ });
  document.querySelector('#reset-demo').onclick=()=>{reset();showView(currentView);};
  window.addEventListener('location-changed',()=>{const path=location.pathname.split('/').filter(Boolean).at(-1);if(dashboard.views.some(v=>v.path===path))showView(path);});
  window.addEventListener('popstate',()=>showView(new URLSearchParams(location.search).get('view')||'demo',false));

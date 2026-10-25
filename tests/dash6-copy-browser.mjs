@@ -23,6 +23,15 @@ try{for(const engine of [chromium,webkit]){
   await page.waitForTimeout(1200);
   assert.deepEqual(await page.evaluate(()=>hostTemplateCalls),[],'Demo Auto Entities templates stay off the host connection');
   assert.equal(await page.getByText('PRIVATE HOST SENTINEL',{exact:true}).count(),0);
+  const roomNames=['Wohnzimmer','Küche','Schlafzimmer','Flur','Badezimmer','Büro','Waschkeller'];
+  const roomPaths=['wohnzimmer','kuche','schlafzimmer','flur','badezimmer','buro','raum-waschkeller'];
+  assert.equal(await page.getByText('Raum öffnen',{exact:true}).count(),7,'Exactly seven copied room cards');
+  assert.deepEqual(await page.locator('button-card').evaluateAll(cards=>cards.filter(c=>c._config?.label==='Raum öffnen').map(c=>c._config.name)),roomNames,'Original room titles without gallery rooms or internal prefixes');
+  for(let i=0;i<roomNames.length;i++){
+   await page.getByText(roomNames[i],{exact:true}).last().click();
+   await page.waitForFunction(path=>new URL(location.href).searchParams.get('view')===path,roomPaths[i],{timeout:5000});
+   await page.evaluate(()=>demoPreview.showView('home'));
+  }
   await page.evaluate(async()=>{
    const config=demoPreview.dashboard.views[0].sections[0].cards[0];
    const scope=(await window.loadCardHelpers()).createCardElement(config);

@@ -56,6 +56,8 @@ Auto-Entities-Vorlagen müssen über die Verbindung der jeweiligen Karte laufen 
 
 ## Verbindliche Entwicklungsmuster
 
+Bei Live-Arbeit keine eigenen Updates über WebSocket-Verbindungen ausführen; vorgesehene MCP-Werkzeuge beziehungsweise die native HA-GUI verwenden. Höchstens zwei Browser-Tabs gleichzeitig verwenden, einschließlich lokaler Prüftabs; vor einem dritten mindestens einen schließen. Bei einem HA-Neustart zuerst die Nichterreichbarkeit von `homeassistant.local`, dann die erneute Erreichbarkeit und schließlich die von HA gesendete Abschlussmeldung abwarten. Bis diese Meldung empfangen wurde, sind sämtliche anderen HA-Requests strikt verboten; nur die dafür erforderlichen Erreichbarkeitsprüfungen und der Empfang der Abschlussmeldung sind zulässig.
+
 1. Bestehende gemeinsame Materialien und Renderer erweitern. Keine zusätzliche Themevariante und keine zweite Nachbildung einer bereits enthaltenen Karte anlegen.
 2. Fähigkeiten aus den tatsächlichen Entities lesen. Geräteaktionen, Sperren, Bestätigungen und Domain-Zuordnungen erhalten. Gestaltungstests verwenden den Browser-Demokontext; keine echten Geräteaktionen.
 3. Hintergrundgraphen mindestens 100px hoch halten. Leistung in den gemeinsamen Kopf; keine zusätzlichen Energiezähler auf solchen Karten. Präsenzsymbole absolut unten rechts mit 8px Randabstand. Hauptzustände und tatsächliche Bestätigungen bleiben maßgeblich; ein Szenenaufruf allein beweist keinen aktiven Sollzustand.

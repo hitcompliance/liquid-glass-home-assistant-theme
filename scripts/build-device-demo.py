@@ -74,6 +74,27 @@ def door_controls():
         entity('switch','schloss_batteriewarnung_simulation'),entity('lock','tur'),
         entity('button','turoffner'),entity('button','zurucksetzen')]}
 
+def copied_home_rooms(dashboard, copied, sources, results):
+    """Keep the copied home grid scoped to its own rooms and authored links."""
+    template=dashboard['views'][0]['sections'][1]['cards'][0]['card']['definition']['filter']['template']
+    key=next(key for key,source in sources.items()
+             if source.replace('\r\n','\n').strip()==template.replace('\r\n','\n').strip())
+    by_area={row['custom_fields']['room']['card']['name']:row for row in results[key]}
+    rooms={spec['room']:spec['area'] for spec in copied}
+    cards=[]
+    for room_view in dashboard['views']:
+        title=room_view.get('title')
+        if title not in rooms: continue
+        row=deepcopy(by_area[rooms[title]])
+        header=row['custom_fields']['room']['card']
+        header['name']=title
+        for target in (row,header):
+            target['tap_action']['navigation_path']='/liquid-glass-demo/'+room_view['path']
+        cards.append(row)
+    if len(cards)!=len(rooms):
+        raise ValueError('Every copied room needs exactly one home card and an authored view')
+    results[key]=cards
+
 def build():
     # The authored public example supplies the complete card/layout library.
     source = subprocess.run(['ruby', '-ryaml', '-rjson', '-e',
@@ -336,8 +357,10 @@ def build():
             except (ValueError,TypeError):
                 try: template_results[key]=ast.literal_eval(result)
                 except (ValueError,SyntaxError): pass
+    template_sources=json.loads((ROOT/'support/demo-template-sources.json').read_text())
+    copied_home_rooms(copy,copied,template_sources,template_results)
     runtime_data={'specs':specs+copied,'dashboards':{'liquid-glass-demo':copy,'liquid-glass-gallery':json.loads(text)},
-                  'template_sources':json.loads((ROOT/'support/demo-template-sources.json').read_text()),
+                  'template_sources':template_sources,
                   'template_results':template_results,
                   'shared_defaults':json.loads((ROOT/'support/theme-defaults.json').read_text())}
     room=json.loads((ROOT/'src/dash6/room-loader-configs.json').read_text())['demo']
