@@ -12,11 +12,13 @@ from types import SimpleNamespace
 from unittest.mock import patch, AsyncMock, Mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant,CoreState
 from homeassistant.components import frontend
 from homeassistant.components.lovelace import LovelaceData
 from homeassistant.components.lovelace.const import LOVELACE_DATA
 from homeassistant.components.lovelace.resources import ResourceYAMLCollection, ResourceStorageCollection
+from homeassistant.components.lovelace.dashboard import DashboardsCollection,DashboardsCollectionWebSocket,LovelaceStorage
+from homeassistant.components.lovelace.const import STORAGE_DASHBOARD_CREATE_FIELDS,STORAGE_DASHBOARD_UPDATE_FIELDS
 from homeassistant.exceptions import ConfigEntryNotReady
 from custom_components.liquid_glass import runtime
 import custom_components.liquid_glass as integration
@@ -31,6 +33,7 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.config = self.root / 'config'
         self.config.mkdir()
         self.hass = HomeAssistant(str(self.config))
+        self.hass.set_state(CoreState.running)
         self.hass.http = SimpleNamespace(async_register_static_paths=AsyncMock())
         # Initialize the actual native schema/service and event behavior, while
         # keeping theme persistence in memory for the isolated test config.
@@ -42,6 +45,17 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.hass.data[frontend.DATA_PANELS] = {}
         self.ll = LovelaceData('yaml', {}, ResourceYAMLCollection([]), {})
         self.hass.data[LOVELACE_DATA] = self.ll
+        self.dashboard_collection=DashboardsCollection(self.hass)
+        async def native_dashboard_changed(change,item_id,item):
+            path=item['url_path']
+            if change=='removed':
+                frontend.async_remove_panel(self.hass,path,warn_if_unknown=False)
+                await self.ll.dashboards.pop(path).async_delete()
+                return
+            if change=='added':self.ll.dashboards[path]=LovelaceStorage(self.hass,item)
+            frontend.async_register_built_in_panel(self.hass,'lovelace',sidebar_title=item['title'],sidebar_icon=item.get('icon'),frontend_url_path=path,config={'mode':'storage'})
+        self.dashboard_collection.async_add_listener(native_dashboard_changed)
+        DashboardsCollectionWebSocket(self.dashboard_collection,'lovelace/dashboards','dashboard',STORAGE_DASHBOARD_CREATE_FIELDS,STORAGE_DASHBOARD_UPDATE_FIELDS).async_setup(self.hass)
         self.hass.config_entries = SimpleNamespace(async_forward_entry_setups=AsyncMock(), async_unload_platforms=AsyncMock(return_value=True))
         self.entry = SimpleNamespace(entry_id='test', data={'demo_dashboard': True, 'demo_mode': 'entities'})
         self.payload = b'export const testDependency = true;'
@@ -78,11 +92,11 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(frontend.async_panel_exists(self.hass,integration.DEMO))
         self.assertEqual(len(self.hass.data[frontend.DATA_EXTRA_MODULE_URL].urls),1)
         self.assertFalse((self.config/'configuration.yaml').exists())
-        self.assertFalse((self.config/'.storage').exists())
+        self.assertTrue((self.config/('.storage/lovelace.'+self.ll.dashboards[integration.DEMO].config['id'])).exists())
         self.assertEqual(self.hass.http.async_register_static_paths.await_count,1)
         await integration.async_unload_entry(self.hass,self.entry)
-        self.assertFalse(frontend.async_panel_exists(self.hass,integration.DEMO))
-        self.assertNotIn(integration.DEMO,self.ll.dashboards)
+        self.assertTrue(frontend.async_panel_exists(self.hass,integration.DEMO))
+        self.assertIn(integration.DEMO,self.ll.dashboards)
         self.assertEqual(self.hass.data[frontend.DATA_THEMES],{'My theme': {'primary-color':'#123456'}})
         self.assertFalse(self.hass.data[frontend.DATA_EXTRA_MODULE_URL].urls)
         self.assertTrue((self.config/'www/liquid-glass/dash6-cards.js').exists())
@@ -101,6 +115,47 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
             config=await self.ll.dashboards[path].async_load(False)
             self.assertNotIn('"mode": "entities"',json.dumps(config))
         self.assertEqual(list(self.hass.states.async_all()),[])
+
+    async def test_native_storage_metadata_and_gui_edits_survive_reload(self):
+        self.entry.data={'demo_dashboard':True,'demo_mode':'browser'}
+        await integration.async_setup_entry(self.hass,self.entry)
+        dashboard=self.ll.dashboards[integration.DEMO]
+        self.assertEqual(dashboard.mode,'storage')
+        self.assertTrue(any(item['url_path']==integration.DEMO for item in self.dashboard_collection.async_items()))
+        config=json.loads(json.dumps(await dashboard.async_load(False)))
+        config['views'][0]['title']='Meine GUI-Anpassung'
+        await dashboard.async_save(config)
+        await integration.async_unload_entry(self.hass,self.entry)
+        await integration.async_setup_entry(self.hass,self.entry)
+        self.assertEqual((await self.ll.dashboards[integration.DEMO].async_load(False))['views'][0]['title'],'Meine GUI-Anpassung')
+        # A fresh native storage object must read the same persisted edit.
+        reloaded=LovelaceStorage(self.hass,dashboard.config)
+        self.assertEqual((await reloaded.async_load(False))['views'][0]['title'],'Meine GUI-Anpassung')
+
+    async def test_generated_storage_refresh_preserves_manual_hue_changes(self):
+        from custom_components.liquid_glass.editable_dashboard import provision,refresh_generated
+        seed={'title':'Hue','views':[{'title':'Raum','path':'raum','cards':[]}]}
+        dashboard=await provision(self.hass,integration.HUE_DEMO,'Hue','mdi:lightbulb',seed,'test')
+        newer={'title':'Hue','views':seed['views']+[{'title':'Neu','path':'neu','cards':[]}]}
+        self.assertTrue(await refresh_generated(dashboard,newer,'test'))
+        custom=json.loads(json.dumps(await dashboard.async_load(False)))
+        custom['views'][0]['title']='Eigener Raum';await dashboard.async_save(custom)
+        self.assertFalse(await refresh_generated(dashboard,seed,'test'))
+        self.assertEqual((await dashboard.async_load(False))['views'][0]['title'],'Eigener Raum')
+
+    async def test_update_versions_only_package_owned_storage_resources(self):
+        resources=ResourceStorageCollection(self.hass,SimpleNamespace(async_load=AsyncMock(return_value={})))
+        await resources.async_load()
+        own=await resources.async_create_item({'url':'/local/liquid-glass/dash6-cards.js?v=old','res_type':'module'})
+        foreign=await resources.async_create_item({'url':'/local/dash6-plant/dash6-plant-card.js?v=private','res_type':'module'})
+        self.ll.resources=resources
+        self.entry.data={'demo_dashboard':True,'demo_mode':'browser'}
+        await integration.async_setup_entry(self.hass,self.entry)
+        rows={item['id']:item for item in resources.async_items()}
+        expected='/local/liquid-glass/dash6-cards.js?v='+hashlib.sha256((self.config/'www/liquid-glass/dash6-cards.js').read_bytes()).hexdigest()[:12]
+        self.assertEqual(rows[own['id']]['url'],expected)
+        self.assertEqual(rows[foreign['id']]['url'],foreign['url'])
+        self.assertIn(expected,(self.config/'www/liquid-glass/integration-bootstrap.js').read_text())
 
     async def test_migration_preserves_legacy_entity_mode(self):
         self.entry.version=1

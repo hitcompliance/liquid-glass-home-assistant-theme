@@ -119,12 +119,12 @@ function synchronize(){
   const source=normalize(template);
   const batch=inlineDemoTemplates(source);
   if(batch.length)return JSON.stringify(Object.fromEntries(batch.map(([id,t])=>[id,renderTemplate(t)])));
-  if(templates.has(source))return templates.get(source);
+  if(templates.has(source))return structuredClone(templates.get(source));
   // Native Mushroom labels and other simple live state fields.
   const rendered=source.replace(/\{\{\s*states\((['"])([^'"]+)\1\)\s*\}\}/g,(_m,_q,id)=>states[id]?.state??'unknown');
   if(!rendered.includes('{%')&&!rendered.includes('{{'))return rendered;
   const embedded=[...templates.keys()].sort((a,b)=>b.length-a.length).find(t=>source.includes(t));
-  if(embedded)return templates.get(embedded);
+  if(embedded)return structuredClone(templates.get(embedded));
   diagnostics.unknownTemplates.add(source);throw Error('Unbekannte lokale Demo-Vorlage.');
  }
  const registryRows=type=>Object.values(type==='entity'?entities:type==='device'?devices:type==='area'?areas:{});
@@ -137,7 +137,7 @@ function synchronize(){
   if(m.type==='call_service')return callService(m.domain,m.service,m.service_data||{},m.target||{});
   if(m.type==='get_states')return Object.values(states);
   if(m.type==='lovelace/config'){const key=m.url_path||'liquid-glass-demo';if(data.dashboards[key])return data.dashboards[key];throw Error('Dieses Dashboard gehört nicht zur lokalen Demo.');}
-  if(m.type==='lovelace/dashboards/list')return Object.entries(data.dashboards).map(([id,config])=>({id,url_path:id,title:config.title,mode:'yaml',show_in_sidebar:true,require_admin:false}));
+  if(m.type==='lovelace/dashboards/list')return Object.entries(data.dashboards).map(([id,config])=>({id,url_path:id,title:config.title,mode:'storage',show_in_sidebar:true,require_admin:false}));
   if(m.type?.endsWith('_registry/list'))return registryRows(m.type.match(/config\/(\w+)_registry/)?.[1]);
   if(m.type==='config/entity_registry/get')return entities[m.entity_id]||null;
   if(m.type==='config/device_registry/get')return devices[m.device_id]||null;
@@ -245,7 +245,8 @@ function synchronize(){
 }
 
 const runtimes=new Map();
-export function loadDemoRuntime(url=new URL((import.meta.url.includes('/chunks/')?'../':'./')+'demo-runtime-data.json',import.meta.url).href){
+const dataRevision=typeof __DASH6_DEMO_REVISION__==='undefined'?'source':__DASH6_DEMO_REVISION__;
+export function loadDemoRuntime(url=new URL((import.meta.url.includes('/chunks/')?'../':'./')+'demo-runtime-data.json?v='+dataRevision,import.meta.url).href){
  if(!runtimes.has(url))runtimes.set(url,fetch(url).then(r=>{if(!r.ok)throw Error('Demo-Daten: '+r.status);return r.json();}).then(data=>createDemoRuntime(data,{assetRoot:new URL('.',url).href})).catch(error=>{runtimes.delete(url);throw error;}));
  return runtimes.get(url);
 }

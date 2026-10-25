@@ -101,7 +101,7 @@ def preserve_instance_layouts(config, files):
     files=[f for f in files if f.path not in overrides and f.path.removesuffix('.gz') not in overrides]
     return files+[installer.File(path,data,'preserved instance layout') for path,data in overrides.items()]
 
-def install(config_dir, existing, dual=False):
+def install(config_dir, existing, dual=False, version_own_modules=False):
     """Verify all downloads first; preserve existing HACS frontend modules."""
     config = Path(config_dir)
     lock = installer.load_lock(ROOT / 'dependencies.lock.json')
@@ -134,8 +134,10 @@ def install(config_dir, existing, dual=False):
         data = next((f.data for f in files if f.path == 'www/liquid-glass/' + name), None)
         if data is None:
             continue
-        # Keep an already registered canonical URL so browser ESM loads it once.
-        modules.append({'id': name, 'url': old or '/local/liquid-glass/' + name + '?v=' + installer.digest(data)[:12]})
+        # Storage resources can be updated through HA's native collection so
+        # the resource table and bootstrap share one current ESM identity.
+        url='/local/liquid-glass/' + name + '?v=' + installer.digest(data)[:12]
+        modules.append({'id': name, 'url': url if version_own_modules else old or url})
     bootstrap = bootstrap_source(modules)
     files.append(installer.File('www/liquid-glass/integration-bootstrap.js', bootstrap.encode(), 'integration loader'))
     result = installer.apply_files(config, files)

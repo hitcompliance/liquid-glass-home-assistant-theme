@@ -1,9 +1,7 @@
 """Instance-local discovery dashboard. Reading registries never calls devices."""
 from collections import defaultdict
 from copy import deepcopy
-from homeassistant.components.lovelace.dashboard import LovelaceConfig
 from homeassistant.helpers import area_registry as ar,device_registry as dr,entity_registry as er
-from homeassistant.helpers.json import json_bytes,json_fragment
 
 HUE_DEMO='liquid-glass-hue-demo'
 TITLE='LIQUID-GLASS-HUE-DEMO'
@@ -74,11 +72,3 @@ def generate(hass):
         if len(cards)==1:cards.append({'type':'markdown','content':'Keine passenden sichtbaren Entities gefunden. Die Ansicht aktualisiert sich nach Registry-Änderungen.'})
         views.append({'title':title,'path':path,'icon':icon,'type':'panel','theme':THEME,'cards':[ultra(cards,links)]})
     return {'title':TITLE,'views':views}
-
-class DiscoveryDashboard(LovelaceConfig):
-    """Generated on the local HA server; never uploads registry information."""
-    @property
-    def mode(self):return 'yaml'
-    async def async_load(self,force):return generate(self.hass)
-    async def async_get_info(self):return {'mode':self.mode,'views':len((await self.async_load(False))['views'])}
-    async def async_json(self,force):return json_fragment(json_bytes(await self.async_load(force)))

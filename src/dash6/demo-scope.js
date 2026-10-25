@@ -24,7 +24,7 @@ export function demoHass(hass){
   if(message.type==='liquid_glass/theme_defaults'&&hass.demo_browser)return hass.callWS(message);
   if(message.type==='get_states')return Object.values(subset(hass.states));
   if(/config\/(entity|device|area)_registry\/list$/.test(message.type))return filterRegistry(message.type,await hass.callWS(message));
-  if(message.type==='lovelace/dashboards/list')return ['liquid-glass-demo','liquid-glass-gallery'].map(id=>({id,url_path:id,title:id==='liquid-glass-demo'?'LIQUID-GLASS-DEMO':'Liquid Glass · Karten & GUI',mode:'yaml',show_in_sidebar:true,require_admin:false}));
+  if(message.type==='lovelace/dashboards/list')return ['liquid-glass-demo','liquid-glass-gallery'].map(id=>({id,url_path:id,title:id==='liquid-glass-demo'?'LIQUID-GLASS-DEMO':'Liquid Glass · Karten & GUI',mode:'storage',show_in_sidebar:true,require_admin:false}));
   if(message.type==='lovelace/config'&&['liquid-glass-demo','liquid-glass-gallery'].includes(message.url_path))return hass.callWS(message);
   if(message.type?.startsWith('history/')){
    const ids=message.entity_ids||message.filter_entity_id||[];
@@ -53,6 +53,7 @@ export function demoHass(hass){
 }
 
 class DemoScope extends HTMLElement{
+ static async getConfigElement(){await import('./demo-scope-editor.js');return document.createElement('dash6-demo-scope-editor');}
  setConfig(config){if(!config.card)throw Error('Demo-Karte fehlt.');this._config=config;this._child=null;this._build();}
  set hass(value){this._hass=value;this._apply();}
  get hass(){return this._context;}

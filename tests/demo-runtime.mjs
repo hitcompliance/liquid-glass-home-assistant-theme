@@ -26,10 +26,10 @@ assert.equal((await h().callWS({type:'config/entity_registry/list'})).length,dat
 assert.equal((await h().callApi('GET','history/period/2026-10-25?filter_entity_id='+id('sensor','temperatur')))[0].length,49);
 assert.equal((await h().callWS({type:'media_player/browse_media',entity_id:id('media_player','homepod')})).children.length,1);
 assert.equal((await h().callService('weather','get_forecasts',{entity_id:id('weather','wetter')}))[id('weather','wetter')].forecast.length,8);
-for(const [key,source] of Object.entries(data.template_sources))assert.equal(runtime.renderTemplate(source),data.template_results[key]);
+for(const [key,source] of Object.entries(data.template_sources))assert.deepEqual(runtime.renderTemplate(source),data.template_results[key]);
 const nested=Object.values(data.template_sources).find(s=>s.includes('{% macro '));assert.ok(nested);
 const batch='{% macro __dash6_inline_query_0() %}\n'+nested+'\n{% endmacro %}';
-assert.equal(inlineDemoTemplates(batch)[0][1],nested.trim());assert.equal(JSON.parse(runtime.renderTemplate(batch))['0'],runtime.renderTemplate(nested));
+assert.equal(inlineDemoTemplates(batch)[0][1],nested.trim());assert.deepEqual(JSON.parse(runtime.renderTemplate(batch))['0'],runtime.renderTemplate(nested));
 assert.deepEqual(realCalls,[]);assert.equal(runtime.diagnostics.unknownTemplates.size,0);assert.equal(runtime.diagnostics.unsupportedRequests.size,0);
 await h().callWS({type:'frontend/get_icons',category:'entity_component',integration:'climate'});
 assert.deepEqual(realCalls,[[{type:'frontend/get_icons',category:'entity_component',integration:'climate'}]],'Only explicit public icon metadata may reach the host');

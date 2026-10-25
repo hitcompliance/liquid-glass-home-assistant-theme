@@ -12,6 +12,27 @@ try{for(const engine of [chromium,webkit]){
   await page.goto(origin);await page.waitForFunction(()=>window.demoPreview?.ready||window.demoPreview?.errors.length);
   assert.equal(await page.evaluate(()=>demoPreview.ready),true,JSON.stringify(await page.evaluate(()=>demoPreview.errors)));
   assert.equal(await page.evaluate(()=>demoPreview.dashboard.title),'LIQUID-GLASS-DEMO');
+  // A real HA host differs from the card's local simulation. Upstream
+  // card-tools must not obtain its global connection for demo templates.
+  await page.evaluate(()=>{
+   window.hostTemplateCalls=[];
+   const app=document.querySelector('home-assistant'),h=app.hass;
+   app.hass={...h,connection:{...h.connection,subscribeMessage:async(callback,message)=>{hostTemplateCalls.push(message.type);callback({result:[{type:'markdown',content:'PRIVATE HOST SENTINEL'}]});return()=>{};}}};
+   demoPreview.showView('home');
+  });
+  await page.waitForTimeout(1200);
+  assert.deepEqual(await page.evaluate(()=>hostTemplateCalls),[],'Demo Auto Entities templates stay off the host connection');
+  assert.equal(await page.getByText('PRIVATE HOST SENTINEL',{exact:true}).count(),0);
+  await page.evaluate(async()=>{
+   const config=demoPreview.dashboard.views[0].sections[0].cards[0];
+   const scope=(await window.loadCardHelpers()).createCardElement(config);
+   const editor=await scope.constructor.getConfigElement();editor.id='storage-scope-editor';
+   editor.hass=demoPreview.hass;editor.setConfig(config);document.body.append(editor);
+  });
+  await page.locator('#storage-scope-editor dash6-profile-editor').waitFor();
+  await page.waitForTimeout(300);
+  assert.equal(await page.getByText('Unbekanntes DASH6-Kartenprofil: demo-inline',{exact:true}).count(),0);
+  await page.evaluate(()=>document.querySelector('#storage-scope-editor').remove());
   assert.equal(await page.evaluate(()=>{const rows=Object.values(demoPreview.hass.entities),copy=new Set(rows.filter(e=>e.entity_id.includes('.liquid_glass_demo_copy_')).map(e=>e.area_id));return rows.filter(e=>!e.entity_id.includes('.liquid_glass_demo_copy_')).some(e=>copy.has(e.area_id));}),false,'Gallery and copied devices use distinct area IDs');
   await page.evaluate(()=>demoPreview.showView('wohnzimmer'));
   await page.locator('dash6-ultra-card').waitFor();

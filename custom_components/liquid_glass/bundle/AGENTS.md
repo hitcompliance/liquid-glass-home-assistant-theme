@@ -15,7 +15,7 @@ Dieses Repository liefert eine vollständige Home-Assistant-HACS-Integration. Da
 | `custom_components/liquid_glass/bundle/` | Generiertes, eigenständiges HACS-Laufzeitpaket |
 | `dist/` | Generierte Einstiegsmodule, Chunks, Profile, Defaults, Konfigurationen und Lizenzen |
 | `examples/domain-blocks.yaml` | Kopierbares kanonisches Domain-Muster: nativer Reiter, heller Rahmen, mehrere dunkle Entity-Karten |
-| `examples/demo-dashboard.yaml` | Vollständige installierbare Demo; JSON-Syntax ist gültiges YAML |
+| `examples/demo-dashboard.yaml` | Buildquelle für das native Storage-Dashboard; JSON-Syntax ist gültiges YAML |
 | `scripts/build-device-demo.py` | Kombiniert versionierte DASH6-Kopie, separate Galerie, Browser-Beispieldaten, optionale Testplattformen und Kartenkatalog |
 | `support/card-catalog.json` | Automatisch erzeugte Galerie-Konfigurationen |
 | `frontend/showcase-*` | Öffentliche Browser-Demo: nur native HA-Elemente werden lokal adaptiert |
@@ -34,7 +34,7 @@ Auf der HA-Installation liegen die Karten unter `/config/www/liquid-glass/`, die
 - Schuhschrank mit direkten Szenen, TV/Apple TV und Staubsauger stehen direkt im Einstieg. Licht-/Segmentdetails, Fernbedienungen, Reinigungsplanung, Basisstation, Verschleißteile und Presets müssen bedienbar bleiben.
 - **GUI konfigurieren** öffnet den echten Karteneditor, soweit die Klasse `getConfigElement()` anbietet. Dafür keine separate, abweichende Demo-GUI erfinden.
 
-Die Kopie liegt in `examples/dash6-copy.json`, ihre lokalen Beispielzustände in `support/dash6-copy-entities.json`, anonymisierte Raumlader in `support/demo-room-configs.json`. Profile verwenden eingebettete `definition`, damit keine privaten Profildateien nachgeladen werden. Der Importer `scripts/import-dash6-copy.py` ist nur ein bewusster Maintainer-Schritt mit privaten Eingaben außerhalb des Release-Pakets. Normale Builds benötigen diese Eingaben nicht.
+Die Kopie liegt in `examples/dash6-copy.json`, ihre lokalen Beispielzustände in `support/dash6-copy-entities.json`, anonymisierte Raumlader in `support/demo-room-configs.json`. Profile verwenden eingebettete `definition`, damit keine privaten Profildateien nachgeladen werden. Der Importer `scripts/import-dash6-copy.py` ist nur ein bewusster Maintainer-Schritt mit privaten Eingaben außerhalb des Release-Pakets. Normale Builds benötigen diese Eingaben nicht. Installierte Demo, Galerie und Hue-Demo sind native Storage-Dashboards. `editable_dashboard.py` legt sie über Home Assistants vorhandene native Dashboard-Collection an, ohne einen Client-Schreibaufruf. Eigene GUI-Änderungen über Updates und Entladen erhalten; nur unberührte generierte Konfigurationen automatisch erneuern.
 
 Die originalen Hintergrundvorgaben der übernommenen Raum-Views stehen in `support/demo-view-backgrounds.json`. Der Demo-Build übernimmt sie in die installierten Dashboards; der Installer kopiert die zugehörigen Dateien aus `assets/backgrounds/` nach `/config/www/liquid-glass/assets/backgrounds/`. Keine privaten HA-Upload-IDs als portable Hintergrundquelle verwenden.
 
@@ -51,6 +51,8 @@ Die Raum-Views und die Demo-View **Domain-Blöcke & Aufbau** (`/liquid-glass-gal
 - In den festen Dummy-Beispielen ist `auto_entities: false`. Produktive dynamische Blöcke aus den tatsächlichen Bereichs-/Domain-Zuordnungen ergänzen; globale Namensausschlüsse getrennt im Dashboard belassen. Keine privaten Raumlader/Profile als neue Voraussetzung für produktive Raum-Views.
 
 Medien-Muster: genau ein Lautstärkeregler als gemeinsame Glaszeile unter dem Player; keinen zusätzlichen nativen Lautstärkeregler und kein sichtbares Lautstärke-Label einführen. `media-volume.css` wird von den Medienkarten und dem Theme verwendet. Wiedergabefortschritt und vorhandene Geräteaktionen erhalten.
+
+Auto-Entities-Vorlagen müssen über die Verbindung der jeweiligen Karte laufen (`auto-entities-context.js`), auch innerhalb der kopierten Startseite. Der globale card-tools-Zugriff auf die Host-Instanz würde echte Räume und Konfigurationen in die Demo übernehmen. Der Browser-Test verwendet deshalb absichtlich verschiedene Host- und Demo-Kontexte. Strukturierte Template-Ergebnisse bleiben Listen/Objekte.
 
 ## Verbindliche Entwicklungsmuster
 

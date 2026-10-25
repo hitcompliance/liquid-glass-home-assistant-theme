@@ -13,6 +13,7 @@ import {pruneVisibleEntities} from './visible-entities.js';
 import {bindThemePreferences,unbindThemePreferences} from './material.js';
 import {LitElement,html,css,unsafeCSS} from 'lit';
 import {scopedHass} from './shared-data.js';
+import {withCardTemplateContext} from './auto-entities-context.js';
 import BASE_CSS from './base.css';
 import {materialCSS,materialValue} from './material.js';
 import {sceneMatches,sceneTarget} from './scene-state.js';
@@ -171,7 +172,7 @@ customElements.whenDefined('apexcharts-card').then(()=>{
 });
 customElements.whenDefined('auto-entities').then(()=>{
  const Base=customElements.get('auto-entities');
- class AutoEntities extends Base{
+ class AutoEntities extends withCardTemplateContext(Base){
   setConfig(config){this._dash6InitialBuilt=false;return super.setConfig(config);}
   async update_card(entities){
    try{

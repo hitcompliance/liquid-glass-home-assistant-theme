@@ -5,17 +5,19 @@ import logging
 from homeassistant.components import frontend, persistent_notification
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.components.lovelace.const import LOVELACE_DATA
-from homeassistant.components.lovelace.dashboard import LovelaceYAML
+import json
+from .editable_dashboard import provision,refresh_generated,owned
 from homeassistant.const import EVENT_THEMES_UPDATED
 from homeassistant.exceptions import ConfigEntryNotReady
 from .runtime import ROOT, install, load_themes, refresh_embedded_resource, EMBEDDED_FILE
 from .installer import resource_basename, InstallError
 from .demo import DemoCoordinator, PLATFORMS, load_specs
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.event import async_call_later
 
 DOMAIN = 'liquid_glass'
 DEMO = 'liquid-glass-demo'
-from .hue_dashboard import DiscoveryDashboard,HUE_DEMO,TITLE as HUE_TITLE
+from .hue_dashboard import generate as generate_hue,HUE_DEMO,TITLE as HUE_TITLE
 GALLERY='liquid-glass-gallery'
 DEFAULT_THEME = 'DASH6 Satin Glass'
 _LOGGER = logging.getLogger(__name__)
@@ -92,7 +94,14 @@ async def async_setup_entry(hass, entry):
             raise ValueError('No valid bundled themes found')
         if DEFAULT_THEME not in themes:
             raise ValueError('Bundled Satin default theme is missing')
-        report = await hass.async_add_executor_job(install, hass.config.config_dir, existing, getattr(entry,'options',{}).get('dual_smart_thermostat',entry.data.get('dual_smart_thermostat', False)))
+        version_resources=hasattr(ll.resources,'async_update_item')
+        report = await hass.async_add_executor_job(install, hass.config.config_dir, existing, getattr(entry,'options',{}).get('dual_smart_thermostat',entry.data.get('dual_smart_thermostat', False)),version_resources)
+        if version_resources:
+            own_urls={module['id']:module['url'] for module in report['frontend_modules'] if module['id'] in ('dash6-cards.js','vacuum-dock-card.js','room-loader.js')}
+            for resource in list(ll.resources.async_items()):
+                url=own_urls.get(resource_basename(resource['url']))
+                if url and resource['url'].startswith('/local/liquid-glass/') and resource['url']!=url:
+                    await ll.resources.async_update_item(resource['id'],{'url':url})
     except Exception as err:
         # Download/hash/path failures leave frontend registration untouched.
         raise ConfigEntryNotReady(f'Liquid Glass installation failed: {err}') from err
@@ -123,49 +132,59 @@ async def async_setup_entry(hass, entry):
         frontend.add_extra_js_url(hass, report['bootstrap'])
         state['bootstrap'] = report['bootstrap']
         await _watch_embedded_resources(hass, entry, state)
-        if getattr(entry,'options',{}).get('demo_dashboard',entry.data.get('demo_dashboard', True)):
-            if DEMO in ll.dashboards or frontend.async_panel_exists(hass, DEMO):
-                _LOGGER.warning('Existing %s dashboard preserved; demo not registered', DEMO)
-            else:
-                mode = getattr(entry,'options',{}).get('demo_mode',entry.data.get('demo_mode','browser'))
-                if mode == 'entities':
-                    specs = await hass.async_add_executor_job(load_specs)
-                    registry = er.async_get(hass)
-                    for spec in specs:
-                        existing_entity = registry.async_get(spec['entity_id'])
-                        if existing_entity and (existing_entity.platform != DOMAIN or existing_entity.unique_id != spec['entity_id']):
-                            raise ValueError('Demo entity ID already belongs to another integration: ' + spec['entity_id'])
-                        if not existing_entity and hass.states.get(spec['entity_id']):
-                            raise ValueError('Demo entity ID is already in use: ' + spec['entity_id'])
-                    coordinator = DemoCoordinator(hass, specs)
-                    state['demo_coordinator'] = coordinator
-                    state['demo_platforms'] = True
-                    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-                    coordinator.assign_areas()
-                    coordinator.refresh()
-                    coordinator.start()
-                conf = {'mode': 'yaml', 'filename': str(ROOT / 'examples' / ('demo-dashboard-entities.yaml' if mode == 'entities' else 'demo-dashboard.yaml')), 'title': 'LIQUID-GLASS-DEMO', 'icon': 'mdi:layers-outline', 'show_in_sidebar': True, 'require_admin': False}
-                demo = LovelaceYAML(hass, DEMO, conf)
-                state['demo'] = demo
-                ll.dashboards[DEMO] = demo
-                frontend.async_register_built_in_panel(hass, 'lovelace', sidebar_title=conf['title'], sidebar_icon=conf['icon'], frontend_url_path=DEMO, config={'mode': 'yaml'})
-        if state['demo'] is not None and GALLERY not in ll.dashboards and not frontend.async_panel_exists(hass,GALLERY):
-            conf={'mode':'yaml','filename':str(ROOT/'examples'/('gallery-dashboard-entities.yaml' if mode == 'entities' else 'gallery-dashboard.yaml')),'title':'Liquid Glass · Karten & GUI','icon':'mdi:view-grid-plus','show_in_sidebar':True,'require_admin':False}
-            gallery=LovelaceYAML(hass,GALLERY,conf)
-            state['additional_dashboards'][GALLERY]=gallery
-            ll.dashboards[GALLERY]=gallery
-            frontend.async_register_built_in_panel(hass,'lovelace',sidebar_title=conf['title'],sidebar_icon=conf['icon'],frontend_url_path=GALLERY,config={'mode':'yaml'})
+        demo_requested=getattr(entry,'options',{}).get('demo_dashboard',entry.data.get('demo_dashboard', True))
+        if demo_requested and DEMO in ll.dashboards and not await owned(ll.dashboards[DEMO],entry.entry_id):
+            _LOGGER.warning('Existing foreign %s dashboard preserved',DEMO)
+            demo_requested=False
+        if demo_requested:
+            mode = getattr(entry,'options',{}).get('demo_mode',entry.data.get('demo_mode','browser'))
+            if mode == 'entities':
+                specs = await hass.async_add_executor_job(load_specs)
+                registry = er.async_get(hass)
+                for spec in specs:
+                    existing_entity = registry.async_get(spec['entity_id'])
+                    if existing_entity and (existing_entity.platform != DOMAIN or existing_entity.unique_id != spec['entity_id']):
+                        raise ValueError('Demo entity ID already belongs to another integration: ' + spec['entity_id'])
+                    if not existing_entity and hass.states.get(spec['entity_id']):
+                        raise ValueError('Demo entity ID is already in use: ' + spec['entity_id'])
+                coordinator = DemoCoordinator(hass, specs)
+                state['demo_coordinator'] = coordinator
+                state['demo_platforms'] = True
+                await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+                coordinator.assign_areas()
+                coordinator.refresh()
+                coordinator.start()
+            for path,title,icon,filename in (
+                (DEMO,'LIQUID-GLASS-DEMO','mdi:layers-outline','demo-dashboard'),
+                (GALLERY,'Liquid Glass · Karten & GUI','mdi:view-grid-plus','gallery-dashboard')):
+                file=ROOT/'examples'/(filename+('-entities' if mode=='entities' else '')+'.yaml')
+                seed=await hass.async_add_executor_job(lambda f=file:json.loads(f.read_text()))
+                dashboard=await provision(hass,path,title,icon,seed,entry.entry_id)
+                if dashboard is None:
+                    _LOGGER.warning('Existing foreign %s dashboard preserved',path)
+                elif path==DEMO:state['demo']=dashboard
+                else:state['additional_dashboards'][path]=dashboard
         if getattr(entry,'options',{}).get('hue_dashboard',entry.data.get('hue_dashboard',False)):
-            if HUE_DEMO in ll.dashboards or frontend.async_panel_exists(hass,HUE_DEMO):
-                _LOGGER.warning('Existing %s dashboard preserved',HUE_DEMO)
+            discovered=await provision(hass,HUE_DEMO,HUE_TITLE,'mdi:lightbulb-group',generate_hue(hass),entry.entry_id)
+            if discovered is None:
+                _LOGGER.warning('Existing foreign %s dashboard preserved',HUE_DEMO)
             else:
-                conf={'mode':'yaml','title':HUE_TITLE,'icon':'mdi:lightbulb-group','show_in_sidebar':True,'require_admin':False}
-                discovered=DiscoveryDashboard(hass,HUE_DEMO,conf)
-                ll.dashboards[HUE_DEMO]=discovered
                 state['additional_dashboards'][HUE_DEMO]=discovered
-                frontend.async_register_built_in_panel(hass,'lovelace',sidebar_title=HUE_TITLE,sidebar_icon=conf['icon'],frontend_url_path=HUE_DEMO,config={'mode':'yaml'})
+                pending_refresh=None
+                refresh_lock=asyncio.Lock()
+                async def refresh_hue(now):
+                    nonlocal pending_refresh
+                    pending_refresh=None
+                    async with refresh_lock:
+                        if state['active']:
+                            await refresh_generated(discovered,generate_hue(hass),entry.entry_id)
+                async def schedule_hue(event):
+                    nonlocal pending_refresh
+                    if pending_refresh:pending_refresh()
+                    pending_refresh=async_call_later(hass,.5,refresh_hue)
+                state['registry_unsubs'].append(lambda:pending_refresh and pending_refresh())
                 for event_type in ('entity_registry_updated','device_registry_updated','area_registry_updated'):
-                    state['registry_unsubs'].append(hass.bus.async_listen(event_type,lambda event:discovered._config_updated()))
+                    state['registry_unsubs'].append(hass.bus.async_listen(event_type,schedule_hue))
         if hasattr(entry,'add_update_listener'):
             state['registry_unsubs'].append(entry.add_update_listener(_reload_options))
         # The native service persists both backend preferences and informs open
@@ -230,11 +249,11 @@ async def async_unload_entry(hass, entry):
         # Persist recovery through HA too; keep a user's later manual selection.
         await hass.services.async_call('frontend', 'set_theme', restore, blocking=True)
     ll = hass.data[LOVELACE_DATA]
-    if state['demo'] is not None and ll.dashboards.get(DEMO) is state['demo']:
+    if state['demo'] is not None and state['demo'].mode != 'storage' and ll.dashboards.get(DEMO) is state['demo']:
         ll.dashboards.pop(DEMO)
         frontend.async_remove_panel(hass, DEMO, warn_if_unknown=False)
     for path,dashboard in state['additional_dashboards'].items():
-        if ll.dashboards.get(path) is dashboard:
+        if dashboard.mode != 'storage' and ll.dashboards.get(path) is dashboard:
             ll.dashboards.pop(path)
             frontend.async_remove_panel(hass,path,warn_if_unknown=False)
     hass.bus.async_fire(EVENT_THEMES_UPDATED)

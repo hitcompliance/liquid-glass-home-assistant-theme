@@ -36,6 +36,7 @@ jobs:
       - run: python scripts/test-theme-store.py
       - run: node tests/ultra-native.mjs
       - run: node tests/demo-runtime.mjs
+      - run: node tests/auto-entities-context.mjs
       - run: node tests/demo-scope-browser.mjs
       - run: node tests/package-smoke.mjs
       - run: python scripts/package-release.py

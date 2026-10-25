@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build the public, backend-driven demo. Never reads private HA exports."""
 import json
+import ast
 from copy import deepcopy
 from pathlib import Path
 import re
@@ -326,9 +327,18 @@ def build():
                 for value in node:entity_mode(value)
         entity_mode(source)
         (ROOT/'examples'/f'{name}-entities.yaml').write_text(json.dumps(source,ensure_ascii=False,indent=2)+'\n')
+    template_results=json.loads((ROOT/'support/demo-template-results.json').read_text())
+    # HA render_template sends structured lists/dicts; captured Python reprs
+    # must retain those types rather than becoming strings of entity IDs.
+    for key,result in template_results.items():
+        if isinstance(result,str) and result.lstrip().startswith(('[','{')):
+            try: template_results[key]=json.loads(result)
+            except (ValueError,TypeError):
+                try: template_results[key]=ast.literal_eval(result)
+                except (ValueError,SyntaxError): pass
     runtime_data={'specs':specs+copied,'dashboards':{'liquid-glass-demo':copy,'liquid-glass-gallery':json.loads(text)},
                   'template_sources':json.loads((ROOT/'support/demo-template-sources.json').read_text()),
-                  'template_results':json.loads((ROOT/'support/demo-template-results.json').read_text()),
+                  'template_results':template_results,
                   'shared_defaults':json.loads((ROOT/'support/theme-defaults.json').read_text())}
     room=json.loads((ROOT/'src/dash6/room-loader-configs.json').read_text())['demo']
     runtime_data['template_sources']['gallery-room-loader']=room['template']
