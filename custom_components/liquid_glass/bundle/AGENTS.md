@@ -11,12 +11,12 @@ Dieses Repository liefert eine vollständige Home-Assistant-HACS-Integration. Da
 | `themes/liquid-glass.yaml` | Native Theme-Variablen; ausschließlich `DASH6 Satin Glass` |
 | `src/dash6/theme-preferences.json` | Vollständige Paketvorgaben für CSS und GUI-Regler |
 | `support/theme-defaults.json` | Dokumentierter Snapshot der veröffentlichten Default-Einstellungen |
-| `custom_components/liquid_glass/` | HA-Lebenszyklus, sicherer Installer, virtuelle Geräte und Theme-Speicherung |
+| `custom_components/liquid_glass/` | HA-Lebenszyklus, sicherer Installer, Browser-Simulation, optionale Testplattformen und Theme-Speicherung |
 | `custom_components/liquid_glass/bundle/` | Generiertes, eigenständiges HACS-Laufzeitpaket |
 | `dist/` | Generierte Einstiegsmodule, Chunks, Profile, Defaults, Konfigurationen und Lizenzen |
 | `examples/domain-blocks.yaml` | Kopierbares kanonisches Domain-Muster: nativer Reiter, heller Rahmen, mehrere dunkle Entity-Karten |
 | `examples/demo-dashboard.yaml` | Vollständige installierbare Demo; JSON-Syntax ist gültiges YAML |
-| `scripts/build-device-demo.py` | Kombiniert versionierte DASH6-Kopie, separate Galerie, Dummy-Entities und Kartenkatalog |
+| `scripts/build-device-demo.py` | Kombiniert versionierte DASH6-Kopie, separate Galerie, Browser-Beispieldaten, optionale Testplattformen und Kartenkatalog |
 | `support/card-catalog.json` | Automatisch erzeugte Galerie-Konfigurationen |
 | `frontend/showcase-*` | Öffentliche Browser-Demo: nur native HA-Elemente werden lokal adaptiert |
 | `demo/` | Gebaute GitHub-Pages-Demo mit den echten eigenen und fremden Karten |
@@ -34,7 +34,7 @@ Auf der HA-Installation liegen die Karten unter `/config/www/liquid-glass/`, die
 - Schuhschrank mit direkten Szenen, TV/Apple TV und Staubsauger stehen direkt im Einstieg. Licht-/Segmentdetails, Fernbedienungen, Reinigungsplanung, Basisstation, Verschleißteile und Presets müssen bedienbar bleiben.
 - **GUI konfigurieren** öffnet den echten Karteneditor, soweit die Klasse `getConfigElement()` anbietet. Dafür keine separate, abweichende Demo-GUI erfinden.
 
-Die Kopie liegt in `examples/dash6-copy.json`, ihre virtuellen Geräte in `support/dash6-copy-entities.json`, anonymisierte Raumlader in `support/demo-room-configs.json`. Profile verwenden eingebettete `definition`, damit keine privaten Profildateien nachgeladen werden. Der Importer `scripts/import-dash6-copy.py` ist nur ein bewusster Maintainer-Schritt mit privaten Eingaben außerhalb des Release-Pakets. Normale Builds benötigen diese Eingaben nicht.
+Die Kopie liegt in `examples/dash6-copy.json`, ihre lokalen Beispielzustände in `support/dash6-copy-entities.json`, anonymisierte Raumlader in `support/demo-room-configs.json`. Profile verwenden eingebettete `definition`, damit keine privaten Profildateien nachgeladen werden. Der Importer `scripts/import-dash6-copy.py` ist nur ein bewusster Maintainer-Schritt mit privaten Eingaben außerhalb des Release-Pakets. Normale Builds benötigen diese Eingaben nicht.
 
 `custom_components/liquid_glass/hue_dashboard.py` erzeugt die optionale **LIQUID-GLASS-HUE-DEMO** ausschließlich aus den lokalen Registries. Sie steuert echte lokale Entities; den Dummy-Scope dort nicht verwenden. Kein Build darf ein festes privates Geräteverzeichnis als Hue-Quelle übernehmen. Ultra Card, Domain-Hüllen, Heading-Reiter und die Theme-Vorgaben bleiben maßgeblich.
 
@@ -53,12 +53,12 @@ Medien-Muster: genau ein Lautstärkeregler als gemeinsame Glaszeile unter dem Pl
 ## Verbindliche Entwicklungsmuster
 
 1. Bestehende gemeinsame Materialien und Renderer erweitern. Keine zusätzliche Themevariante und keine zweite Nachbildung einer bereits enthaltenen Karte anlegen.
-2. Fähigkeiten aus den tatsächlichen Entities lesen. Geräteaktionen, Sperren, Bestätigungen und Domain-Zuordnungen erhalten. Gestaltungstests steuern ausschließlich Dummy-Entities.
+2. Fähigkeiten aus den tatsächlichen Entities lesen. Geräteaktionen, Sperren, Bestätigungen und Domain-Zuordnungen erhalten. Gestaltungstests verwenden den Browser-Demokontext; keine echten Geräteaktionen.
 3. Hintergrundgraphen mindestens 100px hoch halten. Leistung in den gemeinsamen Kopf; keine zusätzlichen Energiezähler auf solchen Karten. Präsenzsymbole absolut unten rechts mit 8px Randabstand. Hauptzustände und tatsächliche Bestätigungen bleiben maßgeblich; ein Szenenaufruf allein beweist keinen aktiven Sollzustand.
 4. Native grafische Konfiguration über `getConfigElement()` bereitstellen, wenn es passende Optionen gibt. Grundlegende, spezialisierte und freie JSON-/YAML-Editoren unterscheiden und in der Kartenreferenz korrekt benennen.
 5. Neue Funktionen gleichzeitig in **README**, [Karten- und GUI-Leitfaden](docs/CARD-GUIDE.md), installierter Demo und öffentlicher Demo nachvollziehbar machen. Detaildialoge und GUI-Klickpfade ebenfalls aufnehmen.
 6. Neue Fremdmodule vollständig mit Chunks, Übersetzungen und Lizenzen im Dependency-Lock erfassen. Automatische, optionale und vom Nutzer selbst einzurichtende Abhängigkeiten ausdrücklich dokumentieren. Keine privaten Zusatzintegrationen voraussetzen.
-7. Demo-IDs verwenden ausschließlich `*.liquid_glass_demo_*`. Die Plattformen ändern nur ihren eigenen Speicherzustand. `dash6-demo-scope` begrenzt zusätzliche Frontend-Aktionen auf konkrete Dummy-Ziele; keine Bereichs-/Geräteziele oder echten API-Verbindungen in der öffentlichen Demo.
+7. Demo-IDs verwenden ausschließlich `*.liquid_glass_demo_*`. `dash6-demo-scope` verwendet standardmäßig `demo-runtime.js` mit `demo-runtime-data.json`. Jede Karte, dynamische Vorlage und jeder Dialog muss diesen Kontext weiterreichen; keine echten HA-Dienste oder APIs für Demo-IDs aufrufen. Mehr-Informationen-Ereignisse bleiben lokal. Neue Gerätefunktionen und Vorlagen in derselben Laufzeit ergänzen und sichtbar demonstrieren. `mode: entities` ist ausschließlich der optionale Altmodus; bestehende Installationen werden dorthin migriert, neue starten ohne HA-Entities.
 8. Paket-Defaults kommen aus den versionierten Theme-/Preference-Dateien. Gemeinsame Änderungen eines installierenden Nutzers werden über die eigene Integration mit Sicherung gespeichert und bei Updates erhalten. Keine privaten Browser-Speicher oder produktiven Konfigurationen als Buildvoraussetzung verwenden.
 
 ## Bauen und prüfen
@@ -73,6 +73,6 @@ python3 scripts/package-release.py
 
 Die öffentliche Demo enthält die festgelegten Vendor-Dateien. Ein normaler Neubau verwendet und prüft diese vorhandenen Bytes. Für neue Abhängigkeiten einen geprüften Downloadcache über `--cache-dir` angeben oder bewusst `--download` verwenden. Auf der HA-Zielinstallation ist kein npm-Build erforderlich.
 
-Vor Veröffentlichung Installer, Integrationslebenszyklus, Dummy-Entities, gemeinsame Theme-Speicherung sowie Chromium und WebKit prüfen. `tests/public-showcase-browser.mjs` prüft insbesondere die sichtbaren Hauptkarten, ihre Detaildialoge und die echten GUI-Editoren. Nur einen echten veröffentlichten Release samt heruntergeladenem ZIP/Prüfsumme als veröffentlicht bezeichnen; lokale Tests, GitHub-CI und produktive Installation getrennt dokumentieren.
+Vor Veröffentlichung Installer, Integrationslebenszyklus ohne Standard-Testplattformen, Browser-Simulation, optionale Test-Entities, gemeinsame Theme-Speicherung sowie Chromium und WebKit prüfen. `tests/public-showcase-browser.mjs` prüft insbesondere die sichtbaren Hauptkarten, ihre Detaildialoge und die echten GUI-Editoren. Nur einen echten veröffentlichten Release samt heruntergeladenem ZIP/Prüfsumme als veröffentlicht bezeichnen; lokale Tests, GitHub-CI und produktive Installation getrennt dokumentieren.
 
 Weitere Details: [Installation](docs/INSTALLATION.md), [Abhängigkeiten](docs/DEPENDENCIES.md), [Kartenreferenz](docs/CARDS.md). Builddateien nicht von Hand korrigieren; zuerst die zuständige Quelle ändern und anschließend neu bauen.

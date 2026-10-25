@@ -6,11 +6,12 @@ from . import DOMAIN
 
 def schema(data):
     return vol.Schema({vol.Optional('demo_dashboard',default=data.get('demo_dashboard',True)):bool,
+                       vol.Optional('demo_mode',default=data.get('demo_mode','browser')):vol.In(['browser','entities']),
                        vol.Optional('hue_dashboard',default=data.get('hue_dashboard',False)):bool,
                        vol.Optional('dual_smart_thermostat',default=data.get('dual_smart_thermostat',False)):bool})
 
 class LiquidGlassConfigFlow(config_entries.ConfigFlow,domain=DOMAIN):
-    VERSION=1
+    VERSION=2
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):return LiquidGlassOptionsFlow()

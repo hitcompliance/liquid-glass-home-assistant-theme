@@ -109,11 +109,10 @@ def build():
     e = entity
     rooms = [
         view('Zuhause', 'home', 'home-variant', [
-            {'type':'markdown','content':'# DASH6 Satin Glass · Demo\nAlle Geräte sind ausdrücklich gekennzeichnete, virtuelle Home-Assistant-Entities. Keine Verbindung zu echten Geräten. Die Räume zeigen die aktuellen Kartenfamilien; weitere Views erklären Layouts und Editoren. Verläufe entstehen ab Installation – es wird keine Vergangenheit erfunden.'},
+            {'type':'markdown','content':'# DASH6 Satin Glass · Demo\nDie Geräte werden lokal im Browser simuliert. Es werden keine Home-Assistant-Entities oder Recorder-Daten angelegt. Karten, Regler, Szenen, Detailansichten und GUI-Editoren sind bedienbar; Werte und Verläufe sind ausdrücklich Beispieldaten. Neu laden setzt die Gerätezustände zurück. Die Räume zeigen die Kartenfamilien; weitere Views erklären Layouts und Editoren.'},
             card('theme-editor-card', title='Glas & Hintergrund', expanded=False),
             {'type':'entities','title':'Demo steuern','entities':[e('button','zurucksetzen'),e('switch','anwesenheit'),e('button','klingeln'),e('button','update_verfugbar')]},
             card('home-overview-card', kind='security', title='Sicherheit', navigation_path='/liquid-glass-demo/flur'),
-            card('home-overview-card', kind='energy', title='Energie', navigation_path='/liquid-glass-demo/energie'),
             {'type':'weather-forecast','entity':e('weather','wetter'),'show_forecast':True,'forecast_type':'daily'},
         ]),
         view('Wohnzimmer','wohnzimmer','sofa',[
@@ -159,7 +158,7 @@ def build():
             {'type':'entities','title':'Feuchtigkeit & Wasser','entities':[e('sensor','luftfeuchte'),e('binary_sensor','wasser')]},
         ]),
         view('Energie','energie','lightning-bolt',[
-            {'type':'markdown','content':'# Demo-Energie\nDiese Werte sind Simulationen. Das native Energie-Dashboard und vorhandene Statistiken werden nicht verändert. Leistung und Energie werden ab Installation aufgezeichnet, wenn Recorder die Demo-Entities einschließt.'},
+            {'type':'markdown','content':'# Demo-Energie\nWerte und Verläufe sind lokale Browser-Simulationen. Das native Energie-Dashboard und vorhandene Statistiken werden nicht verändert; die Demo legt keine Recorder-Daten an.'},
             {'type':'statistics-graph','title':'Virtueller Verbrauch','chart_type':'line','period':'5minute','stat_types':['mean'],'entities':[e('sensor','steckdose_leistung'),e('sensor','luftung_leistung')]},
             {'type':'entities','entities':[e('sensor','steckdose_energie'),e('sensor','lampe_energie')]},
         ]),
@@ -176,7 +175,6 @@ def build():
         {'type':'custom:mushroom-template-card','entity':e('switch','steckdose'),'primary':'Original Mushroom Template','secondary':'{{ states("sensor.liquid_glass_demo_steckdose_leistung") }} W','icon':'mdi:power-socket-eu','tap_action':{'action':'toggle'}},
     ]))
     dashboard['views'].append(view('Heizung & Klima','heizung-klima','thermostat',[
-        card('climate-background',view_path='heizung-klima',opacity=.85),
         {'type':'markdown','content':'# Heizung & Klima\nDie dekorative Klima-Hintergrundanimation gehört ebenfalls zum Paket. Sie liest keine Geräte und löst keine Aktionen aus; reduzierte Bewegung wird beachtet.'},
         card('thermostat-card',entity=e('climate','thermostat'),modes=['off','heat','cool','heat_cool']),
         card('thermostat-card',entity=e('climate','dual_thermostat'),modes=['off','heat','cool','heat_cool']),
@@ -311,6 +309,26 @@ def build():
     (ROOT/'examples/demo-dashboard.yaml').write_text(json.dumps(copy,ensure_ascii=False,indent=2)+'\n')
     copied=json.loads((ROOT/'support/dash6-copy-entities.json').read_text())
     (ROOT/'custom_components/liquid_glass/demo-entities.json').write_text(json.dumps(specs+copied,ensure_ascii=False,indent=2)+'\n')
+    # Standard examples use client-only states. Keep explicit entity variants
+    # for installations that deliberately retain the legacy HA test platforms.
+    for name in ('demo-dashboard','gallery-dashboard'):
+        source=json.loads((ROOT/'examples'/f'{name}.yaml').read_text())
+        def entity_mode(node):
+            if isinstance(node,dict):
+                if node.get('type')=='custom:dash6-demo-scope':node['mode']='entities'
+                for value in node.values():entity_mode(value)
+            elif isinstance(node,list):
+                for value in node:entity_mode(value)
+        entity_mode(source)
+        (ROOT/'examples'/f'{name}-entities.yaml').write_text(json.dumps(source,ensure_ascii=False,indent=2)+'\n')
+    runtime_data={'specs':specs+copied,'dashboards':{'liquid-glass-demo':copy,'liquid-glass-gallery':json.loads(text)},
+                  'template_sources':json.loads((ROOT/'support/demo-template-sources.json').read_text()),
+                  'template_results':json.loads((ROOT/'support/demo-template-results.json').read_text()),
+                  'shared_defaults':json.loads((ROOT/'support/theme-defaults.json').read_text())}
+    room=json.loads((ROOT/'src/dash6/room-loader-configs.json').read_text())['demo']
+    runtime_data['template_sources']['gallery-room-loader']=room['template']
+    runtime_data['template_results']['gallery-room-loader']=json.dumps({'0':room['slots']['lights']['initial']},ensure_ascii=False)
+    (ROOT/'support/demo-runtime-data.json').write_text(json.dumps(runtime_data,ensure_ascii=False,separators=(',',':'))+'\n')
     inventory.update(copy_views=len(copy['views']), copy_virtual_entities=len(copied), gallery_views=len(dashboard['views']), virtual_entities=len(specs)+len(copied), entry_view='home')
     (ROOT/'support/demo-inventory.json').write_text(json.dumps(inventory,ensure_ascii=False,indent=2)+'\n')
     print(f'Built backend demo: {len(dashboard["views"])} views, {len(specs)} isolated entities')

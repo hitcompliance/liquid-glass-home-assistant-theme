@@ -61,6 +61,21 @@ define('ha-control-circular-slider',class extends HTMLElement{
  draw(){this.shadowRoot.innerHTML=`<style>:host{display:block;width:180px;height:180px;position:relative;margin:auto}svg{width:180px;height:180px;transform:rotate(135deg)}circle{fill:none;stroke-width:8;stroke-linecap:round}.track{stroke:#ffffff18}.value{stroke:var(--primary-color,#9acbdc);stroke-dasharray:300 405}label{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:inherit;font:500 32px system-ui}small{display:block;font:12px system-ui;color:var(--secondary-text-color)}input{position:absolute;inset:auto 12% 6%;width:76%;accent-color:var(--primary-color)}</style><svg id="slider" viewBox="0 0 180 180"><circle class="track" cx="90" cy="90" r="65"></circle><circle class="value" cx="90" cy="90" r="65"></circle></svg><label>${esc(this._value)}°<small>Solltemperatur</small></label><input aria-label="Solltemperatur" type="range" min="${this._min}" max="${this._max}" step="0.5" value="${this._value}">`;this.shadowRoot.querySelector('input').onchange=e=>{this._value=Number(e.target.value);this.dispatchEvent(new CustomEvent('value-changed',{detail:{value:this._value},bubbles:true,composed:true}));};}
 });
 
+// Only HA-owned More Info content is adapted. The vendor More Info Card
+// itself stays unchanged and receives the same isolated hass as every card.
+class DemoInfoContent extends HTMLElement{
+ constructor(){super();this.attachShadow({mode:'open'});}
+ set hass(v){this._hass=v;this.draw();}get hass(){return this._hass;}
+ set stateObj(v){this._state=v;this.draw();}
+ draw(){if(!this._hass||!this._state)return;const detail=document.createElement('dash6-demo-entity-detail');detail.hass=this._hass;detail.entity=this._state.entity_id;this.shadowRoot.replaceChildren(detail);}
+}
+define('more-info-content',DemoInfoContent);
+define('state-card-content',class extends HTMLElement{
+ set hass(v){this._hass=v;this.draw();}get hass(){return this._hass;}
+ set stateObj(v){this._state=v;this.draw();}
+ draw(){if(this._state)this.textContent=this._state.attributes.friendly_name+' · '+this._state.state;}
+});
+
 export class NativeCard extends HTMLElement{
  static styles=[];
  constructor(){super();this.attachShadow({mode:'open'});this._cards=[];}

@@ -1,6 +1,6 @@
 # DASH6 Satin Glass für Home Assistant
 
-Ein vollständiges HACS-Paket mit **DASH6 Satin Glass**, eigenen Custom Cards, grafischen Editoren und einer bedienbaren Demo mit virtuellen Home-Assistant-Geräten. Ab Version 3.2 wird ausschließlich dieses Theme ausgeliefert.
+Ein vollständiges HACS-Paket mit **DASH6 Satin Glass**, eigenen Custom Cards, grafischen Editoren und einer bedienbaren Browser-Simulation ohne angelegte Home-Assistant-Entities. Ab Version 3.2 wird ausschließlich dieses Theme ausgeliefert.
 
 [Browser-Vorschau](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/) · [Installation](docs/INSTALLATION.md) · [Alle Abhängigkeiten](docs/DEPENDENCIES.md) · [Kartenreferenz](docs/CARDS.md) · [Karten, Detailansichten & GUI](docs/CARD-GUIDE.md) · [Anleitung für Agenten](AGENTS.md)
 
@@ -10,8 +10,8 @@ Ein vollständiges HACS-Paket mit **DASH6 Satin Glass**, eigenen Custom Cards, g
 
 1. Home Assistant **2026.9 oder neuer** und [HACS](https://www.hacs.xyz/docs/use/download/download/) selbst installieren, falls noch nicht vorhanden.
 2. Dieses Repository in HACS als **Integration** hinzufügen und herunterladen.
-3. Home Assistant neu starten. Unter **Einstellungen → Geräte & Dienste → Integration hinzufügen → Liquid Glass** einrichten. **Interaktives Demo-Dashboard** eingeschaltet lassen.
-4. **Liquid Glass Demo** in der Seitenleiste öffnen. Die Einrichtung installiert das Theme, die eigenen Karten und alle fehlenden Frontend-Abhängigkeiten automatisch. Kein npm, kein YAML-Kopieren und kein manuelles Anlegen der Demo-Entities erforderlich.
+3. Home Assistant neu starten. Unter **Einstellungen → Geräte & Dienste → Integration hinzufügen → Liquid Glass** einrichten. **LIQUID-GLASS-DEMO** eingeschaltet und **Demo-Modus: browser** ausgewählt lassen.
+4. **LIQUID-GLASS-DEMO** in der Seitenleiste öffnen. Die Einrichtung installiert das Theme, die eigenen Karten und alle fehlenden Frontend-Abhängigkeiten automatisch. Kein npm, kein YAML-Kopieren und keine HA-Dummy-Entities erforderlich.
 
 Bei der ersten Einrichtung ist Internetzugriff auf GitHub erforderlich. Nach einem Update Home Assistant neu starten und den Browser vollständig neu laden. Bereits separat installierte HACS-Fremdkarten werden wiederverwendet und weiter durch HACS aktualisiert.
 
@@ -19,14 +19,17 @@ Bei der ersten Einrichtung ist Internetzugriff auf GitHub erforderlich. Nach ein
 
 - **Nur DASH6 Satin Glass**, einschließlich Theme-Editor, Hintergrundoptionen und gemeinsamer Glasbedienung.
 - Eigene Karten für Lichter/Gruppen/Schuhschrank, Messsteckdosen/Kühlschrank, Drei-Modus-Lüftung, Thermostate, Rollos, HomePod/Apple TV/TV, Türen/Schlösser, Roboter/Dock, Pflanzen und Kamera sowie Raum-, Domain-, Profil-, Struktur- und Favoritenkarten.
+- Pflanzenkarte: vier feste Zielplätze (`… / 4`), zeitgewichtetes Tageslichtmittel, aktueller Lux-Wert und Tagesbudget mit Heute/Gestern sowie anpassbaren Licht-Richtwerten. Eigenständiger Build: `node scripts/build-plant.mjs` → `plant-dist/`.
 - Alle JavaScript-Einstiege, nachgeladenen Chunks, neutralen Profile, Bilder und Lizenzen; HACS lädt ein eigenständiges Laufzeitpaket unter `custom_components/liquid_glass/`.
 - **Zwölf automatisch installierte Fremdmodule:** Ultra Card, Button Card, Mushroom, Auto Entities, ApexCharts Card, Mini Graph Card, Card Mod, Layout Card, More Info Card, Vertical Stack In Card, Firemote und Embedded View Card. Die [Abhängigkeitstabelle](docs/DEPENDENCIES.md) nennt Versionen, Zweck und Installationsverhalten.
-- **LIQUID-GLASS-DEMO**: eine anonymisierte Kopie des tatsächlichen DASH6 mit **28 Views**, unveränderten Kartentypen einschließlich **Ultra Card**, Seitenleisten, hellen Domain-Hüllen mit Heading-Reitern und dunklen Gerätekarten. Alle Geräte sind durch **627 eigene Dummy-Entities** ersetzt; Florin und seine Inhalts-View samt Links entfallen. Lokale Profile, Büro-Raumlader und Raumhintergründe sind vollständig enthalten.
-- Zusätzlich **18 Views Karten & GUI** unter `/liquid-glass-gallery/demo`, mit allen Zusatzdialogen, beiden Türen, Szenen, TV/Apple TV, Staubsauger und 18 Haupteditoren. Zusammen entstehen **725 Dummy-Entities**; Verläufe wachsen ab Installation.
+- **LIQUID-GLASS-DEMO**: eine anonymisierte Kopie des tatsächlichen DASH6 mit **28 Views**, unveränderten Kartentypen einschließlich **Ultra Card**, Seitenleisten, hellen Domain-Hüllen mit Heading-Reitern und dunklen Gerätekarten. Alle Geräte erhalten **lokale Beispieldaten im Browser**; Florin und seine Inhalts-View samt Links entfallen. Lokale Profile, Büro-Raumlader und Raumhintergründe sind vollständig enthalten.
+- Zusätzlich **18 Views Karten & GUI** unter `/liquid-glass-gallery/demo`, mit allen Zusatzdialogen, beiden Türen, Szenen, TV/Apple TV, Staubsauger und 18 Haupteditoren. Die Beispielzustände und Verläufe werden direkt im Browser simuliert. **Keine HA-Entities, Geräte, Bereiche oder Recorder-Daten werden dafür angelegt.**
 - Optional **LIQUID-GLASS-HUE-DEMO**: echte, auf der jeweils installierenden HA-Instanz gefundene Hue-/Light-/Switch-Geräte und ihre Entities, ein Ultra-View pro zugeordnetem Raum, „Ohne Bereich“ für unzugeordnete Geräte sowie Wartung, Energie, Sicherheit und Surveillance. Die vier zusätzlichen Views zeigen passende sichtbare System-Entities. Kein festes Geräteverzeichnis, kein Cloud-Upload; beim Erstellen wird nichts geschaltet. Beide Optionen lassen sich unter Geräte & Dienste → Liquid Glass → Konfigurieren ändern.
 - [Optionale Geräte-Skripte und Anleitung](support/README.md), insbesondere die Shelly-Lüftungsquelle. Sie werden mitkopiert, aber nicht auf Hardware aktiviert.
 
-Das Demo-Dashboard begrenzt seine Karten zusätzlich auf den Namensbereich `*.liquid_glass_demo_*`. Serviceaufrufe ohne konkrete Dummy-Entity oder mit Bereichs-/Gerätezielen werden blockiert. Die Demo ändert weder echte Geräte noch die native Energiekonfiguration. Die Demo-Favoritenauswahl bleibt im jeweiligen Browser. Die öffentliche Browser-Demo verwendet denselben vollständigen Kartenkatalog und die echten Custom Cards. HA-eigene Basiselemente werden dort lokal adaptiert; Werte und Historie bleiben ausdrücklich simuliert.
+Das Demo-Dashboard begrenzt seine Karten zusätzlich auf den Namensbereich `*.liquid_glass_demo_*`. Die Karten bekommen eine isolierte lokale API; ihre Aktionen erreichen keinen HA-Gerätedienst. Die Demo ändert weder echte Geräte noch die native Energiekonfiguration. Die Demo-Favoritenauswahl bleibt im jeweiligen Browser. Die öffentliche Browser-Demo verwendet denselben vollständigen Kartenkatalog und die echten Custom Cards. HA-eigene Basiselemente werden dort lokal adaptiert; Werte und Historie bleiben ausdrücklich simuliert.
+
+**Grenzen:** Die Demo zeigt Bedienung, Dialoge, Szenen und Editoren mit simulierten Werten. Sie prüft keine echte Hardware, Automationen oder Messhistorie. Ein Neuladen setzt Gerätezustände zurück; jeder Browser hat seinen eigenen Zustand. Für bestehende Testaufbauten bleibt der ausdrücklich wählbare Altmodus `entities` verfügbar. [Modi und Migration](docs/INSTALLATION.md#demo-ohne-ha-entities).
 
 ## Das DASH6-Grundmuster: Domain-Blöcke
 
@@ -90,7 +93,7 @@ Das Paket installiert die am **25.10.2026 frisch an der aktiven Oberfläche abge
 
 Beide Türkarten stehen direkt im Demo-Einstieg und gemeinsam im hellen Domain-Block **Türen** der Flur-View. **Wohnungstür** zeigt den vertikalen Glasschalter, getrennte Öffnen-/Schlossaktionen, bestätigten Türkontakt, Kontaktbatterie und Schloss-Batteriewarnung. **Haustür** zeigt Türöffner, letzte Klingelaktivität, Batterie und die orange Klingelrückmeldung. Öffnen beziehungsweise die konfigurierten Schloss-/Öffneraktionen beenden die Klingelmarkierung.
 
-**Türzustände ausprobieren** bietet ausschließlich virtuelle Kontakte, Batteriewarnung und Klingeln. Damit lassen sich geschlossen/abgeschlossen, aufgeschlossen, geöffnet sowie Batterie- und Klingelwarnungen zeigen. Beide Karten besitzen den grafischen Tür-/Schlosseditor für diese Zuordnungen, zusätzliche Klingelsensoren und Aktionen zum Beenden des Signals. In eigenen Installationen werden vorhandene Matter-/Schloss-/Türöffner-/Klingel-Integrationen zugeordnet; die Demo legt ihre Dummy-Geräte selbst an.
+**Türzustände ausprobieren** bietet ausschließlich virtuelle Kontakte, Batteriewarnung und Klingeln. Damit lassen sich geschlossen/abgeschlossen, aufgeschlossen, geöffnet sowie Batterie- und Klingelwarnungen zeigen. Beide Karten besitzen den grafischen Tür-/Schlosseditor für diese Zuordnungen, zusätzliche Klingelsensoren und Aktionen zum Beenden des Signals. In eigenen Installationen werden vorhandene Matter-/Schloss-/Türöffner-/Klingel-Integrationen zugeordnet; die Demo simuliert diese Geräte im Browser.
 
 ## Orientierung für Agenten
 
@@ -112,6 +115,6 @@ Alte externe DASH6-/Govee-/Multi-Light-Ressourcen mit denselben Custom-Element-N
 
 ## Entwicklung, Prüfung und Lizenzen
 
-`npm ci && npm run build:cards && python3 scripts/build-integration.py` erzeugt die Veröffentlichung. Auf Home Assistant ist kein Build nötig. Installer-, Integrations-, Dummy-Entity- und Browserprüfungen laufen in isolierten Umgebungen; dabei werden keine produktiven Geräte geschaltet.
+`npm ci && npm run build:cards && python3 scripts/build-integration.py` erzeugt die Veröffentlichung. Auf Home Assistant ist kein Build nötig. Installer-, Integrations-, Browser-Simulations-, optionalen Legacy-Entity- und Browserprüfungen laufen in isolierten Umgebungen; dabei werden keine produktiven Geräte geschaltet.
 
 Aktuelle Browser mit Custom Elements und Shadow DOM werden vorausgesetzt. Chromium und WebKit werden geprüft. Unabhängiges Projekt ohne Verbindung zu Apple oder Home Assistant. [MIT](LICENSE), [Drittanbieter-Lizenzen](THIRD-PARTY-LICENSES.md). Keine privaten Dashboard-Exporte oder Zugangsdaten im Paket.

@@ -4,11 +4,15 @@
     "step": {
       "user": {
         "title": "Set up Liquid Glass",
-        "description": "Installs DASH6 Satin Glass, Ultra Card and missing card dependencies automatically (internet required). LIQUID-GLASS-DEMO copies DASH6 with dummy devices, without Florin; a separate card/GUI gallery is included. Optional LIQUID-GLASS-HUE-DEMO controls real Hue/light/switch entities discovered on this HA instance. Installation never switches devices. Dual Smart Thermostat needs another restart and manual device configuration.",
+        "description": "Installs DASH6 Satin Glass, Ultra Card and missing card dependencies automatically (internet required). LIQUID-GLASS-DEMO copies DASH6 with local browser simulation and no HA entities, without Florin; a separate card/GUI gallery is included. Optional LIQUID-GLASS-HUE-DEMO controls real Hue/light/switch entities discovered on this HA instance. Installation never switches devices. Dual Smart Thermostat needs another restart and manual device configuration.",
         "data": {
           "demo_dashboard": "Create LIQUID-GLASS-DEMO and card/GUI gallery",
           "dual_smart_thermostat": "Also install Dual Smart Thermostat",
-          "hue_dashboard": "Create LIQUID-GLASS-HUE-DEMO with real local devices"
+          "hue_dashboard": "Create LIQUID-GLASS-HUE-DEMO with real local devices",
+          "demo_mode": "Demo mode (browser recommended)"
+        },
+        "data_description": {
+          "demo_mode": "browser: local simulation without HA entities or Recorder data. entities: optional legacy mode with registered HA test entities. Existing installations keep their mode."
         }
       }
     },
@@ -20,11 +24,15 @@
     "step": {
       "init": {
         "title": "Liquid Glass options",
-        "description": "Installs DASH6 Satin Glass, Ultra Card and missing card dependencies automatically (internet required). LIQUID-GLASS-DEMO copies DASH6 with dummy devices, without Florin; a separate card/GUI gallery is included. Optional LIQUID-GLASS-HUE-DEMO controls real Hue/light/switch entities discovered on this HA instance. Installation never switches devices. Dual Smart Thermostat needs another restart and manual device configuration.",
+        "description": "Installs DASH6 Satin Glass, Ultra Card and missing card dependencies automatically (internet required). LIQUID-GLASS-DEMO copies DASH6 with local browser simulation and no HA entities, without Florin; a separate card/GUI gallery is included. Optional LIQUID-GLASS-HUE-DEMO controls real Hue/light/switch entities discovered on this HA instance. Installation never switches devices. Dual Smart Thermostat needs another restart and manual device configuration.",
         "data": {
           "demo_dashboard": "Create LIQUID-GLASS-DEMO and card/GUI gallery",
           "dual_smart_thermostat": "Also install Dual Smart Thermostat",
-          "hue_dashboard": "Create LIQUID-GLASS-HUE-DEMO with real local devices"
+          "hue_dashboard": "Create LIQUID-GLASS-HUE-DEMO with real local devices",
+          "demo_mode": "Demo mode (browser recommended)"
+        },
+        "data_description": {
+          "demo_mode": "browser: local simulation without HA entities or Recorder data. entities: optional legacy mode with registered HA test entities. Existing installations keep their mode."
         }
       }
     }

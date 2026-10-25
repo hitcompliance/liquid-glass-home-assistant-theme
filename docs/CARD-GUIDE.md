@@ -1,6 +1,6 @@
 # Karten, Detailansichten und GUI-Konfiguration
 
-Der Einstieg **Alle Karten & Details** ist in beiden vollständigen Demos derselbe: [öffentliche Browser-Demo](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/) und installierte **Liquid Glass Demo** unter `/liquid-glass-gallery/demo`. Die Browser-Demo lädt die echten eigenen und fremden Karten. Nur Home Assistants native Basiselemente werden dort lokal adaptiert; die HA-Demo verwendet die originalen nativen Elemente.
+Der Einstieg **Alle Karten & Details** ist in beiden vollständigen Demos derselbe: [öffentliche Browser-Demo](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/) und installierte **Liquid Glass Demo** unter `/liquid-glass-gallery/demo`. Die Browser-Demo lädt die echten eigenen und fremden Karten. Nur Home Assistants native Basiselemente werden dort lokal adaptiert; die installierte HA-Demo verwendet die originalen nativen Karten mit lokalem Simulationskontext. Mehr-Informationen-Ereignisse öffnen einen lokalen Demo-Dialog.
 
 ## Das DASH6-Grundmuster: Domain-Blöcke
 
@@ -39,18 +39,18 @@ Zwischen den Karten liegen **8px**. Native Headings stehen am Beginn der gemeins
 | Schuhschrank | Direkte Bunt-/Weiß-Szenen; bestätigter leuchtender Szenenrahmen; Kartenhintergrund öffnet Lichter/Segmente | Spezialisierter Licht-/Gruppeneditor |
 | Licht und Lichtgruppe | Ein/Aus, kombinierte und getrennte Regler, Farbe, Farbtemperatur, Effekte; Hintergrund öffnet Einzellichter und gemeinsame Auswahl | Spezialisierter Licht-/Gruppeneditor; zusätzlich karteneigene Einstellungen |
 | TV / Apple TV / Fire TV | Player, Ein/Aus, Quellen; Hintergrund oder **TV & Fernbedienungen** öffnet Player-/Remote-Dialog, Gerätewechsel, Tastaturhilfe und Medienauswahl | Medieneditor mit Player-/Remote-/Quellenzuordnung |
-| HomePod | Verbindungsschalter, Wiedergabe, Lautstärke und Medienbild; native Entity-Details | Grafische Grundfelder mit vollständiger Konfiguration |
+| HomePod | Verbindungsschalter, Wiedergabe, Lautstärke und Medienbild; lokale Demo-Entity-Details | Grafische Grundfelder mit vollständiger Konfiguration |
 | Staubsauger | Start/Pause/Stopp/Dock; **Räume & Reinigung** öffnet die individuelle Planung; **Basisstation** zeigt Dockfunktionen und Entleerungsmodus; **Verschleißteile** zeigt Verlauf und bestätigbares Zurücksetzen | Spezialisierter mehrstufiger Staubsaugereditor |
 | Eigenständige Vacuum Dock Card | Reinigung und Basisstation als eigenständige Alternative | Eigener mehrstufiger Editor |
 | Messsteckdose / Kühlschrank | Glasschalter, Leistung, Hintergrundgraph, Kindersicherung und LED; virtuelle Tür-/Temperaturrückmeldungen in der Küche | Spezialisierter Geräte-/Messsteckdoseneditor |
-| Lüftung | Aus/Auto/Ein, Force und Restzeit; tatsächliche virtuelle Ausgangsrückmeldungen, Präsenz und Leistungsanzeige | Lüftereditor mit getrennten Modus-/Force-/Restzeit-/Rückmeldefeldern |
+| Lüftung | Aus/Auto/Ein, Force und Restzeit; simulierte Ausgangsrückmeldungen, Präsenz und Leistungsanzeige | Lüftereditor mit getrennten Modus-/Force-/Restzeit-/Rückmeldefeldern |
 | Thermostat | Native Sollwertbedienung, Heizen/Kühlen/Dual, Preset-Auswahl | Grafischer Editor für Entity, Modi und Optionen |
 | Rollo | Öffnen/Schließen/Stopp und Positionsregler | Grafischer Editor |
 | Wohnungstür und Haustür | Beide direkt im Einstieg und gemeinsam im Flur-Block **Türen**. Vertikaler Glasschalter, Öffnen/Schloss, Kontakt, Kontaktbatterie/Schlosswarnung; Türöffner, Aktivitätszeit und orange Klingelrückmeldung. **Türzustände ausprobieren** simuliert Kontakt, Batteriewarnung und Klingeln | Tür-/Schlosseditor einschließlich zusätzlicher Klingelsensoren und Cancel-Aktionen |
-| Pflanzen | Fünf Messwerte, Ziel-/Prüfbereiche, konservativer EC-Hinweis, 24h/7d und Entity-Verlauf | Pflanzeneditor für Sensoren, Substrat, Alter und Bereiche |
+| Pflanzen | Vier feste Zielplätze `… / 4`, Batterie, Tageslichtmittel vor Momentanwert, tägliches Lichtbudget Heute/Gestern mit Mindest-/Ideal-Orientierung, konservativer EC-Hinweis, 24h/7d | Pflanzeneditor für Sensoren, Substrat, Alter, Bereiche und tägliche Lichtziele; eigenständige Ressource `plant-dist/` |
 | Auswahlgruppe | Animierte exklusive Auswahl; Demo-Auswahl-Entity | Grafischer Auswahl-/Optionseditor |
 | Glasschalter | Gemeinsame Schalterbedienung, Zustand und Sperren; außerdem in den Gerätekarten enthalten | Grafische Grundfelder / vollständige Konfiguration |
-| Kamera | Die HA-Demo enthält eine virtuelle Kamera mit Paketbild. Die separate lokale Browser-Kamerakarte ist für eigene Dashboards enthalten und startet eine echte Kamera erst nach bewusster Aktion und Browserfreigabe | Grafischer Editor der lokalen Kamerakarte; native Kamera-Kartenkonfiguration für die Dummy-Kamera |
+| Kamera | Die HA-Demo enthält eine virtuelle Kamera mit Paketbild. Die separate lokale Browser-Kamerakarte ist für eigene Dashboards enthalten und startet eine echte Kamera erst nach bewusster Aktion und Browserfreigabe | Grafischer Editor der lokalen Kamerakarte; native Kamera-Kartenkonfiguration für das Kamera-Beispiel |
 
 Die Tasten unter den Beispielen sind Wegweiser zu den **echten** Kartendialogen. Der Showcase-Wrapper ersetzt deren Implementierung nicht. Die Kartenhintergründe bleiben dort direkt bedienbar, wo die jeweilige Karte diesen Einstieg besitzt.
 
@@ -79,8 +79,8 @@ Installiert wird ausschließlich **DASH6 Satin Glass** mit dem am 25.10.2026 fri
 
 ## Sicherheit und Grenzen der Demos
 
-Die vollständige HA-Demo legt 98 virtuelle Entities in sieben eigenen Bereichen an. Alle Aktionen bleiben auf `*.liquid_glass_demo_*` begrenzt. Demo-Segmentnummern gehören nur zum virtuellen Roboter. Keine realen Geräte, Automationen oder die native Energiekonfiguration werden übernommen.
+DASH6-Kopie und Galerie simulieren ihre Geräte standardmäßig vollständig im Browser, ohne HA-Entities oder Bereiche anzulegen. Alle Aktionen bleiben auf `*.liquid_glass_demo_*` begrenzt. Demo-Segmentnummern gehören nur zum virtuellen Roboter. Keine realen Geräte, Automationen oder die native Energiekonfiguration werden übernommen.
 
-Die Browser-Demo erzeugt ausdrücklich simulierte Historie zur Darstellung von Graphen. In HA entsteht echte Demo-Recorder-Historie erst ab Installation; sie wird nicht rückdatiert. Live-Kamera, eigene Hardwareintegrationen, TV-/ADB-/BLE-Einrichtung und die spezielle Shelly-Hardwarekonfiguration gehören zu den ausdrücklich selbst einzurichtenden Funktionen: [Abhängigkeiten](DEPENDENCIES.md).
+Öffentliche und installierte Browser-Demo verwenden dieselbe Simulation einschließlich Beispielverläufen. Sie prüfen keine echte Gerätewirkung, Automationen oder Messhistorie. Der optionale Altmodus `entities` benötigt für Verläufe neue Recorder-Messpunkte. Live-Kamera, eigene Hardwareintegrationen, TV-/ADB-/BLE-Einrichtung und die spezielle Shelly-Hardwarekonfiguration gehören zu den ausdrücklich selbst einzurichtenden Funktionen: [Abhängigkeiten](DEPENDENCIES.md).
 
 Für Agenten: [Strukturen und verbindliche Muster](../AGENTS.md). Vollständige Optionsreferenz: [CARDS.md](CARDS.md).

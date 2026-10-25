@@ -1,4 +1,6 @@
 import {scopedCustomElements as customElements} from './scoped-elements.js';
+import {loadDemoRuntime} from './demo-runtime.js';
+import './demo-detail.js';
 
 const own=id=>typeof id==='string'&&/^[a-z_]+\.liquid_glass_demo_[a-z0-9_]+$/.test(id);
 const subset=table=>Object.fromEntries(Object.entries(table||{}).filter(([id])=>own(id)));
@@ -50,16 +52,33 @@ export function demoHass(hass){
 }
 
 class DemoScope extends HTMLElement{
- setConfig(config){if(!config.card)throw Error('Demo-Karte fehlt.');this._config=config;this._build();}
- set hass(value){this._hass=value;if(this._child)this._child.hass=demoHass(value);}
+ setConfig(config){if(!config.card)throw Error('Demo-Karte fehlt.');this._config=config;this._child=null;this._build();}
+ set hass(value){this._hass=value;this._apply();}
+ get hass(){return this._context;}
  connectedCallback(){this.style.display='block';this.style.minWidth='0';this._build();}
+ disconnectedCallback(){this._unsubscribe?.();this._unsubscribe=null;}
+ _apply(){
+  if(!this._hass||!this._config)return;
+  const inherited=this._hass.__liquidGlassDemoRuntime;
+  if(inherited){this._context=this._hass;}
+  else if(this._config.mode==='entities'){this._context=demoHass(this._hass);}
+  else if(this._runtime){this._context=this._runtime.hass(this._hass);}
+  else return;
+  if(this._child)this._child.hass=this._context;
+ }
  async _build(){
-  if(this._child||!this._config||!this.isConnected)return;
-  const helpers=await window.loadCardHelpers();
-  if(this._child)return;
-  const child=helpers.createCardElement(this._config.card);this._child=child;
-  if(this._hass)child.hass=demoHass(this._hass);
-  this.replaceChildren(child);
+  if(!this._config||!this.isConnected||this._building)return;
+  this._building=true;
+  try{
+   if(this._config.mode!=='entities'&&!this._hass?.__liquidGlassDemoRuntime){
+    this._runtime=await loadDemoRuntime();
+    this._unsubscribe||=this._runtime.subscribe(()=>this._apply());
+   }
+   if(!this.isConnected)return;
+   if(!this._child){const helpers=await window.loadCardHelpers();this._child=helpers.createCardElement(this._config.card);this.replaceChildren(this._child);}
+   this._apply();
+  }catch(error){this.textContent='Demo konnte nicht geladen werden: '+error.message;this.setAttribute('role','alert');}
+  finally{this._building=false;}
  }
  getCardSize(){return this._child?.getCardSize?.()||4;}
  getGridOptions(){return this._child?.getGridOptions?.()||{columns:12,rows:'auto'};}

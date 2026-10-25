@@ -4,11 +4,15 @@
     "step": {
       "user": {
         "title": "Liquid Glass einrichten",
-        "description": "Installiert DASH6 Satin Glass, Ultra Card und alle fehlenden Karten-Abhängigkeiten automatisch (Internet erforderlich). LIQUID-GLASS-DEMO ist die DASH6-Kopie mit eigenen Dummy-Geräten, ohne Florin; die Karten-/GUI-Galerie kommt zusätzlich. Die optionale LIQUID-GLASS-HUE-DEMO bedient echte, lokal gefundene Hue-/Licht-/Schalter-Entities. Die Installation selbst schaltet nichts. Dual Smart Thermostat benötigt einen weiteren Neustart und eigene Gerätekonfiguration.",
+        "description": "Installiert DASH6 Satin Glass, Ultra Card und alle fehlenden Karten-Abhängigkeiten automatisch (Internet erforderlich). LIQUID-GLASS-DEMO ist die DASH6-Kopie mit lokaler Browser-Simulation ohne HA-Entities, ohne Florin; die Karten-/GUI-Galerie kommt zusätzlich. Die optionale LIQUID-GLASS-HUE-DEMO bedient echte, lokal gefundene Hue-/Licht-/Schalter-Entities. Die Installation selbst schaltet nichts. Dual Smart Thermostat benötigt einen weiteren Neustart und eigene Gerätekonfiguration.",
         "data": {
           "demo_dashboard": "LIQUID-GLASS-DEMO und Karten-/GUI-Galerie anlegen",
           "dual_smart_thermostat": "Dual Smart Thermostat zusätzlich installieren",
-          "hue_dashboard": "LIQUID-GLASS-HUE-DEMO mit echten lokalen Geräten anlegen"
+          "hue_dashboard": "LIQUID-GLASS-HUE-DEMO mit echten lokalen Geräten anlegen",
+          "demo_mode": "Demo-Modus (Browser empfohlen)"
+        },
+        "data_description": {
+          "demo_mode": "browser: lokale Simulation ohne HA-Entities oder Recorder-Daten. entities: optionaler Altmodus mit registrierten HA-Test-Entities. Bestehende Installationen behalten ihren Modus."
         }
       }
     },
@@ -20,11 +24,15 @@
     "step": {
       "init": {
         "title": "Liquid Glass · Optionen",
-        "description": "Installiert DASH6 Satin Glass, Ultra Card und alle fehlenden Karten-Abhängigkeiten automatisch (Internet erforderlich). LIQUID-GLASS-DEMO ist die DASH6-Kopie mit eigenen Dummy-Geräten, ohne Florin; die Karten-/GUI-Galerie kommt zusätzlich. Die optionale LIQUID-GLASS-HUE-DEMO bedient echte, lokal gefundene Hue-/Licht-/Schalter-Entities. Die Installation selbst schaltet nichts. Dual Smart Thermostat benötigt einen weiteren Neustart und eigene Gerätekonfiguration.",
+        "description": "Installiert DASH6 Satin Glass, Ultra Card und alle fehlenden Karten-Abhängigkeiten automatisch (Internet erforderlich). LIQUID-GLASS-DEMO ist die DASH6-Kopie mit lokaler Browser-Simulation ohne HA-Entities, ohne Florin; die Karten-/GUI-Galerie kommt zusätzlich. Die optionale LIQUID-GLASS-HUE-DEMO bedient echte, lokal gefundene Hue-/Licht-/Schalter-Entities. Die Installation selbst schaltet nichts. Dual Smart Thermostat benötigt einen weiteren Neustart und eigene Gerätekonfiguration.",
         "data": {
           "demo_dashboard": "LIQUID-GLASS-DEMO und Karten-/GUI-Galerie anlegen",
           "dual_smart_thermostat": "Dual Smart Thermostat zusätzlich installieren",
-          "hue_dashboard": "LIQUID-GLASS-HUE-DEMO mit echten lokalen Geräten anlegen"
+          "hue_dashboard": "LIQUID-GLASS-HUE-DEMO mit echten lokalen Geräten anlegen",
+          "demo_mode": "Demo-Modus (Browser empfohlen)"
+        },
+        "data_description": {
+          "demo_mode": "browser: lokale Simulation ohne HA-Entities oder Recorder-Daten. entities: optionaler Altmodus mit registrierten HA-Test-Entities. Bestehende Installationen behalten ihren Modus."
         }
       }
     }

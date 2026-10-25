@@ -43,7 +43,7 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.ll = LovelaceData('yaml', {}, ResourceYAMLCollection([]), {})
         self.hass.data[LOVELACE_DATA] = self.ll
         self.hass.config_entries = SimpleNamespace(async_forward_entry_setups=AsyncMock(), async_unload_platforms=AsyncMock(return_value=True))
-        self.entry = SimpleNamespace(entry_id='test', data={'demo_dashboard': True})
+        self.entry = SimpleNamespace(entry_id='test', data={'demo_dashboard': True, 'demo_mode': 'entities'})
         self.payload = b'export const testDependency = true;'
         self.lock = {'schema_version': 1, 'dependencies': [{'id': 'test-card', 'kind': 'frontend', 'version': 'v1.0.0', 'entrypoint': 'test-card.js', 'assets': [{'path': 'test-card.js', 'url': 'https://raw.githubusercontent.com/example/repo/v1.0.0/test-card.js', 'sha256': hashlib.sha256(self.payload).hexdigest(), 'bytes': len(self.payload)}]}]}
         (self.bundle / 'dependencies.lock.json').write_text(json.dumps(self.lock))
@@ -87,6 +87,30 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(self.hass.data[frontend.DATA_EXTRA_MODULE_URL].urls)
         self.assertTrue((self.config/'www/liquid-glass/dash6-cards.js').exists())
 
+    async def test_browser_default_registers_no_entities_or_platforms(self):
+        self.entry.data={'demo_dashboard':True}
+        with patch.object(integration,'DemoCoordinator') as coordinator, patch.object(integration.er,'async_get') as registry:
+            self.assertTrue(await integration.async_setup_entry(self.hass,self.entry))
+        coordinator.assert_not_called()
+        registry.assert_not_called()
+        self.hass.config_entries.async_forward_entry_setups.assert_not_awaited()
+        state=self.hass.data[integration.DOMAIN][self.entry.entry_id]
+        self.assertIsNone(state['demo_coordinator'])
+        self.assertFalse(state['demo_platforms'])
+        for path in (integration.DEMO,integration.GALLERY):
+            config=await self.ll.dashboards[path].async_load(False)
+            self.assertNotIn('"mode": "entities"',json.dumps(config))
+        self.assertEqual(list(self.hass.states.async_all()),[])
+
+    async def test_migration_preserves_legacy_entity_mode(self):
+        self.entry.version=1
+        def update(entry,**changes):
+            for key,value in changes.items():setattr(entry,key,value)
+        self.hass.config_entries.async_update_entry=Mock(side_effect=update)
+        self.assertTrue(await integration.async_migrate_entry(self.hass,self.entry))
+        self.assertEqual(self.entry.version,2)
+        self.assertEqual(self.entry.data['demo_mode'],'entities')
+
     async def test_first_install_persists_satin_for_both_backend_modes(self):
         self.hass.data[frontend.DATA_DEFAULT_THEME] = 'My theme'
         self.hass.data[frontend.DATA_DEFAULT_DARK_THEME] = 'My theme'
@@ -112,7 +136,7 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         await integration.async_setup_entry(self.hass, self.entry)
         self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_THEME], integration.DEFAULT_THEME)
         self.assertEqual(self.hass.data[frontend.DATA_DEFAULT_DARK_THEME], integration.DEFAULT_THEME)
-        self.assertEqual(self.entry.data, {'demo_dashboard': True})
+        self.assertEqual(self.entry.data, {'demo_dashboard': True, 'demo_mode': 'entities'})
 
     async def test_unload_preserves_later_manual_theme_choice(self):
         await integration.async_setup_entry(self.hass, self.entry)
@@ -177,7 +201,7 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((self.config / 'www/liquid-glass/vendor/new-required-card/new-required-card.js').read_bytes(), self.download_payloads[new['assets'][0]['url']])
         bootstrap = (self.config / 'www/liquid-glass/integration-bootstrap.js').read_text()
         self.assertLess(bootstrap.index('/vendor/new-required-card/'), bootstrap.index('/dash6-cards.js'))
-        self.assertEqual(self.entry.data, {'demo_dashboard': True}, 'existing setup does not require a new config flow')
+        self.assertEqual(self.entry.data, {'demo_dashboard': True, 'demo_mode': 'entities'}, 'existing setup does not require a new config flow')
 
     async def test_release_update_replaces_installer_owned_pinned_dependency(self):
         await integration.async_setup_entry(self.hass, self.entry)
@@ -453,8 +477,8 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         with patch.object(flow,'async_set_unique_id',AsyncMock()), patch.object(flow,'_abort_if_unique_id_configured') as guard:
             result=await flow.async_step_user()
             self.assertEqual(result['type'],'form')
-            self.assertEqual(result['data_schema']({}),{'demo_dashboard':True,'hue_dashboard':False,'dual_smart_thermostat':False})
-            result=await flow.async_step_user({'demo_dashboard':True,'hue_dashboard':False,'dual_smart_thermostat':False})
+            self.assertEqual(result['data_schema']({}),{'demo_dashboard':True,'demo_mode':'browser','hue_dashboard':False,'dual_smart_thermostat':False})
+            result=await flow.async_step_user({'demo_dashboard':True,'demo_mode':'browser','hue_dashboard':False,'dual_smart_thermostat':False})
             self.assertEqual(result['type'],'create_entry')
             guard.assert_called()
 

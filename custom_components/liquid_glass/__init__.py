@@ -127,28 +127,30 @@ async def async_setup_entry(hass, entry):
             if DEMO in ll.dashboards or frontend.async_panel_exists(hass, DEMO):
                 _LOGGER.warning('Existing %s dashboard preserved; demo not registered', DEMO)
             else:
-                specs = await hass.async_add_executor_job(load_specs)
-                registry = er.async_get(hass)
-                for spec in specs:
-                    existing_entity = registry.async_get(spec['entity_id'])
-                    if existing_entity and (existing_entity.platform != DOMAIN or existing_entity.unique_id != spec['entity_id']):
-                        raise ValueError('Demo entity ID already belongs to another integration: ' + spec['entity_id'])
-                    if not existing_entity and hass.states.get(spec['entity_id']):
-                        raise ValueError('Demo entity ID is already in use: ' + spec['entity_id'])
-                coordinator = DemoCoordinator(hass, specs)
-                state['demo_coordinator'] = coordinator
-                state['demo_platforms'] = True
-                await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-                coordinator.assign_areas()
-                coordinator.refresh()
-                coordinator.start()
-                conf = {'mode': 'yaml', 'filename': str(ROOT / 'examples' / 'demo-dashboard.yaml'), 'title': 'LIQUID-GLASS-DEMO', 'icon': 'mdi:layers-outline', 'show_in_sidebar': True, 'require_admin': False}
+                mode = getattr(entry,'options',{}).get('demo_mode',entry.data.get('demo_mode','browser'))
+                if mode == 'entities':
+                    specs = await hass.async_add_executor_job(load_specs)
+                    registry = er.async_get(hass)
+                    for spec in specs:
+                        existing_entity = registry.async_get(spec['entity_id'])
+                        if existing_entity and (existing_entity.platform != DOMAIN or existing_entity.unique_id != spec['entity_id']):
+                            raise ValueError('Demo entity ID already belongs to another integration: ' + spec['entity_id'])
+                        if not existing_entity and hass.states.get(spec['entity_id']):
+                            raise ValueError('Demo entity ID is already in use: ' + spec['entity_id'])
+                    coordinator = DemoCoordinator(hass, specs)
+                    state['demo_coordinator'] = coordinator
+                    state['demo_platforms'] = True
+                    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+                    coordinator.assign_areas()
+                    coordinator.refresh()
+                    coordinator.start()
+                conf = {'mode': 'yaml', 'filename': str(ROOT / 'examples' / ('demo-dashboard-entities.yaml' if mode == 'entities' else 'demo-dashboard.yaml')), 'title': 'LIQUID-GLASS-DEMO', 'icon': 'mdi:layers-outline', 'show_in_sidebar': True, 'require_admin': False}
                 demo = LovelaceYAML(hass, DEMO, conf)
                 state['demo'] = demo
                 ll.dashboards[DEMO] = demo
                 frontend.async_register_built_in_panel(hass, 'lovelace', sidebar_title=conf['title'], sidebar_icon=conf['icon'], frontend_url_path=DEMO, config={'mode': 'yaml'})
         if state['demo'] is not None and GALLERY not in ll.dashboards and not frontend.async_panel_exists(hass,GALLERY):
-            conf={'mode':'yaml','filename':str(ROOT/'examples/gallery-dashboard.yaml'),'title':'Liquid Glass · Karten & GUI','icon':'mdi:view-grid-plus','show_in_sidebar':True,'require_admin':False}
+            conf={'mode':'yaml','filename':str(ROOT/'examples'/('gallery-dashboard-entities.yaml' if mode == 'entities' else 'gallery-dashboard.yaml')),'title':'Liquid Glass · Karten & GUI','icon':'mdi:view-grid-plus','show_in_sidebar':True,'require_admin':False}
             gallery=LovelaceYAML(hass,GALLERY,conf)
             state['additional_dashboards'][GALLERY]=gallery
             ll.dashboards[GALLERY]=gallery
@@ -237,3 +239,9 @@ async def async_unload_entry(hass, entry):
             frontend.async_remove_panel(hass,path,warn_if_unknown=False)
     hass.bus.async_fire(EVENT_THEMES_UPDATED)
     return True
+
+async def async_migrate_entry(hass, entry):
+    """Keep existing HA test entities opt-in; new installs default to the browser."""
+    if entry.version == 1:
+        hass.config_entries.async_update_entry(entry, data={**entry.data, 'demo_mode': 'entities'}, version=2)
+    return entry.version <= 2

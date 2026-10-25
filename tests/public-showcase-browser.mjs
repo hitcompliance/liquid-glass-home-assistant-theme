@@ -68,6 +68,9 @@ try{for(const engine of [chromium,webkit]){
   assert.equal(await shell('shoe-cabinet-card').getByRole('button',{name:'Weiß',exact:true}).getAttribute('aria-pressed'),'true','scene activation reflects confirmed targets');
   for(const path of await page.evaluate(()=>demoPreview.dashboard.views.map(v=>v.path))){
    await page.evaluate(path=>demoPreview.showView(path),path);await page.waitForTimeout(220);console.log(engine.name()+' view:',path);
+   await page.waitForFunction(()=>{const walk=r=>[...r.querySelectorAll('*')].flatMap(e=>[e,...(e.shadowRoot?walk(e.shadowRoot):[])]);return walk(document).filter(e=>e.localName==='dash6-showcase-card').every(c=>!c._error&&c._child&&c._child.getBoundingClientRect().height>0);},{},{timeout:10000});
+   const empty=await page.locator('dash6-showcase-card').evaluateAll(cards=>cards.filter(c=>c._error||!c._child||c._child.getBoundingClientRect().height<1).map(c=>({type:c._config.card.type,error:c._error||'empty sample'})));
+   assert.deepEqual(empty,[],path+': every documented sample renders content');
    for(const b of await page.locator('dash6-showcase-card [data-configure]').all()){
     console.log(engine.name()+' editor:',await b.evaluate(e=>e.getRootNode().host._config.card.type));
     await b.click();try{await guiDialog.waitFor({timeout:5000});}catch(error){console.log('Editor alerts:',await page.getByRole('alert').allTextContents());throw error;}
@@ -79,6 +82,8 @@ try{for(const engine of [chromium,webkit]){
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Mobile page has no horizontal overflow');
   const out=resolve('../output/Release-3.3-Demo');await mkdir(out,{recursive:true});await page.screenshot({path:out+'/'+engine.name()+'-mobile.png',fullPage:true});
   console.log(engine.name()+': '+guiCount+' real GUI editors, shoe scenes, TV, vacuum detail dialogs and mobile layout checked; runtime errors:',errors);
+  assert.deepEqual(await page.evaluate(()=>[...demoPreview.runtime.diagnostics.unknownTemplates]),[]);
+  assert.deepEqual(await page.evaluate(()=>[...demoPreview.runtime.diagnostics.unsupportedRequests]),[]);
   assert.deepEqual(errors,[]);
  }finally{await browser.close();}
 }}finally{server.close();}

@@ -7,34 +7,40 @@ Voraussetzungen: Home Assistant **2026.9.0 oder neuer**, ein aktueller Browser u
 1. [Repository in HACS hinzufügen](https://my.home-assistant.io/redirect/hacs_repository/?owner=hitcompliance&repository=liquid-glass-home-assistant-theme&category=integration). Kategorie **Integration**, herunterladen.
 2. Home Assistant neu starten.
 3. **Einstellungen → Geräte & Dienste → Integration hinzufügen → Liquid Glass** öffnen.
-4. **Interaktives Demo-Dashboard anzeigen** eingeschaltet lassen. **Dual Smart Thermostat** nur auswählen, wenn diese optionale Backendintegration für eigene Thermostate benötigt wird.
-5. **Liquid Glass Demo** in der Seitenleiste öffnen. Das Theme **DASH6 Satin Glass** wird als Backendvorgabe für Hell und Dunkel gesetzt. Explizite Benutzer-/View-Auswahlen haben weiterhin Vorrang.
+4. **LIQUID-GLASS-DEMO** eingeschaltet und **Demo-Modus: browser** ausgewählt lassen. **Dual Smart Thermostat** nur auswählen, wenn diese optionale Backendintegration für eigene Thermostate benötigt wird.
+5. **LIQUID-GLASS-DEMO** in der Seitenleiste öffnen. Das Theme **DASH6 Satin Glass** wird als Backendvorgabe für Hell und Dunkel gesetzt. Explizite Benutzer-/View-Auswahlen haben weiterhin Vorrang.
 
 Die Integration installiert die eigenen Karten samt Chunks, Bildern, Profilen und Lizenzen sowie zwölf fehlende Fremdmodule automatisch. Sie registriert die Ressourcen auch bei YAML-Ressourcenverwaltung. Die [vollständige Tabelle](DEPENDENCIES.md) erklärt jede Abhängigkeit und nennt ausdrücklich, was selbst einzurichten ist. `configuration.yaml` und `.storage` werden nicht direkt editiert. Es sind weder Terminalbefehle noch zusätzliche Frontend-HACS-Einträge erforderlich.
 
 Vorhandene passende HACS-Module werden über ihre bestehenden URLs wiederverwendet. Deren Version und Updates bleiben in HACS. Fehlende Module werden anhand des mitgelieferten Locks mit SHA-256 und Dateigröße geprüft und unter `www/liquid-glass/vendor/` installiert; sie erscheinen nicht als eigene HACS-Repositories. Alle benötigten Lazy-Chunks, Übersetzungen und Lizenzen sind im Downloadplan enthalten. Geänderte bestehende Dateien werden vorab unter `backups/liquid-glass/<Zeitstempel>/` gesichert. Download-/Prüfsummenfehler brechen vor Zieländerungen ab; Schreibfehler werden zurückgerollt.
 
-## Demo und virtuelle Entities
+## Demo ohne HA-Entities
 
-Die aktivierte Option **LIQUID-GLASS-DEMO** registriert `/liquid-glass-demo/home`: die tatsächliche DASH6-Struktur mit 28 Views, denselben Karten einschließlich Ultra Card, Seitenleisten, hellen Heading-/Domain-Hüllen, dunklen Entity-Karten und Hintergrund-Detailansichten. Florin und Florin Inhalt samt Navigation sind entfernt. 627 Dummy-Entities ersetzen die Originalgeräte; die mitgelieferten anonymisierten Profile, Büro-Raumdefinitionen und sechs Raumhintergründe machen die Kopie unabhängig von privaten Dateien.
+Die aktivierte Option **LIQUID-GLASS-DEMO** registriert `/liquid-glass-demo/home`: die tatsächliche DASH6-Struktur mit 28 Views, denselben Karten einschließlich Ultra Card, Seitenleisten, hellen Heading-/Domain-Hüllen, dunklen Entity-Karten und Hintergrund-Detailansichten. Florin und Florin Inhalt samt Navigation sind entfernt. Lokale Browserzustände ersetzen die Originalgeräte; die mitgelieferten anonymisierten Profile, Büro-Raumdefinitionen und sechs Raumhintergründe machen die Kopie unabhängig von privaten Dateien.
 
-Zusätzlich ist die **Karten-/GUI-Galerie** mit 18 Views unter `/liquid-glass-gallery/demo` verfügbar. Sie ergänzt 98 Dummy-Entities und zeigt Schuhschrank-Szenen, TV/Apple TV, Staubsauger, beide Türen, Zusatzdialoge und grafische Karteneditoren direkt. Insgesamt 725 Dummy-Entities; keine Hardwareintegration erforderlich. Die Integration erstellt eigene virtuelle Geräte/Bereiche. Sie persistiert keine erfundenen historischen Messwerte.
+Zusätzlich ist die **Karten-/GUI-Galerie** mit 18 Views unter `/liquid-glass-gallery/demo` verfügbar. Sie zeigt Schuhschrank-Szenen, TV/Apple TV, Staubsauger, beide Türen, Zusatzdialoge und grafische Karteneditoren direkt. Standardmäßig werden **keine HA-Entities, Geräte oder Bereiche** für diese beiden Demos angelegt. Zustände, Dienste, Wetter, Medienauswahl und Beispielverläufe kommen aus einer gemeinsamen lokalen Browser-Laufzeit. Recorder und Hardwareintegrationen sind dafür nicht erforderlich.
 
 Die separate Option **LIQUID-GLASS-HUE-DEMO** registriert `/liquid-glass-hue-demo` mit echten Entities dieser HA-Instanz. Entity-, Geräte- und Bereichsregistry bestimmen Hue-Geräte, alle Light-/Switch-Geräte und ihre zugehörigen Entities. Versteckte, deaktivierte und mitgelieferte Demo-Entities bleiben ausgeschlossen. Je belegtem Raum entsteht ein Ultra-View nach demselben Domain-/Glasmuster; fehlende Zuordnung landet in „Ohne Bereich“. Wartung, Energie, Sicherheit und Surveillance zeigen passende sichtbare System-Entities. Registry-Änderungen aktualisieren das generierte Dashboard. Erstellung und Einrichtung rufen keine Geräteaktion auf; spätere Bedienung steuert die echten Geräte.
 
 Unter **Geräte & Dienste → Liquid Glass → Konfigurieren** können beide Dashboard-Optionen nachträglich geändert werden. Bestehende fremde Dashboards gleichen Pfads bleiben erhalten. Generierte Dashboards sind verwaltet und werden nicht als bearbeitbare Benutzerkopie gespeichert; für dauerhafte eigene Layoutänderungen die Konfiguration über die HA-Oberfläche in ein eigenes Dashboard kopieren.
 
-- Szenen ändern nur virtuelle Lichter. Die Markierung prüft deren gemeldete Zielzustände.
+- Szenen ändern nur lokale Beispielzustände. Die Markierung prüft diese simulierten Zielzustände.
 - Die Demo-Lüftung simuliert Aus/Auto/Ein, Präsenz, Ausgänge und Countdown. Keine Shelly-Hardware nötig.
 - Die virtuelle Kamera liefert ein Paketbild; sie fragt keine Webcam-Freigabe an. Die lokale Browser-Kamerakarte bleibt für eigene Dashboards verfügbar.
-- Sensoren liefern simulierte aktuelle Werte. Recorder zeichnet sie ab Installation auf, sofern sie nicht ausgeschlossen sind. Historie/Statistiken werden nicht rückdatiert. Einige Graphen brauchen deshalb zunächst Messpunkte.
+- Sensoren und Verläufe liefern ausdrücklich simulierte Beispieldaten. Sie erzeugen keine Recorder-Aufzeichnungen. Die Demo belegt keine echte Geräte-, Automations- oder Messfunktion.
 - Die native Energiekonfiguration bleibt bestehen. Demo-Energiewerte sind ausdrücklich keine echten Verbrauchsmessungen.
-- Die Favoriten-GUI speichert ihre Demo-Auswahl browserlokal. **Demo zurücksetzen** setzt die virtuellen Gerätewerte zurück; Neustart setzt sie ebenfalls auf den definierten Ausgangszustand.
-- Jede Demo-Karte wird mit `dash6-demo-scope` auf Dummy-Zustände und explizite Dummy-Serviceziele begrenzt. Bereichs-/Geräteziele und ziellose Aktionen sind gesperrt.
+- Die Favoriten-GUI speichert ihre Demo-Auswahl browserlokal. **Demo zurücksetzen** setzt die virtuellen Gerätewerte zurück; Neuladen der Seite setzt sie ebenfalls auf den definierten Ausgangszustand.
+- Jede Demo-Karte erhält über `dash6-demo-scope` einen isolierten lokalen Kontext. Dienste und Abfragen erreichen kein echtes HA-Backend. Auch Mehr-Informationen-Dialoge bleiben innerhalb der Simulation. Jeder Browser besitzt seinen eigenen Zustand.
 
-Die verwaltete Demo-YAML wird bei Updates ersetzt. Eigene Änderungen deshalb in eine Kopie übernehmen. Demo-Entity-IDs nicht umbenennen, solange die mitgelieferte Konfiguration verwendet wird. Eine bereits belegte Demo-Dashboardadresse wird erhalten; ein fremder Entity-ID-Konflikt stoppt die Einrichtung mit einem Hinweis. Bei ausgeschalteter Demo werden keine Dummy-Entities erzeugt.
+Die verwaltete Demo-YAML wird bei Updates ersetzt. Eigene Änderungen deshalb in eine Kopie übernehmen. Demo-Entity-IDs nicht umbenennen, solange die mitgelieferte Konfiguration verwendet wird. Eine bereits belegte Demo-Dashboardadresse wird erhalten; die Browser-Simulation benötigt keine freien HA-Entity-IDs.
 
-Beim Entladen/Entfernen verschwinden Demo-Entities und das eigene Demo-Dashboard aus dem laufenden Zustand. Home Assistants Entity-/Geräte-Registry und Recorder verwalten gespeicherte Metadaten/Historie nach den nativen Regeln. Installierte Dateien, Downloadcache und Sicherungen bleiben erhalten. Fremde Geräte und Dashboards werden nicht entfernt. Backend-Themevorgaben werden soweit verfügbar wiederhergestellt.
+Beim Entladen/Entfernen verschwinden die verwalteten Demo-Dashboards. Der Standardmodus hinterlässt keine Entity-/Geräteregistry oder Recorder-Historie. Installierte Dateien, Downloadcache und Sicherungen bleiben erhalten. Fremde Geräte und Dashboards werden nicht entfernt. Backend-Themevorgaben werden soweit verfügbar wiederhergestellt.
+
+### Optionaler Altmodus mit HA-Test-Entities
+
+`Demo-Modus: entities` behält die bisherigen registrierten Testplattformen für gezielte HA-Backend-Tests. Nur dieser Modus legt Demo-Entities und virtuelle Geräte/Bereiche an; Recorder zeichnet bei entsprechender Konfiguration ab Installation auf. Verläufe werden in diesem Modus nicht rückdatiert. Fremde Entity-ID-Konflikte stoppen dessen Einrichtung.
+
+Bestehende Einträge vor 3.5 werden beim Update ausdrücklich auf `entities` migriert, damit ihre Testgeräte erhalten bleiben. Unter **Konfigurieren → Demo-Modus: browser** kann auf die lokale Simulation gewechselt werden. Das entlädt die Testplattformen; vorhandene Registry-Metadaten und Recorder-Historie entfernt HA nach seinen nativen Regeln, sie werden nicht ungefragt gelöscht. Neue Installationen verwenden `browser`.
 
 ## Aktualisieren
 
@@ -72,7 +78,7 @@ Für eine reine Frontend-Installation ohne Backend-Demo bleibt `python3 scripts/
 | Einrichtung scheitert beim Download | GitHub-Erreichbarkeit und HA-Protokoll prüfen; Einrichtung erneut versuchen |
 | „already defined“ | Doppelte/alte Kartenressource entfernen, Browser vollständig neu laden |
 | Custom Element fehlt | Integration eingerichtet? Neustart und Browser-Reload durchgeführt? HA-Protokoll prüfen |
-| Graph leer | Recorder aktiv und Demo nicht ausgeschlossen? Erst neue Messpunkte sammeln lassen |
+| Browser-Demo lädt nicht | Browser vollständig neu laden; `demo-runtime-data.json` und Ressourcen auf derselben Paketversion prüfen. Nur im optionalen Entity-Modus: Recorder und neue Messpunkte prüfen. |
 | Eigene Geräte fehlen | Geräteintegration und Entity-Zuordnung einrichten; Demo ist eine getrennte Umgebung |
 | Altes Theme sichtbar | Profil-/View-Theme ausdrücklich auf DASH6 Satin Glass setzen |
 | Embedded View doppelt | Genau eine Original-`embedded-view-card.js`-URL behalten, neu laden |

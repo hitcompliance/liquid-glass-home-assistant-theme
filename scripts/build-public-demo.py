@@ -47,7 +47,7 @@ index=(demo/'index.html').read_text().replace('src="app.js"',f'src="app.js?v={ve
 index=index.replace('</head>',f'<meta name="liquid-glass-version" content="{version}"></head>')
 (demo/'index.html').write_text(index)
 app=(demo/'app.js').read_text().replace("'./native.js'",f"'./native.js?v={version}'")
-for module in ['dash6-cards.js','vacuum-dock-card.js','room-loader.js']:
+for module in ['dash6-cards.js','vacuum-dock-card.js','room-loader.js','demo-runtime.js']:
     app=app.replace("'./package/"+module+"'", "'./package/"+module+f"?v={version}'")
 (demo/'app.js').write_text(app)
 shutil.copy2(ROOT/'README.md',demo/'README.md')

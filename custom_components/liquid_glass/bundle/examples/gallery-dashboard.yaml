@@ -753,7 +753,7 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "markdown",
-                "content": "# DASH6 Satin Glass · Demo\nAlle Geräte sind ausdrücklich gekennzeichnete, virtuelle Home-Assistant-Entities. Keine Verbindung zu echten Geräten. Die Räume zeigen die aktuellen Kartenfamilien; weitere Views erklären Layouts und Editoren. Verläufe entstehen ab Installation – es wird keine Vergangenheit erfunden."
+                "content": "# DASH6 Satin Glass · Demo\nDie Geräte werden lokal im Browser simuliert. Es werden keine Home-Assistant-Entities oder Recorder-Daten angelegt. Karten, Regler, Szenen, Detailansichten und GUI-Editoren sind bedienbar; Werte und Verläufe sind ausdrücklich Beispieldaten. Neu laden setzt die Gerätezustände zurück. Die Räume zeigen die Kartenfamilien; weitere Views erklären Layouts und Editoren."
               }
             },
             {
@@ -772,15 +772,10 @@
             {
               "type": "custom:dash6-demo-scope",
               "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Energie",
-                "minimal": false,
-                "card": {
-                  "type": "custom:dash6-home-overview-card",
-                  "kind": "energy",
-                  "title": "Energie",
-                  "navigation_path": "/liquid-glass-gallery/energie"
-                }
+                "type": "weather-forecast",
+                "entity": "weather.liquid_glass_demo_wetter",
+                "show_forecast": true,
+                "forecast_type": "daily"
               }
             }
           ]
@@ -813,15 +808,6 @@
                   "title": "Sicherheit",
                   "navigation_path": "/liquid-glass-gallery/flur"
                 }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "weather-forecast",
-                "entity": "weather.liquid_glass_demo_wetter",
-                "show_forecast": true,
-                "forecast_type": "daily"
               }
             }
           ]
@@ -1687,7 +1673,7 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "markdown",
-                "content": "# Demo-Energie\nDiese Werte sind Simulationen. Das native Energie-Dashboard und vorhandene Statistiken werden nicht verändert. Leistung und Energie werden ab Installation aufgezeichnet, wenn Recorder die Demo-Entities einschließt."
+                "content": "# Demo-Energie\nWerte und Verläufe sind lokale Browser-Simulationen. Das native Energie-Dashboard und vorhandene Statistiken werden nicht verändert; die Demo legt keine Recorder-Daten an."
               }
             },
             {
@@ -2708,14 +2694,8 @@
             {
               "type": "custom:dash6-demo-scope",
               "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "climate-background",
-                "minimal": false,
-                "card": {
-                  "type": "custom:dash6-climate-background",
-                  "view_path": "heizung-klima",
-                  "opacity": 0.85
-                }
+                "type": "markdown",
+                "content": "# Heizung & Klima\nDie dekorative Klima-Hintergrundanimation gehört ebenfalls zum Paket. Sie liest keine Geräte und löst keine Aktionen aus; reduzierte Bewegung wird beachtet."
               }
             },
             {
@@ -2726,7 +2706,7 @@
                 "minimal": false,
                 "card": {
                   "type": "custom:dash6-thermostat-card",
-                  "entity": "climate.liquid_glass_demo_thermostat",
+                  "entity": "climate.liquid_glass_demo_dual_thermostat",
                   "modes": [
                     "off",
                     "heat",
@@ -2744,19 +2724,12 @@
             {
               "type": "custom:dash6-demo-scope",
               "card": {
-                "type": "markdown",
-                "content": "# Heizung & Klima\nDie dekorative Klima-Hintergrundanimation gehört ebenfalls zum Paket. Sie liest keine Geräte und löst keine Aktionen aus; reduzierte Bewegung wird beachtet."
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "thermostat-card",
                 "minimal": false,
                 "card": {
                   "type": "custom:dash6-thermostat-card",
-                  "entity": "climate.liquid_glass_demo_dual_thermostat",
+                  "entity": "climate.liquid_glass_demo_thermostat",
                   "modes": [
                     "off",
                     "heat",

@@ -24,7 +24,6 @@ cards:
   - type: custom:example-light-card
     entity: light.office
     power_entity: sensor.office_power
-custom_cards: []
 dynamic_card:
   type: tile
 templates:

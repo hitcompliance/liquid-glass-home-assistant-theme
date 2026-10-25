@@ -40,4 +40,8 @@ with zipfile.ZipFile(archive) as z:
     entities=json.loads(z.read('custom_components/liquid_glass/demo-entities.json'))
     assert len(entities)==inventory['virtual_entities'],'Incomplete virtual devices'
     assert 'custom_components/liquid_glass/bundle/support/shelly/badluefter-backlog-force-on.js' in z.namelist()
+    local=json.loads(z.read('custom_components/liquid_glass/bundle/dist/demo-runtime-data.json'))
+    assert local['specs']==entities,'Incomplete browser simulation'
+    assert local['dashboards']['liquid-glass-demo']==demo,'Stale browser dashboard'
+    assert 'custom_components/liquid_glass/bundle/dist/demo-runtime.js' in z.namelist()
 print(f'{manifest["version"]}: {archive.name}, {archive.stat().st_size} bytes, SHA256 {checksum}')

@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
+import {readFile} from 'node:fs/promises';
 import {build} from 'esbuild';
 import {chromium,webkit} from 'playwright';
 const result=await build({stdin:{contents:`import {demoHass} from './src/dash6/demo-scope.js';import{sceneMatches,sceneTarget}from'./src/dash6/scene-state.js';window.demoHass=demoHass;window.sceneMatches=sceneMatches;window.sceneTarget=sceneTarget;`,resolveDir:process.cwd()},bundle:true,format:'esm',write:false});
-const server=createServer((req,res)=>{res.setHeader('content-type',req.url==='/test.js'?'text/javascript':'text/html');res.end(req.url==='/test.js'?result.outputFiles[0].text:'<!doctype html><script type="module" src="/test.js"></script>');});
+const runtimeData=await readFile('support/demo-runtime-data.json','utf8');
+const server=createServer((req,res)=>{if(req.url==='/demo-runtime-data.json'){res.setHeader('content-type','application/json');res.end(runtimeData);return;}res.setHeader('content-type',req.url==='/test.js'?'text/javascript':'text/html');res.end(req.url==='/test.js'?result.outputFiles[0].text:'<!doctype html><script type="module" src="/test.js"></script>');});
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 try{
  for(const engine of [chromium,webkit]){
@@ -26,12 +28,26 @@ try{
     // Render the real scope element and verify a propagated hass update.
     class FakeCard extends HTMLElement{setConfig(c){this.config=c;}set hass(v){this.value=v;}getCardSize(){return 7;}}
     customElements.define('test-child',FakeCard);window.loadCardHelpers=async()=>({createCardElement:c=>{const e=document.createElement('test-child');e.setConfig(c);return e;}});
-    const wrapper=document.createElement('dash6-demo-scope');wrapper.setConfig({card:{type:'test-child'}});wrapper.hass=h;document.body.append(wrapper);await new Promise(r=>setTimeout(r,20));
+    const wrapper=document.createElement('dash6-demo-scope');wrapper.setConfig({mode:'entities',card:{type:'test-child'}});wrapper.hass=h;document.body.append(wrapper);await new Promise(r=>setTimeout(r,20));
     const rendered=wrapper.firstElementChild?.value?.states;
     return {blocked,calls,ids:Object.keys(scoped.states),devices:Object.keys(scoped.devices),areas:Object.keys(scoped.areas),registry,before,after,rendered:Object.keys(rendered||{}),size:wrapper.getCardSize()};
    });
    assert.deepEqual(report.blocked,[true,true,true,true,true]);assert.equal(report.calls.length,1);assert.deepEqual(report.ids,['light.liquid_glass_demo_lampe']);assert.deepEqual(report.devices,['demo']);assert.deepEqual(report.areas,['demo']);assert.equal(report.registry.length,1);assert.equal(report.before,true);assert.equal(report.after,false);assert.deepEqual(report.rendered,report.ids);assert.equal(report.size,7);
-   console.log(engine.name()+': demo namespace, service targets, scope rendering and confirmed scene feedback OK');
+   const browserReport=await page.evaluate(async()=>{
+    const calls=[],id='light.liquid_glass_demo_links',h={states:{'light.real':{state:'on'}},entities:{},user:{is_admin:true},callService:(...a)=>calls.push(a),callWS:(...a)=>calls.push(a),callApi:(...a)=>calls.push(a),connection:{}};
+    const wrapper=document.createElement('dash6-demo-scope');wrapper.setConfig({card:{type:'test-child'}});wrapper.hass=h;document.body.append(wrapper);
+    for(let i=0;i<100&&!wrapper.firstElementChild?.value?.states[id];i++)await new Promise(r=>setTimeout(r,20));
+    const context=wrapper.firstElementChild.value;await context.callService('light','turn_off',{entity_id:id});
+    const updated=wrapper.firstElementChild.value.states[id].state;
+    let leaked=0;const listener=()=>leaked++;document.addEventListener('hass-more-info',listener);
+    // Body portals are outside the original scope, but retain its marked hass.
+    const portal=document.createElement('div');portal.hass=context;document.body.append(portal);portal.dispatchEvent(new CustomEvent('hass-more-info',{detail:{entityId:id},bubbles:true,composed:true}));
+    const dialog=document.querySelector('dialog[aria-label="Demo-Entity & Verlauf"]'),detail=dialog?.querySelector('dash6-demo-entity-detail');
+    const result={calls,updated,leaked,dialog:!!dialog?.open,detail:detail?.entity,count:Object.keys(context.states).length,real:!!context.states['light.real']};
+    dialog?.close();portal.remove();wrapper.remove();document.removeEventListener('hass-more-info',listener);return result;
+   });
+   assert.deepEqual(browserReport.calls,[]);assert.equal(browserReport.updated,'off');assert.equal(browserReport.leaked,0);assert.equal(browserReport.dialog,true);assert.equal(browserReport.detail,'light.liquid_glass_demo_links');assert.ok(browserReport.count>700);assert.equal(browserReport.real,false);
+   console.log(engine.name()+': legacy scope and browser default, state propagation, portal More Info isolation and no real calls OK');
   }finally{await browser.close();}
  }
 }finally{server.close();}

@@ -6,7 +6,7 @@
 
 **Ultra Card v3.13.0 wird ausdrücklich automatisch installiert und in beiden Dashboard-Layouts verwendet.** Ultra Card Connect wird dafür nicht benötigt.
 
-Die DASH6-Kopie und Galerie legen außerdem ihre eigenen virtuellen Entities an. Home Assistants native Karten und Plattformen (Klima, Kamera, Wetter usw.) kommen aus Home Assistant; ihre Python-Abhängigkeiten verwaltet HA. Node/npm und externe Hardwareintegrationen sind für die Demo nicht erforderlich.
+DASH6-Kopie und Galerie verwenden standardmäßig eine lokale Browser-Simulation ohne HA-Entities und Recorder-Daten. Nur der ausdrücklich wählbare Altmodus `entities` registriert virtuelle Test-Entities. Home Assistants native Karten und Plattformen (Klima, Kamera, Wetter usw.) kommen aus Home Assistant; ihre Python-Abhängigkeiten verwaltet HA. Node/npm und externe Hardwareintegrationen sind für die Demo nicht erforderlich.
 
 Die gemeinsame Theme-Speicherung gehört zur Liquid-Glass-Integration selbst. Es wird **keine private Config-Editor-Erweiterung** vorausgesetzt. Die öffentliche Demo enthält alle zwölf geprüften Frontend-Module einschließlich ihrer Nebenmodule und Lizenzen.
 
@@ -15,8 +15,8 @@ Die gemeinsame Theme-Speicherung gehört zur Liquid-Glass-Integration selbst. Es
 | Bestandteil | Automatisch? | Was der Nutzer tun muss / wann erforderlich |
 | --- | --- | --- |
 | HACS | **Nein** | Vor dem empfohlenen HACS-Weg [selbst installieren](https://www.hacs.xyz/docs/use/download/download/). Die manuelle Installation des Integrations-ZIPs funktioniert ohne HACS. |
-| Home Assistant ab 2026.9 | **Nein** | Eine unterstützte HA-Installation bereitstellen. Recorder für längerfristige Verläufe aktiv lassen und Demo-Entities nicht ausschließen. |
-| Geräteintegrationen (z. B. Shelly, Matter, Meross, Govee, Tado, Apple TV, Android TV/ADB, ESPHome, Roborock) | **Nein** | Für die tatsächlich verwendete Hardware selbst installieren/einrichten und eigene Entities den Karten zuordnen. Für Dummy-Demo und Galerie nicht nötig. Für LIQUID-GLASS-HUE-DEMO müssen die echten Geräteintegrationen (auch Hue, falls verwendet) selbst eingerichtet und Räume zugeordnet werden. |
+| Home Assistant ab 2026.9 | **Nein** | Eine unterstützte HA-Installation bereitstellen. Für die Browser-Demo ist Recorder nicht erforderlich; nur für echte bzw. optionale Legacy-Testverläufe aktiv lassen. |
+| Geräteintegrationen (z. B. Shelly, Matter, Meross, Govee, Tado, Apple TV, Android TV/ADB, ESPHome, Roborock) | **Nein** | Für die tatsächlich verwendete Hardware selbst installieren/einrichten und eigene Entities den Karten zuordnen. Für Browser-Demo und Galerie nicht nötig. Für LIQUID-GLASS-HUE-DEMO müssen die echten Geräteintegrationen (auch Hue, falls verwendet) selbst eingerichtet und Räume zugeordnet werden. |
 | Dual Smart Thermostat v0.13.2 | **Nur bei Auswahl** | Im Liquid-Glass-Dialog optional auswählen: Dateien werden automatisch geprüft/installiert. Danach erneut HA starten und eigene Temperatur-/Heiz-/Kühl-Entities konfigurieren. Vorhandene Installation bleibt erhalten. Normale Climate- und Demo-Karten brauchen es nicht. |
 | Shelly-Lüftungsskript | **Datei ja, Aktivierung nein** | Quelle wird unter `liquid-glass/support/shelly/` mitkopiert. Geeignete Hardware, virtuelle Komponenten, Verdrahtung und Parameter selbst prüfen/einrichten. [Anleitung](../support/README.md). |
 | TV-Eingangsautomationen / ADB / BLE / ESPHome-Firmware | **Nein** | Nur für gerätespezifische Zusatzaktionen selbst einrichten und zuordnen. Native Medienquellen und Demo funktionieren ohne private Automationen. Firemote ist automatisch enthalten, seine echten Remote-/Player-Entities nicht. |
