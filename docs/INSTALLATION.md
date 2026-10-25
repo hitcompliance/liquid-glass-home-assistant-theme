@@ -30,7 +30,7 @@ Unter **Geräte & Dienste → Liquid Glass → Konfigurieren** können beide Das
 - Sensoren und Verläufe liefern ausdrücklich simulierte Beispieldaten. Sie erzeugen keine Recorder-Aufzeichnungen. Die Demo belegt keine echte Geräte-, Automations- oder Messfunktion.
 - Die native Energiekonfiguration bleibt bestehen. Demo-Energiewerte sind ausdrücklich keine echten Verbrauchsmessungen.
 - Die Favoriten-GUI speichert ihre Demo-Auswahl browserlokal. **Demo zurücksetzen** setzt die virtuellen Gerätewerte zurück; Neuladen der Seite setzt sie ebenfalls auf den definierten Ausgangszustand.
-- Jede Demo-Karte erhält über `dash6-demo-scope` einen isolierten lokalen Kontext. Dienste und Abfragen erreichen kein echtes HA-Backend. Auch Mehr-Informationen-Dialoge bleiben innerhalb der Simulation. Jeder Browser besitzt seinen eigenen Zustand.
+- Jede Demo-Karte erhält über `dash6-demo-scope` einen isolierten lokalen Kontext. Geräteaktionen sowie Zustands-/Verlaufsabfragen bleiben lokal. Nur öffentliche Symbol-Metadaten für native HA-Symbole werden lesend vom Host geladen. Auch Mehr-Informationen-Dialoge bleiben innerhalb der Simulation. Jeder Browser besitzt seinen eigenen Zustand.
 
 Die verwaltete Demo-YAML wird bei Updates ersetzt. Eigene Änderungen deshalb in eine Kopie übernehmen. Demo-Entity-IDs nicht umbenennen, solange die mitgelieferte Konfiguration verwendet wird. Eine bereits belegte Demo-Dashboardadresse wird erhalten; die Browser-Simulation benötigt keine freien HA-Entity-IDs.
 

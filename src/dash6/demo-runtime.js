@@ -23,7 +23,7 @@ export function inlineDemoTemplates(template){
 export function createDemoRuntime(data,{assetRoot='/local/liquid-glass/'}={}){
  const asset=path=>new URL(path,new URL(assetRoot,location.href)).href;
  const specs=data.specs,byId=new Map(specs.map(s=>[s.entity_id,s])),own=id=>ownDemoId(id)&&byId.has(id);
- let states={},timer=null;const listeners=new Set(),templateListeners=new Map(),eventListeners=new Map(),userData=new Map();
+ let states={},timer=null,iconReader=null;const listeners=new Set(),templateListeners=new Map(),eventListeners=new Map(),userData=new Map();
  const diagnostics={actions:[],unknownTemplates:new Set(),unsupportedRequests:new Set()};
  const value=(domain,key)=>states[domain+'.'+PREFIX+key];
  const put=(id,state,attrs={})=>{const s=states[id];if(s){s.state=String(state);Object.assign(s.attributes,attrs);s.last_changed=s.last_updated=stamp();}};
@@ -131,6 +131,9 @@ function synchronize(){
  const forecast=(type='daily')=>Array.from({length:type==='hourly'?24:8},(_,i)=>({datetime:new Date(Date.now()+i*(type==='hourly'?3600000:86400000)).toISOString(),condition:i%3?'partlycloudy':'sunny',temperature:21+i%4,templow:13+i%3,precipitation:0,humidity:55,wind_speed:6,wind_bearing:200,is_daytime:true}));
  const media=()=>({title:'Demo-Mediathek',media_class:'directory',media_content_id:'demo',media_content_type:'directory',can_play:false,can_expand:true,children:[{title:'Virtueller Titel',media_class:'music',media_content_id:'demo-track',media_content_type:'music',can_play:true,can_expand:false}]});
  async function callWS(m){
+  // Native HA controls request public icon paths separately from entity data.
+  // Only this metadata request may use the host; device/history APIs stay local.
+  if(m.type==='frontend/get_icons')return iconReader?iconReader(m):{};
   if(m.type==='call_service')return callService(m.domain,m.service,m.service_data||{},m.target||{});
   if(m.type==='get_states')return Object.values(states);
   if(m.type==='lovelace/config'){const key=m.url_path||'liquid-glass-demo';if(data.dashboards[key])return data.dashboards[key];throw Error('Dieses Dashboard gehört nicht zur lokalen Demo.');}
@@ -201,6 +204,7 @@ function synchronize(){
  }
  async function callApi(method,path){
   if(method==='GET'&&path==='config/config_entries/flow_handlers')return ['liquid_glass'];
+  if(method==='GET'&&path==='ultra_card_pro_cloud/favorite_colors')return {};
   if(method==='GET'&&path.startsWith('history/')){const ids=new URLSearchParams(path.split('?')[1]).get('filter_entity_id')?.split(',')||[];return history(ids,7);}
   diagnostics.unsupportedRequests.add(method+' '+path);return {};
  }
@@ -227,6 +231,7 @@ function synchronize(){
  const api={diagnostics,subscribe(fn){listeners.add(fn);timer??=setInterval(()=>advance(),1000);return()=>{listeners.delete(fn);if(!listeners.size){clearInterval(timer);timer=null;}};},reset,advance,callService,callWS,renderTemplate,history,get states(){return states;},
   setState(id,state,attributes={}){if(!own(id))throw Error('Unbekanntes Demo-Ziel');states=structuredClone(states);put(id,state,attributes);publish();},
   hass(base={}){
+   if(!base.__liquidGlassDemoRuntime&&!base.demo_browser&&base.callWS&&!iconReader)iconReader=message=>base.callWS(message);
    const h={...base,states:{...states},entities,devices,areas,floors:{},labels:{},services,connection,callWS,callService,callApi,
     sendWS:callWS,callApiRaw:async(method,path)=>new Response(JSON.stringify(await callApi(method,path)),{headers:{'Content-Type':'application/json'}}),
     user:{...base.user,id:'public-demo',name:'Demo',is_admin:!!base.demo_browser},

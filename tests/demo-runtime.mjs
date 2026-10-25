@@ -31,5 +31,7 @@ const nested=Object.values(data.template_sources).find(s=>s.includes('{% macro '
 const batch='{% macro __dash6_inline_query_0() %}\n'+nested+'\n{% endmacro %}';
 assert.equal(inlineDemoTemplates(batch)[0][1],nested.trim());assert.equal(JSON.parse(runtime.renderTemplate(batch))['0'],runtime.renderTemplate(nested));
 assert.deepEqual(realCalls,[]);assert.equal(runtime.diagnostics.unknownTemplates.size,0);assert.equal(runtime.diagnostics.unsupportedRequests.size,0);
+await h().callWS({type:'frontend/get_icons',category:'entity_component',integration:'climate'});
+assert.deepEqual(realCalls,[[{type:'frontend/get_icons',category:'entity_component',integration:'climate'}]],'Only explicit public icon metadata may reach the host');
 runtime.reset();assert.equal(h().states[id('light','links')].state,'on');
-console.log('Browser runtime: isolated actions, immutable snapshots, scenes, media, vacuum, doors, countdown, histories, templates and registries OK; no real API calls.');
+console.log('Browser runtime: isolated actions, immutable snapshots, scenes, media, vacuum, doors, countdown, histories, templates and registries OK; no real device/history API calls; public icon metadata only.');
