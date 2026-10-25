@@ -43,13 +43,15 @@ try{
     // Body portals are outside the original scope, but retain its marked hass.
     const portal=document.createElement('div');portal.hass=context;document.body.append(portal);portal.dispatchEvent(new CustomEvent('hass-more-info',{detail:{entityId:id},bubbles:true,composed:true}));
     const dialog=document.querySelector('dialog[aria-label="Demo-Entity & Verlauf"]'),detail=dialog?.querySelector('dash6-demo-entity-detail');
-    let contextStates,unsubscribe,api,registries;const request=(key,callback,subscribe=false)=>{const e=new Event('context-request',{bubbles:true,composed:true});Object.assign(e,{context:key,callback,subscribe});portal.dispatchEvent(e);};
+    let contextStates,unsubscribe,api,registries,connection;const request=(key,callback,subscribe=false)=>{const e=new Event('context-request',{bubbles:true,composed:true});Object.assign(e,{context:key,callback,subscribe});portal.dispatchEvent(e);};
     request('states',(value,unsub)=>{contextStates=value;unsubscribe=unsub||unsubscribe;},true);request('hassApi',value=>api=value);request('hassRegistries',value=>registries=value);
+    request('hassConnection',value=>connection=value);
     await api.callService('light','turn_on',{entity_id:id});const contextUpdated=contextStates[id].state;unsubscribe();
-    const result={calls,updated,leaked,dialog:!!dialog?.open,detail:detail?.entity,count:Object.keys(context.states).length,real:!!context.states['light.real'],contextUpdated,contextReal:!!registries.entities['light.real']};
+    const result={calls,updated,leaked,dialog:!!dialog?.open,detail:detail?.entity,count:Object.keys(context.states).length,real:!!context.states['light.real'],contextUpdated,contextReal:!!registries.entities['light.real'],imageUrl:connection.hassUrl('/api/camera_proxy/camera.liquid_glass_demo_camera')};
     dialog?.close();portal.remove();wrapper.remove();document.removeEventListener('hass-more-info',listener);return result;
    });
    assert.deepEqual(browserReport.calls,[]);assert.equal(browserReport.updated,'off');assert.equal(browserReport.leaked,0);assert.equal(browserReport.dialog,true);assert.equal(browserReport.detail,'light.liquid_glass_demo_links');assert.ok(browserReport.count>700);assert.equal(browserReport.real,false);assert.equal(browserReport.contextUpdated,'on');assert.equal(browserReport.contextReal,false);
+   assert.ok(browserReport.imageUrl.endsWith('/assets/liquid-glass-living-room.jpg'));
    console.log(engine.name()+': legacy scope and browser default, state propagation, portal More Info isolation and no real calls OK');
   }finally{await browser.close();}
  }

@@ -6,12 +6,12 @@ export function contextValue(h,key){
  const values={states:h.states,services:h.services,entities:h.entities,devices:h.devices,areas:h.areas,floors:h.floors,
   hassRegistries:{entities:h.entities,devices:h.devices,areas:h.areas,floors:h.floors},
   hassApi:{callService:h.callService,callApi:h.callApi,callApiRaw:h.callApiRaw,callWS:h.callWS,sendWS:h.sendWS,fetchWithAuth:h.fetchWithAuth,hassUrl:h.hassUrl},
-  hassConnection:{connection:h.connection,connected:true,debugConnection:false},connection:h.connection,
+  hassConnection:{connection:h.connection,connected:true,debugConnection:false,hassUrl:h.hassUrl},connection:h.connection,
   hassConfig:{config:h.config,user:h.user,userData:{},systemData:{}},config:h.config,user:h.user,userData:{},
   labels:[],extendedEntities:Object.values(h.entities),configEntries:[{entry_id:'demo',domain:'liquid_glass',title:'Lokale Demo',state:'loaded'}],
   manifests:{liquid_glass:{domain:'liquid_glass',name:'Liquid Glass Demo'}},related:undefined,
   hassFormatters:Object.fromEntries(Object.entries(h).filter(([k])=>k.startsWith('formatEntity'))),
-  hassInternationalization:{language:h.language,locale:h.locale,localize:h.localize,translationMetadata:h.translationMetadata,loadBackendTranslation:h.loadBackendTranslation,loadFragmentTranslation:h.loadFragmentTranslation},
+  hassInternationalization:{language:h.language,selectedLanguage:h.selectedLanguage,locale:h.locale,localize:h.localize,translationMetadata:h.translationMetadata,loadBackendTranslation:h.loadBackendTranslation,loadFragmentTranslation:h.loadFragmentTranslation},
   localize:h.localize,locale:h.locale,hassUi:{themes:h.themes,selectedTheme:h.selectedTheme,panels:{},narrow:h.narrow},themes:h.themes,selectedTheme:h.selectedTheme,panels:{}};
  return Object.hasOwn(values,key)?{value:values[key]}:null;
 }
