@@ -3,14 +3,16 @@ const prefix='liquid_glass_demo_',own=id=>typeof id==='string'&&/^[a-z_]+\.liqui
 const status=document.querySelector('#runtime-status');
 const stamp=()=>new Date().toISOString();
 const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+': '+r.status);return r.json();};
-const [dashboard,specs,themeTable,modules,sharedDefaults,roomConfigs]=await Promise.all(['dashboard','entities','themes','modules','theme-defaults','room-loader-configs'].map(name=>json('package/'+name+'.json')));
+const isCopy=new URLSearchParams(location.search).get('dashboard')!=='gallery';
+const [gallery,specs,themeTable,modules,sharedDefaults,roomConfigs,copyDashboard,templateResults,templateSources]=await Promise.all(['dashboard','entities','themes','modules','theme-defaults','room-loader-configs','dash6-copy','template-results','template-sources'].map(name=>json('package/'+name+'.json')));
+const dashboard=isCopy?copyDashboard:gallery;
 for(const [key,value]of Object.entries(themeTable['DASH6 Satin Glass']))if(typeof value==='string'&&!key.startsWith('card-mod-'))document.documentElement.style.setProperty('--'+key,value);
 document.documentElement.style.setProperty('--lovelace-background',"url('package/assets/liquid-glass-living-room.jpg')");
 let states={},mounted=[],currentView='demo';const subscribers=new Map();
 const value=(domain,key)=>states[domain+'.'+prefix+key];
 const set=(domain,key,state,attrs={})=>{const s=value(domain,key);if(s){s.state=String(state);Object.assign(s.attributes,attrs);s.last_changed=s.last_updated=stamp();}};
 function initial(spec){
- const {domain,key}=spec;let state='on',a={friendly_name:spec.name,liquid_glass_demo:true};
+ const {domain,key}=spec;let state='on',a={friendly_name:spec.name,liquid_glass_demo:true,...spec.attributes};
  if(domain==='light')Object.assign(a,{supported_features:4,supported_color_modes:['hs','color_temp'],color_mode:'hs',brightness:184,hs_color:[215,70],rgb_color:[55,130,230],color_temp_kelvin:3000,min_color_temp_kelvin:2000,max_color_temp_kelvin:6500,effect:'Solid',effect_list:['Solid','Aurora','Pulse']});
  if(domain==='light'&&['gruppe','schuhschrank'].includes(key))a.entity_id=(key==='gruppe'?['links','rechts']:['schuhschrank_links','schuhschrank_rechts']).map(k=>'light.'+prefix+k);
  if(domain==='switch')state=/force|kindersicherung|simulation|ausgang/.test(key)?'off':'on';
@@ -44,11 +46,16 @@ function initial(spec){
  if(domain==='update'){state='off';Object.assign(a,{installed_version:'1.0.0',latest_version:'1.0.0',supported_features:1});}
  if(domain==='weather'){state='partlycloudy';Object.assign(a,{temperature:21.5,temperature_unit:'°C',humidity:58,supported_features:1});}
  if(domain==='camera'){state='idle';a.entity_picture='package/assets/liquid-glass-living-room.jpg';}
+ if(spec.initial){state=String(spec.initial.value);Object.assign(a,{unit_of_measurement:spec.initial.unit,device_class:spec.initial.device_class,state_class:spec.initial.state_class});}
+ if(spec.scene_targets)a.scene_targets=spec.scene_targets;
+ if(spec.attributes?.entity_id)a.entity_id=spec.attributes.entity_id;
+ if(spec.attributes?.options){a.options=spec.attributes.options.filter(v=>!['unknown','unavailable'].includes(v));state=a.options[0];}
+ if(domain==='event'){state=stamp();a.event_type='press';a.event_types=['press'];}
  return {entity_id:spec.entity_id,state,attributes:a,last_changed:stamp(),last_updated:stamp(),last_reported:stamp(),context:{id:'demo',parent_id:null,user_id:null}};
 }
-const entities=Object.fromEntries(specs.map(s=>[s.entity_id,{entity_id:s.entity_id,device_id:'demo-'+s.room,area_id:'demo-'+s.room,platform:'liquid_glass',config_entry_id:'demo',hidden_by:null,disabled_by:null}]));
-const devices=Object.fromEntries(specs.map(s=>['demo-'+s.room,{id:'demo-'+s.room,area_id:'demo-'+s.room,identifiers:[['liquid_glass','demo_'+s.room]],manufacturer:'Liquid Glass',model:'Virtual device'}]));
-const areas=Object.fromEntries(specs.map(s=>['demo-'+s.room,{area_id:'demo-'+s.room,name:'DASH6 Demo · '+s.room}]));
+const entities=Object.fromEntries(specs.map(s=>[s.entity_id,{entity_id:s.entity_id,device_id:'demo-'+(s.device||s.room),area_id:'demo-'+s.room,platform:'liquid_glass',config_entry_id:'demo',hidden_by:s.hidden?'user':null,disabled_by:null}]));
+const devices=Object.fromEntries(specs.map(s=>['demo-'+(s.device||s.room),{id:'demo-'+(s.device||s.room),area_id:'demo-'+s.room,identifiers:[['liquid_glass','demo_'+s.room]],manufacturer:'Liquid Glass',model:'Virtual device'}]));
+const areas=Object.fromEntries(specs.map(s=>['demo-'+s.room,{area_id:'demo-'+s.room,name:s.area||'DASH6 Demo · '+s.room}]));
 function synchronize(){
  set('binary_sensor','turkontakt',value('switch','turkontakt_simulation')?.state||'off');
  const warning=value('switch','schloss_batteriewarnung_simulation')?.state==='on';set('binary_sensor','schloss_batteriewarnung',warning?'on':'off');set('sensor','turkontakt_batterie',warning?15:86);set('sensor','schloss_batterie',warning?15:86);
@@ -94,18 +101,19 @@ async function callService(domain,service,data={},target={}){
  }
  synchronize();publish();document.querySelector('#runtime-status').textContent='Simuliert: '+domain+'.'+service+' · '+ids.join(', ');return {};
 }
-const connection={haVersion:'2026.9.0',sendMessagePromise:callWS,addEventListener(){},removeEventListener(){},subscribeEvents:async(fn,type)=>{subscribers.set(fn,type);return()=>subscribers.delete(fn);},subscribeMessage:async(fn,m)=>{if(m.type==='render_template')queueMicrotask(()=>{const t=String(m.template);const result=t.includes('Dynamischer Demo-Raum')||t.includes('__dash6_inline_query_')?JSON.stringify({'0':roomConfigs.demo.slots.lights.initial}):t.replace(/\{\{\s*states\(['"]([^'"]+)['"]\)\s*\}\}/g,(_all,id)=>states[id]?.state||'unknown');fn({result});});if(m.type==='weather/subscribe_forecast')queueMicrotask(()=>fn({forecast:[]}));return()=>{};}};
+const connection={haVersion:'2026.9.0',sendMessagePromise:callWS,addEventListener(){},removeEventListener(){},subscribeEvents:async(fn,type)=>{subscribers.set(fn,type);return()=>subscribers.delete(fn);},subscribeMessage:async(fn,m)=>{if(m.type==='render_template')queueMicrotask(async()=>{const t=String(m.template);const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t))),b=>b.toString(16).padStart(2,'0')).join('');const batched=[...t.matchAll(/{% macro __dash6_inline_query_(\d+)\(\) %}\n([\s\S]*?)\n{% endmacro %}/g)];const known=source=>{const entry=Object.entries(templateSources).find(([,s])=>s===source);return entry?templateResults[entry[0]]:undefined;};const batch=batched.length?JSON.stringify(Object.fromEntries(batched.map(m=>[m[1],known(m[2])??'[]']))):undefined;const result=templateResults[hash]??batch??(t.includes('Dynamischer Demo-Raum')||t.includes('__dash6_inline_query_')?JSON.stringify({'0':roomConfigs.demo.slots.lights.initial}):t.replace(/\{\{\s*states\(['"]([^'"]+)['"]\)\s*\}\}/g,(_all,id)=>states[id]?.state||'unknown'));fn({result});});if(m.type==='weather/subscribe_forecast')queueMicrotask(()=>fn({forecast:[]}));return()=>{};}};
 let hass={states,entities,devices,areas,demo_browser:true,user:{id:'public-demo',name:'Demo',is_admin:true},language:'de',translationMetadata:{translations:{de:{isRTL:false}}},locale:{language:'de',number_format:'language',time_format:'24',date_format:'language',first_weekday:'monday'},config:{components:['frontend','lovelace','liquid_glass'],unit_system:{temperature:'°C',length:'km',mass:'kg',pressure:'hPa'},time_zone:'Europe/Berlin',version:'2026.9.0'},themes:{themes:themeTable,default_theme:'DASH6 Satin Glass',darkMode:true},services:{},connection,callWS,callService,localize:key=>({'component.climate.entity_component._.state.off':'Aus','component.climate.entity_component._.state.heat':'Heizen','component.climate.entity_component._.state.cool':'Kühlen','component.climate.entity_component._.state.heat_cool':'Heizen/Kühlen'}[key]||key.split('.').at(-1).replaceAll('_',' ')),formatEntityName:s=>s.attributes?.friendly_name||s.entity_id,formatEntityState:s=>s.state,formatEntityAttributeValue:(s,key)=>String(s.attributes?.[key]??''),formatEntityAttributeName:(_s,k)=>k,formatEntityId:id=>states[id]?.attributes.friendly_name||id,callApi:async(method,path)=>{if(method!=='GET')throw Error('Die öffentliche Demo unterstützt keine Schreib-API.');const ids=new URLSearchParams(path.split('?')[1]).get('filter_entity_id')?.split(',')||[];if(path.startsWith('history/'))return simulatedHistory(ids,7);return {};},fetchWithAuth:async()=>new Response('[]')};
 window.demoPreview={dashboard,hass,ready:false,errors:[]};reset();
 try{
  for(const url of modules)await import(new URL(url,location.href));
  await import('./package/dash6-cards.js');await import('./package/vacuum-dock-card.js');await import('./package/room-loader.js');
+ const originalFetch=window.fetch.bind(window);window.fetch=(url,options)=>originalFetch(typeof url==='string'&&url.startsWith('/local/liquid-glass/')?'package/'+url.slice('/local/liquid-glass/'.length):url,options);
  const preview=document.querySelector('#preview'),app=document.createElement('home-assistant');app.hass=hass;preview.append(app);let node=app;
  for(const tag of ['home-assistant-main','ha-panel-lovelace','hui-root']){const child=document.createElement(tag);node.attachShadow({mode:'open'}).append(child);node=child;}
- const root=node;root.lovelace={config:dashboard,urlPath:'liquid-glass-demo',mode:'storage',editMode:false,saveConfig:async next=>{root.lovelace.config=next;}};
+ const root=node;root.lovelace={config:dashboard,urlPath:isCopy?'liquid-glass-demo':'liquid-glass-gallery',mode:'storage',editMode:false,saveConfig:async next=>{root.lovelace.config=next;}};
  root.attachShadow({mode:'open'}).innerHTML='<style>hui-view-container{display:block}.preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px;align-items:start}.preview-grid>*{min-width:0}.wide{grid-column:1/-1}@media(max-width:760px){.preview-grid{grid-template-columns:minmax(0,1fr)}}</style><hui-view-container></hui-view-container>';
  const view=root.shadowRoot.querySelector('hui-view-container');view.attachShadow({mode:'open'}).innerHTML='<style>.preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px;align-items:start}.preview-grid>*{min-width:0}.wide{grid-column:1/-1}@media(max-width:760px){.preview-grid{grid-template-columns:minmax(0,1fr)}}</style><div class="preview-grid" id="sections"></div>';const grid=view.shadowRoot.querySelector('.preview-grid');
- function showView(path,update=true){const v=dashboard.views.find(v=>v.path===path)||dashboard.views[0];currentView=v.path;view.viewConfig=v;view.lovelace=root.lovelace;mounted=[];grid.replaceChildren();
+ function showView(path,update=true){const v=dashboard.views.find(v=>v.path===path)||dashboard.views[0];currentView=v.path;grid.style.gridTemplateColumns=v.type==='panel'?'minmax(0,1fr)':'';view.viewConfig=v;view.lovelace=root.lovelace;mounted=[];grid.replaceChildren();
   const cards=v.sections?.flatMap(s=>s.cards)||v.cards||[];
   // Restore authored row order from the two sections used by the HA showroom.
   const ordered=v.path==='demo'?Array.from({length:cards.length},(_,i)=>(v.sections[i%2]?.cards||[])[Math.floor(i/2)]).filter(Boolean):cards;
@@ -117,6 +125,6 @@ try{
  document.querySelector('#reset-demo').onclick=()=>{reset();showView(currentView);};
  window.addEventListener('location-changed',()=>{const path=location.pathname.split('/').filter(Boolean).at(-1);if(dashboard.views.some(v=>v.path===path))showView(path);});
  window.addEventListener('popstate',()=>showView(new URLSearchParams(location.search).get('view')||'demo',false));
- showView(new URLSearchParams(location.search).get('view')||'demo');window.demoPreview.ready=true;window.demoPreview.showView=showView;status.textContent='Bereit · '+specs.length+' virtuelle Entities · echte Custom Cards, Detaildialoge und GUI';
+ showView(new URLSearchParams(location.search).get('view')||(isCopy?'home':'demo'));window.demoPreview.ready=true;window.demoPreview.showView=showView;status.textContent='Bereit · '+specs.length+' virtuelle Entities · echte Custom Cards, Detaildialoge und GUI';
 }catch(error){window.demoPreview.errors.push(error.message);status.textContent='Demo konnte nicht vollständig geladen werden';const p=document.createElement('p');p.className='fatal';p.textContent=error.message;document.querySelector('#preview').append(p);console.error(error);}
 document.addEventListener('hass-more-info',event=>{const id=event.detail.entityId;if(!own(id))return;const s=states[id],d=document.createElement('dialog');d.setAttribute('aria-label','Demo-Entity & Verlauf');d.style.cssText='color:var(--primary-text-color);background:var(--primary-background-color);border:1px solid #ffffff44;border-radius:20px;max-width:600px;width:calc(100vw - 32px);padding:24px';const h=document.createElement('h2');h.textContent=s?.attributes.friendly_name||id;const p=document.createElement('p');p.textContent=id+' · '+s?.state+' '+(s?.attributes.unit_of_measurement||'');const chart=document.createElement('div');chart.innerHTML='<svg viewBox="0 0 600 150"><path d="M0 110 Q75 30 150 80 T300 60 T450 95 T600 30" fill="none" stroke="#b8ddbd" stroke-width="3"></path></svg><p>Simulierter Verlauf · keine Messung eines realen Geräts.</p>';const close=document.createElement('button');close.textContent='Schließen';close.style.cssText='padding:10px 18px;border-radius:10px';close.onclick=()=>{d.close();d.remove();};d.append(h,p,chart,close);document.body.append(d);d.showModal();});

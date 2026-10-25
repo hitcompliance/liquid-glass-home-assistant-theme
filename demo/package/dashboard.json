@@ -278,7 +278,7 @@
                 "card": {
                   "type": "custom:dash6-favorites-card",
                   "title": "Favoriten ausprobieren",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "demo_gui": true,
                   "demo_backend": true,
                   "sources": [
@@ -309,7 +309,7 @@
                       },
                       "label": "Ambiente",
                       "source": {
-                        "dashboard": "liquid-glass-demo",
+                        "dashboard": "liquid-glass-gallery",
                         "view": "home",
                         "title": "Demo",
                         "viewOrder": 0
@@ -330,7 +330,7 @@
                       },
                       "label": "custom:dash6-thermostat-card",
                       "source": {
-                        "dashboard": "liquid-glass-demo",
+                        "dashboard": "liquid-glass-gallery",
                         "view": "home",
                         "title": "Demo",
                         "viewOrder": 0
@@ -350,7 +350,7 @@
                       },
                       "label": "Wohnungstür",
                       "source": {
-                        "dashboard": "liquid-glass-demo",
+                        "dashboard": "liquid-glass-gallery",
                         "view": "home",
                         "title": "Demo",
                         "viewOrder": 0
@@ -378,7 +378,7 @@
                 "title": "DASH6-Grundmuster · heller Domain-Block, dunkle Entity-Karten",
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "demo",
                   "block_id": "light",
                   "area": "DASH6 Demo · Büro",
@@ -623,7 +623,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "domain-bloecke",
                   "block_id": "switch",
                   "area": "DASH6 Demo · Büro",
@@ -662,7 +662,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "domain-bloecke",
                   "block_id": "light",
                   "area": "DASH6 Demo · Büro",
@@ -702,7 +702,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "domain-bloecke",
                   "block_id": "media_player",
                   "area": "DASH6 Demo · Büro",
@@ -779,7 +779,7 @@
                   "type": "custom:dash6-home-overview-card",
                   "kind": "energy",
                   "title": "Energie",
-                  "navigation_path": "/liquid-glass-demo/energie"
+                  "navigation_path": "/liquid-glass-gallery/energie"
                 }
               }
             }
@@ -811,7 +811,7 @@
                   "type": "custom:dash6-home-overview-card",
                   "kind": "security",
                   "title": "Sicherheit",
-                  "navigation_path": "/liquid-glass-demo/flur"
+                  "navigation_path": "/liquid-glass-gallery/flur"
                 }
               }
             },
@@ -861,7 +861,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "wohnzimmer",
                   "block_id": "light-0",
                   "area": "DASH6 Demo · Wohnzimmer",
@@ -908,7 +908,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "wohnzimmer",
                   "block_id": "switch-2",
                   "area": "DASH6 Demo · Wohnzimmer",
@@ -978,7 +978,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "wohnzimmer",
                   "block_id": "media_player-1",
                   "area": "DASH6 Demo · Wohnzimmer",
@@ -1046,7 +1046,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "kuche",
                   "block_id": "switch-1",
                   "area": "DASH6 Demo · Küche",
@@ -1083,7 +1083,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "kuche",
                   "block_id": "sensor-0",
                   "area": "DASH6 Demo · Küche",
@@ -1159,7 +1159,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "schlafzimmer",
                   "block_id": "cover-1",
                   "area": "DASH6 Demo · Schlafzimmer",
@@ -1193,7 +1193,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "schlafzimmer",
                   "block_id": "climate-0",
                   "area": "DASH6 Demo · Schlafzimmer",
@@ -1265,7 +1265,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "flur",
                   "block_id": "lock-1",
                   "area": "DASH6 Demo · Flur",
@@ -1320,7 +1320,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "flur",
                   "block_id": "light-0",
                   "area": "DASH6 Demo · Flur",
@@ -1435,7 +1435,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "badezimmer",
                   "block_id": "fan-0",
                   "area": "DASH6 Demo · Badezimmer",
@@ -1498,7 +1498,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "buro",
                   "block_id": "sensor",
                   "area": "DASH6 Demo · Büro",
@@ -1547,7 +1547,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "buro",
                   "block_id": "light-0",
                   "area": "DASH6 Demo · Büro",
@@ -1646,7 +1646,7 @@
                 "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "view": "waschkeller",
                   "block_id": "switch-0",
                   "area": "DASH6 Demo · Waschkeller",
@@ -2790,7 +2790,7 @@
                 "card": {
                   "type": "custom:dash6-favorites-card",
                   "title": "Favoriten ausprobieren",
-                  "dashboard": "liquid-glass-demo",
+                  "dashboard": "liquid-glass-gallery",
                   "demo_gui": true,
                   "demo_backend": true,
                   "sources": [
@@ -2821,7 +2821,7 @@
                       },
                       "label": "Ambiente",
                       "source": {
-                        "dashboard": "liquid-glass-demo",
+                        "dashboard": "liquid-glass-gallery",
                         "view": "home",
                         "title": "Demo",
                         "viewOrder": 0
@@ -2842,7 +2842,7 @@
                       },
                       "label": "custom:dash6-thermostat-card",
                       "source": {
-                        "dashboard": "liquid-glass-demo",
+                        "dashboard": "liquid-glass-gallery",
                         "view": "home",
                         "title": "Demo",
                         "viewOrder": 0
@@ -2862,7 +2862,7 @@
                       },
                       "label": "Wohnungstür",
                       "source": {
-                        "dashboard": "liquid-glass-demo",
+                        "dashboard": "liquid-glass-gallery",
                         "view": "home",
                         "title": "Demo",
                         "viewOrder": 0

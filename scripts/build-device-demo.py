@@ -22,7 +22,7 @@ def view(title, path, icon, cards):
 
 def domain_block(path, domain, heading, cards, area='Büro', columns=1, block_id=None):
     """The production pattern: native heading tab + one light shell + dark cards."""
-    return card('domain-card', dashboard='liquid-glass-demo', view=path,
+    return card('domain-card', dashboard='liquid-glass-gallery', view=path,
                 block_id=block_id or domain, area='DASH6 Demo · '+area,
                 domain=domain, heading=heading, auto_entities=False,
                 combine=True, columns=columns, mobile_columns=1,
@@ -283,7 +283,7 @@ def build():
                 wrapped.append({'type':'custom:dash6-demo-scope','card':sample,**({'grid_options':c['grid_options']} if 'grid_options' in c else {})})
             section['cards']=wrapped
     (ROOT/'support/card-catalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    text=json.dumps(dashboard,ensure_ascii=False,indent=2)+'\n'
+    text=json.dumps(dashboard,ensure_ascii=False,indent=2).replace('liquid-glass-demo','liquid-glass-gallery')+'\n'
     ids=sorted(set(re.findall(r'\b([a-z_]+\.'+PREFIX+r'[a-z0-9_]+)\b',text)))
     specs=[]
     for eid in ids:
@@ -305,8 +305,14 @@ def build():
     collect_types(dashboard)
     inventory={'schema_version':1,'theme':'DASH6 Satin Glass','entry_view':'demo','views':len(dashboard['views']),'virtual_entities':len(specs),'card_types':sorted(types)}
     (ROOT/'support/demo-inventory.json').write_text(json.dumps(inventory,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    (ROOT/'examples/demo-dashboard.yaml').write_text(text,encoding='utf-8') # JSON is valid YAML; no runtime YAML generator needed.
+    (ROOT/'examples/gallery-dashboard.yaml').write_text(text,encoding='utf-8') # JSON is valid YAML; no runtime YAML generator needed.
     (ROOT/'custom_components/liquid_glass/demo-entities.json').write_text(json.dumps(specs,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    copy=json.loads((ROOT/'examples/dash6-copy.json').read_text())
+    (ROOT/'examples/demo-dashboard.yaml').write_text(json.dumps(copy,ensure_ascii=False,indent=2)+'\n')
+    copied=json.loads((ROOT/'support/dash6-copy-entities.json').read_text())
+    (ROOT/'custom_components/liquid_glass/demo-entities.json').write_text(json.dumps(specs+copied,ensure_ascii=False,indent=2)+'\n')
+    inventory.update(copy_views=len(copy['views']), copy_virtual_entities=len(copied), gallery_views=len(dashboard['views']), virtual_entities=len(specs)+len(copied), entry_view='home')
+    (ROOT/'support/demo-inventory.json').write_text(json.dumps(inventory,ensure_ascii=False,indent=2)+'\n')
     print(f'Built backend demo: {len(dashboard["views"])} views, {len(specs)} isolated entities')
 
 if __name__=='__main__': build()

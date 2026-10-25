@@ -10,7 +10,7 @@ const output=resolve('../output/Media-Volume-20261025');await mkdir(output,{recu
 try{for(const engine of [chromium,webkit]){const browser=await engine.launch();try{
  const page=await browser.newPage({viewport:{width:1200,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
- await page.goto(origin);await page.waitForFunction(()=>window.demoPreview?.ready);
+ await page.goto(origin+'?dashboard=gallery');await page.waitForFunction(()=>window.demoPreview?.ready);
  // Verify initial attachment without a second HA update: the former HomePod race.
  for(const type of ['appletv','homepod']){
   const sample=page.locator('[data-card-type="custom:dash6-'+type+'-card"]');

@@ -3,6 +3,7 @@ from .demo import DemoEntity,setup_platform
 class DemoSelect(DemoEntity,SelectEntity):
     @property
     def options(self):
+        if self.spec.get('attributes',{}).get('options'):return [v for v in self.spec['attributes']['options'] if v not in ('unknown','unavailable')] or ['Demo']
         key=self.spec['key']
         return (['vac_and_mop','vacuum','mop'] if 'reinigung' in key else
                 ['off','mild','moderate','intense'] if 'wischintensitat' in key else

@@ -4,6 +4,7 @@ class DemoScene(DemoEntity,Scene):
     @property
     def extra_state_attributes(self):
         targets={}
+        if 'scene_targets' in self.spec:return {**super().extra_state_attributes,'scene_targets':self.spec['scene_targets']}
         for key in ('schuhschrank','schuhschrank_links','schuhschrank_rechts'):
             targets['light.liquid_glass_demo_'+key]={'state':'on','brightness':255,'color_mode':'hs','hs_color':[215,70] if self.spec['key']=='bunt' else [0,0]}
         return {**super().extra_state_attributes,'scene_targets':targets}

@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "theme": "DASH6 Satin Glass",
-  "entry_view": "demo",
+  "entry_view": "home",
   "views": 18,
-  "virtual_entities": 98,
+  "virtual_entities": 755,
   "card_types": [
     "custom:apexcharts-card",
     "custom:auto-entities",
@@ -53,5 +53,8 @@
     "custom:mushroom-template-card",
     "custom:vacuum-dock-card",
     "custom:vertical-stack-in-card"
-  ]
+  ],
+  "copy_views": 28,
+  "copy_virtual_entities": 657,
+  "gallery_views": 18
 }

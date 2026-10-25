@@ -34,8 +34,10 @@ with zipfile.ZipFile(archive) as z:
     snapshot=json.loads(z.read('custom_components/liquid_glass/bundle/support/theme-defaults.json'))
     assert prefs['themes']['DASH6 Satin Glass']['values']==snapshot['themes']['DASH6 Satin Glass']['values'],'Defaults must agree'
     demo=json.loads(z.read('custom_components/liquid_glass/bundle/examples/demo-dashboard.yaml'))
-    assert len(demo['views'])==18,'Incomplete demo'
+    inventory=json.loads(z.read('custom_components/liquid_glass/bundle/support/demo-inventory.json'))
+    assert len(demo['views'])==inventory['copy_views'],'Incomplete DASH6 copy'
+    assert 'custom:dash6-ultra-card' in json.loads(z.read('custom_components/liquid_glass/bundle/support/dash6-copy-inventory.json'))['card_types']
     entities=json.loads(z.read('custom_components/liquid_glass/demo-entities.json'))
-    assert len(entities)==98,'Incomplete virtual devices'
+    assert len(entities)==inventory['virtual_entities'],'Incomplete virtual devices'
     assert 'custom_components/liquid_glass/bundle/support/shelly/badluefter-backlog-force-on.js' in z.namelist()
 print(f'{manifest["version"]}: {archive.name}, {archive.stat().st_size} bytes, SHA256 {checksum}')

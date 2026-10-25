@@ -13,7 +13,7 @@ from unittest.mock import patch, AsyncMock
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntries,ConfigEntry
 from types import MappingProxyType
-from homeassistant.helpers import entity_registry as er, device_registry as dr, area_registry as ar
+from homeassistant.helpers import entity_registry as er, device_registry as dr, area_registry as ar,label_registry as lr
 from homeassistant.helpers.entity_platform import EntityPlatform
 from homeassistant.util import dt as dt_util
 
@@ -29,6 +29,7 @@ class DemoTests(unittest.IsolatedAsyncioTestCase):
         self.entry=ConfigEntry(data={},domain='liquid_glass',source='user',version=1,minor_version=1,options={},unique_id='liquid_glass',title='Liquid Glass',discovery_keys=MappingProxyType({}),subentries_data=[])
         self.hass.config_entries._entries[self.entry.entry_id]=self.entry
         await ar.async_load(self.hass,load_empty=True)
+        await lr.async_load(self.hass,load_empty=True)
         dr.async_setup(self.hass)
         await dr.async_load(self.hass,load_empty=True)
         await er.async_load(self.hass,load_empty=True)
@@ -44,6 +45,7 @@ class DemoTests(unittest.IsolatedAsyncioTestCase):
             cls=next(v for k,v in vars(module).items() if k.startswith('Demo') and k!='DemoEntity' and isinstance(v,type))
             await platform.async_add_entities([cls(self.coordinator,s) for s in self.coordinator.specs if s['domain']==domain])
             self.platforms.append(platform)
+        self.coordinator.assign_areas()
         self.coordinator.refresh()
 
     async def asyncTearDown(self):
@@ -64,6 +66,10 @@ class DemoTests(unittest.IsolatedAsyncioTestCase):
             if spec['domain'] not in ('button','scene'):
                 self.assertNotIn(state.state,('unknown','unavailable'),spec['entity_id'])
             self.assertTrue(state.attributes['liquid_glass_demo'])
+        devices=dr.async_get(self.hass);areas=ar.async_get(self.hass)
+        for spec in self.coordinator.specs:
+            row=er.async_get(self.hass).async_get(spec['entity_id']);device=devices.async_get(row.device_id)
+            self.assertEqual(areas.async_get_area(device.area_id).name,spec.get('area','DASH6 Demo · '+spec['room']))
         dashboard=json.loads((ROOT/'examples/demo-dashboard.yaml').read_text())
         self.assertTrue(all(v.get('theme')=='DASH6 Satin Glass' for v in dashboard['views']))
         self.assertFalse(any('florin' in v.get('path','').lower() for v in dashboard['views']))

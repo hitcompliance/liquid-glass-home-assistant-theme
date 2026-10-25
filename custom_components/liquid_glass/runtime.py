@@ -1,6 +1,7 @@
 """File installation helpers, also testable without Home Assistant."""
 from pathlib import Path
 import json
+import gzip
 from . import installer
 
 ROOT = Path(__file__).parent / 'bundle'
@@ -73,6 +74,33 @@ def load_themes(config_dir=None):
     themes=json.loads((ROOT / 'themes.json').read_text(encoding='utf-8'))
     return resolved_themes(themes,read_stored(config_dir)) if config_dir else themes
 
+def preserve_instance_layouts(config, files):
+    """Carry existing local legacy profiles forward; never ship them in releases."""
+    legacy=config/'www/dash6-satin'
+    current=config/'www/liquid-glass'
+    overrides={}
+    bundled=next(f.data for f in files if f.path=='www/liquid-glass/room-loader-configs.json')
+    merged=json.loads(bundled)
+    for source in (legacy,current):
+        index=source/'profiles/index.json'
+        if index.is_file():
+            table=json.loads(index.read_text())
+            for name in set(table.values()):
+                if not isinstance(name,str) or Path(name).name!=name or not name.endswith('.json'):
+                    raise installer.InstallError('Invalid local profile filename')
+                path=source/'profiles'/name
+                if path.is_file():overrides['www/liquid-glass/profiles/'+name]=path.read_bytes()
+            prior=json.loads(overrides.get('www/liquid-glass/profiles/index.json',b'{}'))
+            overrides['www/liquid-glass/profiles/index.json']=json.dumps({**prior,**table}).encode()
+        path=source/'room-loader-configs.json'
+        if path.is_file():merged.update(json.loads(path.read_text()))
+    if merged!=json.loads(bundled):
+        data=json.dumps(merged).encode()
+        overrides['www/liquid-glass/room-loader-configs.json']=data
+        overrides['www/liquid-glass/room-loader-configs.json.gz']=gzip.compress(data,mtime=0)
+    files=[f for f in files if f.path not in overrides and f.path.removesuffix('.gz') not in overrides]
+    return files+[installer.File(path,data,'preserved instance layout') for path,data in overrides.items()]
+
 def install(config_dir, existing, dual=False):
     """Verify all downloads first; preserve existing HACS frontend modules."""
     config = Path(config_dir)
@@ -97,7 +125,7 @@ def install(config_dir, existing, dual=False):
             # Never take ownership of an existing backend integration.
             continue
         missing.append(dep)
-    files = installer.package_files(ROOT)
+    files = preserve_instance_layouts(config,installer.package_files(ROOT))
     from .theme_store import preserve_user_defaults
     files = preserve_user_defaults(config,files,load_themes())
     files += installer.dependency_files(missing, config / 'liquid-glass' / 'download-cache', False)

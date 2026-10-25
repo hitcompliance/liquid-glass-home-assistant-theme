@@ -4,15 +4,29 @@
     "step": {
       "user": {
         "title": "Liquid Glass einrichten",
-        "description": "DASH6 Satin Glass und alle fehlenden Karten-Abhängigkeiten werden automatisch installiert (Internet erforderlich). Vorhandene HACS-Ressourcen bleiben erhalten. Die optionale Demo legt eigene virtuelle Entities an; keine echten Geräte werden gesteuert. Dual Smart Thermostat benötigt nach der Installation einen weiteren Neustart und eine Geräte-Konfiguration.",
+        "description": "Installiert DASH6 Satin Glass, Ultra Card und alle fehlenden Karten-Abhängigkeiten automatisch (Internet erforderlich). LIQUID-GLASS-DEMO ist die DASH6-Kopie mit eigenen Dummy-Geräten, ohne Florin; die Karten-/GUI-Galerie kommt zusätzlich. Die optionale LIQUID-GLASS-HUE-DEMO bedient echte, lokal gefundene Hue-/Licht-/Schalter-Entities. Die Installation selbst schaltet nichts. Dual Smart Thermostat benötigt einen weiteren Neustart und eigene Gerätekonfiguration.",
         "data": {
-          "demo_dashboard": "Interaktives Demo-Dashboard anzeigen",
-          "dual_smart_thermostat": "Dual Smart Thermostat zusätzlich installieren"
+          "demo_dashboard": "LIQUID-GLASS-DEMO und Karten-/GUI-Galerie anlegen",
+          "dual_smart_thermostat": "Dual Smart Thermostat zusätzlich installieren",
+          "hue_dashboard": "LIQUID-GLASS-HUE-DEMO mit echten lokalen Geräten anlegen"
         }
       }
     },
     "abort": {
       "already_configured": "Liquid Glass ist bereits eingerichtet."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Liquid Glass · Optionen",
+        "description": "Installiert DASH6 Satin Glass, Ultra Card und alle fehlenden Karten-Abhängigkeiten automatisch (Internet erforderlich). LIQUID-GLASS-DEMO ist die DASH6-Kopie mit eigenen Dummy-Geräten, ohne Florin; die Karten-/GUI-Galerie kommt zusätzlich. Die optionale LIQUID-GLASS-HUE-DEMO bedient echte, lokal gefundene Hue-/Licht-/Schalter-Entities. Die Installation selbst schaltet nichts. Dual Smart Thermostat benötigt einen weiteren Neustart und eigene Gerätekonfiguration.",
+        "data": {
+          "demo_dashboard": "LIQUID-GLASS-DEMO und Karten-/GUI-Galerie anlegen",
+          "dual_smart_thermostat": "Dual Smart Thermostat zusätzlich installieren",
+          "hue_dashboard": "LIQUID-GLASS-HUE-DEMO mit echten lokalen Geräten anlegen"
+        }
+      }
     }
   }
 }

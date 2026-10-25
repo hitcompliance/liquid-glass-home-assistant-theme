@@ -11,7 +11,7 @@ try{for(const engine of [chromium,webkit]){
  const browser=await engine.launch();try{
   const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];page.on('pageerror',e=>{errors.push(e.message);console.log('RUNTIME STACK',e.stack);});
   await page.route('**/*',route=>route.request().url().startsWith(origin+'/')?route.continue():route.abort());
-  await page.goto(origin);await page.waitForFunction(()=>window.demoPreview?.ready||window.demoPreview?.errors?.length,{},{timeout:45000});
+  await page.goto(origin+'?dashboard=gallery');await page.waitForFunction(()=>window.demoPreview?.ready||window.demoPreview?.errors?.length,{},{timeout:45000});
   console.log(engine.name()+' boot:',await page.evaluate(()=>({ready:demoPreview.ready,errors:demoPreview.errors,cards:document.querySelector('#runtime-status').textContent})),errors);
   assert.equal(await page.evaluate(()=>demoPreview.ready),true);
   assert.equal(await page.locator('meta[name="liquid-glass-version"]').getAttribute('content'),version);

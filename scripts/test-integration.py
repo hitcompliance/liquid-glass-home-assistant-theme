@@ -235,7 +235,7 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         report=self.hass.data[integration.DOMAIN]['test']['report']
         self.assertEqual(report['changed'],0)
         self.assertIsNone(report['backup'])
-        self.assertEqual(len(self.ll.dashboards),1)
+        self.assertEqual(len(self.ll.dashboards),2)
 
     async def test_existing_hacs_dependency_reused(self):
         url='/hacsfiles/test-card/test-card.js?hacstag=123'
@@ -432,14 +432,29 @@ class IntegrationTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(self.hass.data.get(frontend.DATA_DEFAULT_DARK_THEME))
         self.theme_store.async_delay_save.assert_not_called()
 
+    async def test_preserve_local_profiles_and_room_definitions(self):
+        legacy=self.config/'www/dash6-satin';(legacy/'profiles').mkdir(parents=True)
+        (legacy/'profiles/index.json').write_text(json.dumps({'private-card':'instance.json'}))
+        (legacy/'profiles/instance.json').write_text(json.dumps({'private-card':{'type':'tile','entity':'light.local'}}))
+        (legacy/'room-loader-configs.json').write_text(json.dumps({'instance-room':{'template':'local template','slots':{}}}))
+        await integration.async_setup_entry(self.hass,self.entry)
+        target=self.config/'www/liquid-glass'
+        self.assertEqual(json.loads((target/'profiles/index.json').read_text())['private-card'],'instance.json')
+        self.assertTrue((target/'profiles/instance.json').is_file())
+        data=json.loads((target/'room-loader-configs.json').read_text())
+        self.assertIn('instance-room',data);self.assertIn('demo',data)
+        await integration.async_unload_entry(self.hass,self.entry)
+        await integration.async_setup_entry(self.hass,self.entry)
+        self.assertEqual(self.hass.data[integration.DOMAIN][self.entry.entry_id]['report']['changed'],0)
+
     async def test_config_flow_defaults_and_single_instance(self):
         flow=LiquidGlassConfigFlow()
         flow.hass=self.hass
         with patch.object(flow,'async_set_unique_id',AsyncMock()), patch.object(flow,'_abort_if_unique_id_configured') as guard:
             result=await flow.async_step_user()
             self.assertEqual(result['type'],'form')
-            self.assertEqual(result['data_schema']({}),{'demo_dashboard':True,'dual_smart_thermostat':False})
-            result=await flow.async_step_user({'demo_dashboard':True,'dual_smart_thermostat':False})
+            self.assertEqual(result['data_schema']({}),{'demo_dashboard':True,'hue_dashboard':False,'dual_smart_thermostat':False})
+            result=await flow.async_step_user({'demo_dashboard':True,'hue_dashboard':False,'dual_smart_thermostat':False})
             self.assertEqual(result['type'],'create_entry')
             guard.assert_called()
 

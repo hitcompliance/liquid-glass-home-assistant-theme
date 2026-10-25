@@ -35,7 +35,7 @@ shutil.copytree(ROOT/'dist',package)
 shutil.copytree(ROOT/'assets',package/'assets')
 for path,data in assets:
     target=package/path;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
-for source,target in [('examples/demo-dashboard.yaml','dashboard.json'),('custom_components/liquid_glass/demo-entities.json','entities.json'),('support/card-catalog.json','catalog.json'),('support/demo-inventory.json','inventory.json')]:
+for source,target in [('examples/gallery-dashboard.yaml','dashboard.json'),('examples/demo-dashboard.yaml','dash6-copy.json'),('support/demo-room-configs.json','demo-room-configs.json'),('support/demo-template-results.json','template-results.json'),('support/demo-template-sources.json','template-sources.json'),('custom_components/liquid_glass/demo-entities.json','entities.json'),('support/card-catalog.json','catalog.json'),('support/demo-inventory.json','inventory.json')]:
     shutil.copy2(ROOT/source,package/target)
 themes=subprocess.check_output(['ruby','-ryaml','-rjson','-e','puts YAML.load_file(ARGV[0]).to_json',str(ROOT/'themes/liquid-glass.yaml')])
 (package/'themes.json').write_bytes(themes)

@@ -21,7 +21,9 @@ Bei der ersten Einrichtung ist Internetzugriff auf GitHub erforderlich. Nach ein
 - Eigene Karten für Lichter/Gruppen/Schuhschrank, Messsteckdosen/Kühlschrank, Drei-Modus-Lüftung, Thermostate, Rollos, HomePod/Apple TV/TV, Türen/Schlösser, Roboter/Dock, Pflanzen und Kamera sowie Raum-, Domain-, Profil-, Struktur- und Favoritenkarten.
 - Alle JavaScript-Einstiege, nachgeladenen Chunks, neutralen Profile, Bilder und Lizenzen; HACS lädt ein eigenständiges Laufzeitpaket unter `custom_components/liquid_glass/`.
 - **Zwölf automatisch installierte Fremdmodule:** Ultra Card, Button Card, Mushroom, Auto Entities, ApexCharts Card, Mini Graph Card, Card Mod, Layout Card, More Info Card, Vertical Stack In Card, Firemote und Embedded View Card. Die [Abhängigkeitstabelle](docs/DEPENDENCIES.md) nennt Versionen, Zweck und Installationsverhalten.
-- Eine vollständige Demo mit **18 Views**: Einstieg **Alle Karten & Details**, Räume nach dem Vorbild von DASH6 ohne Florin, Karten-/Layoutansichten und Favoriten-GUI. Die Integration legt dafür **98 virtuelle Entities** in sieben eigenen Demo-Bereichen an. Licht, Szenen, Medien, Klima, Lüftung, Tür, Rollo, Roboter und Updates sind bedienbar; Verläufe entstehen ab Installation. Die virtuelle Kamera zeigt ein mitgeliefertes Bild.
+- **LIQUID-GLASS-DEMO**: eine anonymisierte Kopie des tatsächlichen DASH6 mit **28 Views**, unveränderten Kartentypen einschließlich **Ultra Card**, Seitenleisten, hellen Domain-Hüllen mit Heading-Reitern und dunklen Gerätekarten. Alle Geräte sind durch **657 eigene Dummy-Entities** ersetzt; Florin und seine Inhalts-View samt Links entfallen. Lokale Profile, Büro-Raumlader und Raumhintergründe sind vollständig enthalten.
+- Zusätzlich **18 Views Karten & GUI** unter `/liquid-glass-gallery/demo`, mit allen Zusatzdialogen, beiden Türen, Szenen, TV/Apple TV, Staubsauger und 18 Haupteditoren. Zusammen entstehen **755 Dummy-Entities**; Verläufe wachsen ab Installation.
+- Optional **LIQUID-GLASS-HUE-DEMO**: echte, auf der jeweils installierenden HA-Instanz gefundene Hue-/Light-/Switch-Geräte und ihre Entities, ein Ultra-View pro zugeordnetem Raum, „Ohne Bereich“ für unzugeordnete Geräte sowie Wartung, Energie, Sicherheit und Surveillance. Die vier zusätzlichen Views zeigen passende sichtbare System-Entities. Kein festes Geräteverzeichnis, kein Cloud-Upload; beim Erstellen wird nichts geschaltet. Beide Optionen lassen sich unter Geräte & Dienste → Liquid Glass → Konfigurieren ändern.
 - [Optionale Geräte-Skripte und Anleitung](support/README.md), insbesondere die Shelly-Lüftungsquelle. Sie werden mitkopiert, aber nicht auf Hardware aktiviert.
 
 Das Demo-Dashboard begrenzt seine Karten zusätzlich auf den Namensbereich `*.liquid_glass_demo_*`. Serviceaufrufe ohne konkrete Dummy-Entity oder mit Bereichs-/Gerätezielen werden blockiert. Die Demo ändert weder echte Geräte noch die native Energiekonfiguration. Die Demo-Favoritenauswahl bleibt im jeweiligen Browser. Die öffentliche Browser-Demo verwendet denselben vollständigen Kartenkatalog und die echten Custom Cards. HA-eigene Basiselemente werden dort lokal adaptiert; Werte und Historie bleiben ausdrücklich simuliert.
@@ -30,11 +32,11 @@ Das Demo-Dashboard begrenzt seine Karten zusätzlich auf den Namensbereich `*.li
 
 **Ein nativer Heading-Reiter und eine gemeinsame helle Glashülle fassen mehrere dunkle Entity-Karten einer Domain zusammen.** Beispielsweise stehen unter „Licht“ mehrere einzelne Lichtkarten und unter „Medien“ TV und HomePod. Jede innere Karte behält ihre Bedienung, Zustände und Detailansichten. Die Überschrift gehört zum gemeinsamen Rahmen; sie ist kein zusätzlicher dunkler Kartentitel.
 
-Die erste Demo-View zeigt dieses Muster direkt. Die Raum-Views verwenden es für Licht, Medien, Klima, Schalter, Türen und weitere Gerätegruppen. **Domain-Blöcke & Aufbau** (`/liquid-glass-demo/domain-bloecke`) erklärt den Aufbau anhand mehrerer vollständiger Blöcke. Ein kopierbares Beispiel wird als [examples/domain-blocks.yaml](examples/domain-blocks.yaml) beziehungsweise `/config/liquid-glass/examples/domain-blocks.yaml` mitinstalliert.
+Die kopierten Raum-Views zeigen dieses Muster wie im ursprünglichen DASH6. Die zusätzliche Galerie erklärt es direkt. Die Raum-Views verwenden es für Licht, Medien, Klima, Schalter, Türen und weitere Gerätegruppen. **Domain-Blöcke & Aufbau** (`/liquid-glass-gallery/domain-bloecke`) erklärt den Aufbau anhand mehrerer vollständiger Blöcke. Ein kopierbares Beispiel wird als [examples/domain-blocks.yaml](examples/domain-blocks.yaml) beziehungsweise `/config/liquid-glass/examples/domain-blocks.yaml` mitinstalliert.
 
 ```yaml
 type: custom:dash6-domain-card
-dashboard: liquid-glass-demo
+dashboard: liquid-glass-gallery
 view: domain-bloecke
 block_id: light
 area: DASH6 Demo · Büro
@@ -58,7 +60,7 @@ Zwischen den Karten liegen **8px**. Native Headings stehen am Beginn der gemeins
 
 ## Karten, Zusatzansichten und GUI
 
-**Die erste Demo-View zeigt Schuhschrank, TV/Apple TV und Staubsauger direkt.** Die Wegweiser unter den Karten öffnen deren echte Zusatzansichten. Bei Lichtgruppen und TV öffnet auch der Kartenhintergrund den jeweiligen Dialog.
+**In der DASH6-Kopie stehen die Karten in ihren ursprünglichen Räumen; die Galerie zeigt Schuhschrank, TV/Apple TV und Staubsauger zusätzlich direkt im Einstieg.** Die Wegweiser unter den Karten öffnen deren echte Zusatzansichten. Bei Lichtgruppen und TV öffnet auch der Kartenhintergrund den jeweiligen Dialog.
 
 | Karte / Werkzeug | In der Demo ausprobieren | GUI |
 | --- | --- | --- |
@@ -92,7 +94,7 @@ Beide Türkarten stehen direkt im Demo-Einstieg und gemeinsam im hellen Domain-B
 
 ## Orientierung für Agenten
 
-Die mitgelieferte **[AGENTS.md](AGENTS.md)** erklärt Quellen, Builddateien, Integrations-/Demo-Struktur und verbindliche Kartenmuster. Sie verweist auf `/liquid-glass-demo/demo`, den vollständigen Browser-Showcase und das ausschließlich zu verwendende Theme **DASH6 Satin Glass**. Auf der Zielinstallation liegt sie unter `/config/liquid-glass/AGENTS.md`; Kartenkatalog und Leitfaden werden ebenfalls mitinstalliert. Neue Funktionen müssen in README, beiden Demos und dem Installationspaket gemeinsam ergänzt werden.
+Die mitgelieferte **[AGENTS.md](AGENTS.md)** erklärt Quellen, Builddateien, Integrations-/Demo-Struktur und verbindliche Kartenmuster. Sie verweist auf die DASH6-Kopie `/liquid-glass-demo/home`, die Galerie `/liquid-glass-gallery/demo`, den vollständigen Browser-Showcase und das ausschließlich zu verwendende Theme **DASH6 Satin Glass**. Auf der Zielinstallation liegt sie unter `/config/liquid-glass/AGENTS.md`; Kartenkatalog und Leitfaden werden ebenfalls mitinstalliert. Neue Funktionen müssen in README, beiden Demos und dem Installationspaket gemeinsam ergänzt werden.
 
 ## Vom Nutzer selbst einzurichten
 

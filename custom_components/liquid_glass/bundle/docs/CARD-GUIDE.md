@@ -1,12 +1,12 @@
 # Karten, Detailansichten und GUI-Konfiguration
 
-Der Einstieg **Alle Karten & Details** ist in beiden vollständigen Demos derselbe: [öffentliche Browser-Demo](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/) und installierte **Liquid Glass Demo** unter `/liquid-glass-demo/demo`. Die Browser-Demo lädt die echten eigenen und fremden Karten. Nur Home Assistants native Basiselemente werden dort lokal adaptiert; die HA-Demo verwendet die originalen nativen Elemente.
+Der Einstieg **Alle Karten & Details** ist in beiden vollständigen Demos derselbe: [öffentliche Browser-Demo](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/) und installierte **Liquid Glass Demo** unter `/liquid-glass-gallery/demo`. Die Browser-Demo lädt die echten eigenen und fremden Karten. Nur Home Assistants native Basiselemente werden dort lokal adaptiert; die HA-Demo verwendet die originalen nativen Elemente.
 
 ## Das DASH6-Grundmuster: Domain-Blöcke
 
 **Ein nativer Heading-Reiter und eine gemeinsame helle Glashülle fassen mehrere dunkle Entity-Karten einer Domain zusammen.** Beispielsweise stehen unter „Licht“ mehrere einzelne Lichtkarten und unter „Medien“ TV und HomePod. Jede innere Karte behält ihre Bedienung, Zustände und Detailansichten. Die Überschrift gehört zum gemeinsamen Rahmen; sie ist kein zusätzlicher dunkler Kartentitel.
 
-Die erste Demo-View zeigt dieses Muster direkt. Die Raum-Views verwenden es für Licht, Medien, Klima, Schalter, Türen und weitere Gerätegruppen. **Domain-Blöcke & Aufbau** (`/liquid-glass-demo/domain-bloecke`) erklärt den Aufbau anhand mehrerer vollständiger Blöcke. Ein kopierbares Beispiel wird als [examples/domain-blocks.yaml](../examples/domain-blocks.yaml) beziehungsweise `/config/liquid-glass/examples/domain-blocks.yaml` mitinstalliert.
+Die erste Demo-View zeigt dieses Muster direkt. Die Raum-Views verwenden es für Licht, Medien, Klima, Schalter, Türen und weitere Gerätegruppen. **Domain-Blöcke & Aufbau** (`/liquid-glass-gallery/domain-bloecke`) erklärt den Aufbau anhand mehrerer vollständiger Blöcke. Ein kopierbares Beispiel wird als [examples/domain-blocks.yaml](../examples/domain-blocks.yaml) beziehungsweise `/config/liquid-glass/examples/domain-blocks.yaml` mitinstalliert.
 
 ```yaml
 type: custom:dash6-domain-card

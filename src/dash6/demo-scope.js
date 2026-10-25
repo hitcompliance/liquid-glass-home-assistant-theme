@@ -21,8 +21,8 @@ export function demoHass(hass){
   if(message.type==='liquid_glass/theme_defaults'&&hass.demo_browser)return hass.callWS(message);
   if(message.type==='get_states')return Object.values(subset(hass.states));
   if(/config\/(entity|device|area)_registry\/list$/.test(message.type))return filterRegistry(message.type,await hass.callWS(message));
-  if(message.type==='lovelace/dashboards/list')return [{id:'liquid-glass-demo',url_path:'liquid-glass-demo',title:'Liquid Glass Demo',mode:'yaml',show_in_sidebar:true,require_admin:false}];
-  if(message.type==='lovelace/config'&&message.url_path==='liquid-glass-demo')return hass.callWS(message);
+  if(message.type==='lovelace/dashboards/list')return ['liquid-glass-demo','liquid-glass-gallery'].map(id=>({id,url_path:id,title:id==='liquid-glass-demo'?'LIQUID-GLASS-DEMO':'Liquid Glass · Karten & GUI',mode:'yaml',show_in_sidebar:true,require_admin:false}));
+  if(message.type==='lovelace/config'&&['liquid-glass-demo','liquid-glass-gallery'].includes(message.url_path))return hass.callWS(message);
   if(message.type?.startsWith('history/')){
    const ids=message.entity_ids||message.filter_entity_id||[];
    if(Array.isArray(ids)&&ids.length&&ids.every(own))return hass.callWS(message);

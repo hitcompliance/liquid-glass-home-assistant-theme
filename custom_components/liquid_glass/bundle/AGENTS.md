@@ -16,7 +16,7 @@ Dieses Repository liefert eine vollständige Home-Assistant-HACS-Integration. Da
 | `dist/` | Generierte Einstiegsmodule, Chunks, Profile, Defaults, Konfigurationen und Lizenzen |
 | `examples/domain-blocks.yaml` | Kopierbares kanonisches Domain-Muster: nativer Reiter, heller Rahmen, mehrere dunkle Entity-Karten |
 | `examples/demo-dashboard.yaml` | Vollständige installierbare Demo; JSON-Syntax ist gültiges YAML |
-| `scripts/build-device-demo.py` | Kanonischer Generator für Demo-Views, Dummy-Entities und Kartenkatalog |
+| `scripts/build-device-demo.py` | Kombiniert versionierte DASH6-Kopie, separate Galerie, Dummy-Entities und Kartenkatalog |
 | `support/card-catalog.json` | Automatisch erzeugte Galerie-Konfigurationen |
 | `frontend/showcase-*` | Öffentliche Browser-Demo: nur native HA-Elemente werden lokal adaptiert |
 | `demo/` | Gebaute GitHub-Pages-Demo mit den echten eigenen und fremden Karten |
@@ -28,15 +28,19 @@ Auf der HA-Installation liegen die Karten unter `/config/www/liquid-glass/`, die
 ## Zuerst die vollständige Demo ansehen
 
 - Öffentlich: [Alle Karten, Details und GUI](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/).
-- Installiert: **Liquid Glass Demo**, Einstieg `/liquid-glass-demo/demo` beziehungsweise die erste View **Alle Karten & Details**.
+- Installiert: **LIQUID-GLASS-DEMO**, Einstieg `/liquid-glass-demo/home`: vollständige anonymisierte DASH6-Kopie mit Ultra Card und 28 Views. Die separate Galerie `/liquid-glass-gallery/demo` zeigt alle Karten, Details und GUI-Editoren.
 - Danach die Raum-Views und die Bibliotheks-/Strukturansichten ansehen. Florin und private Dashboarddaten gehören nicht in die Veröffentlichung.
 - Beide Türkarten vollständig zeigen: Wohnungstür mit Kontakt-/Batteriewarnung und Haustür mit Klingel-/Cancel-Rückmeldung. Dummy-Schalter für diese Zustände nutzen; keine echte Türaktion für Gestaltungstests.
 - Schuhschrank mit direkten Szenen, TV/Apple TV und Staubsauger stehen direkt im Einstieg. Licht-/Segmentdetails, Fernbedienungen, Reinigungsplanung, Basisstation, Verschleißteile und Presets müssen bedienbar bleiben.
 - **GUI konfigurieren** öffnet den echten Karteneditor, soweit die Klasse `getConfigElement()` anbietet. Dafür keine separate, abweichende Demo-GUI erfinden.
 
+Die Kopie liegt in `examples/dash6-copy.json`, ihre virtuellen Geräte in `support/dash6-copy-entities.json`, anonymisierte Raumlader in `support/demo-room-configs.json`. Profile verwenden eingebettete `definition`, damit keine privaten Profildateien nachgeladen werden. Der Importer `scripts/import-dash6-copy.py` ist nur ein bewusster Maintainer-Schritt mit privaten Eingaben außerhalb des Release-Pakets. Normale Builds benötigen diese Eingaben nicht.
+
+`custom_components/liquid_glass/hue_dashboard.py` erzeugt die optionale **LIQUID-GLASS-HUE-DEMO** ausschließlich aus den lokalen Registries. Sie steuert echte lokale Entities; den Dummy-Scope dort nicht verwenden. Kein Build darf ein festes privates Geräteverzeichnis als Hue-Quelle übernehmen. Ultra Card, Domain-Hüllen, Heading-Reiter und die Theme-Vorgaben bleiben maßgeblich.
+
 ## Verbindlicher Aufbau der Domain-Blöcke
 
-Die Raum-Views und die Demo-View **Domain-Blöcke & Aufbau** (`/liquid-glass-demo/domain-bloecke`) sind die Gestaltungsreferenz. Verwende `custom:dash6-domain-card` mit `heading`, `cards`, `combine: true`, eindeutiger `block_id`, passender `area` und `domain`. Das kopierbare Beispiel steht in [examples/domain-blocks.yaml](examples/domain-blocks.yaml).
+Die Raum-Views und die Demo-View **Domain-Blöcke & Aufbau** (`/liquid-glass-gallery/domain-bloecke`) sind die Gestaltungsreferenz. Verwende `custom:dash6-domain-card` mit `heading`, `cards`, `combine: true`, eindeutiger `block_id`, passender `area` und `domain`. Das kopierbare Beispiel steht in [examples/domain-blocks.yaml](examples/domain-blocks.yaml).
 
 - **Nativer Heading-Reiter → gemeinsame helle Glashülle → mehrere dunkle Entity-Karten.** Der Reiter gehört zur Hülle. Ein Grid-Titel oder eine einzelne dunkle Karte ersetzt dieses Muster nicht.
 - `heading` erzeugt die native Überschrift; `title` ist kein Ersatz. Geräte behalten eigene Titel, Aktionen, Sperren und Detaildialoge. Eine Domain kann mehrere Karten enthalten.

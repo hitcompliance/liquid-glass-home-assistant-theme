@@ -4,6 +4,7 @@ from .demo import DemoEntity,setup_platform
 class DemoButton(DemoEntity,ButtonEntity):
     async def async_press(self):
         key=self.spec['key']
+        if self.spec.get('demo_action')=='open_door':self.coordinator.put_entity(self.spec.get('contact_entity'),on=True)
         if key=='zurucksetzen': self.coordinator.reset()
         elif key=='klingeln':
             self.coordinator.put('binary_sensor','klingel',on=True)

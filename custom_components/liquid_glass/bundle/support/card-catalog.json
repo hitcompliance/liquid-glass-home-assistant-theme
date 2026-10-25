@@ -362,7 +362,7 @@
     "type": "custom:dash6-domain-card",
     "card": {
       "type": "custom:dash6-domain-card",
-      "dashboard": "liquid-glass-demo",
+      "dashboard": "liquid-glass-gallery",
       "view": "demo",
       "block_id": "light",
       "area": "DASH6 Demo · Büro",

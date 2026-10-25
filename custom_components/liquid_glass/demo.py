@@ -5,12 +5,13 @@ import json
 import math
 from pathlib import Path
 from homeassistant.helpers.entity import Entity, DeviceInfo
+from homeassistant.helpers import area_registry as ar, device_registry as dr, entity_registry as er, label_registry as lr
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.util import dt as dt_util
 
 PLATFORMS = ['light', 'switch', 'sensor', 'binary_sensor', 'fan', 'cover',
              'climate', 'media_player', 'remote', 'vacuum', 'lock', 'button',
-             'select', 'number', 'scene', 'update', 'weather', 'camera']
+             'select', 'number', 'scene', 'update', 'weather', 'camera', 'event']
 PREFIX = 'liquid_glass_demo_'
 
 def load_specs():
@@ -18,6 +19,7 @@ def load_specs():
 
 def initial(spec):
     key, domain = spec['key'], spec['domain']
+    if spec.get('initial'):return deepcopy(spec['initial'])
     if domain == 'sensor':
         unit, device, state_class, value = ('W', 'power', 'measurement', 24.0)
         if 'temperature' in key or 'temperatur' in key: unit,device,value='°C','temperature',22.1
@@ -45,6 +47,21 @@ class DemoCoordinator:
         self.ticks = 0
         self.unsub = None
 
+    def assign_areas(self):
+        """HA no longer applies suggested_area; assign only our own virtual devices."""
+        if not self.entities:return
+        areas,devices,registry=ar.async_get(self.hass),dr.async_get(self.hass),er.async_get(self.hass)
+        for spec in self.specs:
+            row=registry.async_get(spec['entity_id'])
+            if not row or row.platform!='liquid_glass':continue
+            area=areas.async_get_or_create(spec.get('area','DASH6 Demo · '+spec['room']))
+            if spec.get('no_dashboard'):
+                labels=lr.async_get(self.hass)
+                label=next((v for v in labels.labels.values() if v.name=='LIQUID GLASS DEMO · no-dboard'),None) or labels.async_create('LIQUID GLASS DEMO · no-dboard')
+                registry.async_update_entity(row.entity_id,labels=set(row.labels)|{label.label_id})
+            device=devices.async_get(row.device_id) if row.device_id else None
+            if device and not device.area_id:devices.async_update_device(device.id,area_id=area.id)
+
     def start(self):
         self.unsub = async_track_time_interval(self.hass, self.tick, timedelta(seconds=30))
 
@@ -60,7 +77,16 @@ class DemoCoordinator:
             item.data.update(changes)
             if item.hass: item.async_write_ha_state()
 
+    def put_entity(self,eid,**changes):
+        if item:=self.entities.get(eid):
+            item.data.update(changes)
+            if item.hass:item.async_write_ha_state()
+
     def refresh(self):
+        for item in list(self.entities.values()):
+            if item.spec['domain']=='light':
+                members=[self.entities[eid] for eid in item.spec.get('attributes',{}).get('entity_id',[]) if eid in self.entities and eid.startswith('light.')]
+                if members and item.data['on']!=any(m.data['on'] for m in members):self.put_entity(item.entity_id,on=any(m.data['on'] for m in members))
         presence = self.get('switch','anwesenheit')
         self.put('binary_sensor','anwesenheit',on=bool(presence and presence.data['on']))
         door = self.get('switch','kuhlschrank_tur_simulation')
@@ -119,13 +145,14 @@ class DemoEntity(Entity):
         self.entity_id=spec['entity_id']
         self._attr_unique_id=spec['entity_id']
         self._attr_name=spec['name']
-        self._attr_device_info=DeviceInfo(identifiers={('liquid_glass','demo_'+spec['room'])},
+        self._attr_entity_registry_visible_default=not spec.get('hidden',False)
+        self._attr_device_info=DeviceInfo(identifiers={('liquid_glass','demo_'+spec.get('device',spec['room']))},
             name='DASH6 Demo · '+spec['room'],manufacturer='Liquid Glass',model='Virtual demo device',
-            suggested_area='DASH6 Demo · '+spec['room'])
+            suggested_area=spec.get('area','DASH6 Demo · '+spec['room']))
 
     @property
     def extra_state_attributes(self):
-        return {'liquid_glass_demo':True}
+        return {**self.spec.get('attributes',{}),'liquid_glass_demo':True}
 
     async def async_added_to_hass(self):
         self.coordinator.entities[self.spec['entity_id']]=self

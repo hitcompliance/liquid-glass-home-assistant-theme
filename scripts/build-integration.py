@@ -20,11 +20,4 @@ for name in ('dependencies.lock.json', 'LICENSE', 'THIRD-PARTY-LICENSES.md', 'AG
 resolved = subprocess.run(['ruby', '-rjson', '-ryaml', '-e', 'puts (YAML.respond_to?(:unsafe_load_file) ? YAML.unsafe_load_file(ARGV[0]) : YAML.load_file(ARGV[0])).to_json', str(root / 'themes' / 'liquid-glass.yaml')], capture_output=True, text=True, check=True)
 (bundle / 'themes.json').write_text(resolved.stdout)
 shutil.copy2(root / 'scripts' / 'install.py', component / 'installer.py')
-strings = {'title': 'Liquid Glass', 'config': {'step': {'user': {'title': 'Liquid Glass einrichten', 'description': 'DASH6 Satin Glass und alle fehlenden Karten-Abhängigkeiten werden automatisch installiert (Internet erforderlich). Vorhandene HACS-Ressourcen bleiben erhalten. Die optionale Demo legt eigene virtuelle Entities an; keine echten Geräte werden gesteuert. Dual Smart Thermostat benötigt nach der Installation einen weiteren Neustart und eine Geräte-Konfiguration.', 'data': {'demo_dashboard': 'Interaktives Demo-Dashboard anzeigen', 'dual_smart_thermostat': 'Dual Smart Thermostat zusätzlich installieren'}}}, 'abort': {'already_configured': 'Liquid Glass ist bereits eingerichtet.'}}}
-for target in ('strings.json', 'translations/de.json'):
-    (component / target).write_text(json.dumps(strings, ensure_ascii=False, indent=2) + '\n')
-strings['config']['step']['user'].update(title='Set up Liquid Glass', description='Automatically installs DASH6 Satin Glass and missing card dependencies (internet required). Existing HACS resources are reused. The optional demo creates its own virtual entities and never controls real devices. Optional Dual Smart Thermostat requires another restart and device configuration.', data={'demo_dashboard': 'Show interactive demo dashboard', 'dual_smart_thermostat': 'Also install Dual Smart Thermostat'})
-strings['config']['abort']['already_configured'] = 'Liquid Glass is already configured.'
-(component / 'strings.json').write_text(json.dumps(strings, indent=2) + '\n')
-(component / 'translations/en.json').write_text(json.dumps(strings, indent=2) + '\n')
-print('Built self-contained HACS integration 3.3.4')
+print('Built self-contained HACS integration')
