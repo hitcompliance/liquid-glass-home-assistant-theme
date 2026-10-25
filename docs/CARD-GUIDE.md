@@ -2,6 +2,36 @@
 
 Der Einstieg **Alle Karten & Details** ist in beiden vollständigen Demos derselbe: [öffentliche Browser-Demo](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/) und installierte **Liquid Glass Demo** unter `/liquid-glass-demo/demo`. Die Browser-Demo lädt die echten eigenen und fremden Karten. Nur Home Assistants native Basiselemente werden dort lokal adaptiert; die HA-Demo verwendet die originalen nativen Elemente.
 
+## Das DASH6-Grundmuster: Domain-Blöcke
+
+**Ein nativer Heading-Reiter und eine gemeinsame helle Glashülle fassen mehrere dunkle Entity-Karten einer Domain zusammen.** Beispielsweise stehen unter „Licht“ mehrere einzelne Lichtkarten und unter „Medien“ TV und HomePod. Jede innere Karte behält ihre Bedienung, Zustände und Detailansichten. Die Überschrift gehört zum gemeinsamen Rahmen; sie ist kein zusätzlicher dunkler Kartentitel.
+
+Die erste Demo-View zeigt dieses Muster direkt. Die Raum-Views verwenden es für Licht, Medien, Klima, Schalter, Türen und weitere Gerätegruppen. **Domain-Blöcke & Aufbau** (`/liquid-glass-demo/domain-bloecke`) erklärt den Aufbau anhand mehrerer vollständiger Blöcke. Ein kopierbares Beispiel wird als [examples/domain-blocks.yaml](../examples/domain-blocks.yaml) beziehungsweise `/config/liquid-glass/examples/domain-blocks.yaml` mitinstalliert.
+
+```yaml
+type: custom:dash6-domain-card
+dashboard: liquid-glass-demo
+view: domain-bloecke
+block_id: light
+area: DASH6 Demo · Büro
+domain: light
+heading: Licht
+combine: true
+columns: 1
+auto_entities: false
+cards:
+  - type: custom:dash6-govee-light-card-v2
+    entity: light.liquid_glass_demo_lampe
+    name: Leselicht
+  - type: custom:dash6-govee-light-card-v2
+    entity: light.liquid_glass_demo_tischlicht
+    name: Tischlicht
+```
+
+`heading` erzeugt das native Heading; `title` ersetzt diesen Reiter nicht. `cards` enthält die dunklen Gerätekarten, `combine: true` hält sie in einer gemeinsamen hellen Hülle. `block_id` identifiziert den Abschnitt innerhalb der View. `area`/`domain` beschreiben die Zuordnung; `auto_entities: false` hält diese Demo bei den ausdrücklich angegebenen Dummy-Karten. Für eigene Räume kann die Domain-GUI zusätzliche Bereichs-Entities automatisch ergänzen und getrennte Ausschlüsse verwalten.
+
+Zwischen den Karten liegen **8px**. Native Headings stehen am Beginn der gemeinsamen Hülle, nicht als separater Grid-Titel darüber. Hülle und Reiter folgen ausschließlich **hellem Glas** (Paketdefault 20 %/8 px), die einzelnen Gerätekarten **dunklem Glas** (70 %/16 px). Transparente Layout-Wrapper erzeugen keine weitere Glasfläche. Die **Domain-GUI** bearbeitet Überschrift, Raster, feste/automatische Karten und deren jeweilige Originaleditoren. Theme-Regler und Domain-GUI haben unterschiedliche Aufgaben.
+
 ## Gerätekarten
 
 | Karte | Im Demo-Einstieg ausprobieren | Grafische Konfiguration |
@@ -16,7 +46,7 @@ Der Einstieg **Alle Karten & Details** ist in beiden vollständigen Demos dersel
 | Lüftung | Aus/Auto/Ein, Force und Restzeit; tatsächliche virtuelle Ausgangsrückmeldungen, Präsenz und Leistungsanzeige | Lüftereditor mit getrennten Modus-/Force-/Restzeit-/Rückmeldefeldern |
 | Thermostat | Native Sollwertbedienung, Heizen/Kühlen/Dual, Preset-Auswahl | Grafischer Editor für Entity, Modi und Optionen |
 | Rollo | Öffnen/Schließen/Stopp und Positionsregler | Grafischer Editor |
-| Tür / Schloss / Türöffner | Verriegelung, Öffnung, Kontakt, Batterie und Klingelrückmeldung; in der Demo ausschließlich virtuell | Grafischer Tür-/Schlosseditor |
+| Wohnungstür und Haustür | Beide direkt im Einstieg und gemeinsam im Flur-Block **Türen**. Vertikaler Glasschalter, Öffnen/Schloss, Kontakt, Kontaktbatterie/Schlosswarnung; Türöffner, Aktivitätszeit und orange Klingelrückmeldung. **Türzustände ausprobieren** simuliert Kontakt, Batteriewarnung und Klingeln | Tür-/Schlosseditor einschließlich zusätzlicher Klingelsensoren und Cancel-Aktionen |
 | Pflanzen | Fünf Messwerte, Ziel-/Prüfbereiche, konservativer EC-Hinweis, 24h/7d und Entity-Verlauf | Pflanzeneditor für Sensoren, Substrat, Alter und Bereiche |
 | Auswahlgruppe | Animierte exklusive Auswahl; Demo-Auswahl-Entity | Grafischer Auswahl-/Optionseditor |
 | Glasschalter | Gemeinsame Schalterbedienung, Zustand und Sperren; außerdem in den Gerätekarten enthalten | Grafische Grundfelder / vollständige Konfiguration |
@@ -37,7 +67,7 @@ Die Tasten unter den Beispielen sind Wegweiser zu den **echten** Kartendialogen.
 | Home-Übersicht / Klima-Hintergrund | Vorhandene deklarative Konfiguration nach Kartenreferenz; nur tatsächlich vorhandene `getConfigElement()`-Editoren als GUI ausweisen |
 | Ultra, Auto Entities, ApexCharts, Mini Graph, Layout, Button, Mushroom, More Info, Vertical Stack und Embedded View | Die installierten Originalmodule und ihre verfügbaren Originaleditoren; zusätzliche Struktur-/Bibliotheksansichten zeigen die Integration |
 
-**GUI konfigurieren** wird dynamisch für jede Beispielkarte angeboten, deren echte Klasse `getConfigElement()` bereitstellt. Aktuell sind im Haupt-Showcase 17 solche Editoren erreichbar. „In Demo übernehmen“ ändert die jeweilige Vorschau, nicht die verwaltete Dashboard-YAML. Für eigene Karten verwendet Home Assistants normaler Karteneditor dieselben Konfigurationsklassen. Freie JSON-/YAML-Eingaben bleiben für zusätzliche Optionen verfügbar.
+**GUI konfigurieren** wird dynamisch für jede Beispielkarte angeboten, deren echte Klasse `getConfigElement()` bereitstellt. Aktuell sind im Haupt-Showcase 18 solche Editoren erreichbar. „In Demo übernehmen“ ändert die jeweilige Vorschau, nicht die verwaltete Dashboard-YAML. Für eigene Karten verwendet Home Assistants normaler Karteneditor dieselben Konfigurationsklassen. Freie JSON-/YAML-Eingaben bleiben für zusätzliche Optionen verfügbar.
 
 ## Theme-Defaults und Speicherung
 
@@ -47,7 +77,7 @@ Installiert wird ausschließlich **DASH6 Satin Glass** mit dem am 25.10.2026 fri
 
 ## Sicherheit und Grenzen der Demos
 
-Die vollständige HA-Demo legt 94 virtuelle Entities in acht eigenen Bereichen an. Alle Aktionen bleiben auf `*.liquid_glass_demo_*` begrenzt. Demo-Segmentnummern gehören nur zum virtuellen Roboter. Keine realen Geräte, Automationen oder die native Energiekonfiguration werden übernommen.
+Die vollständige HA-Demo legt 98 virtuelle Entities in acht eigenen Bereichen an. Alle Aktionen bleiben auf `*.liquid_glass_demo_*` begrenzt. Demo-Segmentnummern gehören nur zum virtuellen Roboter. Keine realen Geräte, Automationen oder die native Energiekonfiguration werden übernommen.
 
 Die Browser-Demo erzeugt ausdrücklich simulierte Historie zur Darstellung von Graphen. In HA entsteht echte Demo-Recorder-Historie erst ab Installation; sie wird nicht rückdatiert. Live-Kamera, eigene Hardwareintegrationen, TV-/ADB-/BLE-Einrichtung und die spezielle Shelly-Hardwarekonfiguration gehören zu den ausdrücklich selbst einzurichtenden Funktionen: [Abhängigkeiten](DEPENDENCIES.md).
 

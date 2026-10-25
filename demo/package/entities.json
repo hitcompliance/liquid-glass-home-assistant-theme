@@ -35,6 +35,13 @@
     "name": "Demo · Kuhlschrank tur"
   },
   {
+    "entity_id": "binary_sensor.liquid_glass_demo_schloss_batteriewarnung",
+    "key": "schloss_batteriewarnung",
+    "domain": "binary_sensor",
+    "room": "Flur",
+    "name": "Demo · Schloss batteriewarnung"
+  },
+  {
     "entity_id": "binary_sensor.liquid_glass_demo_storung",
     "key": "storung",
     "domain": "binary_sensor",
@@ -525,6 +532,13 @@
     "name": "Demo · Temperatur"
   },
   {
+    "entity_id": "sensor.liquid_glass_demo_turkontakt_batterie",
+    "key": "turkontakt_batterie",
+    "domain": "sensor",
+    "room": "Flur",
+    "name": "Demo · Turkontakt batterie"
+  },
+  {
     "entity_id": "sensor.liquid_glass_demo_ventilator_leistung",
     "key": "ventilator_leistung",
     "domain": "sensor",
@@ -623,11 +637,25 @@
     "name": "Demo · Schalter"
   },
   {
+    "entity_id": "switch.liquid_glass_demo_schloss_batteriewarnung_simulation",
+    "key": "schloss_batteriewarnung_simulation",
+    "domain": "switch",
+    "room": "Flur",
+    "name": "Demo · Schloss batteriewarnung simulation"
+  },
+  {
     "entity_id": "switch.liquid_glass_demo_steckdose",
     "key": "steckdose",
     "domain": "switch",
     "room": "Wohnzimmer",
     "name": "Demo · Steckdose"
+  },
+  {
+    "entity_id": "switch.liquid_glass_demo_turkontakt_simulation",
+    "key": "turkontakt_simulation",
+    "domain": "switch",
+    "room": "Flur",
+    "name": "Demo · Turkontakt simulation"
   },
   {
     "entity_id": "switch.liquid_glass_demo_waschmaschine",

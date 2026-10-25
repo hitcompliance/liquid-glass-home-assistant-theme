@@ -1,3 +1,11 @@
+# 3.3.1 · Domain-Blöcke wie in DASH6
+
+- Nativer Heading-Reiter und gemeinsame helle Glashülle um mehrere dunkle Entity-Karten im Einstieg und den Raum-Views verwendet.
+- Neue View **Domain-Blöcke & Aufbau**; jetzt 18 Views mit 98 virtuellen Entities und denselben Theme-Defaults.
+- Wohnungstür und Haustür mit vollständigen Kontakt-/Batterie-/Klingelzuordnungen direkt im Einstieg und im Türen-Block. Dummy-Schalter simulieren Türkontakt und Batteriewarnung.
+- Struktur, getrennte Materialien, 8px-Abstände und Domain-GUI in README, Kartenleitfaden und Agentenanleitung erklärt. Kopierbares Domain-Beispiel wird mitinstalliert.
+- Öffentliche Vorschau unterstützt die originale native Heading-Struktur; gemeinsame Karten-/Domain-Renderer werden unverändert verwendet.
+
 # 3.3.0 · Vollständige Demo, GUI und aktuelle Theme-Defaults
 
 - 17 Demo-Views mit 94 virtuellen Entities; Schuhschrank/Szenen, TV und Staubsauger unmittelbar im Einstieg sichtbar, ergänzt um echte Detaildialoge und Karteneditoren.

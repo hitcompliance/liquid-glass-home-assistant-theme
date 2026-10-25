@@ -242,15 +242,37 @@
     }
   },
   {
-    "title": "Türschloss · Kontakt & Aktionen",
+    "title": "Wohnungstür · Schloss, Kontakt & Batteriewarnung",
     "type": "custom:dash6-door-card",
     "card": {
       "type": "custom:dash6-door-card",
       "kind": "apartment",
-      "entity": "lock.liquid_glass_demo_tur",
-      "name": "Virtuelles Schloss",
       "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
-      "battery_entity": "sensor.liquid_glass_demo_schloss_batterie"
+      "entity": "lock.liquid_glass_demo_tur",
+      "name": "Wohnungstür",
+      "contact_battery_entity": "sensor.liquid_glass_demo_turkontakt_batterie",
+      "battery_warning_entity": "binary_sensor.liquid_glass_demo_schloss_batteriewarnung"
+    }
+  },
+  {
+    "title": "Haustür · Türöffner, Klingeln & Aktivität",
+    "type": "custom:dash6-door-card",
+    "card": {
+      "type": "custom:dash6-door-card",
+      "kind": "entrance",
+      "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
+      "entity": "button.liquid_glass_demo_turoffner",
+      "name": "Haustür",
+      "battery_entity": "sensor.liquid_glass_demo_schloss_batterie",
+      "activity_entity": "sensor.liquid_glass_demo_klingel_letzte_aktivitat",
+      "ring_entity": "binary_sensor.liquid_glass_demo_klingel",
+      "ring_entities": [
+        "binary_sensor.liquid_glass_demo_klingel"
+      ],
+      "cancel_entities": [
+        "button.liquid_glass_demo_turoffner",
+        "lock.liquid_glass_demo_tur"
+      ]
     }
   },
   {
@@ -340,9 +362,35 @@
     "type": "custom:dash6-domain-card",
     "card": {
       "type": "custom:dash6-domain-card",
-      "title": "Dynamische Demo-Sensoren",
-      "domain": "sensor",
-      "area": "DASH6 Demo · Büro"
+      "dashboard": "liquid-glass-demo",
+      "view": "demo",
+      "block_id": "light",
+      "area": "DASH6 Demo · Büro",
+      "domain": "light",
+      "heading": "Licht",
+      "auto_entities": false,
+      "combine": true,
+      "columns": 1,
+      "mobile_columns": 1,
+      "mobile_breakpoint": 700,
+      "cards": [
+        {
+          "type": "custom:dash6-govee-light-card-v2",
+          "entity": "light.liquid_glass_demo_lampe",
+          "name": "Leselicht",
+          "discovery": {
+            "enabled": false
+          }
+        },
+        {
+          "type": "custom:dash6-govee-light-card-v2",
+          "entity": "light.liquid_glass_demo_tischlicht",
+          "name": "Tischlicht",
+          "discovery": {
+            "enabled": false
+          }
+        }
+      ]
     }
   },
   {
@@ -425,12 +473,13 @@
           "card": {
             "type": "custom:dash6-door-card",
             "kind": "apartment",
-            "entity": "lock.liquid_glass_demo_tur",
-            "name": "Virtuelles Schloss",
             "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
-            "battery_entity": "sensor.liquid_glass_demo_schloss_batterie"
+            "entity": "lock.liquid_glass_demo_tur",
+            "name": "Wohnungstür",
+            "contact_battery_entity": "sensor.liquid_glass_demo_turkontakt_batterie",
+            "battery_warning_entity": "binary_sensor.liquid_glass_demo_schloss_batteriewarnung"
           },
-          "label": "Virtuelles Schloss",
+          "label": "Wohnungstür",
           "source": {
             "dashboard": "liquid-glass-demo",
             "view": "home",

@@ -1,0 +1,119 @@
+{
+  "title": "DASH6 Domain-Muster",
+  "views": [
+    {
+      "title": "Domain-Blöcke & Aufbau",
+      "path": "domain-bloecke",
+      "icon": "mdi:tab",
+      "type": "sections",
+      "max_columns": 2,
+      "theme": "DASH6 Satin Glass",
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "markdown",
+              "content": "# So sind DASH6-Domain-Blöcke aufgebaut\n1. Ein nativer Heading-Reiter benennt die Domain (z. B. Licht oder Medien).\n2. Eine gemeinsame helle Glasfläche umschließt alle zugehörigen Entity-Karten.\n3. Jede Entity behält ihre eigene dunkle Gerätekarte samt Bedienung und Detaildialogen.\n4. Kartenabstand 8px; die Hülle erzeugt keine zweite dunkle Fläche.\nKonfiguriert wird custom:dash6-domain-card mit heading, cards, area, domain, block_id und combine: true. heading erzeugt die native Überschrift; title ersetzt sie nicht. Die Domain-GUI verwaltet Überschrift, Raster und enthaltene Karten. In dieser Demo ist auto_entities: false, damit die festen Dummy-Beispiele nachvollziehbar bleiben. Eigene Räume können automatische Entity-Ergänzung nutzen. Helles und dunkles Glas folgen getrennt den Theme-Reglern. Das vollständige kopierbare Beispiel liegt unter /config/liquid-glass/examples/domain-blocks.yaml."
+            },
+            {
+              "type": "custom:dash6-domain-card",
+              "dashboard": "liquid-glass-demo",
+              "view": "domain-bloecke",
+              "block_id": "switch",
+              "area": "DASH6 Demo · Büro",
+              "domain": "switch",
+              "heading": "Schalter",
+              "auto_entities": false,
+              "combine": true,
+              "columns": 1,
+              "mobile_columns": 1,
+              "mobile_breakpoint": 700,
+              "cards": [
+                {
+                  "type": "custom:dash6-ikea-card",
+                  "entity": "switch.liquid_glass_demo_steckdose",
+                  "name": "Messsteckdose"
+                },
+                {
+                  "type": "custom:dash6-ikea-card",
+                  "entity": "switch.liquid_glass_demo_waschmaschine",
+                  "name": "Waschmaschine"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "custom:dash6-domain-card",
+              "dashboard": "liquid-glass-demo",
+              "view": "domain-bloecke",
+              "block_id": "light",
+              "area": "DASH6 Demo · Büro",
+              "domain": "light",
+              "heading": "Licht",
+              "auto_entities": false,
+              "combine": true,
+              "columns": 1,
+              "mobile_columns": 1,
+              "mobile_breakpoint": 700,
+              "cards": [
+                {
+                  "type": "custom:dash6-govee-light-card-v2",
+                  "entity": "light.liquid_glass_demo_lampe",
+                  "name": "Leselicht",
+                  "discovery": {
+                    "enabled": false
+                  }
+                },
+                {
+                  "type": "custom:dash6-govee-light-card-v2",
+                  "entity": "light.liquid_glass_demo_tischlicht",
+                  "name": "Tischlicht",
+                  "discovery": {
+                    "enabled": false
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:dash6-domain-card",
+              "dashboard": "liquid-glass-demo",
+              "view": "domain-bloecke",
+              "block_id": "media_player",
+              "area": "DASH6 Demo · Büro",
+              "domain": "media_player",
+              "heading": "Medien",
+              "auto_entities": false,
+              "combine": true,
+              "columns": 1,
+              "mobile_columns": 1,
+              "mobile_breakpoint": 700,
+              "cards": [
+                {
+                  "type": "custom:dash6-appletv-card",
+                  "name": "Fernseher & Apple TV",
+                  "apple_entity": "media_player.liquid_glass_demo_apple_tv",
+                  "apple_remote": "remote.liquid_glass_demo_apple_tv",
+                  "fire_entity": "media_player.liquid_glass_demo_fire_tv",
+                  "tv_entity": "media_player.liquid_glass_demo_fernseher",
+                  "tv_remote": "remote.liquid_glass_demo_fernseher",
+                  "tv_sources": "AppleTV, HDMI 1, HDMI 3"
+                },
+                {
+                  "type": "custom:dash6-homepod-card",
+                  "entity": "media_player.liquid_glass_demo_homepod",
+                  "homepod_remote_entity": "remote.liquid_glass_demo_homepod",
+                  "name": "Demo Lautsprecher"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

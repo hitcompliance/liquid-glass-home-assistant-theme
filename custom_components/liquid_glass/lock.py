@@ -4,10 +4,12 @@ class DemoLock(DemoEntity,LockEntity):
     _attr_supported_features=LockEntityFeature.OPEN
     is_locked=property(lambda s:s.data['locked'])
     async def async_lock(self,**kwargs):
+        self.coordinator.put('switch','turkontakt_simulation',on=False)
         self.change(locked=True)
         self.coordinator.put('binary_sensor','turkontakt',on=False)
     async def async_unlock(self,**kwargs): self.change(locked=False)
     async def async_open(self,**kwargs):
+        self.coordinator.put('switch','turkontakt_simulation',on=True)
         self.change(locked=False)
         self.coordinator.put('binary_sensor','turkontakt',on=True)
 async def async_setup_entry(hass,entry,async_add_entities):

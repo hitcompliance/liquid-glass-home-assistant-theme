@@ -2,8 +2,8 @@
   "schema_version": 1,
   "theme": "DASH6 Satin Glass",
   "entry_view": "demo",
-  "views": 17,
-  "virtual_entities": 94,
+  "views": 18,
+  "virtual_entities": 98,
   "card_types": [
     "custom:apexcharts-card",
     "custom:auto-entities",

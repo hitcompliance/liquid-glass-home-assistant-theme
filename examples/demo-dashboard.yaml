@@ -16,291 +16,9 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "markdown",
-                "content": "# Alle Karten, Details & GUI\nSchuhschrank-Szenen, TV/Apple TV und Staubsauger stehen direkt hier. **Kartenhintergründe** und die beschrifteten Detailknöpfe öffnen die echten Zusatzansichten. **GUI konfigurieren** öffnet den zugehörigen echten Karteneditor. Sämtliche Geräte und Aktionen sind simuliert. Die folgenden Raum-Views zeigen weitere Layouts und Muster."
+                "content": "# Alle Karten, Details & GUI\nDas DASH6-Grundmuster steht zuerst: **nativer Heading-Reiter → eine gemeinsame helle Glashülle → mehrere dunkle Entity-Karten** mit 8px Abstand. Die Raum-Views nutzen diese Domain-Blöcke ebenfalls; **Domain-Blöcke & Aufbau** erklärt die Konfiguration. Schuhschrank-Szenen, TV/Apple TV und Staubsauger stehen direkt hier. Kartenhintergründe und Detailknöpfe öffnen die echten Zusatzansichten. GUI konfigurieren öffnet den echten Karteneditor. Sämtliche Geräte und Aktionen sind simuliert."
               }
             },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Fernseher / Apple TV · Player & Fernbedienungen",
-                "card": {
-                  "type": "custom:dash6-appletv-card",
-                  "name": "Fernseher & Apple TV",
-                  "apple_entity": "media_player.liquid_glass_demo_apple_tv",
-                  "apple_remote": "remote.liquid_glass_demo_apple_tv",
-                  "fire_entity": "media_player.liquid_glass_demo_fire_tv",
-                  "tv_entity": "media_player.liquid_glass_demo_fernseher",
-                  "tv_remote": "remote.liquid_glass_demo_fernseher",
-                  "tv_sources": "AppleTV, HDMI 1, HDMI 3"
-                }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Lichtgruppe · Einzellichter im Detail",
-                "card": {
-                  "type": "custom:dash6-lightgroup-card-v2",
-                  "entity": "light.liquid_glass_demo_gruppe",
-                  "name": "Ambiente",
-                  "segments": [
-                    {
-                      "entity": "light.liquid_glass_demo_links",
-                      "name": "Links"
-                    },
-                    {
-                      "entity": "light.liquid_glass_demo_rechts",
-                      "name": "Rechts"
-                    }
-                  ],
-                  "power_entity": "sensor.liquid_glass_demo_lampe_leistung",
-                  "graph": {
-                    "show": true,
-                    "height": 100
-                  },
-                  "discovery": {
-                    "enabled": false
-                  }
-                }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Messsteckdose · Sperre, LED & Verlauf",
-                "card": {
-                  "type": "custom:dash6-ikea-card",
-                  "entity": "switch.liquid_glass_demo_steckdose",
-                  "power_entity": "sensor.liquid_glass_demo_steckdose_leistung",
-                  "child_lock_entity": "switch.liquid_glass_demo_kindersicherung",
-                  "led_entity": "switch.liquid_glass_demo_led",
-                  "name": "Messsteckdose"
-                }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Thermostat · Sollwerte & Presets",
-                "card": {
-                  "type": "custom:dash6-thermostat-card",
-                  "entity": "climate.liquid_glass_demo_dual_thermostat",
-                  "modes": [
-                    "off",
-                    "heat",
-                    "cool",
-                    "heat_cool"
-                  ]
-                }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Pflanzen · Zielbereiche & Historie",
-                "card": {
-                  "type": "custom:dash6-plant-card",
-                  "name": "Demo Pflanze",
-                  "entities": {
-                    "temperature": "sensor.liquid_glass_demo_pflanze_temperature",
-                    "moisture": "sensor.liquid_glass_demo_pflanze_moisture",
-                    "illuminance": "sensor.liquid_glass_demo_pflanze_illuminance",
-                    "conductivity": "sensor.liquid_glass_demo_pflanze_conductivity",
-                    "battery": "sensor.liquid_glass_demo_pflanze_battery"
-                  },
-                  "stale_hours": 6,
-                  "substrate": "coco_or_soilless"
-                }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Türschloss · Kontakt & Aktionen",
-                "card": {
-                  "type": "custom:dash6-door-card",
-                  "kind": "apartment",
-                  "entity": "lock.liquid_glass_demo_tur",
-                  "name": "Virtuelles Schloss",
-                  "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
-                  "battery_entity": "sensor.liquid_glass_demo_schloss_batterie"
-                }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Eigenständige Vacuum Dock Card",
-                "card": {
-                  "type": "custom:vacuum-dock-card",
-                  "entity": "vacuum.liquid_glass_demo_roboter",
-                  "name": "Eigenständige Vacuum Dock Card",
-                  "language": "auto",
-                  "entities": {
-                    "battery": "sensor.liquid_glass_demo_roboter_batterie",
-                    "progress": "sensor.liquid_glass_demo_roboter_fortschritt",
-                    "cleaning_mode": "select.liquid_glass_demo_roboter_reinigung",
-                    "mop_intensity": "select.liquid_glass_demo_roboter_wischintensitat",
-                    "mop_route": "select.liquid_glass_demo_roboter_wischroute",
-                    "mop_drying": "switch.liquid_glass_demo_dock_trocknung",
-                    "mop_washing": "switch.liquid_glass_demo_dock_wasche",
-                    "dust_emptying": "switch.liquid_glass_demo_dock_entleerung",
-                    "drying_remaining": "sensor.liquid_glass_demo_dock_trocknungsrestzeit",
-                    "clean_water": "binary_sensor.liquid_glass_demo_dock_frischwasser_problem",
-                    "dirty_water": "binary_sensor.liquid_glass_demo_dock_schmutzwasser_problem",
-                    "emptying_mode": "select.liquid_glass_demo_dock_entleerungsmodus"
-                  },
-                  "stats": {
-                    "default": [
-                      {
-                        "entity": "sensor.liquid_glass_demo_roboter_filter_restzeit",
-                        "title": "Filter",
-                        "unit": "h",
-                        "scale": 1
-                      }
-                    ],
-                    "cleaning": []
-                  },
-                  "areas": [
-                    {
-                      "roborock_area_id": 16,
-                      "name": "Demo Wohnzimmer"
-                    },
-                    {
-                      "roborock_area_id": 17,
-                      "name": "Demo Küche"
-                    }
-                  ],
-                  "defaults": {
-                    "mode": "vac_and_mop",
-                    "intensity": "moderate",
-                    "route": "standard",
-                    "fan": "balanced",
-                    "repeat": 1
-                  }
-                }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Domain-GUI · dynamische Bereichskarten",
-                "card": {
-                  "type": "custom:dash6-domain-card",
-                  "title": "Dynamische Demo-Sensoren",
-                  "domain": "sensor",
-                  "area": "DASH6 Demo · Büro"
-                }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Favoriten · Auswahl, Gruppierung & Reihenfolge",
-                "card": {
-                  "type": "custom:dash6-favorites-card",
-                  "title": "Favoriten ausprobieren",
-                  "dashboard": "liquid-glass-demo",
-                  "demo_gui": true,
-                  "demo_backend": true,
-                  "sources": [
-                    {
-                      "id": "demo-0",
-                      "card": {
-                        "type": "custom:dash6-lightgroup-card-v2",
-                        "entity": "light.liquid_glass_demo_gruppe",
-                        "name": "Ambiente",
-                        "segments": [
-                          {
-                            "entity": "light.liquid_glass_demo_links",
-                            "name": "Links"
-                          },
-                          {
-                            "entity": "light.liquid_glass_demo_rechts",
-                            "name": "Rechts"
-                          }
-                        ],
-                        "power_entity": "sensor.liquid_glass_demo_lampe_leistung",
-                        "graph": {
-                          "show": true,
-                          "height": 100
-                        },
-                        "discovery": {
-                          "enabled": false
-                        }
-                      },
-                      "label": "Ambiente",
-                      "source": {
-                        "dashboard": "liquid-glass-demo",
-                        "view": "home",
-                        "title": "Demo",
-                        "viewOrder": 0
-                      },
-                      "children": []
-                    },
-                    {
-                      "id": "demo-1",
-                      "card": {
-                        "type": "custom:dash6-thermostat-card",
-                        "entity": "climate.liquid_glass_demo_dual_thermostat",
-                        "modes": [
-                          "off",
-                          "heat",
-                          "cool",
-                          "heat_cool"
-                        ]
-                      },
-                      "label": "custom:dash6-thermostat-card",
-                      "source": {
-                        "dashboard": "liquid-glass-demo",
-                        "view": "home",
-                        "title": "Demo",
-                        "viewOrder": 0
-                      },
-                      "children": []
-                    },
-                    {
-                      "id": "demo-2",
-                      "card": {
-                        "type": "custom:dash6-door-card",
-                        "kind": "apartment",
-                        "entity": "lock.liquid_glass_demo_tur",
-                        "name": "Virtuelles Schloss",
-                        "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
-                        "battery_entity": "sensor.liquid_glass_demo_schloss_batterie"
-                      },
-                      "label": "Virtuelles Schloss",
-                      "source": {
-                        "dashboard": "liquid-glass-demo",
-                        "view": "home",
-                        "title": "Demo",
-                        "viewOrder": 0
-                      },
-                      "children": []
-                    }
-                  ],
-                  "selected": [
-                    "demo-0",
-                    "demo-1",
-                    "demo-2"
-                  ]
-                }
-              }
-            }
-          ]
-        },
-        {
-          "type": "grid",
-          "cards": [
             {
               "type": "custom:dash6-demo-scope",
               "card": {
@@ -414,6 +132,336 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
+                "title": "Haustür · Türöffner, Klingeln & Aktivität",
+                "card": {
+                  "type": "custom:dash6-door-card",
+                  "kind": "entrance",
+                  "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
+                  "entity": "button.liquid_glass_demo_turoffner",
+                  "name": "Haustür",
+                  "battery_entity": "sensor.liquid_glass_demo_schloss_batterie",
+                  "activity_entity": "sensor.liquid_glass_demo_klingel_letzte_aktivitat",
+                  "ring_entity": "binary_sensor.liquid_glass_demo_klingel",
+                  "ring_entities": [
+                    "binary_sensor.liquid_glass_demo_klingel"
+                  ],
+                  "cancel_entities": [
+                    "button.liquid_glass_demo_turoffner",
+                    "lock.liquid_glass_demo_tur"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Lichtgruppe · Einzellichter im Detail",
+                "card": {
+                  "type": "custom:dash6-lightgroup-card-v2",
+                  "entity": "light.liquid_glass_demo_gruppe",
+                  "name": "Ambiente",
+                  "segments": [
+                    {
+                      "entity": "light.liquid_glass_demo_links",
+                      "name": "Links"
+                    },
+                    {
+                      "entity": "light.liquid_glass_demo_rechts",
+                      "name": "Rechts"
+                    }
+                  ],
+                  "power_entity": "sensor.liquid_glass_demo_lampe_leistung",
+                  "graph": {
+                    "show": true,
+                    "height": 100
+                  },
+                  "discovery": {
+                    "enabled": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Messsteckdose · Sperre, LED & Verlauf",
+                "card": {
+                  "type": "custom:dash6-ikea-card",
+                  "entity": "switch.liquid_glass_demo_steckdose",
+                  "power_entity": "sensor.liquid_glass_demo_steckdose_leistung",
+                  "child_lock_entity": "switch.liquid_glass_demo_kindersicherung",
+                  "led_entity": "switch.liquid_glass_demo_led",
+                  "name": "Messsteckdose"
+                }
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Thermostat · Sollwerte & Presets",
+                "card": {
+                  "type": "custom:dash6-thermostat-card",
+                  "entity": "climate.liquid_glass_demo_dual_thermostat",
+                  "modes": [
+                    "off",
+                    "heat",
+                    "cool",
+                    "heat_cool"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Pflanzen · Zielbereiche & Historie",
+                "card": {
+                  "type": "custom:dash6-plant-card",
+                  "name": "Demo Pflanze",
+                  "entities": {
+                    "temperature": "sensor.liquid_glass_demo_pflanze_temperature",
+                    "moisture": "sensor.liquid_glass_demo_pflanze_moisture",
+                    "illuminance": "sensor.liquid_glass_demo_pflanze_illuminance",
+                    "conductivity": "sensor.liquid_glass_demo_pflanze_conductivity",
+                    "battery": "sensor.liquid_glass_demo_pflanze_battery"
+                  },
+                  "stale_hours": 6,
+                  "substrate": "coco_or_soilless"
+                }
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Auswahlgruppe · animierte Linse",
+                "card": {
+                  "type": "custom:dash6-segmented-control-card",
+                  "name": "Lichtmodus",
+                  "entity": "select.liquid_glass_demo_lichtmodus",
+                  "options": [
+                    {
+                      "value": "Lesen",
+                      "label": "Lesen",
+                      "icon": "mdi:book-open-variant"
+                    },
+                    {
+                      "value": "Entspannen",
+                      "label": "Entspannen",
+                      "icon": "mdi:sofa"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Theme-GUI · aktuelle Paketvorgaben",
+                "card": {
+                  "type": "custom:dash6-theme-editor-card",
+                  "title": "Glas & Hintergrund",
+                  "expanded": false
+                }
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Favoriten · Auswahl, Gruppierung & Reihenfolge",
+                "card": {
+                  "type": "custom:dash6-favorites-card",
+                  "title": "Favoriten ausprobieren",
+                  "dashboard": "liquid-glass-demo",
+                  "demo_gui": true,
+                  "demo_backend": true,
+                  "sources": [
+                    {
+                      "id": "demo-0",
+                      "card": {
+                        "type": "custom:dash6-lightgroup-card-v2",
+                        "entity": "light.liquid_glass_demo_gruppe",
+                        "name": "Ambiente",
+                        "segments": [
+                          {
+                            "entity": "light.liquid_glass_demo_links",
+                            "name": "Links"
+                          },
+                          {
+                            "entity": "light.liquid_glass_demo_rechts",
+                            "name": "Rechts"
+                          }
+                        ],
+                        "power_entity": "sensor.liquid_glass_demo_lampe_leistung",
+                        "graph": {
+                          "show": true,
+                          "height": 100
+                        },
+                        "discovery": {
+                          "enabled": false
+                        }
+                      },
+                      "label": "Ambiente",
+                      "source": {
+                        "dashboard": "liquid-glass-demo",
+                        "view": "home",
+                        "title": "Demo",
+                        "viewOrder": 0
+                      },
+                      "children": []
+                    },
+                    {
+                      "id": "demo-1",
+                      "card": {
+                        "type": "custom:dash6-thermostat-card",
+                        "entity": "climate.liquid_glass_demo_dual_thermostat",
+                        "modes": [
+                          "off",
+                          "heat",
+                          "cool",
+                          "heat_cool"
+                        ]
+                      },
+                      "label": "custom:dash6-thermostat-card",
+                      "source": {
+                        "dashboard": "liquid-glass-demo",
+                        "view": "home",
+                        "title": "Demo",
+                        "viewOrder": 0
+                      },
+                      "children": []
+                    },
+                    {
+                      "id": "demo-2",
+                      "card": {
+                        "type": "custom:dash6-door-card",
+                        "kind": "apartment",
+                        "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
+                        "entity": "lock.liquid_glass_demo_tur",
+                        "name": "Wohnungstür",
+                        "contact_battery_entity": "sensor.liquid_glass_demo_turkontakt_batterie",
+                        "battery_warning_entity": "binary_sensor.liquid_glass_demo_schloss_batteriewarnung"
+                      },
+                      "label": "Wohnungstür",
+                      "source": {
+                        "dashboard": "liquid-glass-demo",
+                        "view": "home",
+                        "title": "Demo",
+                        "viewOrder": 0
+                      },
+                      "children": []
+                    }
+                  ],
+                  "selected": [
+                    "demo-0",
+                    "demo-1",
+                    "demo-2"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "DASH6-Grundmuster · heller Domain-Block, dunkle Entity-Karten",
+                "card": {
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "demo",
+                  "block_id": "light",
+                  "area": "DASH6 Demo · Büro",
+                  "domain": "light",
+                  "heading": "Licht",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-govee-light-card-v2",
+                      "entity": "light.liquid_glass_demo_lampe",
+                      "name": "Leselicht",
+                      "discovery": {
+                        "enabled": false
+                      }
+                    },
+                    {
+                      "type": "custom:dash6-govee-light-card-v2",
+                      "entity": "light.liquid_glass_demo_tischlicht",
+                      "name": "Tischlicht",
+                      "discovery": {
+                        "enabled": false
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Fernseher / Apple TV · Player & Fernbedienungen",
+                "card": {
+                  "type": "custom:dash6-appletv-card",
+                  "name": "Fernseher & Apple TV",
+                  "apple_entity": "media_player.liquid_glass_demo_apple_tv",
+                  "apple_remote": "remote.liquid_glass_demo_apple_tv",
+                  "fire_entity": "media_player.liquid_glass_demo_fire_tv",
+                  "tv_entity": "media_player.liquid_glass_demo_fernseher",
+                  "tv_remote": "remote.liquid_glass_demo_fernseher",
+                  "tv_sources": "AppleTV, HDMI 1, HDMI 3"
+                }
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Wohnungstür · Schloss, Kontakt & Batteriewarnung",
+                "card": {
+                  "type": "custom:dash6-door-card",
+                  "kind": "apartment",
+                  "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
+                  "entity": "lock.liquid_glass_demo_tur",
+                  "name": "Wohnungstür",
+                  "contact_battery_entity": "sensor.liquid_glass_demo_turkontakt_batterie",
+                  "battery_warning_entity": "binary_sensor.liquid_glass_demo_schloss_batteriewarnung"
+                }
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "entities",
+                "title": "Türzustände ausprobieren · nur Dummy-Geräte",
+                "entities": [
+                  "button.liquid_glass_demo_klingeln",
+                  "switch.liquid_glass_demo_turkontakt_simulation",
+                  "switch.liquid_glass_demo_schloss_batteriewarnung_simulation",
+                  "lock.liquid_glass_demo_tur",
+                  "button.liquid_glass_demo_turoffner",
+                  "button.liquid_glass_demo_zurucksetzen"
+                ]
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
                 "title": "Licht · Farbe, Temperatur & Effekte",
                 "card": {
                   "type": "custom:dash6-govee-light-card-v2",
@@ -481,35 +529,54 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Auswahlgruppe · animierte Linse",
+                "title": "Eigenständige Vacuum Dock Card",
                 "card": {
-                  "type": "custom:dash6-segmented-control-card",
-                  "name": "Lichtmodus",
-                  "entity": "select.liquid_glass_demo_lichtmodus",
-                  "options": [
+                  "type": "custom:vacuum-dock-card",
+                  "entity": "vacuum.liquid_glass_demo_roboter",
+                  "name": "Eigenständige Vacuum Dock Card",
+                  "language": "auto",
+                  "entities": {
+                    "battery": "sensor.liquid_glass_demo_roboter_batterie",
+                    "progress": "sensor.liquid_glass_demo_roboter_fortschritt",
+                    "cleaning_mode": "select.liquid_glass_demo_roboter_reinigung",
+                    "mop_intensity": "select.liquid_glass_demo_roboter_wischintensitat",
+                    "mop_route": "select.liquid_glass_demo_roboter_wischroute",
+                    "mop_drying": "switch.liquid_glass_demo_dock_trocknung",
+                    "mop_washing": "switch.liquid_glass_demo_dock_wasche",
+                    "dust_emptying": "switch.liquid_glass_demo_dock_entleerung",
+                    "drying_remaining": "sensor.liquid_glass_demo_dock_trocknungsrestzeit",
+                    "clean_water": "binary_sensor.liquid_glass_demo_dock_frischwasser_problem",
+                    "dirty_water": "binary_sensor.liquid_glass_demo_dock_schmutzwasser_problem",
+                    "emptying_mode": "select.liquid_glass_demo_dock_entleerungsmodus"
+                  },
+                  "stats": {
+                    "default": [
+                      {
+                        "entity": "sensor.liquid_glass_demo_roboter_filter_restzeit",
+                        "title": "Filter",
+                        "unit": "h",
+                        "scale": 1
+                      }
+                    ],
+                    "cleaning": []
+                  },
+                  "areas": [
                     {
-                      "value": "Lesen",
-                      "label": "Lesen",
-                      "icon": "mdi:book-open-variant"
+                      "roborock_area_id": 16,
+                      "name": "Demo Wohnzimmer"
                     },
                     {
-                      "value": "Entspannen",
-                      "label": "Entspannen",
-                      "icon": "mdi:sofa"
+                      "roborock_area_id": 17,
+                      "name": "Demo Küche"
                     }
-                  ]
-                }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Theme-GUI · aktuelle Paketvorgaben",
-                "card": {
-                  "type": "custom:dash6-theme-editor-card",
-                  "title": "Glas & Hintergrund",
-                  "expanded": false
+                  ],
+                  "defaults": {
+                    "mode": "vac_and_mop",
+                    "intensity": "moderate",
+                    "route": "standard",
+                    "fan": "balanced",
+                    "repeat": 1
+                  }
                 }
               }
             },
@@ -523,6 +590,147 @@
                   "room": "demo",
                   "slot": "lights",
                   "columns": 2
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Domain-Blöcke & Aufbau",
+      "path": "domain-bloecke",
+      "icon": "mdi:tab",
+      "type": "sections",
+      "max_columns": 2,
+      "theme": "DASH6 Satin Glass",
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "markdown",
+                "content": "# So sind DASH6-Domain-Blöcke aufgebaut\n1. Ein nativer Heading-Reiter benennt die Domain (z. B. Licht oder Medien).\n2. Eine gemeinsame helle Glasfläche umschließt alle zugehörigen Entity-Karten.\n3. Jede Entity behält ihre eigene dunkle Gerätekarte samt Bedienung und Detaildialogen.\n4. Kartenabstand 8px; die Hülle erzeugt keine zweite dunkle Fläche.\nKonfiguriert wird custom:dash6-domain-card mit heading, cards, area, domain, block_id und combine: true. heading erzeugt die native Überschrift; title ersetzt sie nicht. Die Domain-GUI verwaltet Überschrift, Raster und enthaltene Karten. In dieser Demo ist auto_entities: false, damit die festen Dummy-Beispiele nachvollziehbar bleiben. Eigene Räume können automatische Entity-Ergänzung nutzen. Helles und dunkles Glas folgen getrennt den Theme-Reglern. Das vollständige kopierbare Beispiel liegt unter /config/liquid-glass/examples/domain-blocks.yaml."
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Schalter",
+                "minimal": true,
+                "card": {
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "domain-bloecke",
+                  "block_id": "switch",
+                  "area": "DASH6 Demo · Büro",
+                  "domain": "switch",
+                  "heading": "Schalter",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-ikea-card",
+                      "entity": "switch.liquid_glass_demo_steckdose",
+                      "name": "Messsteckdose"
+                    },
+                    {
+                      "type": "custom:dash6-ikea-card",
+                      "entity": "switch.liquid_glass_demo_waschmaschine",
+                      "name": "Waschmaschine"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Licht",
+                "minimal": true,
+                "card": {
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "domain-bloecke",
+                  "block_id": "light",
+                  "area": "DASH6 Demo · Büro",
+                  "domain": "light",
+                  "heading": "Licht",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-govee-light-card-v2",
+                      "entity": "light.liquid_glass_demo_lampe",
+                      "name": "Leselicht",
+                      "discovery": {
+                        "enabled": false
+                      }
+                    },
+                    {
+                      "type": "custom:dash6-govee-light-card-v2",
+                      "entity": "light.liquid_glass_demo_tischlicht",
+                      "name": "Tischlicht",
+                      "discovery": {
+                        "enabled": false
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "custom:dash6-demo-scope",
+              "card": {
+                "type": "custom:dash6-showcase-card",
+                "title": "Medien",
+                "minimal": true,
+                "card": {
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "domain-bloecke",
+                  "block_id": "media_player",
+                  "area": "DASH6 Demo · Büro",
+                  "domain": "media_player",
+                  "heading": "Medien",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-appletv-card",
+                      "name": "Fernseher & Apple TV",
+                      "apple_entity": "media_player.liquid_glass_demo_apple_tv",
+                      "apple_remote": "remote.liquid_glass_demo_apple_tv",
+                      "fire_entity": "media_player.liquid_glass_demo_fire_tv",
+                      "tv_entity": "media_player.liquid_glass_demo_fernseher",
+                      "tv_remote": "remote.liquid_glass_demo_fernseher",
+                      "tv_sources": "AppleTV, HDMI 1, HDMI 3"
+                    },
+                    {
+                      "type": "custom:dash6-homepod-card",
+                      "entity": "media_player.liquid_glass_demo_homepod",
+                      "homepod_remote_entity": "remote.liquid_glass_demo_homepod",
+                      "name": "Demo Lautsprecher"
+                    }
+                  ]
                 }
               }
             }
@@ -566,6 +774,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Energie",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-home-overview-card",
                   "kind": "energy",
@@ -584,6 +793,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Glas & Hintergrund",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-theme-editor-card",
                   "title": "Glas & Hintergrund",
@@ -596,6 +806,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Sicherheit",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-home-overview-card",
                   "kind": "security",
@@ -633,6 +844,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Wohnzimmer · Demo",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-area-header",
                   "title": "Wohnzimmer · Demo",
@@ -645,29 +857,46 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Ambiente",
+                "title": "Licht",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-lightgroup-card-v2",
-                  "entity": "light.liquid_glass_demo_gruppe",
-                  "name": "Ambiente",
-                  "segments": [
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "wohnzimmer",
+                  "block_id": "light-0",
+                  "area": "DASH6 Demo · Wohnzimmer",
+                  "domain": "light",
+                  "heading": "Licht",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
                     {
-                      "entity": "light.liquid_glass_demo_links",
-                      "name": "Links"
-                    },
-                    {
-                      "entity": "light.liquid_glass_demo_rechts",
-                      "name": "Rechts"
+                      "type": "custom:dash6-lightgroup-card-v2",
+                      "entity": "light.liquid_glass_demo_gruppe",
+                      "name": "Ambiente",
+                      "segments": [
+                        {
+                          "entity": "light.liquid_glass_demo_links",
+                          "name": "Links"
+                        },
+                        {
+                          "entity": "light.liquid_glass_demo_rechts",
+                          "name": "Rechts"
+                        }
+                      ],
+                      "power_entity": "sensor.liquid_glass_demo_lampe_leistung",
+                      "graph": {
+                        "show": true,
+                        "height": 100
+                      },
+                      "discovery": {
+                        "enabled": false
+                      }
                     }
-                  ],
-                  "power_entity": "sensor.liquid_glass_demo_lampe_leistung",
-                  "graph": {
-                    "show": true,
-                    "height": 100
-                  },
-                  "discovery": {
-                    "enabled": false
-                  }
+                  ]
                 }
               }
             },
@@ -675,12 +904,31 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Demo Lautsprecher",
+                "title": "Schalter & Geräte",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-homepod-card",
-                  "entity": "media_player.liquid_glass_demo_homepod",
-                  "homepod_remote_entity": "remote.liquid_glass_demo_homepod",
-                  "name": "Demo Lautsprecher"
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "wohnzimmer",
+                  "block_id": "switch-2",
+                  "area": "DASH6 Demo · Wohnzimmer",
+                  "domain": "switch",
+                  "heading": "Schalter & Geräte",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-ikea-card",
+                      "entity": "switch.liquid_glass_demo_steckdose",
+                      "power_entity": "sensor.liquid_glass_demo_steckdose_leistung",
+                      "child_lock_entity": "switch.liquid_glass_demo_kindersicherung",
+                      "led_entity": "switch.liquid_glass_demo_led",
+                      "name": "Messsteckdose"
+                    }
+                  ]
                 }
               }
             }
@@ -694,6 +942,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "custom:mushroom-chips-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:mushroom-chips-card",
                   "chips": [
@@ -725,31 +974,39 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Fernseher & Apple TV",
+                "title": "Medien",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-appletv-card",
-                  "name": "Fernseher & Apple TV",
-                  "apple_entity": "media_player.liquid_glass_demo_apple_tv",
-                  "apple_remote": "remote.liquid_glass_demo_apple_tv",
-                  "fire_entity": "media_player.liquid_glass_demo_fire_tv",
-                  "tv_entity": "media_player.liquid_glass_demo_fernseher",
-                  "tv_remote": "remote.liquid_glass_demo_fernseher",
-                  "tv_sources": "AppleTV, HDMI 1, HDMI 3"
-                }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Messsteckdose",
-                "card": {
-                  "type": "custom:dash6-ikea-card",
-                  "entity": "switch.liquid_glass_demo_steckdose",
-                  "power_entity": "sensor.liquid_glass_demo_steckdose_leistung",
-                  "child_lock_entity": "switch.liquid_glass_demo_kindersicherung",
-                  "led_entity": "switch.liquid_glass_demo_led",
-                  "name": "Messsteckdose"
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "wohnzimmer",
+                  "block_id": "media_player-1",
+                  "area": "DASH6 Demo · Wohnzimmer",
+                  "domain": "media_player",
+                  "heading": "Medien",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-appletv-card",
+                      "name": "Fernseher & Apple TV",
+                      "apple_entity": "media_player.liquid_glass_demo_apple_tv",
+                      "apple_remote": "remote.liquid_glass_demo_apple_tv",
+                      "fire_entity": "media_player.liquid_glass_demo_fire_tv",
+                      "tv_entity": "media_player.liquid_glass_demo_fernseher",
+                      "tv_remote": "remote.liquid_glass_demo_fernseher",
+                      "tv_sources": "AppleTV, HDMI 1, HDMI 3"
+                    },
+                    {
+                      "type": "custom:dash6-homepod-card",
+                      "entity": "media_player.liquid_glass_demo_homepod",
+                      "homepod_remote_entity": "remote.liquid_glass_demo_homepod",
+                      "name": "Demo Lautsprecher"
+                    }
+                  ]
                 }
               }
             }
@@ -773,6 +1030,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Küche · Demo",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-area-header",
                   "title": "Küche · Demo",
@@ -784,14 +1042,31 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Kühlschrank",
+                "title": "Schalter & Geräte",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-ikea-card",
-                  "entity": "switch.liquid_glass_demo_kuhlschrank",
-                  "name": "Kühlschrank",
-                  "power_entity": "sensor.liquid_glass_demo_kuhlschrank_leistung",
-                  "door_entity": "binary_sensor.liquid_glass_demo_kuhlschrank_tur",
-                  "temperature_entity": "sensor.liquid_glass_demo_kuhlschrank_temperatur"
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "kuche",
+                  "block_id": "switch-1",
+                  "area": "DASH6 Demo · Küche",
+                  "domain": "switch",
+                  "heading": "Schalter & Geräte",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-ikea-card",
+                      "entity": "switch.liquid_glass_demo_kuhlschrank",
+                      "name": "Kühlschrank",
+                      "power_entity": "sensor.liquid_glass_demo_kuhlschrank_leistung",
+                      "door_entity": "binary_sensor.liquid_glass_demo_kuhlschrank_tur",
+                      "temperature_entity": "sensor.liquid_glass_demo_kuhlschrank_temperatur"
+                    }
+                  ]
                 }
               }
             }
@@ -804,19 +1079,36 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Demo Pflanze",
+                "title": "Pflanzen",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-plant-card",
-                  "name": "Demo Pflanze",
-                  "entities": {
-                    "temperature": "sensor.liquid_glass_demo_pflanze_temperature",
-                    "moisture": "sensor.liquid_glass_demo_pflanze_moisture",
-                    "illuminance": "sensor.liquid_glass_demo_pflanze_illuminance",
-                    "conductivity": "sensor.liquid_glass_demo_pflanze_conductivity",
-                    "battery": "sensor.liquid_glass_demo_pflanze_battery"
-                  },
-                  "stale_hours": 6,
-                  "substrate": "coco_or_soilless"
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "kuche",
+                  "block_id": "sensor-0",
+                  "area": "DASH6 Demo · Küche",
+                  "domain": "sensor",
+                  "heading": "Pflanzen",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-plant-card",
+                      "name": "Demo Pflanze",
+                      "entities": {
+                        "temperature": "sensor.liquid_glass_demo_pflanze_temperature",
+                        "moisture": "sensor.liquid_glass_demo_pflanze_moisture",
+                        "illuminance": "sensor.liquid_glass_demo_pflanze_illuminance",
+                        "conductivity": "sensor.liquid_glass_demo_pflanze_conductivity",
+                        "battery": "sensor.liquid_glass_demo_pflanze_battery"
+                      },
+                      "stale_hours": 6,
+                      "substrate": "coco_or_soilless"
+                    }
+                  ]
                 }
               }
             },
@@ -851,6 +1143,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Schlafzimmer · Demo",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-area-header",
                   "title": "Schlafzimmer · Demo",
@@ -862,15 +1155,27 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "thermostat-card",
+                "title": "Verdunklungen",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-thermostat-card",
-                  "entity": "climate.liquid_glass_demo_dual_thermostat",
-                  "modes": [
-                    "off",
-                    "heat",
-                    "cool",
-                    "heat_cool"
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "schlafzimmer",
+                  "block_id": "cover-1",
+                  "area": "DASH6 Demo · Schlafzimmer",
+                  "domain": "cover",
+                  "heading": "Verdunklungen",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-cover-card",
+                      "entity": "cover.liquid_glass_demo_rollo",
+                      "name": "Rollo"
+                    }
                   ]
                 }
               }
@@ -884,28 +1189,43 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "thermostat-card",
+                "title": "Klima",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-thermostat-card",
-                  "entity": "climate.liquid_glass_demo_thermostat",
-                  "modes": [
-                    "off",
-                    "heat",
-                    "cool",
-                    "heat_cool"
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "schlafzimmer",
+                  "block_id": "climate-0",
+                  "area": "DASH6 Demo · Schlafzimmer",
+                  "domain": "climate",
+                  "heading": "Klima",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-thermostat-card",
+                      "entity": "climate.liquid_glass_demo_thermostat",
+                      "modes": [
+                        "off",
+                        "heat",
+                        "cool",
+                        "heat_cool"
+                      ]
+                    },
+                    {
+                      "type": "custom:dash6-thermostat-card",
+                      "entity": "climate.liquid_glass_demo_dual_thermostat",
+                      "modes": [
+                        "off",
+                        "heat",
+                        "cool",
+                        "heat_cool"
+                      ]
+                    }
                   ]
-                }
-              }
-            },
-            {
-              "type": "custom:dash6-demo-scope",
-              "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Rollo",
-                "card": {
-                  "type": "custom:dash6-cover-card",
-                  "entity": "cover.liquid_glass_demo_rollo",
-                  "name": "Rollo"
                 }
               }
             }
@@ -929,6 +1249,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Flur · Demo",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-area-header",
                   "title": "Flur · Demo",
@@ -940,14 +1261,49 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Virtuelles Schloss",
+                "title": "Türen",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-door-card",
-                  "kind": "apartment",
-                  "entity": "lock.liquid_glass_demo_tur",
-                  "name": "Virtuelles Schloss",
-                  "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
-                  "battery_entity": "sensor.liquid_glass_demo_schloss_batterie"
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "flur",
+                  "block_id": "lock-1",
+                  "area": "DASH6 Demo · Flur",
+                  "domain": "lock",
+                  "heading": "Türen",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-door-card",
+                      "kind": "apartment",
+                      "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
+                      "entity": "lock.liquid_glass_demo_tur",
+                      "name": "Wohnungstür",
+                      "contact_battery_entity": "sensor.liquid_glass_demo_turkontakt_batterie",
+                      "battery_warning_entity": "binary_sensor.liquid_glass_demo_schloss_batteriewarnung"
+                    },
+                    {
+                      "type": "custom:dash6-door-card",
+                      "kind": "entrance",
+                      "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
+                      "entity": "button.liquid_glass_demo_turoffner",
+                      "name": "Haustür",
+                      "battery_entity": "sensor.liquid_glass_demo_schloss_batterie",
+                      "activity_entity": "sensor.liquid_glass_demo_klingel_letzte_aktivitat",
+                      "ring_entity": "binary_sensor.liquid_glass_demo_klingel",
+                      "ring_entities": [
+                        "binary_sensor.liquid_glass_demo_klingel"
+                      ],
+                      "cancel_entities": [
+                        "button.liquid_glass_demo_turoffner",
+                        "lock.liquid_glass_demo_tur"
+                      ]
+                    }
+                  ]
                 }
               }
             }
@@ -960,54 +1316,71 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Schuhschrank",
+                "title": "Licht",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-shoe-cabinet-card",
-                  "entity": "light.liquid_glass_demo_schuhschrank",
-                  "name": "Schuhschrank",
-                  "segments": [
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "flur",
+                  "block_id": "light-0",
+                  "area": "DASH6 Demo · Flur",
+                  "domain": "light",
+                  "heading": "Licht",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
                     {
-                      "entity": "light.liquid_glass_demo_schuhschrank_links",
-                      "name": "Links"
-                    },
-                    {
-                      "entity": "light.liquid_glass_demo_schuhschrank_rechts",
-                      "name": "Rechts"
+                      "type": "custom:dash6-shoe-cabinet-card",
+                      "entity": "light.liquid_glass_demo_schuhschrank",
+                      "name": "Schuhschrank",
+                      "segments": [
+                        {
+                          "entity": "light.liquid_glass_demo_schuhschrank_links",
+                          "name": "Links"
+                        },
+                        {
+                          "entity": "light.liquid_glass_demo_schuhschrank_rechts",
+                          "name": "Rechts"
+                        }
+                      ],
+                      "scenes": [
+                        {
+                          "entity": "scene.liquid_glass_demo_bunt",
+                          "name": "Bunt",
+                          "icon": "mdi:palette"
+                        },
+                        {
+                          "entity": "scene.liquid_glass_demo_weiss",
+                          "name": "Weiß",
+                          "icon": "mdi:white-balance-sunny"
+                        }
+                      ],
+                      "power_entity": "sensor.liquid_glass_demo_schuhschrank_leistung",
+                      "graph": {
+                        "show": true,
+                        "height": 100
+                      }
                     }
-                  ],
-                  "scenes": [
-                    {
-                      "entity": "scene.liquid_glass_demo_bunt",
-                      "name": "Bunt",
-                      "icon": "mdi:palette"
-                    },
-                    {
-                      "entity": "scene.liquid_glass_demo_weiss",
-                      "name": "Weiß",
-                      "icon": "mdi:white-balance-sunny"
-                    }
-                  ],
-                  "power_entity": "sensor.liquid_glass_demo_schuhschrank_leistung",
-                  "graph": {
-                    "show": true,
-                    "height": 100
-                  }
+                  ]
                 }
               }
             },
             {
               "type": "custom:dash6-demo-scope",
               "card": {
-                "type": "custom:dash6-showcase-card",
-                "title": "Virtueller Türöffner",
-                "card": {
-                  "type": "custom:dash6-door-card",
-                  "kind": "entrance",
-                  "entity": "button.liquid_glass_demo_turoffner",
-                  "name": "Virtueller Türöffner",
-                  "ring_entity": "binary_sensor.liquid_glass_demo_klingel",
-                  "activity_entity": "sensor.liquid_glass_demo_klingel_letzte_aktivitat"
-                }
+                "type": "entities",
+                "title": "Türzustände ausprobieren · nur Dummy-Geräte",
+                "entities": [
+                  "button.liquid_glass_demo_klingeln",
+                  "switch.liquid_glass_demo_turkontakt_simulation",
+                  "switch.liquid_glass_demo_schloss_batteriewarnung_simulation",
+                  "lock.liquid_glass_demo_tur",
+                  "button.liquid_glass_demo_turoffner",
+                  "button.liquid_glass_demo_zurucksetzen"
+                ]
               }
             }
           ]
@@ -1030,6 +1403,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Badezimmer · Demo",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-area-header",
                   "title": "Badezimmer · Demo",
@@ -1057,17 +1431,34 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Lüftung · Aus / Auto / Ein",
+                "title": "Lüftung",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-fan-card",
-                  "entity": "fan.liquid_glass_demo_luftung",
-                  "name": "Lüftung · Aus / Auto / Ein",
-                  "force_switch_entity": "switch.liquid_glass_demo_luftung_force",
-                  "remaining_time_entity": "number.liquid_glass_demo_luftung_restzeit",
-                  "running_switch_entity": "switch.liquid_glass_demo_luftung_ausgang",
-                  "running_force_switch_entity": "switch.liquid_glass_demo_luftung_force_ausgang",
-                  "presence_entity": "binary_sensor.liquid_glass_demo_anwesenheit",
-                  "power_entity": "sensor.liquid_glass_demo_luftung_leistung"
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "badezimmer",
+                  "block_id": "fan-0",
+                  "area": "DASH6 Demo · Badezimmer",
+                  "domain": "fan",
+                  "heading": "Lüftung",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-fan-card",
+                      "entity": "fan.liquid_glass_demo_luftung",
+                      "name": "Lüftung · Aus / Auto / Ein",
+                      "force_switch_entity": "switch.liquid_glass_demo_luftung_force",
+                      "remaining_time_entity": "number.liquid_glass_demo_luftung_restzeit",
+                      "running_switch_entity": "switch.liquid_glass_demo_luftung_ausgang",
+                      "running_force_switch_entity": "switch.liquid_glass_demo_luftung_force_ausgang",
+                      "presence_entity": "binary_sensor.liquid_glass_demo_anwesenheit",
+                      "power_entity": "sensor.liquid_glass_demo_luftung_leistung"
+                    }
+                  ]
                 }
               }
             }
@@ -1091,6 +1482,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Büro · Demo",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-area-header",
                   "title": "Büro · Demo",
@@ -1102,12 +1494,31 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Dynamische Demo-Sensoren",
+                "title": "Sensoren",
+                "minimal": true,
                 "card": {
                   "type": "custom:dash6-domain-card",
-                  "title": "Dynamische Demo-Sensoren",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "buro",
+                  "block_id": "sensor",
+                  "area": "DASH6 Demo · Büro",
                   "domain": "sensor",
-                  "area": "DASH6 Demo · Büro"
+                  "heading": "Sensoren",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "tile",
+                      "entity": "sensor.liquid_glass_demo_temperatur"
+                    },
+                    {
+                      "type": "tile",
+                      "entity": "sensor.liquid_glass_demo_batterie"
+                    }
+                  ]
                 }
               }
             },
@@ -1132,23 +1543,40 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Farbe, Temperatur & Effekte",
+                "title": "Licht",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-govee-light-card-v2",
-                  "entity": "light.liquid_glass_demo_lampe",
-                  "name": "Farbe, Temperatur & Effekte",
-                  "controls": {
-                    "mode": "combo",
-                    "buttons": "group"
-                  },
-                  "power_entity": "sensor.liquid_glass_demo_lampe_leistung",
-                  "graph": {
-                    "show": true,
-                    "height": 100
-                  },
-                  "discovery": {
-                    "enabled": false
-                  }
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "buro",
+                  "block_id": "light-0",
+                  "area": "DASH6 Demo · Büro",
+                  "domain": "light",
+                  "heading": "Licht",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-govee-light-card-v2",
+                      "entity": "light.liquid_glass_demo_lampe",
+                      "name": "Farbe, Temperatur & Effekte",
+                      "controls": {
+                        "mode": "combo",
+                        "buttons": "group"
+                      },
+                      "power_entity": "sensor.liquid_glass_demo_lampe_leistung",
+                      "graph": {
+                        "show": true,
+                        "height": 100
+                      },
+                      "discovery": {
+                        "enabled": false
+                      }
+                    }
+                  ]
                 }
               }
             },
@@ -1157,6 +1585,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "room-slot-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-room-slot-card",
                   "room": "demo",
@@ -1185,6 +1614,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Waschkeller · Demo",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-area-header",
                   "title": "Waschkeller · Demo",
@@ -1212,12 +1642,29 @@
               "type": "custom:dash6-demo-scope",
               "card": {
                 "type": "custom:dash6-showcase-card",
-                "title": "Waschmaschine",
+                "title": "Schalter & Geräte",
+                "minimal": true,
                 "card": {
-                  "type": "custom:dash6-ikea-card",
-                  "entity": "switch.liquid_glass_demo_waschmaschine",
-                  "name": "Waschmaschine",
-                  "power_entity": "sensor.liquid_glass_demo_waschmaschine_leistung"
+                  "type": "custom:dash6-domain-card",
+                  "dashboard": "liquid-glass-demo",
+                  "view": "waschkeller",
+                  "block_id": "switch-0",
+                  "area": "DASH6 Demo · Waschkeller",
+                  "domain": "switch",
+                  "heading": "Schalter & Geräte",
+                  "auto_entities": false,
+                  "combine": true,
+                  "columns": 1,
+                  "mobile_columns": 1,
+                  "mobile_breakpoint": 700,
+                  "cards": [
+                    {
+                      "type": "custom:dash6-ikea-card",
+                      "entity": "switch.liquid_glass_demo_waschmaschine",
+                      "name": "Waschmaschine",
+                      "power_entity": "sensor.liquid_glass_demo_waschmaschine_leistung"
+                    }
+                  ]
                 }
               }
             }
@@ -1294,6 +1741,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Demo-Raum",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-area-header",
                   "title": "Demo-Raum",
@@ -1307,6 +1755,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Stehlampe",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-govee-light-card-v2",
                   "entity": "light.liquid_glass_demo_lampe",
@@ -1340,6 +1789,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Lichtgruppe",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-lightgroup-card-v2",
                   "entity": "light.liquid_glass_demo_gruppe",
@@ -1376,6 +1826,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Licht mit Szenen",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-shoe-cabinet-card",
                   "entity": "light.liquid_glass_demo_schrankgruppe",
@@ -1418,6 +1869,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Messsteckdose",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-ikea-card",
                   "entity": "switch.liquid_glass_demo_steckdose",
@@ -1442,6 +1894,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Schalter",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-glass-switch",
                   "entity": "switch.liquid_glass_demo_schalter",
@@ -1456,6 +1909,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "satin-native-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-satin-native-card",
                   "definition": {
@@ -1476,6 +1930,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "satin-native-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-satin-native-card",
                   "definition": {
@@ -1496,6 +1951,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "satin-graph-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-satin-graph-card",
                   "definition": {
@@ -1591,6 +2047,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Lichtmodus",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-segmented-control-card",
                   "name": "Lichtmodus",
@@ -1615,6 +2072,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Glas einstellen",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-theme-editor-card",
                   "title": "Glas einstellen",
@@ -1642,6 +2100,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "thermostat-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-thermostat-card",
                   "entity": "climate.liquid_glass_demo_thermostat",
@@ -1659,6 +2118,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "thermostat-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-thermostat-card",
                   "entity": "climate.liquid_glass_demo_dual_thermostat",
@@ -1676,6 +2136,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Rollo",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-cover-card",
                   "entity": "cover.liquid_glass_demo_rollo",
@@ -1688,6 +2149,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Fernseher und Apple TV",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-media-card",
                   "name": "Fernseher und Apple TV",
@@ -1718,6 +2180,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "vacuum-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-vacuum-card",
                   "entity": "vacuum.liquid_glass_demo_roboter",
@@ -1770,6 +2233,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Eingang",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-door-card",
                   "kind": "apartment",
@@ -1785,6 +2249,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Türöffner",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-door-card",
                   "kind": "entrance",
@@ -1815,6 +2280,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "stack-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-stack-card",
                   "cards": [
@@ -1839,6 +2305,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "render-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-render-card",
                   "definition": {
@@ -1857,6 +2324,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "profile-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-profile-card",
                   "profile": "sample-button",
@@ -1872,6 +2340,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "auto-entities",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-auto-entities",
                   "card": {
@@ -1900,6 +2369,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "apexcharts-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-apexcharts-card",
                   "graph_span": "24h",
@@ -1931,6 +2401,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "ultra-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-ultra-card",
                   "_config_version": 3,
@@ -1977,6 +2448,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "embedded-view-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-embedded-view-card",
                   "mode": "static",
@@ -2011,6 +2483,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Eingebettetes Licht",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-govee-light-card-v2",
                   "entity": "light.liquid_glass_demo_tischlicht",
@@ -2041,6 +2514,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "custom:vertical-stack-in-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:vertical-stack-in-card",
                   "cards": [
@@ -2061,6 +2535,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "custom:layout-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:layout-card",
                   "layout_type": "custom:grid-layout",
@@ -2086,6 +2561,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "custom:mod-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:mod-card",
                   "card": {
@@ -2103,6 +2579,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "custom:more-info-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:more-info-card",
                   "entity": "cover.liquid_glass_demo_rollo"
@@ -2114,6 +2591,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "custom:mushroom-template-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:mushroom-template-card",
                   "entity": "switch.liquid_glass_demo_steckdose",
@@ -2136,6 +2614,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "custom:auto-entities",
+                "minimal": false,
                 "card": {
                   "type": "custom:auto-entities",
                   "card": {
@@ -2162,6 +2641,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "direct-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-direct-card",
                   "card": {
@@ -2180,6 +2660,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "custom:embedded-view-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:embedded-view-card",
                   "mode": "static",
@@ -2193,6 +2674,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "custom:apexcharts-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:apexcharts-card",
                   "header": {
@@ -2228,6 +2710,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "climate-background",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-climate-background",
                   "view_path": "heizung-klima",
@@ -2240,6 +2723,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "thermostat-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-thermostat-card",
                   "entity": "climate.liquid_glass_demo_thermostat",
@@ -2269,6 +2753,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "thermostat-card",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-thermostat-card",
                   "entity": "climate.liquid_glass_demo_dual_thermostat",
@@ -2301,6 +2786,7 @@
               "card": {
                 "type": "custom:dash6-showcase-card",
                 "title": "Favoriten ausprobieren",
+                "minimal": false,
                 "card": {
                   "type": "custom:dash6-favorites-card",
                   "title": "Favoriten ausprobieren",
@@ -2368,12 +2854,13 @@
                       "card": {
                         "type": "custom:dash6-door-card",
                         "kind": "apartment",
-                        "entity": "lock.liquid_glass_demo_tur",
-                        "name": "Virtuelles Schloss",
                         "contact_entity": "binary_sensor.liquid_glass_demo_turkontakt",
-                        "battery_entity": "sensor.liquid_glass_demo_schloss_batterie"
+                        "entity": "lock.liquid_glass_demo_tur",
+                        "name": "Wohnungstür",
+                        "contact_battery_entity": "sensor.liquid_glass_demo_turkontakt_batterie",
+                        "battery_warning_entity": "binary_sensor.liquid_glass_demo_schloss_batteriewarnung"
                       },
-                      "label": "Virtuelles Schloss",
+                      "label": "Wohnungstür",
                       "source": {
                         "dashboard": "liquid-glass-demo",
                         "view": "home",

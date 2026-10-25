@@ -14,6 +14,7 @@ Dieses Repository liefert eine vollständige Home-Assistant-HACS-Integration. Da
 | `custom_components/liquid_glass/` | HA-Lebenszyklus, sicherer Installer, virtuelle Geräte und Theme-Speicherung |
 | `custom_components/liquid_glass/bundle/` | Generiertes, eigenständiges HACS-Laufzeitpaket |
 | `dist/` | Generierte Einstiegsmodule, Chunks, Profile, Defaults, Konfigurationen und Lizenzen |
+| `examples/domain-blocks.yaml` | Kopierbares kanonisches Domain-Muster: nativer Reiter, heller Rahmen, mehrere dunkle Entity-Karten |
 | `examples/demo-dashboard.yaml` | Vollständige installierbare Demo; JSON-Syntax ist gültiges YAML |
 | `scripts/build-device-demo.py` | Kanonischer Generator für Demo-Views, Dummy-Entities und Kartenkatalog |
 | `support/card-catalog.json` | Automatisch erzeugte Galerie-Konfigurationen |
@@ -29,8 +30,19 @@ Auf der HA-Installation liegen die Karten unter `/config/www/liquid-glass/`, die
 - Öffentlich: [Alle Karten, Details und GUI](https://hitcompliance.github.io/liquid-glass-home-assistant-theme/).
 - Installiert: **Liquid Glass Demo**, Einstieg `/liquid-glass-demo/demo` beziehungsweise die erste View **Alle Karten & Details**.
 - Danach die Raum-Views und die Bibliotheks-/Strukturansichten ansehen. Florin und private Dashboarddaten gehören nicht in die Veröffentlichung.
+- Beide Türkarten vollständig zeigen: Wohnungstür mit Kontakt-/Batteriewarnung und Haustür mit Klingel-/Cancel-Rückmeldung. Dummy-Schalter für diese Zustände nutzen; keine echte Türaktion für Gestaltungstests.
 - Schuhschrank mit direkten Szenen, TV/Apple TV und Staubsauger stehen direkt im Einstieg. Licht-/Segmentdetails, Fernbedienungen, Reinigungsplanung, Basisstation, Verschleißteile und Presets müssen bedienbar bleiben.
 - **GUI konfigurieren** öffnet den echten Karteneditor, soweit die Klasse `getConfigElement()` anbietet. Dafür keine separate, abweichende Demo-GUI erfinden.
+
+## Verbindlicher Aufbau der Domain-Blöcke
+
+Die Raum-Views und die Demo-View **Domain-Blöcke & Aufbau** (`/liquid-glass-demo/domain-bloecke`) sind die Gestaltungsreferenz. Verwende `custom:dash6-domain-card` mit `heading`, `cards`, `combine: true`, eindeutiger `block_id`, passender `area` und `domain`. Das kopierbare Beispiel steht in [examples/domain-blocks.yaml](examples/domain-blocks.yaml).
+
+- **Nativer Heading-Reiter → gemeinsame helle Glashülle → mehrere dunkle Entity-Karten.** Der Reiter gehört zur Hülle. Ein Grid-Titel oder eine einzelne dunkle Karte ersetzt dieses Muster nicht.
+- `heading` erzeugt die native Überschrift; `title` ist kein Ersatz. Geräte behalten eigene Titel, Aktionen, Sperren und Detaildialoge. Eine Domain kann mehrere Karten enthalten.
+- Hülle und Reiter verwenden helles Glas, Entity-Karten dunkles Glas; die beiden Theme-Regler bleiben unabhängig. Layout-Wrapper transparent, Abstände 8px. Keine zusätzlichen hartcodierten Materialflächen.
+- Die Domain-GUI verwaltet Überschrift, Raster, feste Karten, automatische Ergänzung und Ausschlüsse. Die jeweiligen Geräteeditoren bearbeiten die inneren Karten.
+- In den festen Dummy-Beispielen ist `auto_entities: false`. Produktive dynamische Blöcke aus den tatsächlichen Bereichs-/Domain-Zuordnungen ergänzen; globale Namensausschlüsse getrennt im Dashboard belassen. Keine privaten Raumlader/Profile als neue Voraussetzung für produktive Raum-Views.
 
 ## Verbindliche Entwicklungsmuster
 

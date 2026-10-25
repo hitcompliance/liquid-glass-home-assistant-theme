@@ -21,10 +21,40 @@ Bei der ersten Einrichtung ist Internetzugriff auf GitHub erforderlich. Nach ein
 - Eigene Karten für Lichter/Gruppen/Schuhschrank, Messsteckdosen/Kühlschrank, Drei-Modus-Lüftung, Thermostate, Rollos, HomePod/Apple TV/TV, Türen/Schlösser, Roboter/Dock, Pflanzen und Kamera sowie Raum-, Domain-, Profil-, Struktur- und Favoritenkarten.
 - Alle JavaScript-Einstiege, nachgeladenen Chunks, neutralen Profile, Bilder und Lizenzen; HACS lädt ein eigenständiges Laufzeitpaket unter `custom_components/liquid_glass/`.
 - **Zwölf automatisch installierte Fremdmodule:** Ultra Card, Button Card, Mushroom, Auto Entities, ApexCharts Card, Mini Graph Card, Card Mod, Layout Card, More Info Card, Vertical Stack In Card, Firemote und Embedded View Card. Die [Abhängigkeitstabelle](docs/DEPENDENCIES.md) nennt Versionen, Zweck und Installationsverhalten.
-- Eine vollständige Demo mit **17 Views**: Einstieg **Alle Karten & Details**, Räume nach dem Vorbild von DASH6 ohne Florin, Karten-/Layoutansichten und Favoriten-GUI. Die Integration legt dafür **94 virtuelle Entities** in acht eigenen Demo-Bereichen an. Licht, Szenen, Medien, Klima, Lüftung, Tür, Rollo, Roboter und Updates sind bedienbar; Verläufe entstehen ab Installation. Die virtuelle Kamera zeigt ein mitgeliefertes Bild.
+- Eine vollständige Demo mit **18 Views**: Einstieg **Alle Karten & Details**, Räume nach dem Vorbild von DASH6 ohne Florin, Karten-/Layoutansichten und Favoriten-GUI. Die Integration legt dafür **98 virtuelle Entities** in acht eigenen Demo-Bereichen an. Licht, Szenen, Medien, Klima, Lüftung, Tür, Rollo, Roboter und Updates sind bedienbar; Verläufe entstehen ab Installation. Die virtuelle Kamera zeigt ein mitgeliefertes Bild.
 - [Optionale Geräte-Skripte und Anleitung](support/README.md), insbesondere die Shelly-Lüftungsquelle. Sie werden mitkopiert, aber nicht auf Hardware aktiviert.
 
 Das Demo-Dashboard begrenzt seine Karten zusätzlich auf den Namensbereich `*.liquid_glass_demo_*`. Serviceaufrufe ohne konkrete Dummy-Entity oder mit Bereichs-/Gerätezielen werden blockiert. Die Demo ändert weder echte Geräte noch die native Energiekonfiguration. Die Demo-Favoritenauswahl bleibt im jeweiligen Browser. Die öffentliche Browser-Demo verwendet denselben vollständigen Kartenkatalog und die echten Custom Cards. HA-eigene Basiselemente werden dort lokal adaptiert; Werte und Historie bleiben ausdrücklich simuliert.
+
+## Das DASH6-Grundmuster: Domain-Blöcke
+
+**Ein nativer Heading-Reiter und eine gemeinsame helle Glashülle fassen mehrere dunkle Entity-Karten einer Domain zusammen.** Beispielsweise stehen unter „Licht“ mehrere einzelne Lichtkarten und unter „Medien“ TV und HomePod. Jede innere Karte behält ihre Bedienung, Zustände und Detailansichten. Die Überschrift gehört zum gemeinsamen Rahmen; sie ist kein zusätzlicher dunkler Kartentitel.
+
+Die erste Demo-View zeigt dieses Muster direkt. Die Raum-Views verwenden es für Licht, Medien, Klima, Schalter, Türen und weitere Gerätegruppen. **Domain-Blöcke & Aufbau** (`/liquid-glass-demo/domain-bloecke`) erklärt den Aufbau anhand mehrerer vollständiger Blöcke. Ein kopierbares Beispiel wird als [examples/domain-blocks.yaml](examples/domain-blocks.yaml) beziehungsweise `/config/liquid-glass/examples/domain-blocks.yaml` mitinstalliert.
+
+```yaml
+type: custom:dash6-domain-card
+dashboard: liquid-glass-demo
+view: domain-bloecke
+block_id: light
+area: DASH6 Demo · Büro
+domain: light
+heading: Licht
+combine: true
+columns: 1
+auto_entities: false
+cards:
+  - type: custom:dash6-govee-light-card-v2
+    entity: light.liquid_glass_demo_lampe
+    name: Leselicht
+  - type: custom:dash6-govee-light-card-v2
+    entity: light.liquid_glass_demo_tischlicht
+    name: Tischlicht
+```
+
+`heading` erzeugt das native Heading; `title` ersetzt diesen Reiter nicht. `cards` enthält die dunklen Gerätekarten, `combine: true` hält sie in einer gemeinsamen hellen Hülle. `block_id` identifiziert den Abschnitt innerhalb der View. `area`/`domain` beschreiben die Zuordnung; `auto_entities: false` hält diese Demo bei den ausdrücklich angegebenen Dummy-Karten. Für eigene Räume kann die Domain-GUI zusätzliche Bereichs-Entities automatisch ergänzen und getrennte Ausschlüsse verwalten.
+
+Zwischen den Karten liegen **8px**. Native Headings stehen am Beginn der gemeinsamen Hülle, nicht als separater Grid-Titel darüber. Hülle und Reiter folgen ausschließlich **hellem Glas** (Paketdefault 20 %/8 px), die einzelnen Gerätekarten **dunklem Glas** (70 %/16 px). Transparente Layout-Wrapper erzeugen keine weitere Glasfläche. Die **Domain-GUI** bearbeitet Überschrift, Raster, feste/automatische Karten und deren jeweilige Originaleditoren. Theme-Regler und Domain-GUI haben unterschiedliche Aufgaben.
 
 ## Karten, Zusatzansichten und GUI
 
@@ -44,13 +74,19 @@ Das Demo-Dashboard begrenzt seine Karten zusätzlich auf den Namensbereich `*.li
 | Profile, Stacks, Render-/Direct-/Inline- und Embedded-Adapter | Weitere Demo-Views zeigen Einbettung und Strukturmuster | Vorhandene native bzw. freie Editoren |
 | Raumlader / Raumlayout und deklarative Übersichtselemente | Öffentliche Raumdefinition, Spalten und eigene Konfigurationsquelle | JSON/YAML, soweit die Klasse keinen eigenen GUI-Editor anbietet |
 
-**GUI konfigurieren** öffnet automatisch den echten Editor jeder Karte, die einen bereitstellt – aktuell **17 Editoren im Haupt-Showcase**. „In Demo übernehmen“ ändert nur diese Vorschau. Eigene Karten werden mit denselben Editor-Klassen in Home Assistants normaler Karten-GUI konfiguriert. Weitere Details, darunter Kamera, Kompatibilitätsnamen und die genaue Abgrenzung freier Editoren: [Karten- und GUI-Leitfaden](docs/CARD-GUIDE.md).
+**GUI konfigurieren** öffnet automatisch den echten Editor jeder Karte, die einen bereitstellt – aktuell **18 Editoren im Haupt-Showcase**. „In Demo übernehmen“ ändert nur diese Vorschau. Eigene Karten werden mit denselben Editor-Klassen in Home Assistants normaler Karten-GUI konfiguriert. Weitere Details, darunter Kamera, Kompatibilitätsnamen und die genaue Abgrenzung freier Editoren: [Karten- und GUI-Leitfaden](docs/CARD-GUIDE.md).
 
 ## Aktuell verwendeter Satin-Stand als Paket-Default
 
 Das Paket installiert die am **25.10.2026 frisch an der aktiven Oberfläche abgeglichenen Einstellungen**: **64 CSS-Vorgaben und 76 GUI-Werte**. Darin enthalten sind helles Glas mit **20 % / 8 px**, dunkles Glas mit **70 % / 16 px**, die aktuellen Farb-/Textvorgaben, Schalter-/Sliderbewegungen und Grapheneinstellungen. Native Theme-YAML und grafische Regler verwenden denselben versionierten Stand. **Theme-Vorgaben wiederherstellen** kehrt zu diesen Paketvorgaben zurück.
 
 **Alles speichern** speichert für den Browser. **Alles für Alle speichern** verwendet die eigene Administrator-Schnittstelle der eingerichteten Integration, erstellt eine Sicherung und erhält die gemeinsamen Nutzer-Defaults über Updates hinweg. Keine zusätzliche private Config-Editor-Integration erforderlich. Die öffentliche Demo simuliert auch diese Speicherung lokal; die installierte Geräte-Demo bietet keine globale Administrator-Speicherung an.
+
+## Wohnungstür und Haustür
+
+Beide Türkarten stehen direkt im Demo-Einstieg und gemeinsam im hellen Domain-Block **Türen** der Flur-View. **Wohnungstür** zeigt den vertikalen Glasschalter, getrennte Öffnen-/Schlossaktionen, bestätigten Türkontakt, Kontaktbatterie und Schloss-Batteriewarnung. **Haustür** zeigt Türöffner, letzte Klingelaktivität, Batterie und die orange Klingelrückmeldung. Öffnen beziehungsweise die konfigurierten Schloss-/Öffneraktionen beenden die Klingelmarkierung.
+
+**Türzustände ausprobieren** bietet ausschließlich virtuelle Kontakte, Batteriewarnung und Klingeln. Damit lassen sich geschlossen/abgeschlossen, aufgeschlossen, geöffnet sowie Batterie- und Klingelwarnungen zeigen. Beide Karten besitzen den grafischen Tür-/Schlosseditor für diese Zuordnungen, zusätzliche Klingelsensoren und Aktionen zum Beenden des Signals. In eigenen Installationen werden vorhandene Matter-/Schloss-/Türöffner-/Klingel-Integrationen zugeordnet; die Demo legt ihre Dummy-Geräte selbst an.
 
 ## Orientierung für Agenten
 

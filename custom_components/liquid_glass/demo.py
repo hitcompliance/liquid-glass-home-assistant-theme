@@ -65,6 +65,13 @@ class DemoCoordinator:
         self.put('binary_sensor','anwesenheit',on=bool(presence and presence.data['on']))
         door = self.get('switch','kuhlschrank_tur_simulation')
         self.put('binary_sensor','kuhlschrank_tur',on=bool(door and door.data['on']))
+        contact=self.get('switch','turkontakt_simulation')
+        if contact:self.put('binary_sensor','turkontakt',on=contact.data['on'])
+        warning=self.get('switch','schloss_batteriewarnung_simulation')
+        if warning:
+            self.put('binary_sensor','schloss_batteriewarnung',on=warning.data['on'])
+            self.put('sensor','turkontakt_batterie',value=15 if warning.data['on'] else 86)
+            self.put('sensor','schloss_batterie',value=15 if warning.data['on'] else 86)
         fan, force, remaining = self.get('fan','luftung'),self.get('switch','luftung_force'),self.get('number','luftung_restzeit')
         running=bool(force and force.data['on'] or fan and fan.data['on'] and presence and presence.data['on'])
         self.put('switch','luftung_ausgang',on=running)

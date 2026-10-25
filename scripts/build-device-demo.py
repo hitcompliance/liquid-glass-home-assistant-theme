@@ -20,6 +20,59 @@ def view(title, path, icon, cards):
             'type': 'sections', 'max_columns': 2, 'theme': 'DASH6 Satin Glass',
             'sections': [{'type': 'grid', 'cards': cards[::2]}, {'type': 'grid', 'cards': cards[1::2]}]}
 
+def domain_block(path, domain, heading, cards, area='Büro', columns=1, block_id=None):
+    """The production pattern: native heading tab + one light shell + dark cards."""
+    return card('domain-card', dashboard='liquid-glass-demo', view=path,
+                block_id=block_id or domain, area='DASH6 Demo · '+area,
+                domain=domain, heading=heading, auto_entities=False,
+                combine=True, columns=columns, mobile_columns=1,
+                mobile_breakpoint=700, cards=cards)
+
+def group_room_domains(v):
+    sections=v['sections']; ordered=[sections[i%2]['cards'][i//2] for i in range(sum(len(s['cards']) for s in sections))]
+    groups={}; output=[]
+    kinds={'lightgroup-card-v2':('light','Licht'),'govee-light-card-v2':('light','Licht'),
+           'shoe-cabinet-card':('light','Licht'),'appletv-card':('media_player','Medien'),
+           'homepod-card':('media_player','Medien'),'ikea-card':('switch','Schalter & Geräte'),
+           'plant-card':('sensor','Pflanzen'),'thermostat-card':('climate','Klima'),
+           'cover-card':('cover','Verdunklungen'),'door-card':('lock','Türen'),
+           'fan-card':('fan','Lüftung')}
+    for c in ordered:
+        kind=c['type'].removeprefix('custom:dash6-')
+        if kind=='domain-card':
+            c=domain_block(v['path'],'sensor','Sensoren',[
+                {'type':'tile','entity':entity('sensor','temperatur')},
+                {'type':'tile','entity':entity('sensor','batterie')}],v['title'])
+            output.append(c); continue
+        group=kinds.get(kind)
+        if group:
+            domain,heading=group
+            if heading not in groups:
+                groups[heading]=domain_block(v['path'],domain,heading,[],v['title'],block_id=domain+'-'+str(len(groups)))
+                output.append(groups[heading])
+            groups[heading]['cards'].append(c)
+        else: output.append(c)
+    v['sections']=[{'type':'grid','cards':output[::2]},{'type':'grid','cards':output[1::2]}]
+
+def demo_door(kind):
+    e=entity
+    common={'kind':kind,'contact_entity':e('binary_sensor','turkontakt')}
+    if kind=='apartment':
+        return card('door-card',**common,entity=e('lock','tur'),name='Wohnungstür',
+                    contact_battery_entity=e('sensor','turkontakt_batterie'),
+                    battery_warning_entity=e('binary_sensor','schloss_batteriewarnung'))
+    return card('door-card',**common,entity=e('button','turoffner'),name='Haustür',
+                battery_entity=e('sensor','schloss_batterie'),
+                activity_entity=e('sensor','klingel_letzte_aktivitat'),
+                ring_entity=e('binary_sensor','klingel'),ring_entities=[e('binary_sensor','klingel')],
+                cancel_entities=[e('button','turoffner'),e('lock','tur')])
+
+def door_controls():
+    return {'type':'entities','title':'Türzustände ausprobieren · nur Dummy-Geräte','entities':[
+        entity('button','klingeln'),entity('switch','turkontakt_simulation'),
+        entity('switch','schloss_batteriewarnung_simulation'),entity('lock','tur'),
+        entity('button','turoffner'),entity('button','zurucksetzen')]}
+
 def build():
     # The authored public example supplies the complete card/layout library.
     source = subprocess.run(['ruby', '-ryaml', '-rjson', '-e',
@@ -86,8 +139,7 @@ def build():
         view('Flur','flur','door',[
             card('area-header', title='Flur · Demo', area='DASH6 Demo · Flur'),
             card('shoe-cabinet-card', entity=e('light','schuhschrank'), name='Schuhschrank', segments=[{'entity':e('light','schuhschrank_links'),'name':'Links'},{'entity':e('light','schuhschrank_rechts'),'name':'Rechts'}], scenes=[{'entity':e('scene','bunt'),'name':'Bunt','icon':'mdi:palette'},{'entity':e('scene','weiss'),'name':'Weiß','icon':'mdi:white-balance-sunny'}], power_entity=e('sensor','schuhschrank_leistung'),graph={'show':True,'height':100}),
-            card('door-card',kind='apartment',entity=e('lock','tur'),name='Virtuelles Schloss',contact_entity=e('binary_sensor','turkontakt'),battery_entity=e('sensor','schloss_batterie')),
-            card('door-card',kind='entrance',entity=e('button','turoffner'),name='Virtueller Türöffner',ring_entity=e('binary_sensor','klingel'),activity_entity=e('sensor','klingel_letzte_aktivitat')),
+            demo_door('apartment'),demo_door('entrance'),door_controls(),
         ]),
         view('Badezimmer','badezimmer','shower',[
             card('area-header', title='Badezimmer · Demo', area='DASH6 Demo · Badezimmer'),
@@ -171,7 +223,8 @@ def build():
         ('HomePod · Verbindung & Wiedergabe','custom:dash6-homepod-card'),
         ('Pflanzen · Zielbereiche & Historie','custom:dash6-plant-card'),
         ('Rollo · Position & Richtung','custom:dash6-cover-card'),
-        ('Türschloss · Kontakt & Aktionen','custom:dash6-door-card'),
+        ('Wohnungstür · Schloss, Kontakt & Batteriewarnung','custom:dash6-door-card'),
+        ('Haustür · Türöffner, Klingeln & Aktivität','custom:dash6-door-card'),
         ('Auswahlgruppe · animierte Linse','custom:dash6-segmented-control-card'),
         ('Eigenständige Vacuum Dock Card','custom:vacuum-dock-card'),
         ('Theme-GUI · aktuelle Paketvorgaben','custom:dash6-theme-editor-card'),
@@ -183,6 +236,12 @@ def build():
     for title,kind in inventory:
         if kind not in candidates:raise ValueError('Demo is missing '+kind)
         config=deepcopy(candidates[kind])
+        if kind=='custom:dash6-door-card':
+            config=demo_door('entrance' if title.startswith('Haustür') else 'apartment')
+        if kind=='custom:dash6-domain-card':
+            config=domain_block('demo','light','Licht',[
+                card('govee-light-card-v2',entity=e('light','lampe'),name='Leselicht',discovery={'enabled':False}),
+                card('govee-light-card-v2',entity=e('light','tischlicht'),name='Tischlicht',discovery={'enabled':False})])
         if 'vacuum' in kind:
             config['areas']=[{'roborock_area_id':16,'name':'Demo Wohnzimmer'},{'roborock_area_id':17,'name':'Demo Küche'}]
             if kind=='custom:dash6-vacuum-card':
@@ -191,15 +250,36 @@ def build():
                 config['reset_buttons']['Bürste']=e('button','roboter_burste_zurucksetzen')
         samples.append(card('showcase-card',title=title,card=config))
         catalog.append({'title':title,'type':kind,'card':config})
-    intro={'type':'markdown','content':'# Alle Karten, Details & GUI\nSchuhschrank-Szenen, TV/Apple TV und Staubsauger stehen direkt hier. **Kartenhintergründe** und die beschrifteten Detailknöpfe öffnen die echten Zusatzansichten. **GUI konfigurieren** öffnet den zugehörigen echten Karteneditor. Sämtliche Geräte und Aktionen sind simuliert. Die folgenden Raum-Views zeigen weitere Layouts und Muster.'}
-    dashboard['views'].insert(0,view('Alle Karten & Details','demo','view-gallery',[intro,*samples]))
+    # Put the actual domain composition ahead of individual feature samples.
+    domain_sample=next(c for c in samples if c['card']['type']=='custom:dash6-domain-card')
+    samples.remove(domain_sample);samples.insert(0,domain_sample)
+    doors=[c for c in samples if c['card']['type']=='custom:dash6-door-card']
+    samples=[c for c in samples if c not in doors]
+    samples[4:4]=doors
+    domain_sample['title']='DASH6-Grundmuster · heller Domain-Block, dunkle Entity-Karten'
+    intro={'type':'markdown','content':'# Alle Karten, Details & GUI\nDas DASH6-Grundmuster steht zuerst: **nativer Heading-Reiter → eine gemeinsame helle Glashülle → mehrere dunkle Entity-Karten** mit 8px Abstand. Die Raum-Views nutzen diese Domain-Blöcke ebenfalls; **Domain-Blöcke & Aufbau** erklärt die Konfiguration. Schuhschrank-Szenen, TV/Apple TV und Staubsauger stehen direkt hier. Kartenhintergründe und Detailknöpfe öffnen die echten Zusatzansichten. GUI konfigurieren öffnet den echten Karteneditor. Sämtliche Geräte und Aktionen sind simuliert.'}
+    # Keep both doors and the controls directly after the three requested devices.
+    main_cards=[intro,*samples];main_cards.insert(7,door_controls())
+    dashboard['views'].insert(0,view('Alle Karten & Details','demo','view-gallery',main_cards))
+    domain_view=view('Domain-Blöcke & Aufbau','domain-bloecke','tab',[
+        {'type':'markdown','content':'# So sind DASH6-Domain-Blöcke aufgebaut\n1. Ein nativer Heading-Reiter benennt die Domain (z. B. Licht oder Medien).\n2. Eine gemeinsame helle Glasfläche umschließt alle zugehörigen Entity-Karten.\n3. Jede Entity behält ihre eigene dunkle Gerätekarte samt Bedienung und Detaildialogen.\n4. Kartenabstand 8px; die Hülle erzeugt keine zweite dunkle Fläche.\nKonfiguriert wird custom:dash6-domain-card mit heading, cards, area, domain, block_id und combine: true. heading erzeugt die native Überschrift; title ersetzt sie nicht. Die Domain-GUI verwaltet Überschrift, Raster und enthaltene Karten. In dieser Demo ist auto_entities: false, damit die festen Dummy-Beispiele nachvollziehbar bleiben. Eigene Räume können automatische Entity-Ergänzung nutzen. Helles und dunkles Glas folgen getrennt den Theme-Reglern. Das vollständige kopierbare Beispiel liegt unter /config/liquid-glass/examples/domain-blocks.yaml.'},
+        {**deepcopy(domain_sample['card']),'view':'domain-bloecke'},
+        domain_block('domain-bloecke','switch','Schalter',[
+            card('ikea-card',entity=e('switch','steckdose'),name='Messsteckdose'),
+            card('ikea-card',entity=e('switch','waschmaschine'),name='Waschmaschine')]),
+        domain_block('domain-bloecke','media_player','Medien',[
+            deepcopy(candidates['custom:dash6-appletv-card']),deepcopy(candidates['custom:dash6-homepod-card'])]),
+    ])
+    dashboard['views'].insert(1,domain_view)
+    (ROOT/'examples/domain-blocks.yaml').write_text(json.dumps({'title':'DASH6 Domain-Muster','views':[deepcopy(domain_view)]},ensure_ascii=False,indent=2)+'\n')
+    for room in rooms:group_room_domains(room)
     for v in dashboard['views']:
         for section in v.get('sections',[]):
             wrapped=[]
             for c in section.get('cards',[]):
                 sample=c
                 if c.get('type','').startswith('custom:') and c['type']!='custom:dash6-showcase-card':
-                    sample=card('showcase-card',title=c.get('name',c.get('title',c['type'].replace('custom:dash6-',''))),card=c)
+                    sample=card('showcase-card',title=c.get('heading',c.get('name',c.get('title',c['type'].replace('custom:dash6-','')))),minimal=c['type']=='custom:dash6-domain-card',card=c)
                 wrapped.append({'type':'custom:dash6-demo-scope','card':sample,**({'grid_options':c['grid_options']} if 'grid_options' in c else {})})
             section['cards']=wrapped
     (ROOT/'support/card-catalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

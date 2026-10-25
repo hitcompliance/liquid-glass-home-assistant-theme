@@ -9,6 +9,7 @@ class DemoButton(DemoEntity,ButtonEntity):
             self.coordinator.put('binary_sensor','klingel',on=True)
             self.coordinator.put('sensor','klingel_letzte_aktivitat',value=dt_util.utcnow())
         elif key=='turoffner':
+            self.coordinator.put('switch','turkontakt_simulation',on=True)
             self.coordinator.put('binary_sensor','klingel',on=False)
             self.coordinator.put('binary_sensor','turkontakt',on=True)
         elif key=='update_verfugbar': self.coordinator.put('update','firmware',available_update=True)

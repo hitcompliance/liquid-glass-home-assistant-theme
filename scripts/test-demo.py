@@ -124,4 +124,19 @@ class DemoTests(unittest.IsolatedAsyncioTestCase):
         self.coordinator.stop()
         self.assertIsNone(self.coordinator.unsub)
 
+    async def test_both_doors_contact_battery_ring_and_cancel(self):
+        await self.get('switch','turkontakt_simulation').async_turn_on()
+        self.assertEqual(self.state('binary_sensor','turkontakt').state,'on')
+        await self.get('switch','schloss_batteriewarnung_simulation').async_turn_on()
+        self.assertEqual(self.state('binary_sensor','schloss_batteriewarnung').state,'on')
+        self.assertEqual(float(self.state('sensor','turkontakt_batterie').state),15)
+        self.assertEqual(float(self.state('sensor','schloss_batterie').state),15)
+        await self.get('lock','tur').async_lock()
+        self.assertEqual(self.state('binary_sensor','turkontakt').state,'off')
+        await self.get('button','klingeln').async_press()
+        self.assertEqual(self.state('binary_sensor','klingel').state,'on')
+        await self.get('button','turoffner').async_press()
+        self.assertEqual(self.state('binary_sensor','klingel').state,'off')
+        self.assertEqual(self.state('binary_sensor','turkontakt').state,'on')
+
 if __name__=='__main__': unittest.main()

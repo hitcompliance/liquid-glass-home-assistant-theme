@@ -16,6 +16,27 @@ try{for(const engine of [chromium,webkit]){
   assert.equal(await page.evaluate(()=>demoPreview.ready),true);
   const shell=type=>page.locator('[data-card-type="custom:dash6-'+type+'"]');
   for(const kind of ['shoe-cabinet-card','appletv-card','vacuum-card'])assert.equal(await shell(kind).count(),1,kind+' visible on the first view');
+  const domain=shell('domain-card');
+  await domain.locator('dash6-stack-card[data-tab-ready]').first().waitFor();
+  await domain.locator('hui-heading-card.dash6-section-tab').getByRole('heading',{name:'Licht',exact:true}).waitFor();
+  assert.equal(await domain.locator('dash6-govee-light-card-v2').count(),2,'One domain contains multiple entity cards');
+  const material=await domain.locator('dash6-stack-card[data-tab-ready]').first().evaluate(stack=>{
+   const surface=stack.shadowRoot.querySelector('.tab-surface'),walk=r=>[...r.querySelectorAll('*')].flatMap(e=>[e,...(e.shadowRoot?walk(e.shadowRoot):[])]),lights=walk(stack.shadowRoot).filter(e=>e.localName==='dash6-govee-light-card-v2'),frame=stack.getBoundingClientRect();
+   return {surface:getComputedStyle(surface).backgroundColor,opacity:getComputedStyle(surface).opacity,dark:lights.map(e=>getComputedStyle(e.shadowRoot.querySelector('ha-card')).backgroundColor),contained:lights.every(e=>{const b=e.getBoundingClientRect();return b.left>=frame.left&&b.right<=frame.right+1&&b.bottom<=frame.bottom+1;}),gap:lights[1].getBoundingClientRect().top-lights[0].getBoundingClientRect().bottom};
+  });
+  assert.equal(material.opacity,'1');assert.ok(material.contained);assert.ok(Math.abs(material.gap-8)<1);assert.ok(material.dark.every(bg=>bg!==material.surface),'Dark cards remain distinct from the light shell');
+  console.log(engine.name()+' domain pattern:',material);
+  const proof=resolve('../output/Release-3.3-Demo');await mkdir(proof,{recursive:true});await domain.screenshot({path:proof+'/'+engine.name()+'-domain-block.png'});
+  assert.equal(await shell('door-card').count(),2,'Both original door variants are directly visible');
+  const apartment=shell('door-card').filter({hasText:'Wohnungstür'}),entrance=shell('door-card').filter({hasText:'Haustür'});
+  await page.locator('button[data-entity="button.liquid_glass_demo_klingeln"]').click();
+  await entrance.locator('ha-card[data-tone="ring"]').waitFor();
+  await page.locator('button[data-entity="switch.liquid_glass_demo_turkontakt_simulation"]').click();
+  await apartment.locator('ha-card[data-tone="open"]').waitFor();
+  assert.equal(await entrance.locator('ha-card[data-tone="ring"]').count(),0,'Contact opening ends ringing');
+  await page.locator('button[data-entity="switch.liquid_glass_demo_schloss_batteriewarnung_simulation"]').click();
+  assert.ok(await apartment.locator('.warning').count()>=2,'Contact battery and lock warning are demonstrated');
+  await page.locator('button[data-entity="button.liquid_glass_demo_zurucksetzen"]').click();
   await page.waitForFunction(()=>[...document.querySelectorAll('home-assistant')].some(x=>x.shadowRoot));
   for(const [kind,action,label]of [['shoe-cabinet-card','light','Lichtdetails'],['appletv-card','media','Fernseher'],['vacuum-card','clean','Reinigung'],['vacuum-card','dock','Basisstation'],['vacuum-card','maintenance','Verschleißteile']]){
    await shell(kind).locator('[data-detail="'+action+'"]').click();

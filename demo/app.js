@@ -50,6 +50,8 @@ const entities=Object.fromEntries(specs.map(s=>[s.entity_id,{entity_id:s.entity_
 const devices=Object.fromEntries(specs.map(s=>['demo-'+s.room,{id:'demo-'+s.room,area_id:'demo-'+s.room,identifiers:[['liquid_glass','demo_'+s.room]],manufacturer:'Liquid Glass',model:'Virtual device'}]));
 const areas=Object.fromEntries(specs.map(s=>['demo-'+s.room,{area_id:'demo-'+s.room,name:'DASH6 Demo · '+s.room}]));
 function synchronize(){
+ set('binary_sensor','turkontakt',value('switch','turkontakt_simulation')?.state||'off');
+ const warning=value('switch','schloss_batteriewarnung_simulation')?.state==='on';set('binary_sensor','schloss_batteriewarnung',warning?'on':'off');set('sensor','turkontakt_batterie',warning?15:86);set('sensor','schloss_batterie',warning?15:86);
  set('binary_sensor','anwesenheit',value('switch','anwesenheit')?.state||'off');set('binary_sensor','kuhlschrank_tur',value('switch','kuhlschrank_tur_simulation')?.state||'off');
  const run=value('switch','luftung_force')?.state==='on'||value('fan','luftung')?.state==='on'&&value('binary_sensor','anwesenheit')?.state==='on';
  set('switch','luftung_ausgang',run?'on':'off');set('switch','luftung_force_ausgang',run?'on':'off');set('sensor','luftung_leistung',run?18.5:0);
@@ -85,10 +87,10 @@ async function callService(domain,service,data={},target={}){
   if(domain==='cover'){s.attributes.current_position=data.position??(service==='close_cover'?0:service==='open_cover'?100:s.attributes.current_position);s.state=s.attributes.current_position===0?'closed':'open';}
   if(domain==='media_player'){if(['media_play','play_media'].includes(service))s.state='playing';if(service==='media_pause')s.state='paused';if(service==='media_play_pause')s.state=s.state==='playing'?'paused':'playing';if(service==='media_stop'||service==='turn_on')s.state='idle';if(service==='select_source')s.attributes.source=data.source;}
   if(domain==='remote'){s.attributes.last_command=data.command;if(service==='turn_on'||service==='turn_off')set('media_player',key,service==='turn_on'?'idle':'off');}
-  if(domain==='lock'){s.state=service==='lock'?'locked':'unlocked';set('binary_sensor','turkontakt',service==='open'?'on':'off');}
+  if(domain==='lock'){s.state=service==='lock'?'locked':'unlocked';if(service==='lock'||service==='open')set('switch','turkontakt_simulation',service==='open'?'on':'off');}
   if(domain==='vacuum'){s.state=service==='start'||service==='send_command'?'cleaning':service==='return_to_base'?'docked':service==='pause'?'paused':service==='stop'?'idle':s.state;}
   if(domain==='update'){s.state='off';s.attributes.installed_version=s.attributes.latest_version;}
-  if(domain==='button'){s.state=stamp();if(key==='zurucksetzen'){reset();return {};}if(key==='klingeln'){set('binary_sensor','klingel','on');set('sensor','klingel_letzte_aktivitat',stamp());}if(key==='turoffner'){set('binary_sensor','klingel','off');set('binary_sensor','turkontakt','on');}if(key==='update_verfugbar'){set('update','firmware','on',{latest_version:'1.1.0'});}if(key.endsWith('_zurucksetzen'))set('sensor',key.replace('_zurucksetzen','_restzeit'),300);}
+  if(domain==='button'){s.state=stamp();if(key==='zurucksetzen'){reset();return {};}if(key==='klingeln'){set('binary_sensor','klingel','on');set('sensor','klingel_letzte_aktivitat',stamp());}if(key==='turoffner'){set('switch','turkontakt_simulation','on');set('binary_sensor','klingel','off');set('binary_sensor','turkontakt','on');}if(key==='update_verfugbar'){set('update','firmware','on',{latest_version:'1.1.0'});}if(key.endsWith('_zurucksetzen'))set('sensor',key.replace('_zurucksetzen','_restzeit'),300);}
  }
  synchronize();publish();document.querySelector('#runtime-status').textContent='Simuliert: '+domain+'.'+service+' · '+ids.join(', ');return {};
 }
