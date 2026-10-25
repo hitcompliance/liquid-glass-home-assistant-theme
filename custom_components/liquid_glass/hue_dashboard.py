@@ -16,7 +16,7 @@ def block(path,domain,ids,area=None):
         kind='tile'
         extra={}
         if domain=='light':kind='custom:dash6-govee-light-card-v2';extra={'discovery':{'enabled':False}}
-        elif domain=='switch':kind='custom:dash6-glass-switch'
+        elif domain=='switch':kind='custom:dash6-ikea-card'
         elif domain=='media_player':kind='custom:dash6-homepod-card'
         elif domain=='fan':kind='custom:dash6-fan-card'
         elif domain=='vacuum':kind='custom:dash6-vacuum-card'
@@ -32,7 +32,11 @@ def ultra(cards,links):
     nav={'type':'vertical-stack','cards':[{'type':'custom:button-card','name':title,'icon':icon,'tap_action':{'action':'navigate','navigation_path':'/'+HUE_DEMO+'/'+path},'styles':{'card':[{'background':'transparent','box-shadow':'none','height':'40px'}]}} for path,title,icon in links]}
     sidebar=[{'type':'custom:dash6-theme-editor-card','expanded':False},nav]
     toggle={'type':'custom:dash6-direct-card','card':{'type':'custom:button-card','name':'Seitenleiste öffnen','icon':'mdi:dock-right','show_name':False,'tap_action':{'action':'fire-dom-event'},'custom_fields':{'overlay_hook':'[[[ return window.__dash6Cards.overlay(this,hass,html); ]]]'},'variables':{'room_title':cards[0].get('title','Geräte'),'sidebar_cards':deepcopy(sidebar)},'dash6_css':{'class':'dash6-sidebar-toggle'}}}
-    def module(identifier,card):return {'id':identifier,'type':'external_card','card_type':card['type'].removeprefix('custom:'),'card_config':card}
+    def module(identifier,card):
+        # Ultra's external-card module resolves custom elements. HA-native
+        # stacks/markdown use the same direct adapter as the DASH6 copy.
+        if not card['type'].startswith('custom:'):card={'type':'custom:dash6-direct-card','card':card}
+        return {'id':identifier,'type':'external_card','card_type':card['type'].removeprefix('custom:'),'card_config':card}
     return {'type':'custom:dash6-ultra-card','_config_version':3,'card_padding':16,'card_border_width':0,'card_border_radius':0,'layout':{'rows':[{'id':'embedded-room-layout','column_layout':'custom','custom_column_sizing':'minmax(0,1fr) 250px','gap':16,'gap_unit':'px','columns':[{'id':'embedded-content','width':'100%','modules':[module('sidebar-toggle',toggle),*[module('content-'+str(i),c) for i,c in enumerate(cards)]]},{'id':'embedded-sidebar','width':'250px','modules':[module('sidebar-'+str(i),c) for i,c in enumerate(sidebar)]}]}]}}
 
 def generate(hass):

@@ -50,6 +50,7 @@ jobs:
       - run: node tests/demo-content-scope-browser.mjs
       - run: node tests/public-showcase-browser.mjs
       - run: node tests/theme-save-actions-browser.mjs
+      - run: node tests/ultra-native.mjs
       - run: node tests/demo-runtime.mjs
       - run: node tests/demo-scope-browser.mjs
       - run: node tests/demo-favorites.mjs

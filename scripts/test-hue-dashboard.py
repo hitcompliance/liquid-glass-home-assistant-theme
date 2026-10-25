@@ -22,9 +22,17 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(data['title'],'LIQUID-GLASS-HUE-DEMO')
         paths={v['path'] for v in data['views']};self.assertEqual(paths,{'raum-room-a','raum-ohne-bereich','wartung','energie','sicherheit','surveillance'})
         text=json.dumps(data)
+        self.assertIn('custom:dash6-ikea-card',text,'Switches need a named entity card, not an unlabeled standalone toggle')
         for eid in ('light.vendor_lamp','sensor.vendor_power','switch.unknown_area','update.vendor_fw','camera.front'):self.assertIn(eid,text)
         for eid in ('light.hidden','switch.disabled','light.liquid_glass_demo_test'):self.assertNotIn(eid,text)
         self.assertTrue(all(v['cards'][0]['type']=='custom:dash6-ultra-card' for v in data['views']))
+        for view in data['views']:
+            for row in view['cards'][0]['layout']['rows']:
+                for column in row['columns']:
+                    for module in column['modules']:
+                        self.assertTrue(module['card_config']['type'].startswith('custom:'))
+        sidebar=data['views'][0]['cards'][0]['layout']['rows'][0]['columns'][1]['modules'][1]
+        self.assertEqual(sidebar['card_config']['card']['type'],'vertical-stack')
         hass.services.assert_not_called()
     def test_copy_assets_and_service_namespace(self):
         root=Path(__file__).resolve().parents[1];data=json.loads((root/'examples/demo-dashboard.yaml').read_text());text=json.dumps(data)

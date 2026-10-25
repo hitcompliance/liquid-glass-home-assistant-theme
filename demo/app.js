@@ -1,5 +1,5 @@
-import {createCardElement} from './native.js?v=3.5.0';
-import {createDemoRuntime} from './package/demo-runtime.js?v=3.5.0';
+import {createCardElement} from './native.js?v=3.5.1';
+import {createDemoRuntime} from './package/demo-runtime.js?v=3.5.1';
 const status=document.querySelector('#runtime-status');
 const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+': '+r.status);return r.json();};
 const isCopy=new URLSearchParams(location.search).get('dashboard')!=='gallery';
@@ -17,7 +17,7 @@ runtime.subscribe(publish);
 const reset=()=>runtime.reset();
 try{
  for(const url of modules)await import(new URL(url,location.href));
- await import('./package/dash6-cards.js?v=3.5.0');await import('./package/vacuum-dock-card.js?v=3.5.0');await import('./package/room-loader.js?v=3.5.0');
+ await import('./package/dash6-cards.js?v=3.5.1');await import('./package/vacuum-dock-card.js?v=3.5.1');await import('./package/room-loader.js?v=3.5.1');
  const originalFetch=window.fetch.bind(window);window.fetch=(url,options)=>originalFetch(typeof url==='string'&&url.startsWith('/local/liquid-glass/')?'package/'+url.slice('/local/liquid-glass/'.length):url,options);
  const preview=document.querySelector('#preview'),app=document.createElement('home-assistant');app.hass=hass;preview.append(app);let node=app;
  for(const tag of ['home-assistant-main','ha-panel-lovelace','hui-root']){const child=document.createElement(tag);node.attachShadow({mode:'open'}).append(child);node=child;}
